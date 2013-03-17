@@ -48,7 +48,7 @@ Follow <https://github.com/wordnik/swagger-core/wiki/java-jax-rs>
 </project>
 ```
 
-## configure plugin in pom.xml
+## Configure plugin in pom.xml
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -103,20 +103,31 @@ Follow <https://github.com/wordnik/swagger-core/wiki/java-jax-rs>
 ```
 
 
-> - A Java Class which contains Swagger's annotation @Api will be considered as a apiClass.
-- You can specify several apiClass or a apiPackage which contains several apiClass to an apiSource.
-- One apiSource will be considered as a set of APIs for one apiVersion in basePath.
-- You can specify several apiSource to the plugin. For example:
+> - A Java Class which contains Swagger's annotation @Api will be considered as a **apiClass**.
+- You can specify several **apiClass** or an **apiPackage** which contains several **apiClass** to an **apiSource**.
+- One **apiSource** will be considered as a set of APIs for one **apiVersion** in **basePath**.
+- The **basePath** is only used to document, no used for call.
+- You can specify several **apiSource** to the plugin. For example:
  - You can generate documents for your mutil-version supported service.
  - Or you can generate several formats of output for one version of your API.
-- outputTemplate is the path of the mustache template file.
-- outputPath is the path for the output file.
+- **outputTemplate** is the path of the mustache template file.
+- **outputPath** is the path of the output file.
 
+## Build 
+    mvn package
+You'll get your document ouput file in the path you specifid in **outputPath**.
+
+# About the template file
 Don't worry about the template file, the plugin has embed 3 templates in:
 
 1. [wiki.mustache](https://github.com/kongchen/swagger-maven-plugin/blob/master/src/main/resources/wiki.mustache) for wiki markup output.
 2. [html.mustache](https://github.com/kongchen/swagger-maven-plugin/blob/master/src/main/resources/html.mustache) for html output.
 3. [markdown.mustache](https://github.com/kongchen/swagger-maven-plugin/blob/master/src/main/resources/markdown.mustache) for markdown output.
+
+You can directly use them in **outputTemplate**, no extra path is needed, just the filename will be the path. e.g.:
+```xml
+<outputTemplate>markdown.mustache</outputTemplate>
+```
 
 If you dissatisfied with the included mustache template, you can write your own, just follow the following json-schema of the hash your mustache template file will consume. It looks big but actually simple:
 ```json
