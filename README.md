@@ -1,6 +1,6 @@
 # Why this plugin
 
-First of all, Swagger is awesome, thanks to the team!
+First of all, Swagger is awesome!
 
 However, a limitation in using Swagger is that you cannot get your API document unless you:
 
@@ -23,31 +23,40 @@ It supports customized output template (mustache) and will let you generate the 
 You'll always get your up to date document after you launch _mvn package_. You can easily put the generated document anywhere. (put in service war package using maven-assembly-plugin.)
 
 # Tutorials
-## write Swagger-style document
 
-## configure pom.xml
+## Write Swagger-style document
+Follow <https://github.com/wordnik/swagger-core/wiki/java-jax-rs>
+
+## Add repository of this plugin in your pom.xml
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    …
+    <repositories>
+        <repository>
+            <id>swagger-maven-plugin-mvn-repo</id>
+            <url>https://raw.github.com/kongchen/swagger-maven-plugin/mvn-repo/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>
+    …
+</project>
+```
+
+## configure plugin in pom.xml
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
 
-    <groupId>…</groupId>
-    <artifactId>…</artifactId>
-    <version>…</version>
-
-    <dependencies>
-        …
-      <dependency>
-        <groupId>com.wordnik</groupId>
-        <artifactId>swagger-jaxrs_2.9.1</artifactId>
-        <version>1.2.0</version>
-      </dependency>
-        …
-    </dependencies>
-
+    …
     <build>
         <plugins>
             …
@@ -90,7 +99,7 @@ You'll always get your up to date document after you launch _mvn package_. You c
             …
         </plugins>
     </build>
-</xml>
+</project>
 ```
 
 
@@ -105,11 +114,177 @@ You'll always get your up to date document after you launch _mvn package_. You c
 
 Don't worry about the template file, the plugin has embed 3 templates in:
 
-1. wiki.mustache for wiki markup output.
-2. html.mustache for html output.
-3. markdown.mustache for markdown output.
+1. [wiki.mustache](https://github.com/kongchen/swagger-maven-plugin/blob/master/src/main/resources/wiki.mustache) for wiki markup output.
+2. [html.mustache](https://github.com/kongchen/swagger-maven-plugin/blob/master/src/main/resources/html.mustache) for html output.
+3. [markdown.mustache](https://github.com/kongchen/swagger-maven-plugin/blob/master/src/main/resources/markdown.mustache) for markdown output.
 
 If you dissatisfied with the included mustache template, you can write your own, just follow the following json-schema of the hash your mustache template file will consume. It looks big but actually simple:
 ```json
-
+{
+    "type": "object",
+    "properties": {
+        "basePath": {
+            "type": "string"
+        },
+        "apiVersion": {
+            "type": "string"
+        },
+        "apiDocuments": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "index": {
+                        "type": "integer"
+                    },
+                    "resourcePath": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "apis": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "apiIndex": {
+                                    "type": "integer"
+                                },
+                                "path": {
+                                    "type": "string"
+                                },
+                                "url": {
+                                    "type": "string"
+                                },
+                                "operations": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "opIndex": {
+                                                "type": "integer"
+                                            },
+                                            "httpMethod": {
+                                                "type": "string"
+                                            },
+                                            "summary": {
+                                                "type": "string"
+                                            },
+                                            "notes": {
+                                                "type": "string"
+                                            },
+                                            "responseClass": {
+                                                "type": "string"
+                                            },
+                                            "nickname": {
+                                                "type": "string"
+                                            },
+                                            "className": {
+                                                "type": "string"
+                                            },
+                                            "parameters": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "paramType": {
+                                                            "type": "string"
+                                                        },
+                                                        "paras": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "name": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "required": {
+                                                                        "type": "boolean",
+                                                                        "required": true
+                                                                    },
+                                                                    "description": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "type": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "linkType": {
+                                                                        "type": "string"
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "errorResponses": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "code": {
+                                                            "type": "integer"
+                                                        },
+                                                        "reason": {
+                                                            "type": "string"
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "responseClassLinkType": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "dataTypes": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "type": "string"
+                                },
+                                "type": {
+                                    "type": "string"
+                                },
+                                "linkType": {
+                                    "type": "string"
+                                },
+                                "required": {
+                                    "type": "boolean",
+                                    "required": true
+                                },
+                                "access": {
+                                    "type": "string"
+                                },
+                                "description": {
+                                    "type": "string"
+                                },
+                                "notes": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
 ```
