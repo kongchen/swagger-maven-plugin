@@ -24,10 +24,13 @@ You'll always get your up to date document after you launch _mvn package_. You c
 
 # Tutorials
 
-## Write Swagger-style document
+There're only 3 steps for using this plugin with Swagger.
+
+## 1. Write Swagger-style document
 Follow <https://github.com/wordnik/swagger-core/wiki/java-jax-rs>
 
-## Add repository of this plugin in your pom.xml
+## 2. Configure pom.xml
+### 2.1 Add repository
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
@@ -48,7 +51,7 @@ Follow <https://github.com/wordnik/swagger-core/wiki/java-jax-rs>
 </project>
 ```
 
-## Configure plugin in pom.xml
+### 2.2 Configure plugin
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -113,7 +116,7 @@ Follow <https://github.com/wordnik/swagger-core/wiki/java-jax-rs>
 - **outputTemplate** is the path of the mustache template file.
 - **outputPath** is the path of the output file.
 
-## Build 
+## 3. Build 
     mvn package
 You'll get your document ouput file in the path you specifid in **outputPath**.
 
