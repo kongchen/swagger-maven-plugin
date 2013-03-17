@@ -118,13 +118,5 @@
             </plugin>
         </plugins>
     </build>
-    <distributionManagement>
-        <repository>
-            <id>internal.repo</id>
-            <name>Temporary Staging Repository</name>
-            <url>file://${project.build.directory}/mvn-repo</url>
-        </repository>
-    </distributionManagement>
-
 
 </project>
