@@ -101,13 +101,6 @@ public class PetResource {
                         <outputTemplate>markdown.mustache</outputTemplate>
                         <outputPath>doc.md</outputPath>
                     </apiSource>
-                    <apiSource>
-                        <apiPackage>com.foo.bar.api.v2</apiPackage>
-                        <apiVersion>v2</apiVersion>
-                        <basePath>http://host:port/bar/foo</basePath>
-                        <outputTemplate>html.mustache</outputTemplate>
-                        <outputPath>index.html</outputPath>
-                    </apiSource>
                 </apiSources>
             </configuration>
             <executions>
