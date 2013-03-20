@@ -181,7 +181,8 @@ public class MformatApiDocument {
             MformatPara info = new MformatPara();
             info.linkType = getTrueType(para.getDataType());
 
-            if (swaggerDoc.getModels().get(info.linkType) == null) {
+
+            if (swaggerDoc.getModels()!=null && swaggerDoc.getModels().get(info.linkType) == null) {
                 info.type = para.getDataType();
                 info.name = para.getName();
             } else {
@@ -227,7 +228,7 @@ public class MformatApiDocument {
 
     private List<MformatItem> getItemsFromClass(String responseClass) {
 
-        if (responseClass.equals("void")) {
+        if (responseClass== null || responseClass.equals("void")) {
             return null;
         }
 
@@ -533,9 +534,10 @@ class MformatDataType {
 
     @Override
     public int hashCode() {
-        return name.hashCode();
+        int result = name != null ? name.hashCode() : 0;
+        result = 31 * result + (items != null ? items.hashCode() : 0);
+        return result;
     }
-
 
     public String getName() {
         return name;
