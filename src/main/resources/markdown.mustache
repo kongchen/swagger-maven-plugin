@@ -12,16 +12,17 @@
 {{{description}}}
 
 {{#apis}}
+#### {{index}}.{{apiIndex}} `{{path}}`
 {{#operations}}
-#### {{index}}.{{apiIndex}}.{{opIndex}} {{nickname}}
+##### {{index}}.{{apiIndex}}.{{opIndex}} {{nickname}}
 **{{httpMethod}}** `{{path}}`
 
 {{summary}}
 {{{notes}}}
 
-##### URL
+###### URL
     {{url}}
-##### Parameters
+###### Parameters
 {{#parameters}}
 - {{paramType}}
 
@@ -44,12 +45,12 @@
 {{/parameters}}
 
 {{#responseClass}}
-##### Response
+###### Response
 [{{responseClass}}](#{{responseClassLinkType}})
 {{/responseClass}}
 
 
-##### Errors
+###### Errors
 <table border="1">
     <tr>
         <th>Status Code</th>

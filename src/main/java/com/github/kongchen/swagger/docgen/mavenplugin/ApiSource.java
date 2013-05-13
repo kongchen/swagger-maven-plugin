@@ -1,4 +1,4 @@
-package com.github.kongchen.mavenswagger.plugin;
+package com.github.kongchen.swagger.docgen.mavenplugin;
 
 import java.util.List;
 
