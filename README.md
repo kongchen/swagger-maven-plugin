@@ -1,3 +1,7 @@
+*You can:*
+  - *Go to check out [this simple example of using this plugin](https://github.com/kongchen/swagger-maven-example) to see how it works*
+  - *Or start reading following balabala:*
+
 # Why this plugin
 
 First of all, Swagger is awesome!
