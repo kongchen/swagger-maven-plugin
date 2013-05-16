@@ -1,13 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
 
+    <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.kongchen</groupId>
     <artifactId>swagger-maven-plugin</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
+    <name>Swagger Maven Plugin</name>
+    <description>
+        A maven build plugin which helps you generate API document during build phase
+    </description>
+    <url>https://github.com/kongchen/swagger-maven-plugin</url>
+    <licenses>
+        <license>
+            <name>Apache license</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git:git@github.com:kongchen/swagger-maven-plugin.git/tags/swagger-maven-plugin-0.1</connection>
+        <url>scm:git:git@github.com:kongchen/swagger-maven-plugin.git/tags/swagger-maven-plugin-0.1</url>
+      <developerConnection>scm:svn:https://svn.sonatype.org/spice/tags/swagger-maven-plugin-0.1</developerConnection>
+  </scm>
+
+    <developers>
+        <developer>
+            <id>kongchen</id>
+            <name>Kong Chen</name>
+            <timezone>+8</timezone>
+        </developer>
+    </developers>
 
     <properties>
         <maven.version>2.2.1</maven.version>
@@ -68,30 +96,10 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>com.github.github</groupId>
-                <artifactId>site-maven-plugin</artifactId>
-                <version>0.8</version>
-                <configuration>
-                    <message>Maven artifacts for ${project.version}</message>  <!-- git commit message -->
-                    <noJekyll>true</noJekyll>                                  <!-- disable webpage processing -->
-                    <outputDirectory>${project.build.directory}/mvn-repo</outputDirectory> <!-- matches distribution management repository url above -->
-                    <branch>refs/heads/mvn-repo</branch>                       <!-- remote branch name -->
-                    <includes><include>**/*</include></includes>
-                    <repositoryName>swagger-maven-plugin</repositoryName>      <!-- github repo name -->
-                    <repositoryOwner>kongchen</repositoryOwner>    <!-- github username  -->
-                </configuration>
-                <executions>
-                    <!-- run site-maven-plugin's 'site' target as part of the build's normal 'deploy' phase -->
-                    <execution>
-                        <goals>
-                            <goal>site</goal>
-                        </goals>
-                        <phase>deploy</phase>
-                    </execution>
-                </executions>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.0-beta-9</version>
             </plugin>
-
-
             <plugin>
                 <groupId>org.codehaus.plexus</groupId>
                 <artifactId>plexus-maven-plugin</artifactId>
@@ -105,14 +113,6 @@
                 </executions>
             </plugin>
             <plugin>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <version>2.7</version>
-                <configuration>
-                    <altDeploymentRepository>internal.repo::default::file://${project.build.directory}/mvn-repo</altDeploymentRepository>
-                </configuration>
-            </plugin>
-
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.3.2</version>
@@ -124,12 +124,5 @@
             </plugin>
         </plugins>
     </build>
-    <distributionManagement>
-        <repository>
-            <id>github</id>
-            <name>GitHub ${project.artifactId} Repository</name>
-            <url>https://raw.github.com/kongchen/swagger-maven-plugin/mvn-repo/</url>
-        </repository>
-    </distributionManagement>
 
 </project>
