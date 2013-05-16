@@ -24,9 +24,9 @@
     </licenses>
 
     <scm>
-        <connection>scm:git:git@github.com:kongchen/swagger-maven-plugin.git/tags/swagger-maven-plugin-0.1</connection>
-        <url>scm:git:git@github.com:kongchen/swagger-maven-plugin.git/tags/swagger-maven-plugin-0.1</url>
-      <developerConnection>scm:svn:https://svn.sonatype.org/spice/tags/swagger-maven-plugin-0.1</developerConnection>
+        <connection>scm:git:git@github.com:kongchen/swagger-maven-plugin.git</connection>
+        <url>scm:git:git@github.com:kongchen/swagger-maven-plugin.git</url>
+        <developerConnection>scm:git:git@github.com:kongchen/swagger-maven-plugin.git</developerConnection>
   </scm>
 
     <developers>
