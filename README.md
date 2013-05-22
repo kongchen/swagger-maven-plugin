@@ -295,3 +295,4 @@ If you dissatisfied with the included mustache template, you can write your own,
     }
 }
 ```
+[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/8e57158a366298512499affc8b585976 "githalytics.com")](http://githalytics.com/kongchen/swagger-maven-plugin)
