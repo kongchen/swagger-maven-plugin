@@ -54,28 +54,7 @@ public class PetResource {
 
 
 ## 2. Configure pom.xml
-### 2.1 Add plugin repository
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    …
-    <pluginRepositories>
-        <pluginRepository>
-            <id>swagger-maven-plugin-mvn-repo</id>
-            <url>https://github.com/kongchen/swagger-maven-plugin/raw/mvn-repo/</url>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-            </snapshots>
-        </pluginRepository>
-    </pluginRepositories>
-    …
-</project>
-```
-
-### 2.2 Configure plugin
+This plugin has been uploaded to central repository, you can use it directly.
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -90,7 +69,7 @@ public class PetResource {
           <plugin>
             <groupId>com.github.kongchen</groupId>
             <artifactId>swagger-maven-plugin</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0</version>
             <configuration>
                 <apiSources>
                     <!--can speficy multi sources here to get multi format outputs-->
@@ -316,3 +295,4 @@ If you dissatisfied with the included mustache template, you can write your own,
     }
 }
 ```
+[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/8e57158a366298512499affc8b585976 "githalytics.com")](http://githalytics.com/kongchen/swagger-maven-plugin)
