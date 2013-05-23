@@ -1,5 +1,6 @@
+
 *You can:*
-  - *Go to check out [this simple example of using this plugin](https://github.com/kongchen/swagger-maven-example) to see how it works*
+  - *Check these [demos](https://github.com/kongchen/swagger-maven-plugin/wiki/Document-Output-Samples), go to [this simple example](https://github.com/kongchen/swagger-maven-example) to see how to use this plugin,*
   - *Or start reading following balabala:*
 
 # Why this plugin
