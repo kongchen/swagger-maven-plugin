@@ -117,8 +117,10 @@ public class OutputTemplate {
     }
 
     private void feedSource(AbstractDocumentSource source) throws Exception {
-        for (Documentation doc : source.toSwaggerDocuments()) {
-
+        for (Documentation doc : source.getValidDocuments()) {
+            if (doc.getApis() ==null ){
+                continue;
+            }
             MustacheDocument mustacheDocument = createMustacheDocument(doc);
             addMustacheDocument(mustacheDocument);
         }
