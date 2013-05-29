@@ -61,7 +61,7 @@ public class ApiDocumentMojo extends AbstractMojo {
     public Set<Class> getValidClasses() throws GenerateException {
         Set<Class> classes = new HashSet<Class>();
         if (getApiSources() == null) {
-            Set<Class<?>> c = new Reflections().getTypesAnnotatedWith(Api.class);
+            Set<Class<?>> c = new Reflections("").getTypesAnnotatedWith(Api.class);
             classes.addAll(c);
         } else {
             if (apiSources.contains(";")) {
