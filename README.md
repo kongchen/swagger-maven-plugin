@@ -1,7 +1,7 @@
 # Swagger Maven Plugin [![Build Status](https://travis-ci.org/kongchen/swagger-maven-plugin.png)](https://travis-ci.org/kongchen/swagger-maven-plugin)
 This plugin helps you generate API documents in build phase according to customized output templates.
 
-Check out this [demo](https://github.com/kongchen/swagger-maven-plugin/wiki/Document-Output-Samples) to see how this happens.
+Check out this [demo](https://github.com/kongchen/swagger-maven-example) to see how this happens.
 
 # Usage
 
