@@ -1,13 +1,19 @@
 package com.github.kongchen.swagger.docgen;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.kongchen.swagger.docgen.mustache.OutputTemplate;
+import com.github.mustachejava.DefaultMustacheFactory;
+import com.github.mustachejava.Mustache;
+import com.github.mustachejava.MustacheFactory;
 import com.wordnik.swagger.core.Documentation;
 
 /**
@@ -17,13 +23,28 @@ import com.wordnik.swagger.core.Documentation;
  * 05/13/2013
  */
 public abstract class AbstractDocumentSource {
+    private final String outputPath;
+
+    private final String templatePath;
+
+    private final String swaggerPath;
+
+    protected final LogAdapter LOG;
+
     private String basePath;
 
     private String apiVersion;
 
     private ObjectMapper mapper = new ObjectMapper();
 
-    public abstract void documentsIn() throws Exception, GenerateException;
+    public AbstractDocumentSource(LogAdapter logAdapter, String outputPath, String outputTpl, String swaggerOutput) {
+        LOG = logAdapter;
+        this.outputPath = outputPath;
+        this.templatePath = outputTpl;
+        this.swaggerPath = swaggerOutput;
+    }
+
+    public abstract void loadDocuments() throws Exception, GenerateException;
 
     protected Documentation serviceDocument;
 
@@ -53,14 +74,14 @@ public abstract class AbstractDocumentSource {
         return validDocuments;
     }
 
-    public void writeSwaggerDocuments(String outputDirectory) throws GenerateException {
-        if (outputDirectory == null) {
+    public void toSwaggerDocuments() throws GenerateException {
+        if (swaggerPath == null) {
             return;
         }
-        File dir = new File(outputDirectory);
+        File dir = new File(swaggerPath);
         if (dir.isFile()) {
             throw new GenerateException(
-                    String.format("Swagger-outputDirectory[%s] must be a directory!", outputDirectory));
+                    String.format("Swagger-outputDirectory[%s] must be a directory!", swaggerPath));
         }
 
         if (!dir.exists()) {
@@ -68,7 +89,7 @@ public abstract class AbstractDocumentSource {
                 FileUtils.forceMkdir(dir);
             } catch (IOException e) {
                 throw new GenerateException(
-                        String.format("Create Swagger-outputDirectory[%s] failed.", outputDirectory));
+                        String.format("Create Swagger-outputDirectory[%s] failed.", swaggerPath));
             }
         }
         cleanupOlds(dir);
@@ -113,5 +134,21 @@ public abstract class AbstractDocumentSource {
         } catch (IOException e) {
             throw new GenerateException(e);
         }
+    }
+
+    public void toDocuments() throws Exception {
+        OutputTemplate outputTemplate = new OutputTemplate(this);
+        if (outputTemplate.getApiDocuments().isEmpty()) {
+            LOG.warn("nothing to write.");
+            return;
+        }
+        LOG.info("Writing doc to " + outputPath + "...");
+
+        Writer writer = new FileWriter(outputPath);
+        MustacheFactory mf = new DefaultMustacheFactory();
+        Mustache mustache = mf.compile(templatePath);
+        mustache.execute(writer, outputTemplate).flush();
+        writer.close();
+        LOG.info("Done!");
     }
 }

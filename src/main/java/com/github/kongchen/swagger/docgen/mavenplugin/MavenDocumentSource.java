@@ -4,6 +4,7 @@ import org.apache.maven.plugin.logging.Log;
 
 import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
 import com.github.kongchen.swagger.docgen.GenerateException;
+import com.github.kongchen.swagger.docgen.LogAdapter;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.core.Documentation;
 import com.wordnik.swagger.core.DocumentationEndPoint;
@@ -18,22 +19,22 @@ import com.wordnik.swagger.jaxrs.JaxrsApiSpecParser;
  * 05/13/2013
  */
 public class MavenDocumentSource extends AbstractDocumentSource {
-    private final ApiDocumentMojo mojo;
+    private final ApiSource apiSource;
 
-    private final Log LOG;
+    public MavenDocumentSource(ApiSource apiSource, Log log) {
+        super(new LogAdapter(log),
+                apiSource.getOutputPath(), apiSource.getOutputTemplate(), apiSource.getSwaggerDirectory());
 
-    public MavenDocumentSource(ApiDocumentMojo mojo, Log log) {
-        LOG = log;
-        setApiVersion(mojo.getApiVersion());
-        setBasePath(mojo.getBasePath());
-        this.mojo = mojo;
+        setApiVersion(apiSource.getApiVersion());
+        setBasePath(apiSource.getBasePath());
+        this.apiSource = apiSource;
     }
 
     @Override
-    public void documentsIn() throws GenerateException {
-        serviceDocument = new Documentation(mojo.getApiVersion(), SwaggerSpec.version(),
-                mojo.getBasePath(), null);
-        for (Class c : mojo.getValidClasses()) {
+    public void loadDocuments() throws GenerateException {
+        serviceDocument = new Documentation(apiSource.getApiVersion(), SwaggerSpec.version(),
+                apiSource.getBasePath(), null);
+        for (Class c : apiSource.getValidClasses()) {
             Documentation doc = null;
             try {
                 doc = getDocFromClass(c, getApiVersion(), getBasePath());
