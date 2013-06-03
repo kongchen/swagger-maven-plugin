@@ -9,7 +9,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
@@ -30,12 +30,14 @@ public class RemoteDocumentSource extends AbstractDocumentSource {
 
     ObjectMapper mapper = new ObjectMapper();
 
-    public RemoteDocumentSource(URI requestURI) {
-        LOG = new LogAdapter(LoggerFactory.getLogger(RemoteDocumentSource.class));
+    public RemoteDocumentSource(LogAdapter logAdapter, URI requestURI, String outputTpl, String outputPath, String swaggerOutput) {
+        super(logAdapter, outputPath, outputTpl, swaggerOutput);
+        LOG = new LogAdapter(Logger.getLogger(RemoteDocumentSource.class));
         this.requestURI = requestURI;
+
     }
 
-    public void documentsIn() throws IOException {
+    public void loadDocuments() throws IOException {
         HttpClient client = new DefaultHttpClient();
         HttpResponse response = client.execute(new HttpGet(requestURI));
 

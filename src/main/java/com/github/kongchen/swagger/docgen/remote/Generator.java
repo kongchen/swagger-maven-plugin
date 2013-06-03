@@ -3,10 +3,13 @@ package com.github.kongchen.swagger.docgen.remote;
 
 import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
 import com.github.kongchen.swagger.docgen.GenerateException;
+import com.github.kongchen.swagger.docgen.LogAdapter;
 import com.github.kongchen.swagger.docgen.mustache.OutputTemplate;
-import com.github.kongchen.swagger.docgen.mustache.TemplateOutputWriter;
 
 import java.net.URI;
+
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,7 +19,9 @@ import java.net.URI;
 public class Generator {
 
     public static void main(String args[]) throws Exception, GenerateException {
-        org.apache.log4j.BasicConfigurator.configure();
+        BasicConfigurator.configure();
+        Logger logger = Logger.getLogger(Generator.class);
+
         String outputTpl = "html.mustache";
         String outputPath = "apidoc.html";
         String requestURL = "http://petstore.swagger.wordnik.com/api/api-docs.json?api_key=special-key";
@@ -37,14 +42,9 @@ public class Generator {
         }
 
         URI url = new URI(requestURL);
-        TemplateOutputWriter templateOutputWriter = new TemplateOutputWriter(outputTpl, outputPath);
-        AbstractDocumentSource docSource = new RemoteDocumentSource(url);
-        docSource.documentsIn();
-
-        templateOutputWriter.writeBy(new OutputTemplate(docSource));
-        if (swaggerOutput != null) {
-            docSource.writeSwaggerDocuments(swaggerOutput);
-        }
-
+        AbstractDocumentSource docSource = new RemoteDocumentSource(new LogAdapter(logger), url, outputTpl, outputPath, swaggerOutput);
+        docSource.loadDocuments();
+        docSource.toDocuments();
+        docSource.toSwaggerDocuments();
     }
 }

@@ -1,7 +1,9 @@
 package com.github.kongchen.swagger.docgen;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import org.apache.log4j.Logger;
 import org.apache.maven.plugin.logging.Log;
 
 /**
@@ -13,7 +15,7 @@ import org.apache.maven.plugin.logging.Log;
 public class LogAdapter {
     Object logger;
 
-    public LogAdapter(org.slf4j.Logger logger) {
+    public LogAdapter(Logger logger) {
         this.logger = logger;
 
     }
@@ -24,18 +26,22 @@ public class LogAdapter {
 
     private void invoke(String methodName, String s) {
         try {
-            Method[] infoMethods = logger.getClass().getDeclaredMethods();
-            for (Method m : infoMethods) {
-                if (!m.getName().equals(methodName)) continue;
-                Class<?>[] types = m.getParameterTypes();
-                if (types.length == 1 && CharSequence.class.isAssignableFrom(types[0])) {
-                    m.invoke(logger, s);
-                    return;
-                }
-            }
+            Method m = null;
+            if (logger instanceof Logger) {
+                m = logger.getClass().getSuperclass().getDeclaredMethod(methodName, Object.class);
 
-        } catch (Exception e) {
-            System.out.println(s);
+            } else if (logger instanceof Log) {
+                m = logger.getClass().getDeclaredMethod(methodName, CharSequence.class);
+            }
+            if (m != null) {
+                m.invoke(logger, s);
+            }
+        } catch (NoSuchMethodException e) {
+            System.out.print(s);
+        } catch (InvocationTargetException e) {
+            System.out.print(s);
+        } catch (IllegalAccessException e) {
+            System.out.print(s);
         }
     }
 
