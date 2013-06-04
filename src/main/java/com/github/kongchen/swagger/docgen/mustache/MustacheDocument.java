@@ -22,7 +22,7 @@ import com.wordnik.swagger.core.DocumentationSchema;
  *
  * @author: chekong
  */
-public class MustacheDocument {
+public class MustacheDocument implements Comparable<MustacheDocument>{
     protected static final String VOID = "void";
 
     protected static final String ARRAY = "Array";
@@ -95,11 +95,6 @@ public class MustacheDocument {
         apis.add(wapi);
     }
 
-//    public void addTo(OutputTemplate outputTemplate) {
-//        this.setIndex(outputTemplate.getApiDocuments().size() + 1);
-//        outputTemplate.getApiDocuments().add(this);
-//    }
-
     public void addResponseType(String trueType) {
         if (trueType != null) {
             responseTypes.add(trueType);
@@ -157,7 +152,7 @@ public class MustacheDocument {
         }
 
         List<MustacheItem> mustacheItemList = new LinkedList<MustacheItem>();
-        DocumentationSchema field = models.get(responseClass);
+        DocumentationSchema field = models.get(TypeUtils.upperCaseFirstCharacter(responseClass));
 
         if (field != null && field.getProperties() != null) {
             for (Map.Entry<String, DocumentationSchema> entry : field.getProperties().entrySet()) {
@@ -186,6 +181,11 @@ public class MustacheDocument {
                 mustacheItem.setTypeAsArray(item.getType());
             }
         }
+    }
+
+    @Override
+    public int compareTo(MustacheDocument o) {
+        return this.getIndex() - o.getIndex();
     }
 }
 
@@ -437,159 +437,6 @@ class MustacheParameter {
 
     public void setLinkType(String linkType) {
         this.linkType = linkType;
-    }
-}
-
-class MustacheDataType implements Comparable<MustacheDataType> {
-
-    String name;
-
-    List<MustacheItem> items;
-
-    public MustacheDataType(MustacheDocument mustacheDocument, String requestType) {
-        this.name = requestType;
-        this.items = mustacheDocument.analyzeDataTypes(requestType);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof MustacheDataType)) return false;
-
-        MustacheDataType that = (MustacheDataType) o;
-
-        if (!name.equals(that.name)) return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = name != null ? name.hashCode() : 0;
-        result = 31 * result + (items != null ? items.hashCode() : 0);
-        return result;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public List<MustacheItem> getItems() {
-        return items;
-    }
-
-    public void setItems(List<MustacheItem> items) {
-        this.items = items;
-    }
-
-    @Override
-    public int compareTo(MustacheDataType o) {
-        if (o == null) {
-            return 1;
-        }
-        return this.name.compareTo(o.getName());
-    }
-
-    @Override
-    public String toString() {
-        return "MustacheDataType{" +
-                "name='" + name + '\'' +
-                ", items=" + items +
-                '}';
-    }
-}
-
-class MustacheItem {
-    String name;
-
-    String type;
-
-    String linkType;
-
-    boolean required;
-
-    String access;
-
-    String description;
-
-    String notes;
-
-    public MustacheItem(String name, DocumentationSchema documentationSchema) {
-
-        this.name = name;
-        this.type = documentationSchema.getType();
-        this.linkType = this.type;
-
-        this.required = documentationSchema.required();
-        this.access = documentationSchema.getAccess();
-        this.description = documentationSchema.getDescription();
-        this.notes = documentationSchema.getNotes();
-        this.linkType = TypeUtils.filterBasicTypes(this.linkType);
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getLinkType() {
-        return linkType;
-    }
-
-    public void setLinkType(String linkType) {
-        this.linkType = linkType;
-    }
-
-    public boolean isRequired() {
-        return required;
-    }
-
-    public void setRequired(boolean required) {
-        this.required = required;
-    }
-
-    public String getAccess() {
-        return access;
-    }
-
-    public void setAccess(String access) {
-        this.access = access;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getNotes() {
-        return notes;
-    }
-
-    public void setNotes(String notes) {
-        this.notes = notes;
-    }
-
-    public void setTypeAsArray(String elementType) {
-        this.type = "Array:" + elementType;
-        setLinkType(TypeUtils.filterBasicTypes(elementType));
     }
 }
 
