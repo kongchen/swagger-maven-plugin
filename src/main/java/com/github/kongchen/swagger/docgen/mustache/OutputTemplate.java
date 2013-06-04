@@ -24,7 +24,7 @@ public class OutputTemplate {
 
     private String apiVersion;
 
-    private List<MustacheDocument> apiDocuments = new LinkedList<MustacheDocument>();
+    private Set<MustacheDocument> apiDocuments = new TreeSet<MustacheDocument>();
 
     private Set<MustacheDataType> dataTypes = new TreeSet<MustacheDataType>();
 
@@ -46,15 +46,23 @@ public class OutputTemplate {
         return dataTypes;
     }
 
-    public void addDateType(MustacheDataType dataType) {
+    public void addDateType(MustacheDocument mustacheDocument, MustacheDataType dataType) {
         dataTypes.add(dataType);
+        for (MustacheItem item : dataType.getItems()) {
+            String trueType = TypeUtils.getTrueType(item.getType());
+            if (trueType == null) {
+                continue;
+            }
+            addDateType(mustacheDocument, new MustacheDataType(mustacheDocument, trueType));
+
+        }
     }
 
-    public List<MustacheDocument> getApiDocuments() {
+    public Set<MustacheDocument> getApiDocuments() {
         return apiDocuments;
     }
 
-    public void setApiDocuments(List<MustacheDocument> apiDocuments) {
+    public void setApiDocuments(Set<MustacheDocument> apiDocuments) {
         this.apiDocuments = apiDocuments;
     }
 
@@ -94,7 +102,7 @@ public class OutputTemplate {
         for (String requestType : mustacheDocument.getRequestTypes()) {
             MustacheDataType dataType = new MustacheDataType(mustacheDocument, requestType);
 
-            addDateType(dataType);
+            addDateType(mustacheDocument, dataType);
         }
 
         Set<String> missedTypes = new LinkedHashSet<String>();
@@ -110,7 +118,7 @@ public class OutputTemplate {
 
         for (String type : missedTypes) {
             MustacheDataType dataType = new MustacheDataType(mustacheDocument, type);
-            addDateType(dataType);
+            addDateType(mustacheDocument, dataType);
         }
 
         return mustacheDocument;

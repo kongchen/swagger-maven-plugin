@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 /**
  * Created with IntelliJ IDEA.
  *
@@ -14,7 +12,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * 05/13/2013
  */
 public class TypeUtils {
-    @JsonIgnore
     private static final List<String> basicTypes;
 
     static {
@@ -24,10 +21,6 @@ public class TypeUtils {
         basicTypes = Arrays.asList(a);
     }
 
-//    @JsonIgnore
-//    private final Documentation swaggerDoc;
-
-    @JsonIgnore
     private static final Pattern pattern = Pattern.compile("^\\w+\\[(\\w+)\\]$");
 
     public static String getTrueType(String dataType) {
@@ -50,5 +43,9 @@ public class TypeUtils {
             return null;
         }
         return linkType;
+    }
+
+    public static String upperCaseFirstCharacter(String inputString) {
+        return inputString.substring(0,1).toUpperCase() + inputString.substring(1);
     }
 }

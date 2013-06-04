@@ -78,6 +78,7 @@
 
 <table border="1">
     <tr>
+        <th>name</th>
         <th>type</th>
         <th>required</th>
         <th>access</th>
@@ -86,9 +87,10 @@
     </tr>
     {{#items}}
         <tr>
-            <th>{{name}}</th>
+            <td>{{name}}</td>
             <td>{{#linkType}}<a href="#{{linkType}}">{{type}}</a>{{/linkType}}{{^linkType}}{{type}}{{/linkType}}</td>
             <td>{{#required}}required{{/required}}{{^required}}optional{{/required}}</td>
+            <td>{{#access}}{{{access}}}{{/access}}{{^access}}-{{/access}}</td>
             <td>{{#description}}{{{description}}}{{/description}}{{^description}}-{{/description}}</td>
             <td>{{#notes}}{{{notes}}}{{/notes}}{{^notes}}-{{/notes}}</td>
         </tr>
