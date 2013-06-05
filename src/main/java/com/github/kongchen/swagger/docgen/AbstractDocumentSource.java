@@ -1,9 +1,10 @@
 package com.github.kongchen.swagger.docgen;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.Writer;
+import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -144,7 +145,8 @@ public abstract class AbstractDocumentSource {
         }
         LOG.info("Writing doc to " + outputPath + "...");
 
-        Writer writer = new FileWriter(outputPath);
+        FileOutputStream fileOutputStream = new FileOutputStream(outputPath);
+        OutputStreamWriter writer = new OutputStreamWriter(fileOutputStream, Charset.forName("UTF-8"));
         MustacheFactory mf = new DefaultMustacheFactory();
         Mustache mustache = mf.compile(templatePath);
         mustache.execute(writer, outputTemplate).flush();
