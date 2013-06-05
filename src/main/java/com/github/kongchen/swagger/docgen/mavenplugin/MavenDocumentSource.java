@@ -54,6 +54,11 @@ public class MavenDocumentSource extends AbstractDocumentSource {
         }
         // to keep order
         for (Documentation doc : docMap.values()) {
+            if (!apiSource.isWithFormatSuffix()) {
+                for (DocumentationEndPoint endPoint : doc.getApis()) {
+                    endPoint.setPath(endPoint.getPath().replaceAll("\\.\\{format\\}",""));
+                }
+            }
             acceptDocument(doc);
         }
     }

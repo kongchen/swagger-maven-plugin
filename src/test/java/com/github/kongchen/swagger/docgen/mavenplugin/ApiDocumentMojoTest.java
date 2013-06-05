@@ -34,7 +34,8 @@ public class ApiDocumentMojoTest {
         apiSource.setLocations("sample.api");
         apiSource.setOutputPath("temp.html");
         apiSource.setOutputTemplate("strapdown.html.mustache");
-        apiSource.setSwaggerDirectory(null);
+        apiSource.setWithFormatSuffix(false);
+        apiSource.setSwaggerDirectory("apidocsf");
 
         apiSources.add(apiSource);
         mojo.setApiSources(apiSources);
