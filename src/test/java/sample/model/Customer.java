@@ -70,8 +70,7 @@ public class Customer implements Entity<Integer>{
     }
 
     @XmlElement(name = "address", required = false)
-    @ApiProperty(required = false, notes = "Customer's address",
-            dataType = "Address")
+    @ApiProperty(required = false, notes = "Customer's address")
     public Address getAddress() {
         return address;
     }
