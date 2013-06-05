@@ -60,8 +60,7 @@ public class Customer implements Entity<Integer>{
     }
 
     @XmlElement(required = false, name = "email")
-    @ApiProperty(notes = "The list of customer emails", required = false,
-            dataType = "Email")
+    @ApiProperty(notes = "The list of customer emails", required = false)
     public List<Email> getEmails() {
         return emails;
     }
