@@ -1,5 +1,9 @@
 package com.github.kongchen.swagger.docgen.mavenplugin;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
+
 import org.apache.maven.plugin.logging.Log;
 
 import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
@@ -20,6 +24,8 @@ import com.wordnik.swagger.jaxrs.JaxrsApiSpecParser;
  */
 public class MavenDocumentSource extends AbstractDocumentSource {
     private final ApiSource apiSource;
+
+    private Map<String, Documentation> docMap = new TreeMap<String, Documentation>();
 
     public MavenDocumentSource(ApiSource apiSource, Log log) {
         super(new LogAdapter(log),
@@ -44,6 +50,10 @@ public class MavenDocumentSource extends AbstractDocumentSource {
             if (doc == null) continue;
             LOG.info("Detect Resource:" + c.getName());
             serviceDocument.addApi(new DocumentationEndPoint(doc.getResourcePath(), ""));
+            docMap.put(doc.getResourcePath(), doc);
+        }
+        // to keep order
+        for (Documentation doc : docMap.values()) {
             acceptDocument(doc);
         }
     }

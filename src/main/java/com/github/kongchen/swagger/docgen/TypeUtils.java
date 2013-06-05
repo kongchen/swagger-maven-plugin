@@ -12,6 +12,8 @@ import java.util.regex.Pattern;
  * 05/13/2013
  */
 public class TypeUtils {
+    public static final String ARRAY_TYPE_PREFIX = "Array:";
+
     private static final List<String> basicTypes;
 
     static {
@@ -21,7 +23,7 @@ public class TypeUtils {
         basicTypes = Arrays.asList(a);
     }
 
-    private static final Pattern pattern = Pattern.compile("^\\w+\\[(\\w+)\\]$");
+    private static final Pattern pattern = Pattern.compile("^" + ARRAY_TYPE_PREFIX + "(\\w+)$");
 
     public static String getTrueType(String dataType) {
         String t;
@@ -46,6 +48,6 @@ public class TypeUtils {
     }
 
     public static String upperCaseFirstCharacter(String inputString) {
-        return inputString.substring(0,1).toUpperCase() + inputString.substring(1);
+        return inputString.substring(0, 1).toUpperCase() + inputString.substring(1);
     }
 }

@@ -1,5 +1,7 @@
 package sample.model;
 
+import java.util.List;
+
 import com.wordnik.swagger.annotations.ApiProperty;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -29,6 +31,17 @@ public class Car {
 
     @ApiProperty(required = false, notes = "Any other comments for the car")
     private String notes;
+
+    @ApiProperty(required = false, notes = "Repair history")
+    private List<String> repairHistory;
+
+    public List<String> getRepairHistory() {
+        return repairHistory;
+    }
+
+    public void setRepairHistory(List<String> repairHistory) {
+        this.repairHistory = repairHistory;
+    }
 
     public String getBrand() {
         return brand;

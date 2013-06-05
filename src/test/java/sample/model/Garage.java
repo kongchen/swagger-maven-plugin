@@ -1,5 +1,7 @@
 package sample.model;
 
+import java.util.List;
+
 import com.wordnik.swagger.annotations.ApiProperty;
 
 /**
@@ -23,6 +25,17 @@ public class Garage {
 
     @ApiProperty(required = true, notes = "The telephone of the garage")
     private String telephone;
+
+    @ApiProperty(required = false, notes = "Holding cars")
+    private List<Car> holdingCars;
+
+    public List<Car> getHoldingCars() {
+        return holdingCars;
+    }
+
+    public void setHoldingCars(List<Car> holdingCars) {
+        this.holdingCars = holdingCars;
+    }
 
     public int getId() {
         return id;

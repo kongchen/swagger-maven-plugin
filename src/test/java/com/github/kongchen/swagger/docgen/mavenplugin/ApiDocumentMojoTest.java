@@ -1,8 +1,12 @@
 package com.github.kongchen.swagger.docgen.mavenplugin;
 
+import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,5 +39,15 @@ public class ApiDocumentMojoTest {
     @Test
     public void testExecute() throws Exception {
         mojo.execute();
+        FileInputStream testOutputIs = new FileInputStream(new File("temp.html"));
+        InputStream expectIs = this.getClass().getResourceAsStream("/sample.html");
+        while (true) {
+            int expect = expectIs.read();
+            int actual = testOutputIs.read();
+            Assert.assertEquals(expect, actual);
+            if (expect == -1) {
+                break;
+            }
+        }
     }
 }

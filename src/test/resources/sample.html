@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html>
+<title>API Document</title>
+
+<xmp theme="united" style="display:none;">
+#API Document
+
+
+## BasePath: http://example.com
+
+## Api Version: 1.0
+
+## Resources
+### 1. /car
+#### Overview
+Operations about cars
+
+#### 1.1 `/car.{format}/{carId}`
+##### 1.1.1 getCarById
+**GET** `/car.{format}/{carId}`
+
+Find car by ID
+To get car info by car's Id
+
+###### URL
+    http://example.com/car.{format}/{carId}
+###### Parameters
+- path
+
+    <table border="1">
+        <tr>
+            <th>Parameter</th>
+            <th>Required</th>
+            <th>Description</th>
+            <th>Data Type</th>
+        </tr>
+        <tr>
+            <th>carId</th>
+            <td>true</td>
+            <td>ID of car that needs to be fetched</td>
+            <td>string</td>
+        </tr>
+    </table>
+
+###### Response
+[Car](#Car)
+
+
+###### Errors
+<table border="1">
+    <tr>
+        <th>Status Code</th>
+        <th>Reason</th>
+    </tr>
+        <tr>
+            <td>400</td>
+            <td>Invalid ID supplied</td>
+        </tr>
+        <tr>
+            <td>404</td>
+            <td>Car not found</td>
+        </tr>
+</table>
+
+
+- - -
+### 2. /garage
+#### Overview
+Operations about garages
+
+#### 2.1 `/garage.{format}/{garageId}`
+##### 2.1.1 getGarageById
+**GET** `/garage.{format}/{garageId}`
+
+Find garages by Id
+To get garage info
+
+###### URL
+    http://example.com/garage.{format}/{garageId}
+###### Parameters
+- path
+
+    <table border="1">
+        <tr>
+            <th>Parameter</th>
+            <th>Required</th>
+            <th>Description</th>
+            <th>Data Type</th>
+        </tr>
+        <tr>
+            <th>garageId</th>
+            <td>true</td>
+            <td>ID of garage that needs to be fetched</td>
+            <td>string</td>
+        </tr>
+    </table>
+
+###### Response
+[Garage](#Garage)
+
+
+###### Errors
+<table border="1">
+    <tr>
+        <th>Status Code</th>
+        <th>Reason</th>
+    </tr>
+        <tr>
+            <td>400</td>
+            <td>Invalid ID supplied</td>
+        </tr>
+        <tr>
+            <td>404</td>
+            <td>Garage not found</td>
+        </tr>
+</table>
+
+
+- - -
+##### 2.1.2 getGarageById
+**POST** `/garage.{format}/{garageId}`
+
+Repair a broken car in garage
+To repair car
+
+###### URL
+    http://example.com/garage.{format}/{garageId}
+###### Parameters
+- body
+
+    <table border="1">
+        <tr>
+            <th>Parameter</th>
+            <th>Required</th>
+            <th>Description</th>
+            <th>Data Type</th>
+        </tr>
+        <tr>
+            <th>Car</th>
+            <td>true</td>
+            <td>broken car1</td>
+            <td><a href="#Car">Car</a></td>
+        </tr>
+    </table>
+- path
+
+    <table border="1">
+        <tr>
+            <th>Parameter</th>
+            <th>Required</th>
+            <th>Description</th>
+            <th>Data Type</th>
+        </tr>
+        <tr>
+            <th>garageId</th>
+            <td>true</td>
+            <td>ID of garage</td>
+            <td>string</td>
+        </tr>
+    </table>
+
+###### Response
+[nEwcar](#nEwcar)
+
+
+###### Errors
+<table border="1">
+    <tr>
+        <th>Status Code</th>
+        <th>Reason</th>
+    </tr>
+        <tr>
+            <td>400</td>
+            <td>Invalid ID supplied</td>
+        </tr>
+        <tr>
+            <td>404</td>
+            <td>Garage not found</td>
+        </tr>
+</table>
+
+
+- - -
+### 3. /v2/car
+#### Overview
+Operations about cars
+
+#### 3.1 `/v2/car.{format}/{carId}`
+##### 3.1.1 getCarById
+**GET** `/v2/car.{format}/{carId}`
+
+Find car by ID
+To get car info by car's Id
+
+###### URL
+    http://example.com/v2/car.{format}/{carId}
+###### Parameters
+- path
+
+    <table border="1">
+        <tr>
+            <th>Parameter</th>
+            <th>Required</th>
+            <th>Description</th>
+            <th>Data Type</th>
+        </tr>
+        <tr>
+            <th>carId</th>
+            <td>true</td>
+            <td>ID of car that needs to be fetched</td>
+            <td>string</td>
+        </tr>
+    </table>
+
+###### Response
+[Customer](#Customer)
+
+
+###### Errors
+<table border="1">
+    <tr>
+        <th>Status Code</th>
+        <th>Reason</th>
+    </tr>
+        <tr>
+            <td>400</td>
+            <td>Invalid ID supplied</td>
+        </tr>
+        <tr>
+            <td>404</td>
+            <td>Car not found</td>
+        </tr>
+</table>
+
+
+- - -
+
+## Data Types
+
+
+## <a name="Address">Address</a>
+
+<table border="1">
+    <tr>
+        <th>name</th>
+        <th>type</th>
+        <th>required</th>
+        <th>access</th>
+        <th>description</th>
+        <th>notes</th>
+    </tr>
+        <tr>
+            <td>id</td>
+            <td>int</td>
+            <td>optional</td>
+            <td>-</td>
+            <td>-</td>
+            <td>Address' indentifier</td>
+        </tr>
+        <tr>
+            <td>zip</td>
+            <td>long</td>
+            <td>optional</td>
+            <td>-</td>
+            <td>-</td>
+            <td>The location</td>
+        </tr>
+        <tr>
+            <td>location</td>
+            <td>string</td>
+            <td>optional</td>
+            <td>-</td>
+            <td>-</td>
+            <td>The zip code for this location</td>
+        </tr>
+</table>
+
+
+
+## <a name="Car">Car</a>
+
+<table border="1">
+    <tr>
+        <th>name</th>
+        <th>type</th>
+        <th>required</th>
+        <th>access</th>
+        <th>description</th>
+        <th>notes</th>
+    </tr>
+        <tr>
+            <td>id</td>
+            <td>int</td>
+            <td>required</td>
+            <td>-</td>
+            <td>-</td>
+            <td>car's id</td>
+        </tr>
+        <tr>
+            <td>price</td>
+            <td>float</td>
+            <td>required</td>
+            <td>readOnly</td>
+            <td>-</td>
+            <td>The price of the car</td>
+        </tr>
+        <tr>
+            <td>engine</td>
+            <td>string</td>
+            <td>required</td>
+            <td>-</td>
+            <td>-</td>
+            <td>The engine parameter of the car</td>
+        </tr>
+        <tr>
+            <td>mt</td>
+            <td>boolean</td>
+            <td>required</td>
+            <td>-</td>
+            <td>-</td>
+            <td>Indicate the car is MT or AT</td>
+        </tr>
+        <tr>
+            <td>brand</td>
+            <td>string</td>
+            <td>required</td>
+            <td>-</td>
+            <td>-</td>
+            <td>The brand of the car</td>
+        </tr>
+        <tr>
+            <td>repairHistory</td>
+            <td>Array:string</td>
+            <td>optional</td>
+            <td>-</td>
+            <td>-</td>
+            <td>Repair history</td>
+        </tr>
+        <tr>
+            <td>notes</td>
+            <td>string</td>
+            <td>optional</td>
+            <td>-</td>
+            <td>-</td>
+            <td>Any other comments for the car</td>
+        </tr>
+</table>
+
+
+
+## <a name="Customer">Customer</a>
+
+<table border="1">
+    <tr>
+        <th>name</th>
+        <th>type</th>
+        <th>required</th>
+        <th>access</th>
+        <th>description</th>
+        <th>notes</th>
+    </tr>
+        <tr>
+            <td>id</td>
+            <td>int</td>
+            <td>required</td>
+            <td>-</td>
+            <td>-</td>
+            <td>Customer's identifier</td>
+        </tr>
+        <tr>
+            <td>address</td>
+            <td><a href="#Address">Address</a></td>
+            <td>optional</td>
+            <td>-</td>
+            <td>-</td>
+            <td>Customer's address</td>
+        </tr>
+        <tr>
+            <td>email</td>
+            <td><a href="#Email">Array:Email</a></td>
+            <td>optional</td>
+            <td>-</td>
+            <td>-</td>
+            <td>The list of customer emails</td>
+        </tr>
+        <tr>
+            <td>name</td>
+            <td>string</td>
+            <td>required</td>
+            <td>-</td>
+            <td>-</td>
+            <td>Customer's name</td>
+        </tr>
+        <tr>
+            <td>surname</td>
+            <td>string</td>
+            <td>required</td>
+            <td>-</td>
+            <td>-</td>
+            <td>Customer's surname</td>
+        </tr>
+</table>
+
+
+
+## <a name="Email">Email</a>
+
+<table border="1">
+    <tr>
+        <th>name</th>
+        <th>type</th>
+        <th>required</th>
+        <th>access</th>
+        <th>description</th>
+        <th>notes</th>
+    </tr>
+        <tr>
+            <td>id</td>
+            <td>int</td>
+            <td>optional</td>
+            <td>-</td>
+            <td>-</td>
+            <td>Email identifier</td>
+        </tr>
+        <tr>
+            <td>default</td>
+            <td>boolean</td>
+            <td>optional</td>
+            <td>-</td>
+            <td>-</td>
+            <td>The flag shows if this email is a default email</td>
+        </tr>
+        <tr>
+            <td>address</td>
+            <td>string</td>
+            <td>optional</td>
+            <td>-</td>
+            <td>-</td>
+            <td>Email address</td>
+        </tr>
+</table>
+
+
+
+## <a name="Garage">Garage</a>
+
+<table border="1">
+    <tr>
+        <th>name</th>
+        <th>type</th>
+        <th>required</th>
+        <th>access</th>
+        <th>description</th>
+        <th>notes</th>
+    </tr>
+        <tr>
+            <td>id</td>
+            <td>int</td>
+            <td>required</td>
+            <td>-</td>
+            <td>-</td>
+            <td>Garage's id</td>
+        </tr>
+        <tr>
+            <td>address</td>
+            <td>string</td>
+            <td>required</td>
+            <td>-</td>
+            <td>-</td>
+            <td>The address of the garage</td>
+        </tr>
+        <tr>
+            <td>description</td>
+            <td>string</td>
+            <td>required</td>
+            <td>-</td>
+            <td>-</td>
+            <td>The description of the garage</td>
+        </tr>
+        <tr>
+            <td>holdingCars</td>
+            <td><a href="#Car">Array:Car</a></td>
+            <td>optional</td>
+            <td>-</td>
+            <td>-</td>
+            <td>Holding cars</td>
+        </tr>
+        <tr>
+            <td>name</td>
+            <td>string</td>
+            <td>required</td>
+            <td>-</td>
+            <td>-</td>
+            <td>The name of the garage</td>
+        </tr>
+        <tr>
+            <td>telephone</td>
+            <td>string</td>
+            <td>required</td>
+            <td>-</td>
+            <td>-</td>
+            <td>The telephone of the garage</td>
+        </tr>
+</table>
+
+
+
+## <a name="nEwcar">nEwcar</a>
+
+<table border="1">
+    <tr>
+        <th>name</th>
+        <th>type</th>
+        <th>required</th>
+        <th>access</th>
+        <th>description</th>
+        <th>notes</th>
+    </tr>
+        <tr>
+            <td>id</td>
+            <td>int</td>
+            <td>required</td>
+            <td>-</td>
+            <td>-</td>
+            <td>car's id</td>
+        </tr>
+        <tr>
+            <td>engine</td>
+            <td>string</td>
+            <td>required</td>
+            <td>-</td>
+            <td>-</td>
+            <td>The engine parameter of the car</td>
+        </tr>
+        <tr>
+            <td>mt</td>
+            <td>boolean</td>
+            <td>required</td>
+            <td>-</td>
+            <td>-</td>
+            <td>Indicate the car is MT or AT</td>
+        </tr>
+        <tr>
+            <td>brand</td>
+            <td>string</td>
+            <td>required</td>
+            <td>-</td>
+            <td>-</td>
+            <td>The brand of the car</td>
+        </tr>
+        <tr>
+            <td>notes</td>
+            <td>string</td>
+            <td>optional</td>
+            <td>-</td>
+            <td>-</td>
+            <td>Any other comments for the car</td>
+        </tr>
+</table>
+
+
+
+</xmp>
+
+<script src="http://strapdownjs.com/v/0.2/strapdown.js"></script>
+</html>
