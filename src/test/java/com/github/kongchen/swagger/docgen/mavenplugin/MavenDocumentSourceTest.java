@@ -18,11 +18,15 @@ import org.testng.annotations.Test;
 import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
 import com.github.kongchen.swagger.docgen.GenerateException;
 import com.github.kongchen.swagger.docgen.TypeUtils;
+import com.github.kongchen.swagger.docgen.mustache.MustacheApi;
 import com.github.kongchen.swagger.docgen.mustache.MustacheDataType;
+import com.github.kongchen.swagger.docgen.mustache.MustacheDocument;
 import com.github.kongchen.swagger.docgen.mustache.MustacheItem;
 import com.github.kongchen.swagger.docgen.mustache.OutputTemplate;
 import com.wordnik.swagger.annotations.ApiProperty;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
 import sample.model.Address;
 import sample.model.Customer;
 import sample.model.Email;
@@ -48,6 +52,23 @@ public class MavenDocumentSourceTest {
     }
 
     @Test
+    public void testWithFormat() throws Exception, GenerateException {
+        apiSource.setWithFormatSuffix(true);
+        AbstractDocumentSource documentSource = new MavenDocumentSource(apiSource, new SystemStreamLog());
+        documentSource.loadDocuments();
+        OutputTemplate outputTemplate = new OutputTemplate(documentSource);
+        assertEquals(apiSource.getApiVersion(), outputTemplate.getApiVersion());
+        assertEquals(apiSource.getBasePath(), outputTemplate.getBasePath());
+        assertEquals(3, outputTemplate.getApiDocuments().size());
+        for (MustacheDocument doc : outputTemplate.getApiDocuments()) {
+            for (MustacheApi api : doc.getApis()) {
+                assertTrue(api.getPath().contains("{format}"));
+            }
+        }
+    }
+
+
+        @Test
     public void test() throws Exception, GenerateException {
         AbstractDocumentSource documentSource = new MavenDocumentSource(apiSource, new SystemStreamLog());
         documentSource.loadDocuments();
@@ -55,6 +76,12 @@ public class MavenDocumentSourceTest {
         assertEquals(apiSource.getApiVersion(), outputTemplate.getApiVersion());
         assertEquals(apiSource.getBasePath(), outputTemplate.getBasePath());
         assertEquals(3, outputTemplate.getApiDocuments().size());
+        for (MustacheDocument doc : outputTemplate.getApiDocuments()) {
+            for (MustacheApi api : doc.getApis()) {
+                assertFalse(api.getPath().contains("{format}"));
+            }
+        }
+
 
         assertEquals(6, outputTemplate.getDataTypes().size());
         List<MustacheDataType> typeList = new LinkedList<MustacheDataType>();

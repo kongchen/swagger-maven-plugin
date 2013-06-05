@@ -47,6 +47,19 @@ public class ApiSource{
      */
     private String swaggerDirectory;
 
+    /**
+     * @parameter
+     */
+    private boolean withFormatSuffix = false;
+
+    public boolean isWithFormatSuffix() {
+        return withFormatSuffix;
+    }
+
+    public void setWithFormatSuffix(boolean withFormatSuffix) {
+        this.withFormatSuffix = withFormatSuffix;
+    }
+
     public Set<Class> getValidClasses() throws GenerateException {
         Set<Class> classes = new HashSet<Class>();
         if (getLocations() == null) {

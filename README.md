@@ -28,6 +28,7 @@ This plugin helps you **generate API documents** in build phase according to [cu
                             <basePath>http://www.example.com</basePath>
                             <outputTemplate>strapdown.html.mustache</outputTemplate>
                             <outputPath>generated/strapdown.html</outputPath>
+                            <withFormatSuffix>false</withFormatSuffix>
                             <swaggerDirectory>generated/apidocs</swaggerDirectory>
                         </apiSource>
                     </apiSources>
@@ -64,6 +65,7 @@ This plugin helps you **generate API documents** in build phase according to [cu
 - **outputTemplate** is the path of the mustache template file.
 - **outputPath** is the path of your output file.
 - If **swaggerDirectory** is configured, the plugin will also generate a Swagger resource listing suitable for feeding to swagger-ui.
+- **withFormatSuffix** indicates if you need Swagger's _.{format}_ suffix in API's path. Default: false
 
 You can specify several apiSources with different api versions and base paths.
 
