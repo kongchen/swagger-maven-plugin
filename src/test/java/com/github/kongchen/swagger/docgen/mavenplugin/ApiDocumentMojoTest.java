@@ -1,15 +1,14 @@
 package com.github.kongchen.swagger.docgen.mavenplugin;
 
-import java.io.BufferedReader;
+import static junit.framework.Assert.*;
+
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -23,16 +22,21 @@ public class ApiDocumentMojoTest {
 
     private List<ApiSource> apiSources = new ArrayList<ApiSource>();
     ApiDocumentMojo mojo = new ApiDocumentMojo();
+    String outputPath;
+    String tempDirPath;
 
     @BeforeClass
-    private void prepare(){
+    private void prepare() throws Exception {
+        tempDirPath = createTempDirPath();
+        outputPath = tempDirPath + "/test.html";
 
         ApiSource apiSource;
         apiSource = new ApiSource();
+        apiSource.setCreateOutputDirectories(true);
         apiSource.setApiVersion("1.0");
         apiSource.setBasePath("http://example.com");
         apiSource.setLocations("sample.api");
-        apiSource.setOutputPath("temp.html");
+        apiSource.setOutputPath(outputPath);
         apiSource.setOutputTemplate("strapdown.html.mustache");
         apiSource.setWithFormatSuffix(false);
         apiSource.setSwaggerDirectory("apidocsf");
@@ -57,4 +61,18 @@ public class ApiDocumentMojoTest {
         }
     }
 
+    @Test(enabled = true)
+    public void testExecuteDirectoryCreated() throws Exception {
+        mojo.execute();
+        File file = new File(outputPath);
+        assertTrue(file.exists());
+        FileUtils.deleteDirectory(new File(tempDirPath));
+    }
+
+    private String createTempDirPath() throws Exception {
+        File tempFile = File.createTempFile("swagmvn", "test");
+        String path = tempFile.getAbsolutePath();
+        tempFile.delete();
+        return path;
+    }
 }
