@@ -3,10 +3,8 @@ package sample.api.car;
 import com.sun.jersey.api.NotFoundException;
 import com.wordnik.swagger.annotations.*;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
@@ -16,7 +14,7 @@ import javax.ws.rs.core.Response;
  */
 @Path("/car.json")
 @Api(value = "/car", description = "Operations about cars")
-@Produces( {"application/json"})
+@Produces({"application/json"})
 public class CarResourceV1 {
     @GET
     @Path("/{carId}")
@@ -24,9 +22,14 @@ public class CarResourceV1 {
             responseClass = "sample.model.Car")
     @ApiErrors(value = {@ApiError(code = 400, reason = "Invalid ID supplied"),
             @ApiError(code = 404, reason = "Car not found")})
+    @ApiParamsImplicit(value = {@ApiParamImplicit(name = "ETag", paramType = "response_header", value = "version", dataType = "string")})
     public Response getCarById(
             @ApiParam(value = "ID of car that needs to be fetched", allowableValues = "range[1,10]",
-                    required = true) @PathParam("carId") String carId)
+                    required = true) @PathParam("carId") String carId,
+            @ApiParam()
+            @HeaderParam("Accept") MediaType accept,
+            @ApiParam(name = "e")
+            @QueryParam("e") String e)
             throws NotFoundException {
         return Response.noContent().build();
     }

@@ -25,13 +25,25 @@ public class TypeUtils {
 
     private static final Pattern pattern = Pattern.compile("^" + ARRAY_TYPE_PREFIX + "(\\w+)$");
 
+    public static final Pattern genericPattern = Pattern.compile("^(.*)<.*>$");
+
     public static String getTrueType(String dataType) {
         String t;
         Matcher m = pattern.matcher(dataType);
         if (m.find()) {
             t = m.group(1);
         } else {
-            t = dataType;
+            m = genericPattern.matcher(dataType);
+            if (m.find()) {
+                try {
+                    t = m.group(1);
+                } catch (IllegalStateException e) {
+                    System.out.println(dataType);
+                    return dataType;
+                }
+            } else {
+                t = dataType;
+            }
         }
         if (basicTypes.contains(t)) {
             t = null;

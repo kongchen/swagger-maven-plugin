@@ -9,11 +9,8 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.kongchen.swagger.docgen.TypeUtils;
-import static com.github.kongchen.swagger.docgen.TypeUtils.getTrueType;
+import com.wordnik.swagger.core.ApiValues;
 import com.wordnik.swagger.core.Documentation;
-import com.wordnik.swagger.core.DocumentationEndPoint;
-import com.wordnik.swagger.core.DocumentationError;
-import com.wordnik.swagger.core.DocumentationOperation;
 import com.wordnik.swagger.core.DocumentationParameter;
 import com.wordnik.swagger.core.DocumentationSchema;
 
@@ -137,10 +134,15 @@ public class MustacheDocument implements Comparable<MustacheDocument>{
         if (models != null && models.get(mustacheParameter.linkType) == null) {
             mustacheParameter.setName(para.getName());
         } else {
-            if (mustacheParameter.getLinkType() != null){
+            if (mustacheParameter.getLinkType() != null
+                    && !para.getParamType().equals(ApiValues.TYPE_HEADER)){
                 requestTypes.add(mustacheParameter.getLinkType());
             }
-            mustacheParameter.setName(para.getDataType());
+            if (para.getName() != null) {
+                mustacheParameter.setName(para.getName());
+            } else {
+                mustacheParameter.setName(para.getDataType());
+            }
         }
 
         return mustacheParameter;
@@ -186,199 +188,6 @@ public class MustacheDocument implements Comparable<MustacheDocument>{
     @Override
     public int compareTo(MustacheDocument o) {
         return this.getIndex() - o.getIndex();
-    }
-}
-
-class MustacheOperation {
-    int opIndex;
-
-    String httpMethod;
-
-    String summary;
-
-    String notes;
-
-    String responseClass;
-
-    String nickname;
-
-    List<MustacheParameterSet> parameters;
-
-    List<DocumentationError> errorResponses;
-
-    String responseClassLinkType;
-
-    public MustacheOperation(MustacheDocument mustacheDocument, DocumentationOperation op) {
-        this.httpMethod = op.getHttpMethod();
-        this.notes = op.getNotes();
-        this.summary = op.getSummary();
-        this.nickname = op.nickname();
-        this.parameters = mustacheDocument.analyzeParameters(op.getParameters());
-        String trueType = TypeUtils.getTrueType(op.getResponseClass());
-        if (trueType != null) {
-            this.responseClass = op.getResponseClass();
-            this.responseClassLinkType = trueType;
-        }
-
-        this.errorResponses = op.getErrorResponses();
-    }
-
-    public int getOpIndex() {
-        return opIndex;
-    }
-
-    public void setOpIndex(int opIndex) {
-        this.opIndex = opIndex;
-    }
-
-    public String getHttpMethod() {
-        return httpMethod;
-    }
-
-    public void setHttpMethod(String httpMethod) {
-        this.httpMethod = httpMethod;
-    }
-
-    public String getSummary() {
-        return summary;
-    }
-
-    public void setSummary(String summary) {
-        this.summary = summary;
-    }
-
-    public String getNotes() {
-        return notes;
-    }
-
-    public void setNotes(String notes) {
-        this.notes = notes;
-    }
-
-    public String getResponseClass() {
-        return responseClass;
-    }
-
-    public void setResponseClass(String responseClass) {
-        this.responseClass = responseClass;
-    }
-
-    public String getNickname() {
-        return nickname;
-    }
-
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
-    }
-
-    public List<MustacheParameterSet> getParameters() {
-        return parameters;
-    }
-
-    public void setParameters(List<MustacheParameterSet> parameters) {
-        this.parameters = parameters;
-    }
-
-    public List<DocumentationError> getErrorResponses() {
-        return errorResponses;
-    }
-
-    public void setErrorResponses(List<DocumentationError> errorResponses) {
-        this.errorResponses = errorResponses;
-    }
-
-    public String getResponseClassLinkType() {
-        return responseClassLinkType;
-    }
-
-    public void setResponseClassLinkType(String responseClassLinkType) {
-        this.responseClassLinkType = responseClassLinkType;
-    }
-}
-
-class MustacheParameterSet {
-    String paramType;
-
-    List<MustacheParameter> paras;
-
-    public MustacheParameterSet(Map.Entry<String, List<MustacheParameter>> entry) {
-        this.paramType = entry.getKey();
-        this.paras = entry.getValue();
-    }
-
-    public String getParamType() {
-        return paramType;
-    }
-
-    public void setParamType(String paramType) {
-        this.paramType = paramType;
-    }
-
-    public List<MustacheParameter> getParas() {
-        return paras;
-    }
-
-    public void setParas(List<MustacheParameter> paras) {
-        this.paras = paras;
-    }
-}
-
-class MustacheParameter {
-    String name;
-
-    boolean required;
-
-    String description;
-
-    String type;
-
-    String linkType;
-
-    public MustacheParameter(DocumentationParameter para) {
-        this.linkType = getTrueType(para.getDataType());
-        this.required = para.required();
-        this.description = para.getDescription();
-        this.type = para.getDataType();
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public boolean isRequired() {
-        return required;
-    }
-
-    public void setRequired(boolean required) {
-        this.required = required;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getLinkType() {
-        return linkType;
-    }
-
-    public void setLinkType(String linkType) {
-        this.linkType = linkType;
     }
 }
 

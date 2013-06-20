@@ -1,36 +1,25 @@
 package com.github.kongchen.swagger.docgen.mavenplugin;
 
+import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
+import com.github.kongchen.swagger.docgen.GenerateException;
+import com.github.kongchen.swagger.docgen.TypeUtils;
+import com.github.kongchen.swagger.docgen.mustache.*;
+import com.wordnik.swagger.annotations.ApiProperty;
+import org.apache.maven.plugin.logging.SystemStreamLog;
+import org.testng.Assert;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+import sample.model.*;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
-import org.apache.maven.plugin.logging.SystemStreamLog;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
-
-import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
-import com.github.kongchen.swagger.docgen.GenerateException;
-import com.github.kongchen.swagger.docgen.TypeUtils;
-import com.github.kongchen.swagger.docgen.mustache.MustacheApi;
-import com.github.kongchen.swagger.docgen.mustache.MustacheDataType;
-import com.github.kongchen.swagger.docgen.mustache.MustacheDocument;
-import com.github.kongchen.swagger.docgen.mustache.MustacheItem;
-import com.github.kongchen.swagger.docgen.mustache.OutputTemplate;
-import com.wordnik.swagger.annotations.ApiProperty;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
-import sample.model.Address;
-import sample.model.Customer;
-import sample.model.Email;
-import sample.model.Garage;
+import static junit.framework.Assert.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -67,8 +56,7 @@ public class MavenDocumentSourceTest {
         }
     }
 
-
-        @Test
+    @Test
     public void test() throws Exception, GenerateException {
         AbstractDocumentSource documentSource = new MavenDocumentSource(apiSource, new SystemStreamLog());
         documentSource.loadDocuments();
@@ -79,21 +67,48 @@ public class MavenDocumentSourceTest {
         for (MustacheDocument doc : outputTemplate.getApiDocuments()) {
             for (MustacheApi api : doc.getApis()) {
                 assertFalse(api.getPath().contains("{format}"));
+                if (api.getPath().equals("/car/{carId}")) {
+                    Assert.assertEquals(api.getOperations().get(0).getParameters().size(), 0);
+                    MustacheOperation op = api.getOperations().get(0);
+
+                    Assert.assertEquals("ETag", op.getResponseHeader().getParas().get(0).getName());
+                    Assert.assertEquals("carId",
+                            op.getRequestPath().getParas().get(0).getName());
+                    Assert.assertEquals("e",
+                            op.getRequestQuery().getParas().get(0).getName());
+
+                    Assert.assertEquals("Accept",
+                            op.getRequestHeader().getParas().get(0).getName());
+                    Assert.assertEquals("MediaType",
+                            op.getRequestHeader().getParas().get(0).getType());
+
+
+                }
             }
         }
 
 
-        assertEquals(6, outputTemplate.getDataTypes().size());
+        assertEquals(8, outputTemplate.getDataTypes().size());
         List<MustacheDataType> typeList = new LinkedList<MustacheDataType>();
         for (MustacheDataType type : outputTemplate.getDataTypes()) {
             typeList.add(type);
         }
+        Collections.sort(typeList, new Comparator<MustacheDataType>() {
+
+            @Override
+            public int compare(MustacheDataType o1, MustacheDataType o2) {
+
+                return o1.getName().compareTo(o2.getName());
+            }
+        });
         assertDataTypeInList(typeList, 0, Address.class);
         assertDataTypeInList(typeList, 1, sample.model.Car.class);
         assertDataTypeInList(typeList, 2, Customer.class);
         assertDataTypeInList(typeList, 3, Email.class);
-        assertDataTypeInList(typeList, 4, Garage.class);
-        assertDataTypeInList(typeList, 5, sample.model.v2.Car.class);
+        assertDataTypeInList(typeList, 4, ForGeneric.class);
+        assertDataTypeInList(typeList, 5, G1.class);
+        assertDataTypeInList(typeList, 6, G2.class);
+        assertDataTypeInList(typeList, 7, sample.model.v2.Car.class);
     }
 
     private void assertDataTypeInList(List<MustacheDataType> typeList, int indexInList,
@@ -122,6 +137,9 @@ public class MavenDocumentSourceTest {
                 a = getApiProperty(aClass, name);
             }
 
+            if (a == null) {
+                return;
+            }
             String type = a.dataType();
             if (type.equals("")) {
                 // need to get true data type

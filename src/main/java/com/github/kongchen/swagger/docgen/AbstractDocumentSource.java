@@ -38,6 +38,8 @@ public abstract class AbstractDocumentSource {
 
     private ObjectMapper mapper = new ObjectMapper();
 
+    private OutputTemplate outputTemplate;
+
     public AbstractDocumentSource(LogAdapter logAdapter, String outputPath, String outputTpl, String swaggerOutput) {
         LOG = logAdapter;
         this.outputPath = outputPath;
@@ -57,6 +59,10 @@ public abstract class AbstractDocumentSource {
 
     public String getApiVersion() {
         return apiVersion;
+    }
+
+    public OutputTemplate getOutputTemplate() {
+        return outputTemplate;
     }
 
     public void setBasePath(String basePath) {
@@ -137,8 +143,15 @@ public abstract class AbstractDocumentSource {
         }
     }
 
+    public OutputTemplate prepareMustacheTemplate() throws Exception {
+        this.outputTemplate = new OutputTemplate(this);
+        return outputTemplate;
+
+    }
     public void toDocuments() throws Exception {
-        OutputTemplate outputTemplate = new OutputTemplate(this);
+        if (outputTemplate == null) {
+            prepareMustacheTemplate();
+        }
         if (outputTemplate.getApiDocuments().isEmpty()) {
             LOG.warn("nothing to write.");
             return;
