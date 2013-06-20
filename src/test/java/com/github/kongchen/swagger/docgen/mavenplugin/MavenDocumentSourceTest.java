@@ -68,7 +68,7 @@ public class MavenDocumentSourceTest {
             for (MustacheApi api : doc.getApis()) {
                 assertFalse(api.getPath().contains("{format}"));
                 if (api.getPath().equals("/car/{carId}")) {
-                    Assert.assertEquals(api.getOperations().get(0).getParameters().size(), 0);
+                    Assert.assertEquals(api.getOperations().get(0).getParameters().size(), 4);
                     MustacheOperation op = api.getOperations().get(0);
 
                     Assert.assertEquals("ETag", op.getResponseHeader().getParas().get(0).getName());
