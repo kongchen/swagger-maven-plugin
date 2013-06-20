@@ -1,8 +1,8 @@
 package com.github.kongchen.swagger.docgen.mustache;
 
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.TreeSet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsonschema.JsonSchema;
@@ -22,9 +22,9 @@ public class OutputTemplate {
 
     private String apiVersion;
 
-    private Set<MustacheDocument> apiDocuments = new TreeSet<MustacheDocument>();
+    private Set<MustacheDocument> apiDocuments = new LinkedHashSet<MustacheDocument>();
 
-    private Set<MustacheDataType> dataTypes = new TreeSet<MustacheDataType>();
+    private Set<MustacheDataType> dataTypes = new LinkedHashSet<MustacheDataType>();
 
     public OutputTemplate(AbstractDocumentSource docSource) throws Exception {
         feedSource(docSource);
@@ -91,7 +91,8 @@ public class OutputTemplate {
             for (DocumentationOperation op : api.getOperations()) {
                 MustacheOperation mustacheOperation = new MustacheOperation(mustacheDocument, op);
                 mustacheApi.addOperation(mustacheOperation);
-                mustacheDocument.addResponseType(mustacheOperation.getResponseClassLinkType());
+                addResponseType(mustacheDocument, mustacheOperation.getResponseClass());
+
             }
 
             mustacheDocument.addApi(mustacheApi);
@@ -118,8 +119,29 @@ public class OutputTemplate {
             MustacheDataType dataType = new MustacheDataType(mustacheDocument, type);
             addDateType(mustacheDocument, dataType);
         }
+        filterDatatypes(dataTypes);
 
         return mustacheDocument;
+    }
+
+    private void filterDatatypes(Set<MustacheDataType> dataTypes) {
+        Iterator<MustacheDataType> it = dataTypes.iterator();
+        while (it.hasNext()){
+            MustacheDataType type = it.next();
+
+            if (type.items == null || type.items.size() == 0) {
+                it.remove();
+            }
+        }
+    }
+
+    private void addResponseType(MustacheDocument mustacheDocument, MustacheResponseClass responseClass) {
+        mustacheDocument.addResponseType(responseClass.getResponseClassLinkType());
+        if (responseClass.getGenericClasses() != null) {
+            for (MustacheResponseClass mrc : responseClass.getGenericClasses()){
+                addResponseType(mustacheDocument, mrc);
+            }
+        }
     }
 
     private void feedSource(AbstractDocumentSource source) throws Exception {

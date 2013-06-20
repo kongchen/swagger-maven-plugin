@@ -18,7 +18,7 @@ public class GarageResourceV1 {
     @GET
     @Path("/{garageId}")
     @ApiOperation(value = "Find garages by Id", notes = "To get garage info",
-            responseClass = "sample.model.Garage")
+            responseClass = "sample.model.ForGeneric<sample.model.G1>")
     @ApiErrors(value = {@ApiError(code = 400, reason = "Invalid ID supplied"),
             @ApiError(code = 404, reason = "Garage not found")})
     public Response getGarageById(
@@ -31,7 +31,7 @@ public class GarageResourceV1 {
     @POST
     @Path("/{garageId}")
     @ApiOperation(value = "Repair a broken car in garage", notes = "To repair car",
-            responseClass = "sample.model.v2.Car")
+            responseClass = "sample.model.ForGeneric<sample.model.G2,sample.model.v2.Car>")
     @ApiErrors(value = {@ApiError(code = 400, reason = "Invalid ID supplied"),
             @ApiError(code = 404, reason = "Garage not found")})
     public Response getGarageById(

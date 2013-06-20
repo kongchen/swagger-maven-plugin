@@ -22,7 +22,7 @@ public class Generator {
         BasicConfigurator.configure();
         Logger logger = Logger.getLogger(Generator.class);
 
-        String outputTpl = "html.mustache";
+        String outputTpl = "strapdown.html.mustache";
         String outputPath = "apidoc.html";
         String requestURL = "http://petstore.swagger.wordnik.com/api/api-docs.json?api_key=special-key";
         String swaggerOutput = "api-docs/";
@@ -42,7 +42,9 @@ public class Generator {
         }
 
         URI url = new URI(requestURL);
-        AbstractDocumentSource docSource = new RemoteDocumentSource(new LogAdapter(logger), url, outputTpl, outputPath, swaggerOutput);
+        RemoteDocumentSource docSource = new RemoteDocumentSource(
+                new LogAdapter(logger), url, outputTpl, outputPath, swaggerOutput);
+        docSource.withFormatSuffix(false);
         docSource.loadDocuments();
         docSource.toDocuments();
         docSource.toSwaggerDocuments();
