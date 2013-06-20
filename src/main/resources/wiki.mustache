@@ -1,24 +1,32 @@
-{toc}
-
 h2. BasePath: {{basePath}}
 
 h2. Api Version: {{apiVersion}}
 
 h2. Resources
 {{#apiDocuments}}
-h3. {{resourcePath}}
-h4. Overview
+- [#{{resourcePath}}]
 {{{description}}}
+{{#apis}}
+{{#operations}}
+|{color:green}{{httpMethod}} {color}|{color}[{{path}}|#{{nickname}}]{color}|{{summary}}|
+{{/operations}}
+{{/apis}}
+
+
+{{/apiDocuments}}
+
+h2. Apis
+{{#apiDocuments}}
+{anchor:{{resourcePath}}}
 
 {{#apis}}
 {{#operations}}
-h4. {{nickname}}
-{noformat}{{httpMethod}} {{path}}{noformat}
-{info:title={{summary}}}{{{notes}}}{info}
+{anchor:{{nickname}}}
+h3. {{summary}}
+{noformat}{{httpMethod}} {{url}}{noformat}
+{{{notes}}}
 
-h5. URL
-{code}{{url}}{code}
-h5. Parameters
+h4. Parameters
 {{#parameters}}
 - {{paramType}}
 || Parameter || Required || Description || Data Type ||
@@ -27,14 +35,33 @@ h5. Parameters
 {{/paras}}
 {{/parameters}}
 
-h5. Response
-[#{{responseClass}}]
+{{#responseClass}}
+h4. Response
+{{^responseClassLinkType}}{{responseClass}}{{/responseClassLinkType}}{{#responseClassLinkType}}[{{responseClass}}|#{{responseClassLinkType}}]{{/responseClassLinkType}}{{^genericClasses}}{{/genericClasses}}{{#genericClasses}}< [{{responseClass}}|#{{responseClassLinkType}}] >{{/genericClasses}}
+{{/responseClass}}
 
-h5. Errors
+h4. Errors
 || *Status Code* || *Reason* ||
 {{#errorResponses}}
 |{{code}}|{{{reason}}}|
 {{/errorResponses}}
+
+{{#samples}}
+h4. Examples
+{{/samples}}
+{{#samples}}
+h5. {{sampleDescription}}
+- Sample Request
+{noformat}
+{{{sampleRequest}}}
+{noformat}
+
+- Sample Response
+{noformat}
+{{{sampleResponse}}}
+{noformat}
+
+{{/samples}}
 
 {{/operations}}
 {{/apis}}

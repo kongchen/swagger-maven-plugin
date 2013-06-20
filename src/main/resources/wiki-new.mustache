@@ -1,0 +1,114 @@
+h2. BasePath: {{basePath}}
+
+h2. Api Version: {{apiVersion}}
+
+h2. Resources
+{{#apiDocuments}}
+h3. {{resourcePath}}
+{{{description}}}
+{{#apis}}
+{{#operations}}
+||{color:green}{{httpMethod}} {color}|{color}[{{path}}|#{{nickname}}]{color}|{color}{{summary}}{color}|
+{{/operations}}
+{{/apis}}
+{{/apiDocuments}}
+
+{{#apiDocuments}}
+{{#apis}}
+{{#operations}}
+{anchor:{{nickname}}}
+h1. {{summary}}
+{{{notes}}}
+
+h3. Request
+
+h5. HTTP Request
+{code}{{httpMethod}} {{path}}{{#requestQuery}}[?query_parameters]{{/requestQuery}}{code}
+
+{{#requestPath}}
+h5. URL Parameters
+|| Parameter Name || Type || Required || Description ||
+{{#paras}}
+|{{name}} | [#{{type}}] | {{required}} | {{{description}}}|
+{{/paras}}
+{{/requestPath}}
+
+{{#requestQuery}}
+h5. Query Parameters
+|| Parameter Name || Type || Required || Description || Default value ||
+{{#paras}}
+| {{name}} | [#{{type}}] | {{required}} | {{{description}}} | {{defaultValue}} |
+{{/paras}}
+{{/requestQuery}}
+
+h5. Authorization
+[CONTACTS:Contact Service Developers Guide#2.AuthenticationandAuthorization]
+
+
+{{#requestBody}}
+h5. Request Body
+{{#paras}}
+|| Format || Required || Description ||
+|[#{{type}}] | {{required}} | {{{description}}} |
+{{/paras}}
+{{/requestBody}}
+
+
+{{#requestHeader}}
+h5. Request Headers
+|| Header || Type || Standard || Required || Description ||
+{{#paras}}
+| *{{name}}* | {{type}} | yes | {{required}} | {{{description}}} {{#defaultValue}}_Default value: {{defaultValue}}_{{/defaultValue}} |
+{{/paras}}
+{{/requestHeader}}
+
+h3. Response
+
+h5. Response Status Codes
+
+The following status codes may be returned by the server in response to this type of request.
+
+|| HTTP Status || Description ||
+{{#errorResponses}}
+|{{code}}|{{{reason}}}|
+{{/errorResponses}}
+
+{{#responseClass}}
+{{#responseClass}}
+h5. Response Body
+{{/responseClass}}
+{{^responseClassLinkType}}{{responseClass}}{{/responseClassLinkType}}{{#responseClassLinkType}}[{{responseClass}}|#{{responseClassLinkType}}]{{/responseClassLinkType}}{{^genericClasses}}{{/genericClasses}}{{#genericClasses}}{color}<[{{responseClass}}|#{{responseClassLinkType}}]>{color}{{/genericClasses}}
+{{/responseClass}}
+
+{{#responseHeader}}
+h5. Response Headers
+|| Header || Type || Standard || Required || Description ||
+{{#paras}}
+| *{{name}}* | {{type}} | yes | {{required}} | {{{description}}}
+{{/paras}}
+{{/responseHeader}}
+
+{{#samples}}
+h3. Examples
+{{/samples}}
+{{#samples}}
+# {quote}{{{sampleDescription}}}{quote}
+Request
+{code}{{{sampleRequest}}} {code}
+Response
+{code} {{{sampleResponse}}} {code}
+{{/samples}}
+{{/operations}}
+{{/apis}}
+{{/apiDocuments}}
+
+h1. Data Types
+{{#dataTypes}}
+{anchor:{{name}}}
+h3. {{name}}
+|| ||*type*||*required*||*access*||*schema*||*notes*||
+{{#items}}
+|*{{name}}*|{{#linkType}}[{{type}}|#{{linkType}}]{{/linkType}}{{^linkType}}{{type}}{{/linkType}}|{{#required}}required{{/required}}{{^required}}optional{{/required}}|{{#access}}{{{access}}}{{/access}}{{^access}}-{{/access}}|{{#description}}{{{description}}}{{/description}}{{^description}}-{{/description}}|{{#notes}}{{{notes}}}{{/notes}}{{^notes}}-{{/notes}}|
+{{/items}}
+{{/dataTypes}}
+

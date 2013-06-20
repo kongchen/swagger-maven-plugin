@@ -46,19 +46,19 @@ public class MustacheOperation {
             MustacheParameterSet para = it.next();
             if (para.getParamType().equals(ApiValues.TYPE_QUERY)) {
                 this.requestQuery = para;
-                it.remove();
+//                it.remove();
             } else if (para.getParamType().equals(ApiValues.TYPE_HEADER)) {
                 this.requestHeader = para;
-                it.remove();
+//                it.remove();
             } else if (para.getParamType().equals(ApiValues.TYPE_BODY)) {
                 this.requestBody = para;
-                it.remove();
+//                it.remove();
             } else if (para.getParamType().equals(ApiValues.TYPE_PATH)) {
                 this.requestPath = para;
-                it.remove();
+//                it.remove();
             } else if (para.getParamType().equals(DocTemplateConstants.TYPE_RESPONSE_HEADER)) {
                 this.responseHeader = para;
-                it.remove();
+//                it.remove();
             }
         }
     }
