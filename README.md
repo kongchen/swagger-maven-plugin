@@ -60,18 +60,20 @@ This plugin helps you **generate API documents** in build phase according to [cu
 ```
 
 
-> - One **apiSource** can be considered as a set of APIs for one **apiVersion** in API's **basePath**.
-- Java classes containing Swagger's annotation @Api, or Java packages containing those classes can be configured in **locations**, using ';' as the delimiter.
-- **outputTemplate** is the path of the mustache template file.
-- **outputPath** is the path of your output file.
-- If **swaggerDirectory** is configured, the plugin will also generate a Swagger resource listing suitable for feeding to swagger-ui.
-- **withFormatSuffix** indicates if you need Swagger's _.{format}_ suffix in API's path. Default: false
+- One ```apiSource``` can be considered as a set of APIs for one ```apiVersion``` in API's ```basePath```.
+- Java classes containing Swagger's annotation ```@Api```, or Java packages containing those classes can be configured in ```locations```, using ```;``` as the delimiter.
+- ```outputTemplate``` is the path of the mustache template file.
+- ```outputPath``` is the path of your output file.
+- If ```swaggerDirectory``` is configured, the plugin will also generate a Swagger resource listing suitable for feeding to swagger-ui.
+- ```withFormatSuffix``` indicates if you need Swagger's _.{format}_ suffix in API's path. Default: false
 
-You can specify several apiSources with different api versions and base paths.
+You can specify several ```apiSources``` with different api versions and base paths.
 
 # About the template file
 See [this page](https://github.com/kongchen/swagger-maven-plugin/wiki/Document-Templates) for more details.
+
+# A Sample
+Check out this [sample project](https://github.com/kongchen/swagger-maven-example) to see how this happens.
+
 [![githalytics.com alpha](https://cruel-carlota.pagodabox.com/8e57158a366298512499affc8b585976 "githalytics.com")](http://githalytics.com/kongchen/swagger-maven-plugin)
 
-# Demo
-Check out this [demo](https://github.com/kongchen/swagger-maven-example) to see how this happens.
