@@ -52,6 +52,11 @@ public class ApiSource{
      */
     private boolean withFormatSuffix = false;
 
+    /**
+     * @parameter
+     */
+    private boolean createOutputDirectories = true;
+    
     public boolean isWithFormatSuffix() {
         return withFormatSuffix;
     }
@@ -131,6 +136,14 @@ public class ApiSource{
 
     public void setSwaggerDirectory(String swaggerDirectory) {
         this.swaggerDirectory = swaggerDirectory;
+    }
+
+    public boolean isCreateOutputDirectories() {
+        return createOutputDirectories;
+    }
+
+    public void setCreateOutputDirectories(boolean createDirectories) {
+        this.createOutputDirectories = createDirectories;
     }
 
 }
