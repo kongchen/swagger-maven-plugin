@@ -4,15 +4,13 @@ h2. Api Version: {{apiVersion}}
 
 h2. Resources
 {{#apiDocuments}}
-- [#{{resourcePath}}]
+h3. {{resourcePath}}
 {{{description}}}
 {{#apis}}
 {{#operations}}
-|{color:green}{{httpMethod}} {color}|{color}[{{path}}|#{{nickname}}]{color}|{{summary}}|
+||{color:green}{{httpMethod}} {color}|{color}[{{path}}|#{{nickname}}]{color}|{color}{{summary}}{color}|
 {{/operations}}
 {{/apis}}
-
-
 {{/apiDocuments}}
 
 h2. Apis
@@ -37,7 +35,7 @@ h4. Parameters
 
 {{#responseClass}}
 h4. Response
-{{^responseClassLinkType}}{{responseClass}}{{/responseClassLinkType}}{{#responseClassLinkType}}[{{responseClass}}|#{{responseClassLinkType}}]{{/responseClassLinkType}}{{^genericClasses}}{{/genericClasses}}{{#genericClasses}}< [{{responseClass}}|#{{responseClassLinkType}}] >{{/genericClasses}}
+{{^classLinkName}}{{className}}{{/classLinkName}}{{#classLinkName}}[{{className}}|#{{classLinkName}}]{{/classLinkName}}{{^genericClasses}}{{/genericClasses}}{{#genericClasses}}< [{{className}}|#{{classLinkName}}] >{{/genericClasses}}
 {{/responseClass}}
 
 h4. Errors
@@ -62,7 +60,6 @@ h5. {{sampleDescription}}
 {noformat}
 
 {{/samples}}
-
 {{/operations}}
 {{/apis}}
 {{/apiDocuments}}
