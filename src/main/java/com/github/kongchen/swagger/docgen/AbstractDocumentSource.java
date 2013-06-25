@@ -2,8 +2,11 @@ package com.github.kongchen.swagger.docgen;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.net.URI;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.LinkedList;
 import java.util.List;
@@ -24,13 +27,17 @@ import com.wordnik.swagger.core.Documentation;
  * 05/13/2013
  */
 public abstract class AbstractDocumentSource {
+    protected final LogAdapter LOG;
+
     private final String outputPath;
 
     private final String templatePath;
 
     private final String swaggerPath;
 
-    protected final LogAdapter LOG;
+    protected Documentation serviceDocument;
+
+    List<Documentation> validDocuments = new LinkedList<Documentation>();
 
     private String basePath;
 
@@ -49,28 +56,24 @@ public abstract class AbstractDocumentSource {
 
     public abstract void loadDocuments() throws Exception, GenerateException;
 
-    protected Documentation serviceDocument;
-
-    List<Documentation> validDocuments = new LinkedList<Documentation>();
-
     public String getBasePath() {
         return basePath;
-    }
-
-    public String getApiVersion() {
-        return apiVersion;
-    }
-
-    public OutputTemplate getOutputTemplate() {
-        return outputTemplate;
     }
 
     public void setBasePath(String basePath) {
         this.basePath = basePath;
     }
 
+    public String getApiVersion() {
+        return apiVersion;
+    }
+
     public void setApiVersion(String apiVersion) {
         this.apiVersion = apiVersion;
+    }
+
+    public OutputTemplate getOutputTemplate() {
+        return outputTemplate;
     }
 
     protected void acceptDocument(Documentation doc) {
@@ -148,6 +151,7 @@ public abstract class AbstractDocumentSource {
         return outputTemplate;
 
     }
+
     public void toDocuments() throws Exception {
         if (outputTemplate == null) {
             prepareMustacheTemplate();
@@ -161,7 +165,24 @@ public abstract class AbstractDocumentSource {
         FileOutputStream fileOutputStream = new FileOutputStream(outputPath);
         OutputStreamWriter writer = new OutputStreamWriter(fileOutputStream, Charset.forName("UTF-8"));
         MustacheFactory mf = new DefaultMustacheFactory();
-        Mustache mustache = mf.compile(templatePath);
+        Mustache mustache = null;
+
+        URI uri = new URI(templatePath);
+        if (!uri.isAbsolute()) {
+            File file = new File(templatePath);
+            if (!file.exists()) {
+                mustache = mf.compile(templatePath);
+            } else {
+                uri = new File(templatePath).toURI();
+            }
+        }
+        if (mustache == null) {
+
+            URL url = uri.toURL();
+
+            InputStreamReader reader = new InputStreamReader(url.openStream(), Charset.forName("UTF-8"));
+            mustache = mf.compile(reader, templatePath);
+        }
         mustache.execute(writer, outputTemplate).flush();
         writer.close();
         LOG.info("Done!");

@@ -5,15 +5,15 @@ import java.util.LinkedList;
 import com.github.kongchen.swagger.docgen.TypeUtils;
 
 public class MustacheResponseClass {
-    private String responseClass;
-    private String responseClassLinkType;
+    private String className;
+    private String classLinkName;
     private LinkedList<MustacheResponseClass> genericClasses;
 
     public MustacheResponseClass(String responseClass) {
         if ((TypeUtils.genericPattern.matcher(responseClass).matches())) {
             String trueType = TypeUtils.getTrueType(responseClass);
-            this.responseClassLinkType = trueType;
-            this.responseClass = trueType;
+            this.classLinkName = trueType;
+            this.className = trueType;
             genericClasses = new LinkedList<MustacheResponseClass>();
             while (true) {
                 int idx1 = responseClass.indexOf('<');
@@ -33,34 +33,18 @@ public class MustacheResponseClass {
         } else {
             String trueType = TypeUtils.getTrueType(responseClass);
             if (trueType != null) {
-                this.responseClass = responseClass;
-                this.responseClassLinkType = trueType;
+                this.className = responseClass;
+                this.classLinkName = trueType;
             } else {
                 if (responseClass.equalsIgnoreCase("void")) {
-                    this.responseClass = null;
+                    this.className = null;
                 } else {
-                    this.responseClass = responseClass;
+                    this.className = responseClass;
                 }
             }
         }
 
 
-    }
-
-    String getResponseClass() {
-        return responseClass;
-    }
-
-    void setResponseClass(String responseClass) {
-        this.responseClass = responseClass;
-    }
-
-    String getResponseClassLinkType() {
-        return responseClassLinkType;
-    }
-
-    void setResponseClassLinkType(String responseClassLinkType) {
-        this.responseClassLinkType = responseClassLinkType;
     }
 
     public LinkedList<MustacheResponseClass> getGenericClasses() {
@@ -69,5 +53,21 @@ public class MustacheResponseClass {
 
     public void setGenericClasses(LinkedList<MustacheResponseClass> genericClasses) {
         this.genericClasses = genericClasses;
+    }
+
+    public String getClassName() {
+        return className;
+    }
+
+    public void setClassName(String className) {
+        this.className = className;
+    }
+
+    public String getClassLinkName() {
+        return classLinkName;
+    }
+
+    public void setClassLinkName(String classLinkName) {
+        this.classLinkName = classLinkName;
     }
 }
