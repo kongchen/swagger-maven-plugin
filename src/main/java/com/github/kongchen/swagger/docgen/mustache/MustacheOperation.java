@@ -41,6 +41,9 @@ public class MustacheOperation {
         this.parameters = mustacheDocument.analyzeParameters(op.getParameters());
         responseClass = new MustacheResponseClass(op.getResponseClass());
         this.errorResponses = op.getErrorResponses();
+        if (parameters == null) {
+            return;
+        }
         Iterator<MustacheParameterSet> it = parameters.iterator();
         while (it.hasNext()) {
             MustacheParameterSet para = it.next();

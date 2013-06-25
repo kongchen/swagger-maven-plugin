@@ -206,7 +206,7 @@ public class MavenDocumentSourceTest {
         }
 
         t = toPrimitive(t);
-        return isArray ? TypeUtils.ARRAY_TYPE_PREFIX + t : t;
+        return isArray ? TypeUtils.AsArrayType(t) : t;
     }
 
     private String toPrimitive(String type) {

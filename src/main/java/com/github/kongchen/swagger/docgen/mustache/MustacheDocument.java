@@ -187,7 +187,10 @@ public class MustacheDocument implements Comparable<MustacheDocument>{
 
     @Override
     public int compareTo(MustacheDocument o) {
-        return this.getIndex() - o.getIndex();
+        if (o == null) {
+            return 1;
+        }
+        return this.getResourcePath().compareTo(o.getResourcePath());
     }
 }
 

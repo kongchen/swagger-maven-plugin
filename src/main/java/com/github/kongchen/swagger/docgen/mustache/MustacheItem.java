@@ -88,7 +88,7 @@ public class MustacheItem {
     }
 
     public void setTypeAsArray(String elementType) {
-        this.type = TypeUtils.ARRAY_TYPE_PREFIX + elementType;
+        this.type = TypeUtils.AsArrayType(elementType);
         setLinkType(TypeUtils.filterBasicTypes(elementType));
     }
 }

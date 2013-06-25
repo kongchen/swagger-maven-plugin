@@ -136,7 +136,7 @@ public class OutputTemplate {
     }
 
     private void addResponseType(MustacheDocument mustacheDocument, MustacheResponseClass responseClass) {
-        mustacheDocument.addResponseType(responseClass.getResponseClassLinkType());
+        mustacheDocument.addResponseType(responseClass.getClassLinkName());
         if (responseClass.getGenericClasses() != null) {
             for (MustacheResponseClass mrc : responseClass.getGenericClasses()){
                 addResponseType(mustacheDocument, mrc);
@@ -159,5 +159,9 @@ public class OutputTemplate {
     private void addMustacheDocument(MustacheDocument mustacheDocument) {
         mustacheDocument.setIndex(apiDocuments.size() + 1);
         apiDocuments.add(mustacheDocument);
+    }
+
+    public void setDataTypes(Set<MustacheDataType> dataTypes) {
+        this.dataTypes = dataTypes;
     }
 }
