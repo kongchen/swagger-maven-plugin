@@ -74,10 +74,10 @@ The following status codes may be returned by the server in response to this typ
 {{/errorResponses}}
 
 {{#responseClass}}
-{{#responseClass}}
+{{#className}}
 h5. Response Body
-{{/responseClass}}
-{{^responseClassLinkType}}{{responseClass}}{{/responseClassLinkType}}{{#responseClassLinkType}}[{{responseClass}}|#{{responseClassLinkType}}]{{/responseClassLinkType}}{{^genericClasses}}{{/genericClasses}}{{#genericClasses}}{color}<[{{responseClass}}|#{{responseClassLinkType}}]>{color}{{/genericClasses}}
+{{/className}}
+{{^classLinkName}}{{className}}{{/classLinkName}}{{#classLinkName}}[{{className}}|#{{classLinkName}}]{{/classLinkName}}{{^genericClasses}}{{/genericClasses}}{{#genericClasses}}{color}<[{{className}}|#{{classLinkName}}]>{color}{{/genericClasses}}
 {{/responseClass}}
 
 {{#responseHeader}}
