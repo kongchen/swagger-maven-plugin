@@ -1,11 +1,14 @@
 package com.github.kongchen.swagger.docgen;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.LinkedList;
@@ -146,13 +149,13 @@ public abstract class AbstractDocumentSource {
         }
     }
 
-    public OutputTemplate prepareMustacheTemplate() throws Exception {
+    public OutputTemplate prepareMustacheTemplate() {
         this.outputTemplate = new OutputTemplate(this);
         return outputTemplate;
 
     }
 
-    public void toDocuments() throws Exception {
+    public void toDocuments() throws GenerateException {
         if (outputTemplate == null) {
             prepareMustacheTemplate();
         }
@@ -162,29 +165,45 @@ public abstract class AbstractDocumentSource {
         }
         LOG.info("Writing doc to " + outputPath + "...");
 
-        FileOutputStream fileOutputStream = new FileOutputStream(outputPath);
+        FileOutputStream fileOutputStream = null;
+        try {
+            fileOutputStream = new FileOutputStream(outputPath);
+        } catch (FileNotFoundException e) {
+            throw new GenerateException(e);
+        }
         OutputStreamWriter writer = new OutputStreamWriter(fileOutputStream, Charset.forName("UTF-8"));
         MustacheFactory mf = new DefaultMustacheFactory();
-        Mustache mustache = null;
 
-        URI uri = new URI(templatePath);
+
+        URI uri = null;
+        try {
+            uri = new URI(templatePath);
+        } catch (URISyntaxException e) {
+            throw new GenerateException(e);
+        }
         if (!uri.isAbsolute()) {
             File file = new File(templatePath);
             if (!file.exists()) {
-                mustache = mf.compile(templatePath);
+                throw new GenerateException("Template " + file.getAbsoluteFile()
+                        + " not found. You can go to https://github.com/kongchen/api-doc-template to get templates.");
             } else {
                 uri = new File(templatePath).toURI();
             }
         }
-        if (mustache == null) {
 
-            URL url = uri.toURL();
-
+        URL url = null;
+        try {
+            url = uri.toURL();
             InputStreamReader reader = new InputStreamReader(url.openStream(), Charset.forName("UTF-8"));
-            mustache = mf.compile(reader, templatePath);
+            Mustache mustache = mf.compile(reader, templatePath);
+
+            mustache.execute(writer, outputTemplate).flush();
+            writer.close();
+            LOG.info("Done!");
+        } catch (MalformedURLException e) {
+            throw new GenerateException(e);
+        } catch (IOException e) {
+            throw new GenerateException(e);
         }
-        mustache.execute(writer, outputTemplate).flush();
-        writer.close();
-        LOG.info("Done!");
     }
 }
