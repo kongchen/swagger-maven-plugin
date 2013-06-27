@@ -26,7 +26,7 @@ public class OutputTemplate {
 
     private Set<MustacheDataType> dataTypes = new LinkedHashSet<MustacheDataType>();
 
-    public OutputTemplate(AbstractDocumentSource docSource) throws Exception {
+    public OutputTemplate(AbstractDocumentSource docSource) {
         feedSource(docSource);
     }
 
@@ -144,7 +144,7 @@ public class OutputTemplate {
         }
     }
 
-    private void feedSource(AbstractDocumentSource source) throws Exception {
+    private void feedSource(AbstractDocumentSource source) {
         for (Documentation doc : source.getValidDocuments()) {
             if (doc.getApis() ==null ){
                 continue;
