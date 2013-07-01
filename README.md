@@ -53,7 +53,7 @@ This plugin helps you **generate API documents** in build phase according to [cu
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
-            <id>central</id>
+            <id>bintray-kongchen</id>
             <name>bintray-plugins</name>
             <url>http://dl.bintray.com/kongchen/maven</url>
         </pluginRepository>
