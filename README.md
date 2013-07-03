@@ -1,6 +1,11 @@
 # Swagger Maven Plugin [![Build Status](https://travis-ci.org/kongchen/swagger-maven-plugin.png)](https://travis-ci.org/kongchen/swagger-maven-plugin)
 This plugin helps you **generate API documents** in build phase according to [customized output templates](https://github.com/kongchen/api-doc-template).
 
+[Changes](https://github.com/kongchen/swagger-maven-plugin/blob/master/CHANGES.md)
+==
+Current status:
+- Offical version `1.1.0` is availabe in central repository
+
 # Usage
 
 ```xml
@@ -19,7 +24,7 @@ This plugin helps you **generate API documents** in build phase according to [cu
             <plugin>
                 <groupId>com.github.kongchen</groupId>
                 <artifactId>swagger-maven-plugin</artifactId>
-                <version>1.1</version>
+                <version>1.1.0</version>
                 <configuration>
                     <apiSources>
                         <apiSource>
@@ -48,16 +53,7 @@ This plugin helps you **generate API documents** in build phase according to [cu
         </plugins>
     </build>
     ...
-    <pluginRepositories>
-        <pluginRepository>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <id>bintray-kongchen</id>
-            <name>bintray-plugins</name>
-            <url>http://dl.bintray.com/kongchen/maven</url>
-        </pluginRepository>
-    </pluginRepositories>
+
 
 </project>
 ```
