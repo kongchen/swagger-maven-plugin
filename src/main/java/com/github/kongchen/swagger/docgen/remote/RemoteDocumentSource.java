@@ -49,6 +49,9 @@ public class RemoteDocumentSource extends AbstractDocumentSource {
         HttpClient client = new DefaultHttpClient();
         HttpResponse response = client.execute(new HttpGet(requestURI));
 
+        if (response.getStatusLine().getStatusCode() != 200) {
+            throw new IOException(requestURI + " got " + response.getStatusLine().getReasonPhrase());
+        }
         Documentation doc = mapper.readValue(response.getEntity().getContent(), Documentation.class);
         serviceDocument = doc;
 
