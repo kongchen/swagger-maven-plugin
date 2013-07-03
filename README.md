@@ -19,7 +19,7 @@ This plugin helps you **generate API documents** in build phase according to [cu
             <plugin>
                 <groupId>com.github.kongchen</groupId>
                 <artifactId>swagger-maven-plugin</artifactId>
-                <version>1.1-SNAPSHOT</version>
+                <version>1.1</version>
                 <configuration>
                     <apiSources>
                         <apiSource>
@@ -50,14 +50,15 @@ This plugin helps you **generate API documents** in build phase according to [cu
     ...
     <pluginRepositories>
         <pluginRepository>
-            <id>com.github.kongchen</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
             <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
+                <enabled>false</enabled>
             </snapshots>
+            <id>bintray-kongchen</id>
+            <name>bintray-plugins</name>
+            <url>http://dl.bintray.com/kongchen/maven</url>
         </pluginRepository>
     </pluginRepositories>
+
 </project>
 ```
 
