@@ -1,5 +1,6 @@
 package com.github.kongchen.swagger.docgen.mavenplugin;
 
+import java.io.File;
 import java.util.List;
 
 import org.apache.maven.plugin.AbstractMojo;
@@ -38,8 +39,18 @@ public class ApiDocumentMojo extends AbstractMojo {
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
+            
             getLog().debug(apiSources.toString());
             for (ApiSource apiSource : apiSources) {
+                if (apiSource.isCreateOutputDirectories()) {
+                    File outputPathFile;
+                    outputPathFile = new File(apiSource.getOutputPath());
+                    if (outputPathFile.getParent() != null) {
+                        File basePathDir = new File(outputPathFile.getParent());
+                        basePathDir.mkdirs();
+                    }
+                }
+
                 AbstractDocumentSource documentSource = new MavenDocumentSource(apiSource, getLog());
                 documentSource.loadDocuments();
                 documentSource.toDocuments();
