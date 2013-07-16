@@ -1,7 +1,11 @@
-**7/03/2013 1.1.0**
+**07/16/2013 1.1.1**
+- released in central repository
+- fix issue #7
+
+**07/03/2013 1.1.0**
 - 1.1.0 released in central repository
 
-**6/26/2013 1.1-SNAPSHOT**
+**06/26/2013 1.1-SNAPSHOT**
 - Upgrade [mustache lib]https://github.com/spullara/mustache.java to 0.8.12
 - Support remote url for outputTemplatePath
 
