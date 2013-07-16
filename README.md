@@ -3,8 +3,7 @@ This plugin helps you **generate API documents** in build phase according to [cu
 
 [Changes](https://github.com/kongchen/swagger-maven-plugin/blob/master/CHANGES.md)
 ==
-Current status:
-- Offical version `1.1.0` is availabe in central repository
+Latest version `1.1.1` is availabe in central repository
 
 # Usage
 
@@ -24,7 +23,7 @@ Current status:
             <plugin>
                 <groupId>com.github.kongchen</groupId>
                 <artifactId>swagger-maven-plugin</artifactId>
-                <version>1.1.0</version>
+                <version>1.1.1</version>
                 <configuration>
                     <apiSources>
                         <apiSource>
@@ -71,7 +70,7 @@ Current status:
      >E.g: The template https://raw.github.com/kongchen/api-doc-template/master/v1.1/strapdown.html.mustache includes
      [`markdown.mustache`](https://raw.github.com/kongchen/api-doc-template/master/v1.1/markdown.mustache) by this way,
      to use `strapdown.html.mustache` you should put `markdown.mustache` in your local path first.
-- ```outputPath``` is the path of your output file.
+- ```outputPath``` is the path of your output file, not existed parent directory of the file will be created.
 - If ```swaggerDirectory``` is configured, the plugin will also generate a Swagger resource listing suitable for feeding to swagger-ui.
 - ```withFormatSuffix``` indicates if you need Swagger's _.{format}_ suffix in API's path. Default: false
 
