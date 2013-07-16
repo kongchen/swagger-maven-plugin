@@ -33,8 +33,7 @@ public class ApiDocumentMojoTest {
         apiSource.setBasePath("http://example.com");
         apiSource.setLocations("sample.api");
         apiSource.setOutputPath("temp.html");
-        apiSource.setOutputTemplate("https://raw.github.com/kongchen/api-doc-template/master/v1.1/strapdown.html" +
-                ".mustache");
+        apiSource.setOutputTemplate("https://raw.github.com/kongchen/api-doc-template/master/v1.1/markdown.mustache");
         apiSource.setWithFormatSuffix(false);
         apiSource.setSwaggerDirectory("apidocsf");
 
