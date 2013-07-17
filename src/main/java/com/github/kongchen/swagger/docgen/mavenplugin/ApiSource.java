@@ -15,7 +15,7 @@ import com.wordnik.swagger.annotations.Api;
  * Date: 3/7/13
  */
 
-public class ApiSource {
+public class ApiSource{
 
     /**
      * @parameter
@@ -52,10 +52,6 @@ public class ApiSource {
      */
     private boolean withFormatSuffix = false;
 
-    public String mustacheFileRoot;
-
-    public boolean useOutputFlatStructure = true;
-
     public boolean isWithFormatSuffix() {
         return withFormatSuffix;
     }
@@ -76,13 +72,13 @@ public class ApiSource {
                     Set<Class<?>> c = new Reflections(source).getTypesAnnotatedWith(Api.class);
                     classes.addAll(c);
                 }
-            } else {
+            }else {
                 classes.addAll(new Reflections(locations).getTypesAnnotatedWith(Api.class));
             }
         }
         Iterator<Class> it = classes.iterator();
         while (it.hasNext()) {
-            if (it.next().getName().startsWith("com.wordnik.swagger")) {
+            if (it.next().getName().startsWith("com.wordnik.swagger")){
                 it.remove();
             }
         }
@@ -103,22 +99,6 @@ public class ApiSource {
 
     public void setOutputTemplate(String outputTemplate) {
         this.outputTemplate = outputTemplate;
-    }
-
-    public String getMustacheFileRoot() {
-        return mustacheFileRoot;
-    }
-
-    public void setMustacheFileRoot(String mustacheFileRoot) {
-        this.mustacheFileRoot = mustacheFileRoot;
-    }
-
-    public boolean isUseOutputFlatStructure() {
-        return useOutputFlatStructure;
-    }
-
-    public void setUseOutputFlatStructure(boolean useOutputFlatStructure) {
-        this.useOutputFlatStructure = useOutputFlatStructure;
     }
 
     public String getOutputPath() {
