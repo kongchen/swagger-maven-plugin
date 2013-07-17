@@ -30,8 +30,6 @@ Latest version `1.1.1` is availabe in central repository
                             <locations>com.foo.bar.apis;com.foo.bar.apis.internal.Resource</locations>
                             <apiVersion>v1</apiVersion>
                             <basePath>http://www.example.com</basePath>
-                            <useOutputFlatStructure>false</useOutputFlatStructure>
-                            <mustacheFileRoot>${basedir}/src/main/resources/</mustacheFileRoot>
                             <outputTemplate>
                                      https://raw.github.com/kongchen/api-doc-template/master/v1.1/markdown.mustache
                             </outputTemplate>
@@ -75,8 +73,6 @@ Latest version `1.1.1` is availabe in central repository
 - ```outputPath``` is the path of your output file, not existed parent directory of the file will be created.
 - If ```swaggerDirectory``` is configured, the plugin will also generate a Swagger resource listing suitable for feeding to swagger-ui.
 - ```withFormatSuffix``` indicates if you need Swagger's _.{format}_ suffix in API's path. Default: false
-- ```useOutputFlatStructure``` indicates whether output will be created in subdirs by path defined in @com.wordnik.swagger.annotations.Api#value (false), or the filename will be the path with replaced slashes to underscores (true). Default: true
-- ```mustacheFileRoot``` directory where mustache is looking for markdown.mustache
 
 You can specify several ```apiSources``` with different api versions and base paths.
 

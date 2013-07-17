@@ -35,8 +35,8 @@ public class RemoteDocumentSource extends AbstractDocumentSource {
 
     private boolean withFormatSuffix = true;
 
-    public RemoteDocumentSource(LogAdapter logAdapter, URI requestURI, String outputTpl, String outputPath, String swaggerOutput, String mustacheFileRoot, boolean useOutputFlatStructure) {
-        super(logAdapter, outputPath, outputTpl, swaggerOutput, mustacheFileRoot, useOutputFlatStructure);
+    public RemoteDocumentSource(LogAdapter logAdapter, URI requestURI, String outputTpl, String outputPath, String swaggerOutput) {
+        super(logAdapter, outputPath, outputTpl, swaggerOutput);
         LOG = new LogAdapter(Logger.getLogger(RemoteDocumentSource.class));
         this.requestURI = requestURI;
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
