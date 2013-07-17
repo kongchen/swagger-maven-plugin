@@ -1,6 +1,5 @@
 package com.github.kongchen.swagger.docgen.mavenplugin;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -29,7 +28,7 @@ public class MavenDocumentSource extends AbstractDocumentSource {
 
     public MavenDocumentSource(ApiSource apiSource, Log log) {
         super(new LogAdapter(log),
-                apiSource.getOutputPath(), apiSource.getOutputTemplate(), apiSource.getSwaggerDirectory());
+                apiSource.getOutputPath(), apiSource.getOutputTemplate(), apiSource.getSwaggerDirectory(), apiSource.mustacheFileRoot, apiSource.isUseOutputFlatStructure());
 
         setApiVersion(apiSource.getApiVersion());
         setBasePath(apiSource.getBasePath());
