@@ -3,7 +3,27 @@ This plugin helps you **generate API documents** in build phase according to [cu
 
 [Changes](https://github.com/kongchen/swagger-maven-plugin/blob/master/CHANGES.md)
 ==
-Latest version `1.1.1` is availabe in central repository
+**Latest version `1.1.1` is available in central repository.**
+
+*What's new in `1.1.2-SNAPSHOT`:*
+- *add `useOutputFlatStructure` and `mustacheFileRoot` in configuration. 07/18/2013*
+
+>To use SNAPSHOT version, you should add plugin repository first:
+
+```
+<pluginRepositories>
+  <pluginRepository>
+    <id>sonatype-snapshot</id>
+    <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+    <releases>
+      <enabled>false</enabled>
+    </releases>
+    <snapshots>
+      <enabled>true</enabled>
+    </snapshots>
+  </pluginRepository>
+</pluginRepositories>
+```
 
 # Usage
 
@@ -67,7 +87,7 @@ Latest version `1.1.1` is availabe in central repository
  but local file is highly recommanded because:
  
     > 1. You can modify the template to match your requirement easily.
-    > 2. Mustache can use `>localfile` for mustache partials. You should put the partials in `mustacheFileRoot` if any.
+    > 2. Mustache can use `>localfile` for mustache partials, but you should put the partials in `mustacheFileRoot` if any.
 
      >E.g: The template https://raw.github.com/kongchen/api-doc-template/master/v1.1/strapdown.html.mustache uses
      [`markdown.mustache`](https://raw.github.com/kongchen/api-doc-template/master/v1.1/markdown.mustache) as a partial by this way,
