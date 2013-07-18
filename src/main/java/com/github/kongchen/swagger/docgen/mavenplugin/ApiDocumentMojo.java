@@ -15,6 +15,7 @@ import com.github.kongchen.swagger.docgen.GenerateException;
  * User: kongchen
  * Date: 3/7/13
  */
+
 /**
  * @goal generate
  * @phase compile
@@ -55,9 +56,9 @@ public class ApiDocumentMojo extends AbstractMojo {
             }
 
         } catch (Exception e) {
-            throw new MojoFailureException(e.getMessage());
+            throw new MojoFailureException(e.getMessage(), e);
         } catch (GenerateException e) {
-            throw new MojoFailureException(e.getMessage());
+            throw new MojoFailureException(e.getMessage(), e);
         }
     }
 }
