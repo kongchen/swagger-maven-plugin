@@ -126,13 +126,16 @@ public abstract class AbstractDocumentSource {
         }
     }
 
-    private String resourcePathToFilename(String resourcePath) {
+    protected String resourcePathToFilename(String resourcePath) {
         if (resourcePath == null) {
             return "service.json";
         }
         String name = resourcePath;
         if (resourcePath.startsWith("/")) {
             name = resourcePath.substring(1);
+        }
+        if (resourcePath.endsWith("/")) {
+            name = resourcePath.substring(0, resourcePath.length() - 1);
         }
 
         if (useOutputFlatStructure) {
@@ -152,7 +155,7 @@ public abstract class AbstractDocumentSource {
         }
     }
 
-    private File createFile(File dir, String outputResourcePath) throws IOException {
+    protected File createFile(File dir, String outputResourcePath) throws IOException {
         File serviceFile;
         int i = outputResourcePath.lastIndexOf("/");
         if (i != -1) {
