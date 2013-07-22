@@ -131,11 +131,11 @@ public abstract class AbstractDocumentSource {
             return "service.json";
         }
         String name = resourcePath;
-        if (resourcePath.startsWith("/")) {
-            name = resourcePath.substring(1);
+        if (name.startsWith("/")) {
+            name = name.substring(1);
         }
-        if (resourcePath.endsWith("/")) {
-            name = resourcePath.substring(0, resourcePath.length() - 1);
+        if (name.endsWith("/")) {
+            name = name.substring(0, name.length() - 1);
         }
 
         if (useOutputFlatStructure) {
