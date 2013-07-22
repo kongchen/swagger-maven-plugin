@@ -18,12 +18,14 @@ public class AbstractDocumentSourceTest {
 	public void testResourcePathToFilename() throws Exception {
 		AbstractDocumentSource abstractDocumentSource = getAbstractDocumentSource(true);
 		assertEquals(FLAT_OUTPUT_PATH, abstractDocumentSource.resourcePathToFilename("/foo/bar"));
+		assertEquals(FLAT_OUTPUT_PATH, abstractDocumentSource.resourcePathToFilename("/foo/bar/"));
 		assertEquals(FLAT_OUTPUT_PATH, abstractDocumentSource.resourcePathToFilename("foo/bar"));
 		assertEquals(FLAT_OUTPUT_PATH, abstractDocumentSource.resourcePathToFilename("foo/bar/"));
 		assertEquals("bar.json", abstractDocumentSource.resourcePathToFilename("bar"));
 
 		abstractDocumentSource = getAbstractDocumentSource(false);
 		assertEquals(OUTPUT_PATH, abstractDocumentSource.resourcePathToFilename("/foo/bar"));
+		assertEquals(OUTPUT_PATH, abstractDocumentSource.resourcePathToFilename("/foo/bar/"));
 		assertEquals(OUTPUT_PATH, abstractDocumentSource.resourcePathToFilename("foo/bar"));
 		assertEquals(OUTPUT_PATH, abstractDocumentSource.resourcePathToFilename("foo/bar/"));
 		assertEquals("bar.json", abstractDocumentSource.resourcePathToFilename("bar"));
