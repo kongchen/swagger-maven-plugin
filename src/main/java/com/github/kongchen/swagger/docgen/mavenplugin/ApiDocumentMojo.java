@@ -39,6 +39,10 @@ public class ApiDocumentMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+        if (apiSources == null) {
+            throw new MojoFailureException("You must configure at least one apiSources element");
+        }
+
         try {
             getLog().debug(apiSources.toString());
             for (ApiSource apiSource : apiSources) {
@@ -55,10 +59,10 @@ public class ApiDocumentMojo extends AbstractMojo {
                 documentSource.toSwaggerDocuments();
             }
 
-        } catch (Exception e) {
-            throw new MojoFailureException(e.getMessage(), e);
         } catch (GenerateException e) {
             throw new MojoFailureException(e.getMessage(), e);
+        } catch (Exception e) {
+            throw new MojoExecutionException(e.getMessage(), e);
         }
     }
 }
