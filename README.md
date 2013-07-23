@@ -3,10 +3,11 @@ This plugin helps you **generate API documents** in build phase according to [cu
 
 [Changes](https://github.com/kongchen/swagger-maven-plugin/blob/master/CHANGES.md)
 ==
-**Latest version `1.1.1` is available in central repository.**
+**Latest RELEASE version `1.1.1` is available in central repository.**
 
 *What's new in `1.1.2-SNAPSHOT`:*
 - *add `useOutputFlatStructure` and `mustacheFileRoot` in configuration. 07/18/2013*
+- *Maven 3.1.0 compat (pull#15)
 
 >To use SNAPSHOT version, you should add plugin repository first:
 
