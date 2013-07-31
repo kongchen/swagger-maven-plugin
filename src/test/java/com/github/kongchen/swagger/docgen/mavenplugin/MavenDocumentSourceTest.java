@@ -42,12 +42,15 @@ public class MavenDocumentSourceTest {
 
     @Test
     public void testIssue17() throws Exception, GenerateException {
+        String locations = apiSource.getLocations();
         apiSource.setLocations("issue17");
         AbstractDocumentSource documentSource = new MavenDocumentSource(apiSource, new SystemStreamLog());
         documentSource.loadDocuments();
         OutputTemplate outputTemplate = new OutputTemplate(documentSource);
         Assert.assertEquals(outputTemplate.getDataTypes().size(), 1);
         Assert.assertEquals(outputTemplate.getDataTypes().iterator().next().getName(), "Child");
+        // set back
+        apiSource.setLocations(locations);
     }
 
     @Test
