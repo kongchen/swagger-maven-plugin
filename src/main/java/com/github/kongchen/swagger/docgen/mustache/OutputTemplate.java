@@ -45,6 +45,9 @@ public class OutputTemplate {
     }
 
     public void addDateType(MustacheDocument mustacheDocument, MustacheDataType dataType) {
+        if (dataTypes.contains(dataType)) {
+            return;
+        }
         dataTypes.add(dataType);
         for (MustacheItem item : dataType.getItems()) {
             String trueType = TypeUtils.getTrueType(item.getType());
