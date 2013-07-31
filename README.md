@@ -6,9 +6,9 @@ This plugin helps you **generate API documents** in build phase according to [cu
 **Latest RELEASE version `1.1.1` is available in central repository.**
 
 *What's new in `1.1.2-SNAPSHOT`:*
-- 07/31/2013 *fix issue #17*
 - 07/18/2013: *add `useOutputFlatStructure` and `mustacheFileRoot` in configuration.* 
 - 07/23/2013: *Maven 3.1.0 compat (pull#15)*
+- 07/31/2013: *fix issue #17*
 
 >To use SNAPSHOT version, you should add plugin repository first:
 
