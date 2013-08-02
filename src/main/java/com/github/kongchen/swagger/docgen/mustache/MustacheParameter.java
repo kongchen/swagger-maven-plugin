@@ -1,10 +1,17 @@
 package com.github.kongchen.swagger.docgen.mustache;
 
+import com.wordnik.swagger.core.DocumentationAllowableListValues;
+import com.wordnik.swagger.core.DocumentationAllowableRangeValues;
+import com.wordnik.swagger.core.DocumentationAllowableValues;
 import com.wordnik.swagger.core.DocumentationParameter;
+
+import java.util.List;
 
 import static com.github.kongchen.swagger.docgen.TypeUtils.getTrueType;
 
 public class MustacheParameter {
+    private final String allowableValue;
+
     String defaultValue;
 
     String name;
@@ -24,6 +31,30 @@ public class MustacheParameter {
         this.description = para.getDescription();
         this.type = para.getDataType();
         this.defaultValue = para.defaultValue();
+
+
+        this.allowableValue = allowableValuesToString(para.allowableValues());
+    }
+
+    private String allowableValuesToString(DocumentationAllowableValues para) {
+        if (para == null) {
+            return null;
+        }
+        String values = "";
+        if (para instanceof DocumentationAllowableListValues) {
+            List<String> vlist = ((DocumentationAllowableListValues) para).getValues();
+            for (String v : vlist) {
+                values += v.trim() + ", ";
+            }
+            values = values.trim();
+            values = values.substring(0, values.length() - 1);
+
+        } else {
+            Float max = ((DocumentationAllowableRangeValues) para).getMax();
+            Float min = ((DocumentationAllowableRangeValues) para).getMin();
+            values = min + " to " + max;
+        }
+        return values;
     }
 
     String getDefaultValue() {
@@ -32,6 +63,10 @@ public class MustacheParameter {
 
     void setDefaultValue(String defaultValue) {
         this.defaultValue = defaultValue;
+    }
+
+    public String getAllowableValue() {
+        return allowableValue;
     }
 
     public String getName() {

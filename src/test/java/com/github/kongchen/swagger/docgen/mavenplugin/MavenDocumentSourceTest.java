@@ -85,8 +85,12 @@ public class MavenDocumentSourceTest {
                     MustacheOperation op = api.getOperations().get(0);
 
                     Assert.assertEquals("ETag", op.getResponseHeader().getParas().get(0).getName());
+
                     Assert.assertEquals("carId",
                             op.getRequestPath().getParas().get(0).getName());
+                    Assert.assertEquals("1.0 to 10.0",
+                            op.getRequestPath().getParas().get(0).getAllowableValue());
+
                     Assert.assertEquals("e",
                             op.getRequestQuery().getParas().get(0).getName());
 
@@ -94,6 +98,8 @@ public class MavenDocumentSourceTest {
                             op.getRequestHeader().getParas().get(0).getName());
                     Assert.assertEquals("MediaType",
                             op.getRequestHeader().getParas().get(0).getType());
+                    Assert.assertEquals("application/json, application/*",
+                            op.getRequestHeader().getParas().get(0).getAllowableValue());
 
 
                 }
