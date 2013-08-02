@@ -26,7 +26,7 @@ public class CarResourceV1 {
     public Response getCarById(
             @ApiParam(value = "ID of car that needs to be fetched", allowableValues = "range[1,10]",
                     required = true) @PathParam("carId") String carId,
-            @ApiParam()
+            @ApiParam(allowableValues = "application/json, application/*")
             @HeaderParam("Accept") MediaType accept,
             @ApiParam(name = "e")
             @QueryParam("e") String e)
