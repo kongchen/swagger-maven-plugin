@@ -21,6 +21,7 @@ import com.github.kongchen.swagger.docgen.mustache.OutputTemplate;
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
 import com.wordnik.swagger.core.Documentation;
+import com.wordnik.swagger.core.DocumentationEndPoint;
 
 /**
  * Created with IntelliJ IDEA.
@@ -110,6 +111,8 @@ public abstract class AbstractDocumentSource {
         }
         cleanupOlds(dir);
 
+        prepareServiceDocument();
+
         writeInDirectory(dir, serviceDocument);
         for (Documentation doc : validDocuments) {
             writeInDirectory(dir, doc);
@@ -122,6 +125,20 @@ public abstract class AbstractDocumentSource {
                 if (f.getName().endsWith("json")) {
                     f.delete();
                 }
+            }
+        }
+    }
+
+    private void prepareServiceDocument() {
+        if (useOutputFlatStructure) {
+            for (DocumentationEndPoint documentationEndPoint : serviceDocument.getApis()) {
+                String path = documentationEndPoint.getPath();
+                path = path.replaceAll("/", "_");
+                if (path.startsWith("_")) {
+                    path = "/" + path.substring(1);
+                }
+                path += ".{format}";
+                documentationEndPoint.setPath(path);
             }
         }
     }
