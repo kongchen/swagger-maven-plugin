@@ -1,10 +1,5 @@
 package com.github.kongchen.swagger.docgen.mavenplugin;
 
-import java.util.Map;
-import java.util.TreeMap;
-
-import org.apache.maven.plugin.logging.Log;
-
 import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
 import com.github.kongchen.swagger.docgen.GenerateException;
 import com.github.kongchen.swagger.docgen.LogAdapter;
@@ -14,6 +9,12 @@ import com.wordnik.swagger.core.DocumentationEndPoint;
 import com.wordnik.swagger.core.SwaggerSpec;
 import com.wordnik.swagger.jaxrs.HelpApi;
 import com.wordnik.swagger.jaxrs.JaxrsApiSpecParser;
+import org.apache.maven.plugin.logging.Log;
+
+import java.util.Map;
+import java.util.TreeMap;
+
+import static java.util.AbstractMap.SimpleEntry;
 
 /**
  * Created with IntelliJ IDEA.
@@ -40,15 +41,19 @@ public class MavenDocumentSource extends AbstractDocumentSource {
         serviceDocument = new Documentation(apiSource.getApiVersion(), SwaggerSpec.version(),
                 apiSource.getBasePath(), null);
         for (Class c : apiSource.getValidClasses()) {
-            Documentation doc = null;
+            SimpleEntry<Documentation, Api> entry;
             try {
-                doc = getDocFromClass(c, getApiVersion(), getBasePath());
+                entry = getDocFromClass(c, getApiVersion(), getBasePath());
             } catch (Exception e) {
                 throw new GenerateException(e);
             }
-            if (doc == null) continue;
+            if (entry == null) continue;
             LOG.info("Detect Resource:" + c.getName());
-            serviceDocument.addApi(new DocumentationEndPoint(doc.getResourcePath(), ""));
+
+            Documentation doc = entry.getKey();
+            Api resource = entry.getValue();
+
+            serviceDocument.addApi(new DocumentationEndPoint(doc.getResourcePath(), resource.description()));
             docMap.put(doc.getResourcePath(), doc);
         }
         // to keep order
@@ -62,13 +67,16 @@ public class MavenDocumentSource extends AbstractDocumentSource {
         }
     }
 
-    private Documentation getDocFromClass(Class c, String apiVersion, String basePath) throws Exception {
+    private SimpleEntry<Documentation, Api> getDocFromClass(Class c, String apiVersion, String basePath) throws Exception {
         Api resource = (Api) c.getAnnotation(Api.class);
 
         if (resource == null) return null;
         JaxrsApiSpecParser parser = new JaxrsApiSpecParser(c, apiVersion,
                 SwaggerSpec.version(), basePath, resource.value());
 
-        return new HelpApi().filterDocs(parser.parse(), null, null, null, null);
+        Documentation doc = new HelpApi().filterDocs(parser.parse(), null, null, null, null);
+        if (doc == null) return null;
+
+        return new SimpleEntry<Documentation, Api>(doc, resource);
     }
 }
