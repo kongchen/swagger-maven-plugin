@@ -24,232 +24,224 @@ import com.wordnik.swagger.core.Documentation;
 
 /**
  * Created with IntelliJ IDEA.
- * 
+ *
  * @author: chekong 05/13/2013
  */
 public abstract class AbstractDocumentSource {
 
-  protected final LogAdapter LOG;
+    protected final LogAdapter LOG;
 
-  private final String outputPath;
+    private final String outputPath;
 
-  private final String templatePath;
+    private final String templatePath;
 
-  private final String mustacheFileRoot;
+    private final String mustacheFileRoot;
 
-  private final String swaggerPath;
+    private final String swaggerPath;
 
-  protected Documentation serviceDocument;
+    protected Documentation serviceDocument;
 
-  List<Documentation> validDocuments = new LinkedList<Documentation>();
+    List<Documentation> validDocuments = new LinkedList<Documentation>();
 
-  private String basePath;
+    private String basePath;
 
-  private String apiVersion;
+    private String apiVersion;
 
-  private final ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper mapper = new ObjectMapper();
 
-  private OutputTemplate outputTemplate;
+    private OutputTemplate outputTemplate;
 
-  private final boolean useOutputFlatStructure;
+    private boolean useOutputFlatStructure;
 
-  public AbstractDocumentSource(LogAdapter logAdapter, String outputPath, String outputTpl,
-      String swaggerOutput, String mustacheFileRoot, boolean useOutputFlatStructure1) {
-    LOG = logAdapter;
-    this.outputPath = outputPath;
-    this.templatePath = outputTpl;
-    this.mustacheFileRoot = mustacheFileRoot;
-    this.useOutputFlatStructure = useOutputFlatStructure1;
-    this.swaggerPath = swaggerOutput;
-  }
+    public AbstractDocumentSource(LogAdapter logAdapter, String outputPath, String outputTpl, String swaggerOutput, String mustacheFileRoot, boolean useOutputFlatStructure1) {
+        LOG = logAdapter;
+        this.outputPath = outputPath;
+        this.templatePath = outputTpl;
+        this.mustacheFileRoot = mustacheFileRoot;
+        this.useOutputFlatStructure = useOutputFlatStructure1;
+        this.swaggerPath = swaggerOutput;
+    }
 
-  protected void acceptDocument(Documentation doc) {
-    validDocuments.add(doc);
-  }
+    public abstract void loadDocuments() throws Exception, GenerateException;
 
-  private void cleanupOlds(File dir) {
-    if (dir.listFiles() != null) {
-      for (File f : dir.listFiles()) {
-        if (f.getName().endsWith("json")) {
-          f.delete();
+    public String getBasePath() {
+        return basePath;
+    }
+
+    public void setBasePath(String basePath) {
+        this.basePath = basePath;
+    }
+
+    public String getApiVersion() {
+        return apiVersion;
+    }
+
+    public void setApiVersion(String apiVersion) {
+        this.apiVersion = apiVersion;
+    }
+
+    public OutputTemplate getOutputTemplate() {
+        return outputTemplate;
+    }
+
+    protected void acceptDocument(Documentation doc) {
+        validDocuments.add(doc);
+    }
+
+    public List<Documentation> getValidDocuments() {
+        return validDocuments;
+    }
+
+    public void toSwaggerDocuments() throws GenerateException {
+        if (swaggerPath == null) {
+            return;
         }
-      }
-    }
-  }
+        File dir = new File(swaggerPath);
+        if (dir.isFile()) {
+            throw new GenerateException(String.format("Swagger-outputDirectory[%s] must be a directory!", swaggerPath));
+        }
 
-  protected File createFile(File dir, String outputResourcePath) throws IOException {
-    File serviceFile;
-    int i = outputResourcePath.lastIndexOf("/");
-    if (i != -1) {
-      String fileName = outputResourcePath.substring(i + 1);
-      String subDir = outputResourcePath.substring(0, i);
-      File finalDirectory = new File(dir, subDir);
-      finalDirectory.mkdirs();
-      serviceFile = new File(finalDirectory, fileName);
-    } else {
-      serviceFile = new File(dir, outputResourcePath);
-    }
-    while (!serviceFile.createNewFile()) {
-      serviceFile.delete();
-    }
-    LOG.info("Creating file " + serviceFile.getAbsolutePath());
-    return serviceFile;
-  }
+        if (!dir.exists()) {
+            try {
+                FileUtils.forceMkdir(dir);
+            } catch (IOException e) {
+                throw new GenerateException(String.format("Create Swagger-outputDirectory[%s] failed.", swaggerPath));
+            }
+        }
+        cleanupOlds(dir);
 
-  public String getApiVersion() {
-    return apiVersion;
-  }
-
-  public String getBasePath() {
-    return basePath;
-  }
-
-  private DefaultMustacheFactory getMustacheFactory() {
-    if (mustacheFileRoot == null) {
-      return new DefaultMustacheFactory();
-    } else {
-      return new DefaultMustacheFactory(new File(mustacheFileRoot));
-    }
-  }
-
-  public OutputTemplate getOutputTemplate() {
-    return outputTemplate;
-  }
-
-  private URI getTemplateUri() throws GenerateException {
-    URI uri = null;
-    try {
-      uri = new URI(templatePath);
-    } catch (URISyntaxException e) {
-      File file = new File(templatePath);
-      if (!file.exists()) {
-        throw new GenerateException(
-            "Template "
-                + file.getAbsoluteFile()
-                + " not found. You can go to https://github.com/kongchen/api-doc-template to get templates.");
-      }
-      uri = file.toURI();
-    }
-    if (!uri.isAbsolute()) {
-      File file = new File(templatePath);
-      if (!file.exists()) {
-        throw new GenerateException(
-            "Template "
-                + file.getAbsoluteFile()
-                + " not found. You can go to https://github.com/kongchen/api-doc-template to get templates.");
-      } else {
-        uri = new File(templatePath).toURI();
-      }
-    }
-    return uri;
-  }
-
-  public List<Documentation> getValidDocuments() {
-    return validDocuments;
-  }
-
-  public abstract void loadDocuments() throws Exception, GenerateException;
-
-  public OutputTemplate prepareMustacheTemplate() {
-    this.outputTemplate = new OutputTemplate(this);
-    return outputTemplate;
-
-  }
-
-  protected String resourcePathToFilename(String resourcePath) {
-    if (resourcePath == null) {
-      return "service.json";
-    }
-    String name = resourcePath;
-    if (name.startsWith("/")) {
-      name = name.substring(1);
-    }
-    if (name.endsWith("/")) {
-      name = name.substring(0, name.length() - 1);
+        writeInDirectory(dir, serviceDocument);
+        for (Documentation doc : validDocuments) {
+            writeInDirectory(dir, doc);
+        }
     }
 
-    if (useOutputFlatStructure) {
-      name = name.replaceAll("/", "_");
+    private void cleanupOlds(File dir) {
+        if (dir.listFiles() != null) {
+            for (File f : dir.listFiles()) {
+                if (f.getName().endsWith("json")) {
+                    f.delete();
+                }
+            }
+        }
     }
 
-    // Return the name without "*.json" extension so that swagger-ui can show it correctly
-    return name;
-  }
+    protected String resourcePathToFilename(String resourcePath) {
+        if (resourcePath == null) {
+            return "service.json";
+        }
+        String name = resourcePath;
+        if (name.startsWith("/")) {
+            name = name.substring(1);
+        }
+        if (name.endsWith("/")) {
+            name = name.substring(0, name.length() - 1);
+        }
 
-  public void setApiVersion(String apiVersion) {
-    this.apiVersion = apiVersion;
-  }
+        if (useOutputFlatStructure) {
+            name = name.replaceAll("/", "_");
+        }
 
-  public void setBasePath(String basePath) {
-    this.basePath = basePath;
-  }
-
-  public void toDocuments() throws GenerateException {
-    if (outputTemplate == null) {
-      prepareMustacheTemplate();
-    }
-    if (outputTemplate.getApiDocuments().isEmpty()) {
-      LOG.warn("nothing to write.");
-      return;
-    }
-    LOG.info("Writing doc to " + outputPath + "...");
-
-    FileOutputStream fileOutputStream = null;
-    try {
-      fileOutputStream = new FileOutputStream(outputPath);
-    } catch (FileNotFoundException e) {
-      throw new GenerateException(e);
-    }
-    OutputStreamWriter writer = new OutputStreamWriter(fileOutputStream, Charset.forName("UTF-8"));
-
-    try {
-      URL url = getTemplateUri().toURL();
-      InputStreamReader reader = new InputStreamReader(url.openStream(), Charset.forName("UTF-8"));
-      Mustache mustache = getMustacheFactory().compile(reader, templatePath);
-
-      mustache.execute(writer, outputTemplate).flush();
-      writer.close();
-      LOG.info("Done!");
-    } catch (MalformedURLException e) {
-      throw new GenerateException(e);
-    } catch (IOException e) {
-      throw new GenerateException(e);
-    }
-  }
-
-  public void toSwaggerDocuments() throws GenerateException {
-    if (swaggerPath == null) {
-      return;
-    }
-    File dir = new File(swaggerPath);
-    if (dir.isFile()) {
-      throw new GenerateException(String.format("Swagger-outputDirectory[%s] must be a directory!",
-          swaggerPath));
+        return name + ".json";
     }
 
-    if (!dir.exists()) {
-      try {
-        FileUtils.forceMkdir(dir);
-      } catch (IOException e) {
-        throw new GenerateException(String.format("Create Swagger-outputDirectory[%s] failed.",
-            swaggerPath));
-      }
+    private void writeInDirectory(File dir, Documentation doc) throws GenerateException {
+        String filename = resourcePathToFilename(doc.getResourcePath());
+        try {
+            File serviceFile = createFile(dir, filename);
+            mapper.writerWithDefaultPrettyPrinter().writeValue(serviceFile, doc);
+        } catch (IOException e) {
+            throw new GenerateException(e);
+        }
     }
-    cleanupOlds(dir);
 
-    writeInDirectory(dir, serviceDocument);
-    for (Documentation doc : validDocuments) {
-      writeInDirectory(dir, doc);
+    protected File createFile(File dir, String outputResourcePath) throws IOException {
+        File serviceFile;
+        int i = outputResourcePath.lastIndexOf("/");
+        if (i != -1) {
+            String fileName = outputResourcePath.substring(i + 1);
+            String subDir = outputResourcePath.substring(0, i);
+            File finalDirectory = new File(dir, subDir);
+            finalDirectory.mkdirs();
+            serviceFile = new File(finalDirectory, fileName);
+        } else {
+            serviceFile = new File(dir, outputResourcePath);
+        }
+        while (!serviceFile.createNewFile()) {
+            serviceFile.delete();
+        }
+        LOG.info("Creating file " + serviceFile.getAbsolutePath());
+        return serviceFile;
     }
-  }
 
-  private void writeInDirectory(File dir, Documentation doc) throws GenerateException {
-    String filename = resourcePathToFilename(doc.getResourcePath());
-    try {
-      File serviceFile = createFile(dir, filename);
-      mapper.writerWithDefaultPrettyPrinter().writeValue(serviceFile, doc);
-    } catch (IOException e) {
-      throw new GenerateException(e);
+    public OutputTemplate prepareMustacheTemplate() {
+        this.outputTemplate = new OutputTemplate(this);
+        return outputTemplate;
+
     }
-  }
+
+    public void toDocuments() throws GenerateException {
+        if (outputTemplate == null) {
+            prepareMustacheTemplate();
+        }
+        if (outputTemplate.getApiDocuments().isEmpty()) {
+            LOG.warn("nothing to write.");
+            return;
+        }
+        LOG.info("Writing doc to " + outputPath + "...");
+
+        FileOutputStream fileOutputStream = null;
+        try {
+            fileOutputStream = new FileOutputStream(outputPath);
+        } catch (FileNotFoundException e) {
+            throw new GenerateException(e);
+        }
+        OutputStreamWriter writer = new OutputStreamWriter(fileOutputStream, Charset.forName("UTF-8"));
+
+        try {
+            URL url = getTemplateUri().toURL();
+            InputStreamReader reader = new InputStreamReader(url.openStream(), Charset.forName("UTF-8"));
+            Mustache mustache = getMustacheFactory().compile(reader, templatePath);
+
+            mustache.execute(writer, outputTemplate).flush();
+            writer.close();
+            LOG.info("Done!");
+        } catch (MalformedURLException e) {
+            throw new GenerateException(e);
+        } catch (IOException e) {
+            throw new GenerateException(e);
+        }
+    }
+
+    private URI getTemplateUri() throws GenerateException {
+        URI uri = null;
+        try {
+            uri = new URI(templatePath);
+        } catch (URISyntaxException e) {
+            File file = new File(templatePath);
+            if (!file.exists()) {
+                throw new GenerateException("Template " + file.getAbsoluteFile()
+                        + " not found. You can go to https://github.com/kongchen/api-doc-template to get templates.");
+            }
+            uri = file.toURI();
+        }
+        if (!uri.isAbsolute()) {
+            File file = new File(templatePath);
+            if (!file.exists()) {
+                throw new GenerateException("Template " + file.getAbsoluteFile()
+                        + " not found. You can go to https://github.com/kongchen/api-doc-template to get templates.");
+            } else {
+                uri = new File(templatePath).toURI();
+            }
+        }
+        return uri;
+    }
+
+    private DefaultMustacheFactory getMustacheFactory() {
+        if (mustacheFileRoot == null) {
+            return new DefaultMustacheFactory();
+        } else {
+            return new DefaultMustacheFactory(new File(mustacheFileRoot));
+        }
+    }
 }
