@@ -2,16 +2,24 @@ package com.github.kongchen.swagger.docgen.mavenplugin;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
 import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Created with IntelliJ IDEA.
@@ -20,14 +28,15 @@ import org.testng.annotations.Test;
  */
 public class ApiDocumentMojoTest {
 
-    private List<ApiSource> apiSources = new ArrayList<ApiSource>();
-
     ApiDocumentMojo mojo = new ApiDocumentMojo();
 
-    @BeforeClass
-    private void prepare() {
+    String tmpSwaggerOutputDir = "apidocsf";
 
-        ApiSource apiSource;
+    ApiSource apiSource;
+
+    @BeforeMethod
+    private void prepare() {
+        List<ApiSource> apiSources = new ArrayList<ApiSource>();
         apiSource = new ApiSource();
         apiSource.setApiVersion("1.0");
         apiSource.setBasePath("http://example.com");
@@ -35,10 +44,106 @@ public class ApiDocumentMojoTest {
         apiSource.setOutputPath("temp.html");
         apiSource.setOutputTemplate("https://raw.github.com/kongchen/api-doc-template/master/v1.1/markdown.mustache");
         apiSource.setWithFormatSuffix(false);
-        apiSource.setSwaggerDirectory("apidocsf");
+        apiSource.setSwaggerDirectory(tmpSwaggerOutputDir);
 
         apiSources.add(apiSource);
         mojo.setApiSources(apiSources);
+    }
+
+    @AfterMethod
+    private void fin() throws IOException {
+        File tempOutput = new File(tmpSwaggerOutputDir);
+        FileUtils.deleteDirectory(tempOutput);
+    }
+
+    /**
+     * {
+     * "apiVersion" : "1.0",
+     * "swaggerVersion" : "1.1",
+     * "basePath" : "http://localhost/apidocsf",
+     * "apis" : [ {
+     * "path" : "/v2_car.{format}",
+     * "description" : "Operations about cars"
+     * }, {
+     * "path" : "/garage.{format}",
+     * "description" : "Operations about garages"
+     * }, {
+     * "path" : "/car.{format}",
+     * "description" : "Operations about cars"
+     * } ]
+     * }
+     */
+    @Test
+    public void testSwaggerOutputFlat() throws IOException, MojoFailureException, MojoExecutionException {
+        apiSource.setSwaggerDirectory(tmpSwaggerOutputDir);
+        apiSource.setUseOutputFlatStructure(true);
+
+        File output = new File(tmpSwaggerOutputDir);
+        FileUtils.deleteDirectory(output);
+
+        mojo.execute();
+        List<String> flatfiles = new ArrayList<String>();
+
+        for (String f : output.list()) {
+            flatfiles.add(f);
+        }
+        Collections.sort(flatfiles);
+        Assert.assertEquals(flatfiles.get(0), "car.json");
+        Assert.assertEquals(flatfiles.get(1), "garage.json");
+        Assert.assertEquals(flatfiles.get(2), "service.json");
+        Assert.assertEquals(flatfiles.get(3), "v2_car.json");
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode node = objectMapper.readTree(FileUtils.getFile(output, "service.json"));
+        JsonNode apis = node.get("apis");
+        Assert.assertEquals(apis.size(), 3);
+        List<String> pathInService = new ArrayList<String> ();
+        for (JsonNode api : apis) {
+            pathInService.add(api.get("path").asText());
+        }
+        Collections.sort(pathInService);
+        Assert.assertEquals(pathInService.get(0), "/car.{format}");
+        Assert.assertEquals(pathInService.get(1), "/garage.{format}");
+        Assert.assertEquals(pathInService.get(2), "/v2_car.{format}");
+    }
+
+    @Test
+    public void testSwaggerOutput() throws IOException, MojoFailureException, MojoExecutionException {
+        apiSource.setSwaggerDirectory(tmpSwaggerOutputDir);
+        apiSource.setUseOutputFlatStructure(false);
+
+        File output = new File(tmpSwaggerOutputDir);
+        FileUtils.deleteDirectory(output);
+
+        mojo.execute();
+        List<File> outputFiles = new ArrayList<File>();
+
+        for (File f : output.listFiles()) {
+            outputFiles.add(f);
+        }
+        Collections.sort(outputFiles);
+        Assert.assertEquals(outputFiles.get(0).getName(), "car.json");
+        Assert.assertEquals(outputFiles.get(1).getName(), "garage.json");
+        Assert.assertEquals(outputFiles.get(2).getName(), "service.json");
+        Assert.assertEquals(outputFiles.get(3).getName(), "v2");
+        File v2 = outputFiles.get(3);
+        Assert.assertTrue(v2.isDirectory());
+        String[] v2carfile = v2.list();
+        Assert.assertEquals(v2carfile[0], "car.json");
+
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode node = objectMapper.readTree(FileUtils.getFile(output, "service.json"));
+        JsonNode apis = node.get("apis");
+        Assert.assertEquals(apis.size(), 3);
+        List<String> pathInService = new ArrayList<String> ();
+        for (JsonNode api : apis) {
+            pathInService.add(api.get("path").asText());
+        }
+        Collections.sort(pathInService);
+        Assert.assertEquals(pathInService.get(0), "/car.{format}");
+        Assert.assertEquals(pathInService.get(1), "/garage.{format}");
+        Assert.assertEquals(pathInService.get(2), "/v2/car.{format}");
     }
 
     @Test(enabled = false)

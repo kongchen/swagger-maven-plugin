@@ -54,7 +54,8 @@ public abstract class AbstractDocumentSource {
 
     private boolean useOutputFlatStructure;
 
-    public AbstractDocumentSource(LogAdapter logAdapter, String outputPath, String outputTpl, String swaggerOutput, String mustacheFileRoot, boolean useOutputFlatStructure1) {
+    public AbstractDocumentSource(LogAdapter logAdapter, String outputPath, String outputTpl, String swaggerOutput,
+                                  String mustacheFileRoot, boolean useOutputFlatStructure1) {
         LOG = logAdapter;
         this.outputPath = outputPath;
         this.templatePath = outputTpl;
@@ -130,16 +131,16 @@ public abstract class AbstractDocumentSource {
     }
 
     private void prepareServiceDocument() {
-        if (useOutputFlatStructure) {
-            for (DocumentationEndPoint documentationEndPoint : serviceDocument.getApis()) {
-                String path = documentationEndPoint.getPath();
+        for (DocumentationEndPoint documentationEndPoint : serviceDocument.getApis()) {
+            String path = documentationEndPoint.getPath();
+            if (useOutputFlatStructure) {
                 path = path.replaceAll("/", "_");
                 if (path.startsWith("_")) {
                     path = "/" + path.substring(1);
                 }
-                path += ".{format}";
-                documentationEndPoint.setPath(path);
             }
+            path += ".{format}";
+            documentationEndPoint.setPath(path);
         }
     }
 
@@ -194,7 +195,6 @@ public abstract class AbstractDocumentSource {
     public OutputTemplate prepareMustacheTemplate() {
         this.outputTemplate = new OutputTemplate(this);
         return outputTemplate;
-
     }
 
     public void toDocuments() throws GenerateException {
