@@ -1,3 +1,15 @@
+**01/20/2014 1.1.3-SNAPSHOT**
+- 01/20/2014： *revert pull #27*
+- 01/20/2014： *accept pull #22*
+- 01/20/2014： *fix path issue when `useOutputFlatStructure` is false*
+
+**01/19/2014 1.1.2**
+- 01/19/2014： *accept pull #27*
+- 01/19/2014： *accept pull #28*
+- 07/18/2013:  *add `useOutputFlatStructure` and `mustacheFileRoot` in configuration.* 
+- 07/23/2013:  *Maven 3.1.0 compat (pull#15)*
+- 07/31/2013:  *fix issue #17*
+
 **07/16/2013 1.1.1**
 - released in central repository
 - fix issue #7
