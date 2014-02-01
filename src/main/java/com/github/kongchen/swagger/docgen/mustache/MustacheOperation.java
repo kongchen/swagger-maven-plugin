@@ -1,69 +1,95 @@
 package com.github.kongchen.swagger.docgen.mustache;
 
-import java.util.Iterator;
-import java.util.List;
-
 import com.github.kongchen.swagger.docgen.DocTemplateConstants;
 import com.wordnik.swagger.core.ApiValues;
-import com.wordnik.swagger.core.DocumentationError;
-import com.wordnik.swagger.core.DocumentationOperation;
+import com.wordnik.swagger.model.Authorization;
+import com.wordnik.swagger.model.Operation;
+import com.wordnik.swagger.model.Parameter;
+import com.wordnik.swagger.model.ResponseMessage;
+import scala.collection.JavaConversions;
+import scala.collection.mutable.Buffer;
+
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+import java.util.regex.Pattern;
 
 public class MustacheOperation {
-    int opIndex;
+    private final int opIndex;
 
-    String httpMethod;
+    private final String httpMethod;
 
-    String summary;
+    private final String summary;
 
-    String notes;
+    private final String notes;
 
-    MustacheResponseClass responseClass;
+    private final MustacheResponseClass responseClass;
 
-    String nickname;
+    private final String nickname;
+    private final List<MustacheAuthorization> authorizations = new ArrayList<MustacheAuthorization>();
 
-    List<MustacheParameterSet> parameters;
+    private List<MustacheParameterSet> parameters;
 
-    MustacheParameterSet requestQuery;
-    MustacheParameterSet requestHeader;
-    MustacheParameterSet requestBody;
-    MustacheParameterSet requestPath;
-    MustacheParameterSet responseHeader;
+    private MustacheParameterSet requestQuery;
+    private MustacheParameterSet requestHeader;
+    private MustacheParameterSet requestBody;
+    private MustacheParameterSet requestPath;
+    private MustacheParameterSet responseHeader;
 
-    List<DocumentationError> errorResponses;
+    private static final Pattern genericInNotes = Pattern.compile("(/\\*.*<)((\\w+|((\\w+\\.)+\\w+))|(((\\w+|((\\w+\\.)+\\w+)),)+(\\w+|((\\w+\\.)+\\w+))))(>.*\\*/)");
+
+    private List<ResponseMessage> errorResponses;
 
     List<MustacheSample> samples;
 
-    public MustacheOperation(MustacheDocument mustacheDocument, DocumentationOperation op) {
-        this.httpMethod = op.getHttpMethod();
-        this.notes = op.getNotes();
-        this.summary = op.getSummary();
+    public MustacheOperation(MustacheDocument mustacheDocument, Operation op) {
+        Buffer<Authorization> authorBuffer = op.authorizations().toBuffer();
+        for(Authorization authorization : JavaConversions.asJavaList(authorBuffer)) {
+            this.authorizations.add(new MustacheAuthorization(authorization));
+        }
+        this.opIndex = op.position();
+        this.httpMethod = op.method();
+        AbstractMap.SimpleEntry<String, String> notesAndGenericStr = parseGenericFromNotes(op.notes());
+        this.notes = notesAndGenericStr.getKey();
+        this.summary = op.summary();
         this.nickname = op.nickname();
-        this.parameters = mustacheDocument.analyzeParameters(op.getParameters());
-        responseClass = new MustacheResponseClass(op.getResponseClass());
-        this.errorResponses = op.getErrorResponses();
+        Buffer<Parameter> buffer = op.parameters().toBuffer();
+        this.parameters = mustacheDocument.analyzeParameters(JavaConversions.asJavaList(buffer));
+        responseClass = new MustacheResponseClass(op.responseClass() + notesAndGenericStr.getValue());
+        Buffer<ResponseMessage> errorbuffer = op.responseMessages().toBuffer();
+        this.errorResponses = JavaConversions.asJavaList(errorbuffer);
         if (parameters == null) {
             return;
         }
-        Iterator<MustacheParameterSet> it = parameters.iterator();
-        while (it.hasNext()) {
-            MustacheParameterSet para = it.next();
-            if (para.getParamType().equals(ApiValues.TYPE_QUERY)) {
+        for (MustacheParameterSet para : parameters) {
+            if (para.getParamType().equals(ApiValues.TYPE_QUERY())) {
                 this.requestQuery = para;
-//                it.remove();
-            } else if (para.getParamType().equals(ApiValues.TYPE_HEADER)) {
+            } else if (para.getParamType().equals(ApiValues.TYPE_HEADER())) {
                 this.requestHeader = para;
-//                it.remove();
-            } else if (para.getParamType().equals(ApiValues.TYPE_BODY)) {
+            } else if (para.getParamType().equals(ApiValues.TYPE_BODY())) {
                 this.requestBody = para;
-//                it.remove();
-            } else if (para.getParamType().equals(ApiValues.TYPE_PATH)) {
+            } else if (para.getParamType().equals(ApiValues.TYPE_PATH())) {
                 this.requestPath = para;
-//                it.remove();
             } else if (para.getParamType().equals(DocTemplateConstants.TYPE_RESPONSE_HEADER)) {
                 this.responseHeader = para;
-//                it.remove();
             }
         }
+    }
+
+    private AbstractMap.SimpleEntry<String, String> parseGenericFromNotes(String notes) {
+        Scanner scanner = new Scanner(notes);
+        String genericString = scanner.findInLine(genericInNotes);
+        if (genericString != null) {
+            return new AbstractMap.SimpleEntry<String, String>(notes.replaceFirst(genericInNotes.pattern(), ""),
+                    genericString.replaceAll("/\\*", "").replaceAll("\\*/", "").trim());
+        } else {
+            return new AbstractMap.SimpleEntry<String, String>(notes, "");
+        }
+    }
+
+    public List<MustacheAuthorization> getAuthorizations() {
+        return authorizations;
     }
 
     public MustacheParameterSet getResponseHeader() {
@@ -118,63 +144,31 @@ public class MustacheOperation {
         return opIndex;
     }
 
-    public void setOpIndex(int opIndex) {
-        this.opIndex = opIndex;
-    }
-
     public String getHttpMethod() {
         return httpMethod;
-    }
-
-    public void setHttpMethod(String httpMethod) {
-        this.httpMethod = httpMethod;
     }
 
     public String getSummary() {
         return summary;
     }
 
-    public void setSummary(String summary) {
-        this.summary = summary;
-    }
-
     public String getNotes() {
         return notes;
-    }
-
-    public void setNotes(String notes) {
-        this.notes = notes;
     }
 
     public String getNickname() {
         return nickname;
     }
 
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
-    }
-
     public List<MustacheParameterSet> getParameters() {
         return parameters;
     }
 
-    public void setParameters(List<MustacheParameterSet> parameters) {
-        this.parameters = parameters;
-    }
-
-    public List<DocumentationError> getErrorResponses() {
+    public List<ResponseMessage> getErrorResponses() {
         return errorResponses;
-    }
-
-    public void setErrorResponses(List<DocumentationError> errorResponses) {
-        this.errorResponses = errorResponses;
     }
 
     public MustacheResponseClass getResponseClass() {
         return responseClass;
-    }
-
-    public void setResponseClass(MustacheResponseClass responseClass) {
-        this.responseClass = responseClass;
     }
 }

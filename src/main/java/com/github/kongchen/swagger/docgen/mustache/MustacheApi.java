@@ -1,42 +1,31 @@
 package com.github.kongchen.swagger.docgen.mustache;
 
+import com.github.kongchen.swagger.docgen.util.Utils;
+import com.wordnik.swagger.model.ApiDescription;
+
 import java.util.LinkedList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.wordnik.swagger.core.DocumentationEndPoint;
-
 public class MustacheApi {
-    int apiIndex;
+    private final String description;
 
-    String path;
+    private String path;
 
-    String url;
+    private final String url;
 
-    List<MustacheOperation> operations = new LinkedList<MustacheOperation>();
+    private final List<MustacheOperation> operations = new LinkedList<MustacheOperation>();
 
-    @JsonIgnore
-    private int opIndex = 1;
-
-    public MustacheApi(String basePath, DocumentationEndPoint api) {
-        this.path = api.getPath();
+    public MustacheApi(String basePath, ApiDescription api) {
+        this.path = api.path();
         if (this.path != null && !this.path.startsWith("/")) {
             this.path = "/" + this.path;
         }
-        this.url = basePath + api.getPath();
+        this.url = basePath + api.path();
+        this.description = Utils.getStrInOption(api.description());
     }
 
     public void addOperation(MustacheOperation operation) {
-        operation.setOpIndex(this.opIndex++);
         operations.add(operation);
-    }
-
-    public int getApiIndex() {
-        return apiIndex;
-    }
-
-    public void setApiIndex(int apiIndex) {
-        this.apiIndex = apiIndex;
     }
 
     public String getPath() {
@@ -51,15 +40,11 @@ public class MustacheApi {
         return url;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
     public List<MustacheOperation> getOperations() {
         return operations;
     }
 
-    public void setOperations(List<MustacheOperation> operations) {
-        this.operations = operations;
+    public String getDescription() {
+        return description;
     }
 }

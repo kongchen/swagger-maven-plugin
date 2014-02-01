@@ -1,3 +1,10 @@
+**02/01/2014 2.0.0-SNAPSHOT**
+- 02/01/2014 fully support swagger spec [1.2](https://github.com/wordnik/swagger-core/wiki/1.2-transition)
+             Fix issue #33 #35 #31 #20 #29
+- 02/01/2014 Fix issue #32
+
+
+
 **01/20/2014 1.1.3-SNAPSHOT**
 - 01/20/2014： *revert pull #27*
 - 01/20/2014： *accept pull #22*

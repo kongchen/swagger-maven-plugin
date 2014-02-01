@@ -1,14 +1,7 @@
 package com.github.kongchen.swagger.docgen.mavenplugin;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -18,8 +11,14 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -42,8 +41,7 @@ public class ApiDocumentMojoTest {
         apiSource.setBasePath("http://example.com");
         apiSource.setLocations("sample.api");
         apiSource.setOutputPath("temp.html");
-        apiSource.setOutputTemplate("https://raw.github.com/kongchen/api-doc-template/master/v1.1/markdown.mustache");
-        apiSource.setWithFormatSuffix(false);
+        apiSource.setOutputTemplate("https://raw2.github.com/kongchen/api-doc-template/master/v1.1/strapdown.html.mustache");
         apiSource.setSwaggerDirectory(tmpSwaggerOutputDir);
 
         apiSources.add(apiSource);
@@ -53,7 +51,7 @@ public class ApiDocumentMojoTest {
     @AfterMethod
     private void fin() throws IOException {
         File tempOutput = new File(tmpSwaggerOutputDir);
-        FileUtils.deleteDirectory(tempOutput);
+//        FileUtils.deleteDirectory(tempOutput);
     }
 
     /**
@@ -84,9 +82,7 @@ public class ApiDocumentMojoTest {
         mojo.execute();
         List<String> flatfiles = new ArrayList<String>();
 
-        for (String f : output.list()) {
-            flatfiles.add(f);
-        }
+        Collections.addAll(flatfiles, output.list());
         Collections.sort(flatfiles);
         Assert.assertEquals(flatfiles.get(0), "car.json");
         Assert.assertEquals(flatfiles.get(1), "garage.json");
@@ -94,7 +90,7 @@ public class ApiDocumentMojoTest {
         Assert.assertEquals(flatfiles.get(3), "v2_car.json");
 
         ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode node = objectMapper.readTree(FileUtils.getFile(output, "service.json"));
+        JsonNode node = objectMapper.readTree(FileUtils.readFileToByteArray(new File(output, "service.json")));
         JsonNode apis = node.get("apis");
         Assert.assertEquals(apis.size(), 3);
         List<String> pathInService = new ArrayList<String> ();
@@ -118,9 +114,7 @@ public class ApiDocumentMojoTest {
         mojo.execute();
         List<File> outputFiles = new ArrayList<File>();
 
-        for (File f : output.listFiles()) {
-            outputFiles.add(f);
-        }
+        Collections.addAll(outputFiles, output.listFiles());
         Collections.sort(outputFiles);
         Assert.assertEquals(outputFiles.get(0).getName(), "car.json");
         Assert.assertEquals(outputFiles.get(1).getName(), "garage.json");
@@ -133,7 +127,7 @@ public class ApiDocumentMojoTest {
 
 
         ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode node = objectMapper.readTree(FileUtils.getFile(output, "service.json"));
+        JsonNode node = objectMapper.readTree(FileUtils.readFileToByteArray(new File(output, "service.json")));
         JsonNode apis = node.get("apis");
         Assert.assertEquals(apis.size(), 3);
         List<String> pathInService = new ArrayList<String> ();
@@ -146,16 +140,18 @@ public class ApiDocumentMojoTest {
         Assert.assertEquals(pathInService.get(2), "/v2/car.{format}");
     }
 
-    @Test(enabled = false)
+    @Test(enabled = true)
     public void testExecute() throws Exception {
         mojo.execute();
         FileInputStream testOutputIs = new FileInputStream(new File("temp.html"));
         InputStream expectIs = this.getClass().getResourceAsStream("/sample.html");
+        int count = 0;
         while (true) {
+            count++;
             int expect = expectIs.read();
             int actual = testOutputIs.read();
 
-            Assert.assertEquals(expect, actual);
+            Assert.assertEquals( expect, actual, ""+count);
             if (expect == -1) {
                 break;
             }

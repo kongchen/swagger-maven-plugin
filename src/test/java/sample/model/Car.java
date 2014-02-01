@@ -1,10 +1,9 @@
 package sample.model;
 
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
-
-import com.wordnik.swagger.annotations.ApiProperty;
-
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,27 +11,27 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author: chekong
  * 05/14/2013
  */
-//@XmlRootElement(name = "car")
+@ApiModel(value = "car")
 public class Car {
-    @ApiProperty(required = true, notes = "car's id")
+    @ApiModelProperty(required = true, value = "car's id")
     private int id;
 
-    @ApiProperty(required = true, notes = "The brand of the car")
+    @ApiModelProperty(required = true, value = "The brand of the car")
     private String brand;
 
-    @ApiProperty(required = true, notes = "The engine parameter of the car")
+    @ApiModelProperty(required = true, value = "The engine parameter of the car")
     private String engine;
 
-    @ApiProperty(required = true, notes = "Indicate the car is MT or AT")
+    @ApiModelProperty(required = true, value = "Indicate the car is MT or AT")
     private boolean mt;
 
-    @ApiProperty(required = true, notes = "The price of the car", access = "readOnly")
+    @ApiModelProperty(required = true, value = "The price of the car", access = "readOnly")
     private float price;
 
-    @ApiProperty(required = false, notes = "Any other comments for the car")
+    @ApiModelProperty(required = false, value = "Any other comments for the car")
     private String notes;
 
-    @ApiProperty(required = false, notes = "Repair history")
+    @ApiModelProperty(required = false, value = "Repair history")
     private List<String> repairHistory;
 
     public List<String> getRepairHistory() {

@@ -1,57 +1,62 @@
 package com.github.kongchen.swagger.docgen.mustache;
 
-import com.wordnik.swagger.core.DocumentationAllowableListValues;
-import com.wordnik.swagger.core.DocumentationAllowableRangeValues;
-import com.wordnik.swagger.core.DocumentationAllowableValues;
-import com.wordnik.swagger.core.DocumentationParameter;
 
-import java.util.List;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.kongchen.swagger.docgen.util.Utils;
+import com.wordnik.swagger.model.AllowableListValues;
+import com.wordnik.swagger.model.AllowableRangeValues;
+import com.wordnik.swagger.model.AllowableValues;
+import com.wordnik.swagger.model.Parameter;
+import scala.collection.JavaConversions;
+import scala.collection.mutable.Buffer;
 
 import static com.github.kongchen.swagger.docgen.TypeUtils.getTrueType;
 
 public class MustacheParameter {
     private final String allowableValue;
 
-    String defaultValue;
+    private final String access;
 
-    String name;
+    private final String defaultValue;
 
-    boolean required;
+    private String name;
 
-    String description;
+    private final boolean required;
 
-    String type;
+    private final String description;
 
-    String linkType;
+    private final String type;
 
-    public MustacheParameter(DocumentationParameter para) {
-        this.name = para.getName();
-        this.linkType = getTrueType(para.getDataType());
+    private final String linkType;
+
+    public MustacheParameter(Parameter para) {
+        this.name = para.name();
+        this.linkType = getTrueType(para.dataType());
         this.required = para.required();
-        this.description = para.getDescription();
-        this.type = para.getDataType();
-        this.defaultValue = para.defaultValue();
-
-
+        this.description = Utils.getStrInOption(para.description());
+        this.type = para.dataType();
+        this.defaultValue = Utils.getStrInOption(para.defaultValue());
         this.allowableValue = allowableValuesToString(para.allowableValues());
+        this.access = Utils.getStrInOption(para.paramAccess());
     }
 
-    private String allowableValuesToString(DocumentationAllowableValues para) {
+    private String allowableValuesToString(AllowableValues para) {
         if (para == null) {
             return null;
         }
         String values = "";
-        if (para instanceof DocumentationAllowableListValues) {
-            List<String> vlist = ((DocumentationAllowableListValues) para).getValues();
-            for (String v : vlist) {
-                values += v.trim() + ", ";
+        if (para instanceof AllowableListValues) {
+            Buffer<String> buffer = ((AllowableListValues) para).values().toBuffer();
+            for (String aVlist : JavaConversions.asJavaList(buffer)) {
+                values += aVlist.trim() + ", ";
             }
             values = values.trim();
             values = values.substring(0, values.length() - 1);
 
         } else {
-            Float max = ((DocumentationAllowableRangeValues) para).getMax();
-            Float min = ((DocumentationAllowableRangeValues) para).getMin();
+            String max = ((AllowableRangeValues) para).max();
+            String min = ((AllowableRangeValues) para).min();
             values = min + " to " + max;
         }
         return values;
@@ -59,10 +64,6 @@ public class MustacheParameter {
 
     String getDefaultValue() {
         return defaultValue;
-    }
-
-    void setDefaultValue(String defaultValue) {
-        this.defaultValue = defaultValue;
     }
 
     public String getAllowableValue() {
@@ -73,39 +74,38 @@ public class MustacheParameter {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public boolean isRequired() {
         return required;
-    }
-
-    public void setRequired(boolean required) {
-        this.required = required;
     }
 
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public String getType() {
         return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 
     public String getLinkType() {
         return linkType;
     }
 
-    public void setLinkType(String linkType) {
-        this.linkType = linkType;
+    public String getAccess() {
+        return access;
+    }
+
+    @Override
+    public String toString() {
+        ObjectMapper om = new ObjectMapper();
+        try {
+           return  om.writerWithDefaultPrettyPrinter().writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            return null;
+        }
+
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

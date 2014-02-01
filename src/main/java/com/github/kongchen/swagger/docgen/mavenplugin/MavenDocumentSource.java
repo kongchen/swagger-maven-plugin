@@ -4,15 +4,22 @@ import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
 import com.github.kongchen.swagger.docgen.GenerateException;
 import com.github.kongchen.swagger.docgen.LogAdapter;
 import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.core.Documentation;
-import com.wordnik.swagger.core.DocumentationEndPoint;
+import com.wordnik.swagger.config.SwaggerConfig;
 import com.wordnik.swagger.core.SwaggerSpec;
-import com.wordnik.swagger.jaxrs.HelpApi;
-import com.wordnik.swagger.jaxrs.JaxrsApiSpecParser;
+import com.wordnik.swagger.jaxrs.JaxrsApiReader;
+import com.wordnik.swagger.jaxrs.reader.DefaultJaxrsApiReader;
+import com.wordnik.swagger.model.ApiListing;
+import com.wordnik.swagger.model.ApiListingReference;
+import com.wordnik.swagger.model.AuthorizationType;
+import com.wordnik.swagger.model.ResourceListing;
 import org.apache.maven.plugin.logging.Log;
+import scala.None;
+import scala.Option;
+import scala.collection.JavaConversions;
+import scala.collection.mutable.Buffer;
 
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.ArrayList;
+import java.util.List;
 
 import static java.util.AbstractMap.SimpleEntry;
 
@@ -25,8 +32,6 @@ import static java.util.AbstractMap.SimpleEntry;
 public class MavenDocumentSource extends AbstractDocumentSource {
     private final ApiSource apiSource;
 
-    private Map<String, Documentation> docMap = new TreeMap<String, Documentation>();
-
     public MavenDocumentSource(ApiSource apiSource, Log log) {
         super(new LogAdapter(log),
                 apiSource.getOutputPath(), apiSource.getOutputTemplate(), apiSource.getSwaggerDirectory(), apiSource.mustacheFileRoot, apiSource.isUseOutputFlatStructure());
@@ -38,45 +43,44 @@ public class MavenDocumentSource extends AbstractDocumentSource {
 
     @Override
     public void loadDocuments() throws GenerateException {
-        serviceDocument = new Documentation(apiSource.getApiVersion(), SwaggerSpec.version(),
-                apiSource.getBasePath(), null);
+        SwaggerConfig swaggerConfig =  new SwaggerConfig();
+        swaggerConfig.setApiVersion(apiSource.getApiVersion());
+        swaggerConfig.setSwaggerVersion(SwaggerSpec.version());
+        List<ApiListingReference> apiListingReferences = new ArrayList<ApiListingReference>();
+        List<AuthorizationType> authorizationTypes = new ArrayList<AuthorizationType>();
         for (Class c : apiSource.getValidClasses()) {
-            SimpleEntry<Documentation, Api> entry;
+            SimpleEntry<ApiListing, Api> entry;
             try {
-                entry = getDocFromClass(c, getApiVersion(), getBasePath());
+                entry = getDocFromClass(c, swaggerConfig, getBasePath());
             } catch (Exception e) {
                 throw new GenerateException(e);
             }
             if (entry == null) continue;
             LOG.info("Detect Resource:" + c.getName());
 
-            Documentation doc = entry.getKey();
+            ApiListing doc = entry.getKey();
             Api resource = entry.getValue();
-
-            serviceDocument.addApi(new DocumentationEndPoint(doc.getResourcePath(), resource.description()));
-            docMap.put(doc.getResourcePath(), doc);
-        }
-        // to keep order
-        for (Documentation doc : docMap.values()) {
-            if (!apiSource.isWithFormatSuffix()) {
-                for (DocumentationEndPoint endPoint : doc.getApis()) {
-                    endPoint.setPath(endPoint.getPath().replaceAll("\\.\\{format\\}",""));
-                }
-            }
+            Buffer<AuthorizationType> buffer = doc.authorizations().toBuffer();
+            authorizationTypes.addAll(JavaConversions.asJavaList(buffer));
+            ApiListingReference apiListingReference = new ApiListingReference(resource.value(), doc.description(), doc.position());
+            apiListingReferences.add(apiListingReference);
             acceptDocument(doc);
         }
+        serviceDocument = new ResourceListing(swaggerConfig.apiVersion(), swaggerConfig.swaggerVersion(),
+                scala.collection.immutable.List.fromIterator(JavaConversions.asScalaIterator(apiListingReferences.iterator())),
+                scala.collection.immutable.List.fromIterator(JavaConversions.asScalaIterator(authorizationTypes.iterator())),
+                swaggerConfig.info());
     }
 
-    private SimpleEntry<Documentation, Api> getDocFromClass(Class c, String apiVersion, String basePath) throws Exception {
+    private SimpleEntry<ApiListing, Api> getDocFromClass(Class c, SwaggerConfig swaggerConfig, String basePath) throws Exception {
         Api resource = (Api) c.getAnnotation(Api.class);
 
         if (resource == null) return null;
-        JaxrsApiSpecParser parser = new JaxrsApiSpecParser(c, apiVersion,
-                SwaggerSpec.version(), basePath, resource.value());
+        JaxrsApiReader reader = new DefaultJaxrsApiReader();
+        Option<ApiListing> apiListing = reader.read(basePath, c, swaggerConfig);
 
-        Documentation doc = new HelpApi().filterDocs(parser.parse(), null, null, null, null);
-        if (doc == null) return null;
+        if (None.canEqual(apiListing)) return null;
 
-        return new SimpleEntry<Documentation, Api>(doc, resource);
+        return new SimpleEntry<ApiListing, Api>(apiListing.get(), resource);
     }
 }

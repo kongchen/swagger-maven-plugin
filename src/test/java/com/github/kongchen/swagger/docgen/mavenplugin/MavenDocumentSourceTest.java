@@ -4,7 +4,7 @@ import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
 import com.github.kongchen.swagger.docgen.GenerateException;
 import com.github.kongchen.swagger.docgen.TypeUtils;
 import com.github.kongchen.swagger.docgen.mustache.*;
-import com.wordnik.swagger.annotations.ApiProperty;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 import org.apache.maven.plugin.logging.SystemStreamLog;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
@@ -36,7 +36,7 @@ public class MavenDocumentSourceTest {
         apiSource.setBasePath("http://example.com");
         apiSource.setLocations("sample.api.car;sample.api.garage");
         apiSource.setOutputPath("sample.html");
-        apiSource.setOutputTemplate("strapdown.html.mustache");
+        apiSource.setOutputTemplate("https://github.com/kongchen/api-doc-template/blob/master/v1.1/html.mustache");
         apiSource.setSwaggerDirectory(null);
     }
 
@@ -54,56 +54,59 @@ public class MavenDocumentSourceTest {
     }
 
     @Test
-    public void testWithFormat() throws Exception, GenerateException {
-        apiSource.setWithFormatSuffix(true);
-        AbstractDocumentSource documentSource = new MavenDocumentSource(apiSource, new SystemStreamLog());
-        documentSource.loadDocuments();
-        OutputTemplate outputTemplate = new OutputTemplate(documentSource);
-        assertEquals(apiSource.getApiVersion(), outputTemplate.getApiVersion());
-        assertEquals(apiSource.getBasePath(), outputTemplate.getBasePath());
-        assertEquals(3, outputTemplate.getApiDocuments().size());
-        for (MustacheDocument doc : outputTemplate.getApiDocuments()) {
-            for (MustacheApi api : doc.getApis()) {
-                assertTrue(api.getPath().contains("{format}"));
-            }
-        }
-    }
-
-    @Test
     public void test() throws Exception, GenerateException {
         AbstractDocumentSource documentSource = new MavenDocumentSource(apiSource, new SystemStreamLog());
         documentSource.loadDocuments();
         OutputTemplate outputTemplate = new OutputTemplate(documentSource);
         assertEquals(apiSource.getApiVersion(), outputTemplate.getApiVersion());
-        assertEquals(apiSource.getBasePath(), outputTemplate.getBasePath());
         assertEquals(3, outputTemplate.getApiDocuments().size());
         for (MustacheDocument doc : outputTemplate.getApiDocuments()) {
-            for (MustacheApi api : doc.getApis()) {
-                assertFalse(api.getPath().contains("{format}"));
-                if (api.getPath().equals("/car/{carId}")) {
-                    Assert.assertEquals(api.getOperations().get(0).getParameters().size(), 4);
-                    MustacheOperation op = api.getOperations().get(0);
+            if (doc.getIndex() == 1) {
+                Assert.assertEquals(doc.getResourcePath(), "/car");
+                for (MustacheApi api : doc.getApis()) {
+                    assertTrue(api.getUrl().startsWith(apiSource.getBasePath()));
+                    assertFalse(api.getPath().contains("{format}"));
+                    for (MustacheOperation op : api.getOperations()) {
+                        if (op.getOpIndex() == 2) {
 
-                    Assert.assertEquals("ETag", op.getResponseHeader().getParas().get(0).getName());
+                            Assert.assertEquals(op.getParameters().size(), 4);
 
-                    Assert.assertEquals("carId",
-                            op.getRequestPath().getParas().get(0).getName());
-                    Assert.assertEquals("1.0 to 10.0",
-                            op.getRequestPath().getParas().get(0).getAllowableValue());
+                            Assert.assertEquals("ETag", op.getResponseHeader().getParas().get(0).getName());
 
-                    Assert.assertEquals("e",
-                            op.getRequestQuery().getParas().get(0).getName());
+                            Assert.assertEquals("carId",
+                                    op.getRequestPath().getParas().get(0).getName());
+                            Assert.assertEquals("1.0 to 10.0",
+                                    op.getRequestPath().getParas().get(0).getAllowableValue());
 
-                    Assert.assertEquals("Accept",
-                            op.getRequestHeader().getParas().get(0).getName());
-                    Assert.assertEquals("MediaType",
-                            op.getRequestHeader().getParas().get(0).getType());
-                    Assert.assertEquals("application/json, application/*",
-                            op.getRequestHeader().getParas().get(0).getAllowableValue());
+                            Assert.assertEquals("e",
+                                    op.getRequestQuery().getParas().get(0).getName());
 
-
+                            Assert.assertEquals("Accept",
+                                    op.getRequestHeader().getParas().get(0).getName());
+                            Assert.assertEquals("MediaType",
+                                    op.getRequestHeader().getParas().get(0).getType());
+                            Assert.assertEquals("application/json, application/*",
+                                    op.getRequestHeader().getParas().get(0).getAllowableValue());
+                            Assert.assertEquals(op.getErrorResponses().size(), 2);
+                            Assert.assertEquals(op.getErrorResponses().get(0).message(), "Invalid ID supplied");
+                            Assert.assertEquals(op.getErrorResponses().get(0).code(), 400);
+                            Assert.assertEquals(op.getErrorResponses().get(1).code(), 404);
+                            Assert.assertEquals(op.getAuthorizations().get(0).getType(), "oauth2");
+                            Assert.assertEquals(op.getAuthorizations().get(0).getAuthorizationScopes().get(0).description(), "car1 des get");
+                        }
+                        if (op.getOpIndex() == 1) {
+                            Assert.assertEquals(op.getSummary(), "search cars");
+                        }
+                    }
                 }
             }
+            if (doc.getIndex() == 2) {
+                Assert.assertEquals(doc.getResourcePath(), "/v2/car");
+            }
+            if (doc.getIndex() == 3) {
+                Assert.assertEquals(doc.getResourcePath(), "/garage");
+            }
+
         }
 
 
@@ -143,12 +146,12 @@ public class MavenDocumentSourceTest {
         for (MustacheItem item : dataType.getItems()) {
 
             String name = item.getName();
-            ApiProperty a = null;
+            ApiModelProperty a = null;
 
             Field f = null;
             try {
                 f = aClass.getDeclaredField(name);
-                a = f.getAnnotation(ApiProperty.class);
+                a = f.getAnnotation(ApiModelProperty.class);
                 if (a == null) {
                     a = getApiProperty(aClass, name);
                 }
@@ -165,8 +168,6 @@ public class MavenDocumentSourceTest {
                 type = getActualDataType(aClass, name);
             }
 
-            assertEquals(a.access(), nullToEmpty(item.getAccess()));
-            assertEquals(a.notes(), nullToEmpty(item.getNotes()));
             assertEquals(type, item.getType());
             assertEquals(a.required(), item.isRequired());
             assertEquals(a.value(), nullToEmpty(item.getDescription()));
@@ -259,15 +260,15 @@ public class MavenDocumentSourceTest {
         return type;
     }
 
-    private ApiProperty getApiProperty(Class<?> aClass, String name) {
-        ApiProperty a = null;
+    private ApiModelProperty getApiProperty(Class<?> aClass, String name) {
+        ApiModelProperty a = null;
         for (Field _f : aClass.getDeclaredFields()) {
             XmlElement ele = _f.getAnnotation(XmlElement.class);
             if (ele == null) {
                 continue;
             }
             if (ele.name().equals(name)) {
-                a = _f.getAnnotation(ApiProperty.class);
+                a = _f.getAnnotation(ApiModelProperty.class);
                 break;
             }
         }
@@ -277,7 +278,7 @@ public class MavenDocumentSourceTest {
                 continue;
             }
             if (ele.name().equals(name)) {
-                a = _m.getAnnotation(ApiProperty.class);
+                a = _m.getAnnotation(ApiModelProperty.class);
                 break;
             }
         }

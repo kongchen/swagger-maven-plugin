@@ -1,24 +1,24 @@
 package com.github.kongchen.swagger.docgen.remote;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.log4j.Logger;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
 import com.github.kongchen.swagger.docgen.LogAdapter;
-import com.wordnik.swagger.core.Documentation;
-import com.wordnik.swagger.core.DocumentationEndPoint;
+import com.wordnik.swagger.model.ApiDescription;
+import com.wordnik.swagger.model.ApiListing;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.log4j.Logger;
+import scala.collection.Iterator;
+
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * Created with IntelliJ IDEA.
@@ -52,32 +52,34 @@ public class RemoteDocumentSource extends AbstractDocumentSource {
         if (response.getStatusLine().getStatusCode() != 200) {
             throw new IOException(requestURI + " got " + response.getStatusLine().getReasonPhrase());
         }
-        Documentation doc = mapper.readValue(response.getEntity().getContent(), Documentation.class);
-        serviceDocument = doc;
+        ApiListing doc = mapper.readValue(response.getEntity().getContent(), ApiListing.class);
+//        serviceDocument = doc;
 
-        setApiVersion(doc.getApiVersion());
-        setBasePath(doc.getBasePath());
+        setApiVersion(doc.apiVersion());
+        setBasePath(doc.basePath());
         URIBuilder uriBuilder = new URIBuilder(requestURI);
         String path = uriBuilder.getPath();
 
-        for (DocumentationEndPoint endPoint : doc.getApis()) {
+        for (Iterator<ApiDescription> iterator = doc.apis().iterator(); iterator.hasNext(); ) {
+            ApiDescription endPoint = iterator.next();
 
-            String _endpoint = endPoint.getPath().replaceAll("/api-docs\\.\\{format\\}", "");
+            String _endpoint = endPoint.path().replaceAll("/api-docs\\.\\{format\\}", "");
             uriBuilder.setPath((path + "/" + _endpoint).replaceAll("\\/\\/", "/"));
             String newURL = null;
             try {
                 newURL = uriBuilder.build().toString();
             } catch (URISyntaxException e) {
-                LOG.error("URL " + newURL + "is not valid.");
+                LOG.error("URL is not valid." + e);
                 continue;
             }
             LOG.info("calling " + newURL);
             response = client.execute(new HttpGet(newURL));
-            Documentation _doc = mapper.readValue(response.getEntity().getContent(), Documentation.class);
+            ApiListing _doc = mapper.readValue(response.getEntity().getContent(), ApiListing.class);
 
             if (!withFormatSuffix) {
-                for (DocumentationEndPoint ep : _doc.getApis()) {
-                    ep.setPath(ep.getPath().replaceAll("\\.\\{format}",""));
+                for (Iterator<ApiDescription> iterator1 = _doc.apis().iterator(); iterator1.hasNext(); ) {
+                    ApiDescription ep = iterator1.next();
+//                    ep.path() = (ep.path().replaceAll("\\.\\{format}", ""));
                 }
             }
             acceptDocument(_doc);

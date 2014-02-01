@@ -1,27 +1,27 @@
 package com.github.kongchen.swagger.docgen;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.kongchen.swagger.docgen.mustache.OutputTemplate;
+import com.github.mustachejava.DefaultMustacheFactory;
+import com.github.mustachejava.Mustache;
+import com.wordnik.swagger.core.util.JsonSerializer;
+import com.wordnik.swagger.core.util.JsonUtil;
+import com.wordnik.swagger.model.ApiListing;
+import com.wordnik.swagger.model.ApiListingReference;
+import com.wordnik.swagger.model.ResourceListing;
+import org.apache.commons.io.FileUtils;
+import scala.collection.Iterator;
+import scala.collection.JavaConversions;
+
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.commons.io.FileUtils;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.kongchen.swagger.docgen.mustache.OutputTemplate;
-import com.github.mustachejava.DefaultMustacheFactory;
-import com.github.mustachejava.Mustache;
-import com.wordnik.swagger.core.Documentation;
-import com.wordnik.swagger.core.DocumentationEndPoint;
 
 /**
  * Created with IntelliJ IDEA.
@@ -40,9 +40,9 @@ public abstract class AbstractDocumentSource {
 
     private final String swaggerPath;
 
-    protected Documentation serviceDocument;
+    protected ResourceListing serviceDocument;
 
-    List<Documentation> validDocuments = new LinkedList<Documentation>();
+    List<ApiListing> validDocuments = new ArrayList<ApiListing>();
 
     private String basePath;
 
@@ -86,11 +86,12 @@ public abstract class AbstractDocumentSource {
         return outputTemplate;
     }
 
-    protected void acceptDocument(Documentation doc) {
-        validDocuments.add(doc);
+    protected void acceptDocument(ApiListing doc) {
+        ApiListing newDoc = new ApiListing(doc.apiVersion(), doc.swaggerVersion(), this.basePath, doc.resourcePath(), doc.produces(), doc.consumes(), doc.protocols(), doc.authorizations(), doc.apis(), doc.models(), doc.description(), doc.position());
+        validDocuments.add(newDoc);
     }
 
-    public List<Documentation> getValidDocuments() {
+    public List<ApiListing> getValidDocuments() {
         return validDocuments;
     }
 
@@ -115,7 +116,7 @@ public abstract class AbstractDocumentSource {
         prepareServiceDocument();
 
         writeInDirectory(dir, serviceDocument);
-        for (Documentation doc : validDocuments) {
+        for (ApiListing doc : validDocuments) {
             writeInDirectory(dir, doc);
         }
     }
@@ -131,18 +132,25 @@ public abstract class AbstractDocumentSource {
     }
 
     private void prepareServiceDocument() {
-        for (DocumentationEndPoint documentationEndPoint : serviceDocument.getApis()) {
-            String path = documentationEndPoint.getPath();
+        List<ApiListingReference> apiListingReferences = new ArrayList<ApiListingReference>();
+        for (Iterator<ApiListingReference> iterator = serviceDocument.apis().iterator(); iterator.hasNext(); ) {
+            ApiListingReference apiListingReference = iterator.next();
+            String newPath = apiListingReference.path();
             if (useOutputFlatStructure) {
-                path = path.replaceAll("/", "_");
-                if (path.startsWith("_")) {
-                    path = "/" + path.substring(1);
+                newPath = newPath.replaceAll("/", "_");
+                if (newPath.startsWith("_")) {
+                    newPath = "/" + newPath.substring(1);
                 }
             }
-            path += ".{format}";
-            documentationEndPoint.setPath(path);
+            newPath += ".{format}";
+            apiListingReferences.add(new ApiListingReference(newPath,
+                    apiListingReference.description(), apiListingReference.position()));
         }
-    }
+        // there's no setter of path for ApiListingReference, we need to create a new ResourceListing for new path
+        serviceDocument = new ResourceListing(serviceDocument.apiVersion(), serviceDocument.swaggerVersion(),
+                scala.collection.immutable.List.fromIterator(JavaConversions.asScalaIterator(apiListingReferences.iterator())),
+                serviceDocument.authorizations(), serviceDocument.info());
+     }
 
     protected String resourcePathToFilename(String resourcePath) {
         if (resourcePath == null) {
@@ -163,11 +171,25 @@ public abstract class AbstractDocumentSource {
         return name + ".json";
     }
 
-    private void writeInDirectory(File dir, Documentation doc) throws GenerateException {
-        String filename = resourcePathToFilename(doc.getResourcePath());
+    private void writeInDirectory(File dir, ApiListing apiListing) throws GenerateException {
+        String filename = resourcePathToFilename(apiListing.resourcePath());
         try {
             File serviceFile = createFile(dir, filename);
-            mapper.writerWithDefaultPrettyPrinter().writeValue(serviceFile, doc);
+            String json = JsonSerializer.asJson(apiListing);
+            JsonNode tree = mapper.readTree(json);
+            JsonUtil.mapper().writerWithDefaultPrettyPrinter().writeValue(serviceFile, tree);
+        } catch (IOException e) {
+            throw new GenerateException(e);
+        }
+    }
+
+    private void writeInDirectory(File dir, ResourceListing resourceListing) throws GenerateException {
+        String filename = resourcePathToFilename(null);
+        try {
+            File serviceFile = createFile(dir, filename);
+            String json = JsonSerializer.asJson(resourceListing);
+            JsonNode tree = mapper.readTree(json);
+            JsonUtil.mapper().writerWithDefaultPrettyPrinter().writeValue(serviceFile, tree);
         } catch (IOException e) {
             throw new GenerateException(e);
         }
@@ -207,7 +229,7 @@ public abstract class AbstractDocumentSource {
         }
         LOG.info("Writing doc to " + outputPath + "...");
 
-        FileOutputStream fileOutputStream = null;
+        FileOutputStream fileOutputStream;
         try {
             fileOutputStream = new FileOutputStream(outputPath);
         } catch (FileNotFoundException e) {
@@ -231,7 +253,7 @@ public abstract class AbstractDocumentSource {
     }
 
     private URI getTemplateUri() throws GenerateException {
-        URI uri = null;
+        URI uri;
         try {
             uri = new URI(templatePath);
         } catch (URISyntaxException e) {

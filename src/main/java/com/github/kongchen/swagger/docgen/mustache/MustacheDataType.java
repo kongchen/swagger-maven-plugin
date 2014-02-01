@@ -3,10 +3,9 @@ package com.github.kongchen.swagger.docgen.mustache;
 import java.util.List;
 
 public class MustacheDataType implements Comparable<MustacheDataType> {
+    private final String name;
 
-    String name;
-
-    List<MustacheItem> items;
+    private List<MustacheItem> items;
 
     public MustacheDataType(MustacheDocument mustacheDocument, String requestType) {
         this.name = requestType;
@@ -32,10 +31,6 @@ public class MustacheDataType implements Comparable<MustacheDataType> {
 
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public List<MustacheItem> getItems() {

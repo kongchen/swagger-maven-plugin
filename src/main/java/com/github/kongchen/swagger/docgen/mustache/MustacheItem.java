@@ -1,33 +1,32 @@
 package com.github.kongchen.swagger.docgen.mustache;
 
 import com.github.kongchen.swagger.docgen.TypeUtils;
-import com.wordnik.swagger.core.DocumentationSchema;
+import com.github.kongchen.swagger.docgen.util.Utils;
+import com.wordnik.swagger.model.ModelProperty;
 
 public class MustacheItem {
-    String name;
+    private String name;
 
-    String type;
+    private String type;
 
-    String linkType;
+    private String linkType;
 
-    boolean required;
+    private boolean required;
 
-    String access;
+    private String access;
 
-    String description;
+    private String description;
 
-    String notes;
+    private String notes;
 
-    public MustacheItem(String name, DocumentationSchema documentationSchema) {
+    public MustacheItem(String name, ModelProperty documentationSchema) {
 
         this.name = name;
-        this.type = documentationSchema.getType();
+        this.type = documentationSchema.type();
         this.linkType = this.type;
-
+        this.description = Utils.getStrInOption(documentationSchema.description());
         this.required = documentationSchema.required();
-        this.access = documentationSchema.getAccess();
-        this.description = documentationSchema.getDescription();
-        this.notes = documentationSchema.getNotes();
+        this.notes = Utils.getStrInOption(documentationSchema.description());
         this.linkType = TypeUtils.filterBasicTypes(this.linkType);
     }
 

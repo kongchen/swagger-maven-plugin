@@ -1,8 +1,12 @@
 package com.github.kongchen.swagger.docgen.mustache;
 
-import java.util.LinkedList;
-
 import com.github.kongchen.swagger.docgen.TypeUtils;
+import com.wordnik.swagger.core.util.ModelUtil;
+import com.wordnik.swagger.model.Model;
+import scala.Option;
+import scala.Tuple2;
+
+import java.util.LinkedList;
 
 public class MustacheResponseClass {
     private String className;
@@ -32,16 +36,21 @@ public class MustacheResponseClass {
             }
         } else {
             String trueType = TypeUtils.getTrueType(responseClass);
-            if (trueType != null) {
+            Option<Tuple2<String, Model>> m = ModelUtil.modelFromString(responseClass);
+            if (!m.isEmpty()) {
+                this.classLinkName = m.get()._1();
+                this.className = responseClass;
+            }else if (trueType != null) {
                 this.className = responseClass;
                 this.classLinkName = trueType;
-            } else {
-                if (responseClass.equalsIgnoreCase("void")) {
-                    this.className = null;
-                } else {
-                    this.className = responseClass;
-                }
             }
+
+            if (responseClass.equalsIgnoreCase("void")) {
+                this.className = null;
+            } else {
+                this.className = responseClass;
+            }
+
         }
 
 

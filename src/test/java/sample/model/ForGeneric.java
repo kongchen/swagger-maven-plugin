@@ -1,9 +1,6 @@
 package sample.model;
 
-import org.reflections.Reflections;
-
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * Created by chekong on 13-6-9.

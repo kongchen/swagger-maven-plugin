@@ -1,13 +1,13 @@
 package com.github.kongchen.swagger.docgen;
 
-import static org.testng.AssertJUnit.assertEquals;
-import static org.testng.AssertJUnit.assertTrue;
-
-import java.io.File;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.testng.annotations.Test;
+
+import java.io.File;
+
+import static org.testng.AssertJUnit.assertEquals;
+import static org.testng.AssertJUnit.assertTrue;
 
 public class AbstractDocumentSourceTest {
 
