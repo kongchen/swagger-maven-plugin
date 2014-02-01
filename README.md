@@ -1,9 +1,16 @@
 # Swagger Maven Plugin [![Build Status](https://travis-ci.org/kongchen/swagger-maven-plugin.png)](https://travis-ci.org/kongchen/swagger-maven-plugin)
 This plugin helps you **generate API documents** in build phase according to [customized output templates](https://github.com/kongchen/api-doc-template).
 
-[Changes](https://github.com/kongchen/swagger-maven-plugin/blob/master/CHANGES.md)
+[Versions](https://github.com/kongchen/swagger-maven-plugin/blob/master/CHANGES.md)
 ==
-**Latest version `1.1.3-SNAPSHOT` is available in central repository.**
+This plugin has 2 serials of versions:
+- 1.x.x : For [Swagger core version 1.2.x](https://github.com/wordnik/swagger-core/wiki/Changelog#v125-jun-19-2013)
+> **Latest version `1.1.3-SNAPSHOT` is available in central repository.**
+
+- 2.x.x : For [Swagger core version >= 1.3.0] (https://github.com/wordnik/swagger-core/wiki/Changelog#v130-aug-12-2013)
+> **Latest version `2.0-SNAPSHOT` is available in central repository.**
+
+See [change log](https://github.com/kongchen/swagger-maven-plugin/blob/master/CHANGES.md) for more details.
 
 >To use SNAPSHOT version, you should add plugin repository first:
 
@@ -32,7 +39,13 @@ This plugin helps you **generate API documents** in build phase according to [cu
 
     …
     <dependencies>
-        …
+        ...
+        <dependency>
+            <groupId>com.wordnik</groupId>
+            <artifactId>swagger-jaxrs_2.10</artifactId>
+            <version>1.3.2</version>
+        </dependency>
+        ...
     </dependencies>
     <build>
         <plugins>
@@ -40,7 +53,7 @@ This plugin helps you **generate API documents** in build phase according to [cu
             <plugin>
                 <groupId>com.github.kongchen</groupId>
                 <artifactId>swagger-maven-plugin</artifactId>
-                <version>1.1.1</version>
+                <version>2.0-SNAPSHOT</version>
                 <configuration>
                     <apiSources>
                         <apiSource>
@@ -51,7 +64,6 @@ This plugin helps you **generate API documents** in build phase according to [cu
                                      https://raw.github.com/kongchen/api-doc-template/master/v1.1/markdown.mustache
                             </outputTemplate>
                             <outputPath>generated/strapdown.html</outputPath>
-                            <withFormatSuffix>false</withFormatSuffix>
                             <!--swaggerDirectory>generated/apidocs</swaggerDirectory-->
                             <!--useOutputFlatStructure>false</useOutputFlatStructure-->
                             <!--mustacheFileRoot>${basedir}/src/main/resources/</mustacheFileRoot-->
@@ -92,7 +104,6 @@ This plugin helps you **generate API documents** in build phase according to [cu
 - ```outputPath``` is the path of your output file, not existed parent directory of the file will be created.
 - If ```swaggerDirectory``` is configured, the plugin will also generate a Swagger resource listing suitable for feeding to swagger-ui.
   - ```useOutputFlatStructure``` indicates whether swagger output will be created in subdirs by path defined in @com.wordnik.swagger.annotations.Api#value (false), or the filename will be the path with replaced slashes to underscores (true). Default: true
-- ```withFormatSuffix``` indicates if you need Swagger's _.{format}_ suffix in API's path. Default: false
 
 You can specify several ```apiSources``` with different api versions and base paths.
 

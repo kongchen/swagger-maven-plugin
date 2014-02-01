@@ -1,16 +1,15 @@
 package com.github.kongchen.swagger.docgen.mustache;
 
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsonschema.JsonSchema;
 import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
 import com.github.kongchen.swagger.docgen.TypeUtils;
-import com.wordnik.swagger.core.Documentation;
-import com.wordnik.swagger.core.DocumentationEndPoint;
-import com.wordnik.swagger.core.DocumentationOperation;
+import com.github.kongchen.swagger.docgen.util.Utils;
+import com.wordnik.swagger.model.ApiDescription;
+import com.wordnik.swagger.model.ApiListing;
+import com.wordnik.swagger.model.Operation;
+
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -22,9 +21,9 @@ public class OutputTemplate {
 
     private String apiVersion;
 
-    private Set<MustacheDocument> apiDocuments = new LinkedHashSet<MustacheDocument>();
+    private List<MustacheDocument> apiDocuments = new ArrayList<MustacheDocument>();
 
-    private Set<MustacheDataType> dataTypes = new LinkedHashSet<MustacheDataType>();
+    private Set<MustacheDataType> dataTypes = new TreeSet<MustacheDataType>();
 
     public OutputTemplate(AbstractDocumentSource docSource) {
         feedSource(docSource);
@@ -59,12 +58,8 @@ public class OutputTemplate {
         }
     }
 
-    public Set<MustacheDocument> getApiDocuments() {
+    public List<MustacheDocument> getApiDocuments() {
         return apiDocuments;
-    }
-
-    public void setApiDocuments(Set<MustacheDocument> apiDocuments) {
-        this.apiDocuments = apiDocuments;
     }
 
     public String getBasePath() {
@@ -83,19 +78,27 @@ public class OutputTemplate {
         this.apiVersion = apiVersion;
     }
 
-    private MustacheDocument createMustacheDocument(Documentation swaggerDoc) {
+    /**
+     * Create mustache document according to a swagger document apilisting
+     * @param swaggerDoc
+     * @return
+     */
+    private MustacheDocument createMustacheDocument(ApiListing swaggerDoc) {
         MustacheDocument mustacheDocument = new MustacheDocument(swaggerDoc);
 
-        for (DocumentationEndPoint api : swaggerDoc.getApis()) {
-            mustacheDocument.setDescription(api.getDescription());
+        setApiVersion(swaggerDoc.apiVersion());
+        setBasePath(swaggerDoc.basePath());
+        for (scala.collection.Iterator<ApiDescription> it = swaggerDoc.apis().iterator(); it.hasNext(); ) {
+            ApiDescription api = it.next();
+            mustacheDocument.setDescription(Utils.getStrInOption(api.description()));
 
-            MustacheApi mustacheApi = new MustacheApi(swaggerDoc.getBasePath(), api);
+            MustacheApi mustacheApi = new MustacheApi(swaggerDoc.basePath(), api);
 
-            for (DocumentationOperation op : api.getOperations()) {
+            for (scala.collection.Iterator<Operation> opIt  = api.operations().iterator(); opIt.hasNext(); ) {
+                Operation op = opIt.next();
                 MustacheOperation mustacheOperation = new MustacheOperation(mustacheDocument, op);
                 mustacheApi.addOperation(mustacheOperation);
                 addResponseType(mustacheDocument, mustacheOperation.getResponseClass());
-
             }
 
             mustacheDocument.addApi(mustacheApi);
@@ -132,14 +135,14 @@ public class OutputTemplate {
         while (it.hasNext()){
             MustacheDataType type = it.next();
 
-            if (type.items == null || type.items.size() == 0) {
+            if (type.getItems() == null || type.getItems().size() == 0) {
                 it.remove();
             }
         }
     }
 
     private void addResponseType(MustacheDocument mustacheDocument, MustacheResponseClass responseClass) {
-        mustacheDocument.addResponseType(responseClass.getClassLinkName());
+        mustacheDocument.addResponseType(responseClass);
         if (responseClass.getGenericClasses() != null) {
             for (MustacheResponseClass mrc : responseClass.getGenericClasses()){
                 addResponseType(mustacheDocument, mrc);
@@ -148,19 +151,22 @@ public class OutputTemplate {
     }
 
     private void feedSource(AbstractDocumentSource source) {
-        for (Documentation doc : source.getValidDocuments()) {
-            if (doc.getApis() ==null ){
+        for (ApiListing doc : source.getValidDocuments()) {
+            if (doc.apis().isEmpty()){
                 continue;
             }
             MustacheDocument mustacheDocument = createMustacheDocument(doc);
             addMustacheDocument(mustacheDocument);
         }
-        setBasePath(source.getBasePath());
-        setApiVersion(source.getApiVersion());
+        Collections.sort(apiDocuments, new Comparator<MustacheDocument>() {
+            @Override
+            public int compare(MustacheDocument o1, MustacheDocument o2) {
+                return o1.getIndex() - o2.getIndex();
+            }
+        });
     }
 
     private void addMustacheDocument(MustacheDocument mustacheDocument) {
-        mustacheDocument.setIndex(apiDocuments.size() + 1);
         apiDocuments.add(mustacheDocument);
     }
 

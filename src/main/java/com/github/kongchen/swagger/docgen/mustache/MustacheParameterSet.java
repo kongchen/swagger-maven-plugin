@@ -4,9 +4,9 @@ import java.util.List;
 import java.util.Map;
 
 public class MustacheParameterSet {
-    String paramType;
+    private String paramType;
 
-    List<MustacheParameter> paras;
+    private List<MustacheParameter> paras;
 
     public MustacheParameterSet(Map.Entry<String, List<MustacheParameter>> entry) {
         this.paramType = entry.getKey();

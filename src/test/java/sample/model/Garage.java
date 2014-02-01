@@ -1,8 +1,9 @@
 package sample.model;
 
-import java.util.List;
+import com.wordnik.swagger.annotations.ApiModelProperty;
+import sample.model.v2.Car;
 
-import com.wordnik.swagger.annotations.ApiProperty;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -11,22 +12,22 @@ import com.wordnik.swagger.annotations.ApiProperty;
  * 05/14/2013
  */
 public class Garage {
-    @ApiProperty(required = true, notes = "Garage's id")
+    @ApiModelProperty(required = true, value = "Garage's id")
     private int id;
 
-    @ApiProperty(required = true, notes = "The name of the garage")
+    @ApiModelProperty(required = true, value = "The name of the garage")
     private String name;
 
-    @ApiProperty(required = true, notes = "The description of the garage")
+    @ApiModelProperty(required = true, value = "The description of the garage")
     private String description;
 
-    @ApiProperty(required = true, notes = "The address of the garage")
+    @ApiModelProperty(required = true, value = "The address of the garage")
     private String address;
 
-    @ApiProperty(required = true, notes = "The telephone of the garage")
+    @ApiModelProperty(required = true, value = "The telephone of the garage")
     private String telephone;
 
-    @ApiProperty(required = false, notes = "Holding cars")
+    @ApiModelProperty(required = false, value = "Holding cars")
     private List<Car> holdingCars;
 
     public List<Car> getHoldingCars() {

@@ -1,13 +1,12 @@
 package com.github.kongchen.swagger.docgen.mavenplugin;
 
+import com.github.kongchen.swagger.docgen.GenerateException;
+import com.wordnik.swagger.annotations.Api;
+import org.reflections.Reflections;
+
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-
-import org.reflections.Reflections;
-
-import com.github.kongchen.swagger.docgen.GenerateException;
-import com.wordnik.swagger.annotations.Api;
 
 /**
  * Created with IntelliJ IDEA.
@@ -47,22 +46,9 @@ public class ApiSource {
      */
     private String swaggerDirectory;
 
-    /**
-     * @parameter
-     */
-    private boolean withFormatSuffix = false;
-
     public String mustacheFileRoot;
 
     public boolean useOutputFlatStructure = true;
-
-    public boolean isWithFormatSuffix() {
-        return withFormatSuffix;
-    }
-
-    public void setWithFormatSuffix(boolean withFormatSuffix) {
-        this.withFormatSuffix = withFormatSuffix;
-    }
 
     public Set<Class> getValidClasses() throws GenerateException {
         Set<Class> classes = new HashSet<Class>();

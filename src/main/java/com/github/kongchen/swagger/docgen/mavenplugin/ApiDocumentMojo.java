@@ -1,14 +1,13 @@
 package com.github.kongchen.swagger.docgen.mavenplugin;
 
-import java.io.File;
-import java.util.List;
-
+import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
+import com.github.kongchen.swagger.docgen.GenerateException;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
-import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
-import com.github.kongchen.swagger.docgen.GenerateException;
+import java.io.File;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -41,6 +40,13 @@ public class ApiDocumentMojo extends AbstractMojo {
     public void execute() throws MojoExecutionException, MojoFailureException {
         if (apiSources == null) {
             throw new MojoFailureException("You must configure at least one apiSources element");
+        }
+        try {
+            Class<?> tryClass = Class.forName("com.wordnik.swagger.annotations.ApiErrors");
+            throw new MojoExecutionException("You may use an old version of swagger which is not supported by swagger-maven-plugin 2.0+\n" +
+                    "swagger-maven-plugin 2.0+ only supports swagger-core 1.3.x");
+        } catch (ClassNotFoundException e) {
+            //ignore
         }
 
         try {

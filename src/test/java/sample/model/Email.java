@@ -1,6 +1,6 @@
 package sample.model;
 
-import com.wordnik.swagger.annotations.ApiProperty;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
 import javax.xml.bind.annotation.XmlElement;
 
@@ -15,7 +15,7 @@ public class Email implements Entity<Integer> {
      * {@inheritDoc}
      */
     @XmlElement(name = "id")
-    @ApiProperty(notes = "Email identifier")
+    @ApiModelProperty(value = "Email identifier")
     @Override
     public Integer getId() {
         return id;
@@ -30,7 +30,7 @@ public class Email implements Entity<Integer> {
     }
 
     @XmlElement(name = "address")
-    @ApiProperty(notes = "Email address")
+    @ApiModelProperty(value = "Email address")
     public String getEmail() {
         return email;
     }
@@ -40,7 +40,7 @@ public class Email implements Entity<Integer> {
     }
 
     @XmlElement(name = "default", required = false)
-    @ApiProperty(notes = "The flag shows if this email is a default email",
+    @ApiModelProperty(value = "The flag shows if this email is a default email",
             required = false)
     public Boolean getByDefault() {
         return byDefault;

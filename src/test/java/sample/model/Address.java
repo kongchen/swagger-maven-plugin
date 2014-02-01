@@ -1,6 +1,6 @@
 package sample.model;
 
-import com.wordnik.swagger.annotations.ApiProperty;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
 import javax.xml.bind.annotation.XmlElement;
 
@@ -15,7 +15,7 @@ public class Address implements Entity<Integer> {
      * {@inheritDoc}
      */
     @XmlElement(name = "id")
-    @ApiProperty(notes = "Address' indentifier")
+    @ApiModelProperty(value = "Address' indentifier")
     @Override
     public Integer getId() {
         return id;
@@ -30,7 +30,7 @@ public class Address implements Entity<Integer> {
     }
 
     @XmlElement(name = "zip", required = false)
-    @ApiProperty(notes = "The location")
+    @ApiModelProperty(value = "The location")
     public Long getZipCode() {
         return zipCode;
     }
@@ -40,7 +40,7 @@ public class Address implements Entity<Integer> {
     }
 
     @XmlElement(name = "location")
-    @ApiProperty(notes = "The zip code for this location", required = false)
+    @ApiModelProperty(value = "The zip code for this location", required = false)
     public String getLocation() {
         return location;
     }

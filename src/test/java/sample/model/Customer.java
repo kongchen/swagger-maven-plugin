@@ -1,6 +1,6 @@
 package sample.model;
 
-import com.wordnik.swagger.annotations.ApiProperty;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
 import javax.xml.bind.annotation.XmlElement;
 import java.util.List;
@@ -25,7 +25,7 @@ public class Customer implements Entity<Integer>{
      * {@inheritDoc}
      */
     @XmlElement(name = "id")
-    @ApiProperty(required = true, notes = "Customer's identifier")
+    @ApiModelProperty(required = true, value = "Customer's identifier")
     @Override
     public Integer getId() {
         return id;
@@ -40,7 +40,7 @@ public class Customer implements Entity<Integer>{
     }
 
     @XmlElement(name = "surname")
-    @ApiProperty(required = true, notes = "Customer's surname")
+    @ApiModelProperty(required = true, value = "Customer's surname")
     public String getSurname() {
         return surname;
     }
@@ -50,7 +50,7 @@ public class Customer implements Entity<Integer>{
     }
 
     @XmlElement(name = "name")
-    @ApiProperty(required = true, notes = "Customer's name")
+    @ApiModelProperty(required = true, value = "Customer's name")
     public String getName() {
         return name;
     }
@@ -60,7 +60,7 @@ public class Customer implements Entity<Integer>{
     }
 
     @XmlElement(required = false, name = "email")
-    @ApiProperty(notes = "The list of customer emails", required = false)
+    @ApiModelProperty(value = "The list of customer emails", required = false)
     public List<Email> getEmails() {
         return emails;
     }
@@ -70,7 +70,7 @@ public class Customer implements Entity<Integer>{
     }
 
     @XmlElement(name = "address", required = false)
-    @ApiProperty(required = false, notes = "Customer's address")
+    @ApiModelProperty(required = false, value = "Customer's address")
     public Address getAddress() {
         return address;
     }
