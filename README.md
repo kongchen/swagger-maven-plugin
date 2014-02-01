@@ -61,7 +61,7 @@ See [change log](https://github.com/kongchen/swagger-maven-plugin/blob/master/CH
                             <apiVersion>v1</apiVersion>
                             <basePath>http://www.example.com</basePath>
                             <outputTemplate>
-                                     https://raw.github.com/kongchen/api-doc-template/master/v1.1/markdown.mustache
+                                     https://raw.github.com/kongchen/api-doc-template/master/v2.0/markdown.mustache
                             </outputTemplate>
                             <outputPath>generated/strapdown.html</outputPath>
                             <!--swaggerDirectory>generated/apidocs</swaggerDirectory-->
@@ -92,14 +92,14 @@ See [change log](https://github.com/kongchen/swagger-maven-plugin/blob/master/CH
 - Java classes containing Swagger's annotation ```@Api```, or Java packages containing those classes can be configured in ```locations```, using ```;``` as the delimiter.
 - ```outputTemplate``` is the path of the mustache template file.
 
- >It supports a remote path such as https://raw.github.com/kongchen/api-doc-template/master/v1.1/markdown.mustache
+ >It supports a remote path such as https://raw.github.com/kongchen/api-doc-template/master/v2.0/markdown.mustache
  but local file is highly recommanded because:
  
     > 1. You can modify the template to match your requirement easily.
     > 2. Mustache can use `>localfile` for mustache partials, but you should put the partials in `mustacheFileRoot` if any.
 
-     >E.g: The template https://raw.github.com/kongchen/api-doc-template/master/v1.1/strapdown.html.mustache uses
-     [`markdown.mustache`](https://raw.github.com/kongchen/api-doc-template/master/v1.1/markdown.mustache) as a partial by this way,
+     >E.g: The template https://raw.github.com/kongchen/api-doc-template/master/v2.0/strapdown.html.mustache uses
+     [`markdown.mustache`](https://raw.github.com/kongchen/api-doc-template/master/v2.0/markdown.mustache) as a partial by this way,
      to use `strapdown.html.mustache` you should put `markdown.mustache` in your local path and tell the path to plugin via `mustacheFileRoot`.
 - ```outputPath``` is the path of your output file, not existed parent directory of the file will be created.
 - If ```swaggerDirectory``` is configured, the plugin will also generate a Swagger resource listing suitable for feeding to swagger-ui.
