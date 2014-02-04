@@ -49,20 +49,18 @@ public class MavenDocumentSource extends AbstractDocumentSource {
         List<ApiListingReference> apiListingReferences = new ArrayList<ApiListingReference>();
         List<AuthorizationType> authorizationTypes = new ArrayList<AuthorizationType>();
         for (Class c : apiSource.getValidClasses()) {
-            SimpleEntry<ApiListing, Api> entry;
+            ApiListing doc;
             try {
-                entry = getDocFromClass(c, swaggerConfig, getBasePath());
+                doc  = getDocFromClass(c, swaggerConfig, getBasePath());
             } catch (Exception e) {
                 throw new GenerateException(e);
             }
-            if (entry == null) continue;
+            if (doc == null) continue;
             LOG.info("Detect Resource:" + c.getName());
 
-            ApiListing doc = entry.getKey();
-            Api resource = entry.getValue();
             Buffer<AuthorizationType> buffer = doc.authorizations().toBuffer();
             authorizationTypes.addAll(JavaConversions.asJavaList(buffer));
-            ApiListingReference apiListingReference = new ApiListingReference(resource.value(), doc.description(), doc.position());
+            ApiListingReference apiListingReference = new ApiListingReference(doc.resourcePath(), doc.description(), doc.position());
             apiListingReferences.add(apiListingReference);
             acceptDocument(doc);
         }
@@ -72,7 +70,7 @@ public class MavenDocumentSource extends AbstractDocumentSource {
                 swaggerConfig.info());
     }
 
-    private SimpleEntry<ApiListing, Api> getDocFromClass(Class c, SwaggerConfig swaggerConfig, String basePath) throws Exception {
+    private ApiListing getDocFromClass(Class c, SwaggerConfig swaggerConfig, String basePath) throws Exception {
         Api resource = (Api) c.getAnnotation(Api.class);
 
         if (resource == null) return null;
@@ -81,6 +79,6 @@ public class MavenDocumentSource extends AbstractDocumentSource {
 
         if (None.canEqual(apiListing)) return null;
 
-        return new SimpleEntry<ApiListing, Api>(apiListing.get(), resource);
+        return apiListing.get();
     }
 }

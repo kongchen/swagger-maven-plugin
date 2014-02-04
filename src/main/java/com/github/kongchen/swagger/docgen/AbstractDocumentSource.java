@@ -214,7 +214,7 @@ public abstract class AbstractDocumentSource {
         return serviceFile;
     }
 
-    public OutputTemplate prepareMustacheTemplate() {
+    public OutputTemplate prepareMustacheTemplate() throws GenerateException {
         this.outputTemplate = new OutputTemplate(this);
         return outputTemplate;
     }

@@ -1,6 +1,7 @@
 package com.github.kongchen.swagger.docgen.mustache;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.github.kongchen.swagger.docgen.GenerateException;
 import com.github.kongchen.swagger.docgen.util.Utils;
 import com.wordnik.swagger.core.ApiValues;
 import com.wordnik.swagger.core.util.ModelUtil;
@@ -104,7 +105,7 @@ public class MustacheDocument implements Comparable<MustacheDocument> {
 
     }
 
-    public List<MustacheParameterSet> analyzeParameters(List<Parameter> parameters) {
+    public List<MustacheParameterSet> analyzeParameters(List<Parameter> parameters) throws GenerateException {
         if (parameters == null) return null;
         List<MustacheParameterSet> list = new LinkedList<MustacheParameterSet>();
 
@@ -117,7 +118,7 @@ public class MustacheDocument implements Comparable<MustacheDocument> {
         return list;
     }
 
-    private Map<String, List<MustacheParameter>> toParameterTypeMap(List<Parameter> parameters) {
+    private Map<String, List<MustacheParameter>> toParameterTypeMap(List<Parameter> parameters) throws GenerateException {
         Map<String, List<MustacheParameter>> paraMap = new HashMap<String, List<MustacheParameter>>();
 
         for (Parameter para : parameters) {
@@ -134,8 +135,13 @@ public class MustacheDocument implements Comparable<MustacheDocument> {
         return paraMap;
     }
 
-    private MustacheParameter analyzeParameter(Parameter para) {
-        MustacheParameter mustacheParameter = new MustacheParameter(para);
+    private MustacheParameter analyzeParameter(Parameter para) throws GenerateException {
+        MustacheParameter mustacheParameter = null;
+        try {
+            mustacheParameter = new MustacheParameter(para);
+        } catch (GenerateException e) {
+            throw new GenerateException("Parse failed in "+para.toString()+"Error:" + e.getMessage());
+        }
 
         if (models.get(mustacheParameter.getLinkType()) == null) {
             mustacheParameter.setName(para.name());

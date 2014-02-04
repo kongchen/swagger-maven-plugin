@@ -1,6 +1,7 @@
 package com.github.kongchen.swagger.docgen.mustache;
 
 import com.github.kongchen.swagger.docgen.DocTemplateConstants;
+import com.github.kongchen.swagger.docgen.GenerateException;
 import com.wordnik.swagger.core.ApiValues;
 import com.wordnik.swagger.model.Authorization;
 import com.wordnik.swagger.model.Operation;
@@ -43,7 +44,7 @@ public class MustacheOperation {
 
     List<MustacheSample> samples;
 
-    public MustacheOperation(MustacheDocument mustacheDocument, Operation op) {
+    public MustacheOperation(MustacheDocument mustacheDocument, Operation op) throws GenerateException {
         Buffer<Authorization> authorBuffer = op.authorizations().toBuffer();
         for(Authorization authorization : JavaConversions.asJavaList(authorBuffer)) {
             this.authorizations.add(new MustacheAuthorization(authorization));
