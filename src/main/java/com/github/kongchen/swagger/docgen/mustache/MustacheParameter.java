@@ -4,7 +4,11 @@ package com.github.kongchen.swagger.docgen.mustache;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.kongchen.swagger.docgen.util.Utils;
-import com.wordnik.swagger.model.*;
+import com.wordnik.swagger.model.AllowableListValues;
+import com.wordnik.swagger.model.AllowableRangeValues;
+import com.wordnik.swagger.model.AllowableValues;
+import com.wordnik.swagger.model.AnyAllowableValues$;
+import com.wordnik.swagger.model.Parameter;
 import scala.collection.JavaConversions;
 import scala.collection.mutable.Buffer;
 
