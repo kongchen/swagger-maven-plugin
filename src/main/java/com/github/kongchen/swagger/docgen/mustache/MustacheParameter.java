@@ -3,11 +3,11 @@ package com.github.kongchen.swagger.docgen.mustache;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.kongchen.swagger.docgen.GenerateException;
 import com.github.kongchen.swagger.docgen.util.Utils;
 import com.wordnik.swagger.model.AllowableListValues;
 import com.wordnik.swagger.model.AllowableRangeValues;
 import com.wordnik.swagger.model.AllowableValues;
+import com.wordnik.swagger.model.AnyAllowableValues$;
 import com.wordnik.swagger.model.Parameter;
 import scala.collection.JavaConversions;
 import scala.collection.mutable.Buffer;
@@ -31,7 +31,7 @@ public class MustacheParameter {
 
     private final String linkType;
 
-    public MustacheParameter(Parameter para) throws GenerateException {
+    public MustacheParameter(Parameter para) {
         this.name = para.name();
         this.linkType = getTrueType(para.dataType());
         this.required = para.required();
@@ -42,7 +42,7 @@ public class MustacheParameter {
         this.access = Utils.getStrInOption(para.paramAccess());
     }
 
-    private String allowableValuesToString(AllowableValues para) throws GenerateException {
+    private String allowableValuesToString(AllowableValues para) {
         if (para == null) {
             return null;
         }
@@ -59,8 +59,8 @@ public class MustacheParameter {
             String max = ((AllowableRangeValues) para).max();
             String min = ((AllowableRangeValues) para).min();
             values = min + " to " + max;
-        } else {
-            throw new GenerateException("Invalid allowableValues");
+        } else if (para instanceof AnyAllowableValues$) {
+            return values;
         }
         return values;
     }

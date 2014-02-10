@@ -26,6 +26,9 @@ public class TypeUtils {
     public static final Pattern genericPattern = Pattern.compile("^(.*)<.*>$");
 
     public static String getTrueType(String dataType) {
+        if(dataType == null) {
+            return null;
+        }
         String t;
         Matcher m = pattern.matcher(dataType);
         if (m.find()) {
