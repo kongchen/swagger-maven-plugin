@@ -105,7 +105,7 @@ public class MustacheDocument implements Comparable<MustacheDocument> {
 
     }
 
-    public List<MustacheParameterSet> analyzeParameters(List<Parameter> parameters) throws GenerateException {
+    public List<MustacheParameterSet> analyzeParameters(List<Parameter> parameters) {
         if (parameters == null) return null;
         List<MustacheParameterSet> list = new LinkedList<MustacheParameterSet>();
 
@@ -118,7 +118,7 @@ public class MustacheDocument implements Comparable<MustacheDocument> {
         return list;
     }
 
-    private Map<String, List<MustacheParameter>> toParameterTypeMap(List<Parameter> parameters) throws GenerateException {
+    private Map<String, List<MustacheParameter>> toParameterTypeMap(List<Parameter> parameters) {
         Map<String, List<MustacheParameter>> paraMap = new HashMap<String, List<MustacheParameter>>();
 
         for (Parameter para : parameters) {
@@ -135,13 +135,9 @@ public class MustacheDocument implements Comparable<MustacheDocument> {
         return paraMap;
     }
 
-    private MustacheParameter analyzeParameter(Parameter para) throws GenerateException {
+    private MustacheParameter analyzeParameter(Parameter para) {
         MustacheParameter mustacheParameter = null;
-        try {
-            mustacheParameter = new MustacheParameter(para);
-        } catch (GenerateException e) {
-            throw new GenerateException("Parse failed in "+para.toString()+"Error:" + e.getMessage());
-        }
+        mustacheParameter = new MustacheParameter(para);
 
         if (models.get(mustacheParameter.getLinkType()) == null) {
             mustacheParameter.setName(para.name());
