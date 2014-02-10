@@ -26,7 +26,7 @@ public class OutputTemplate {
 
     private Set<MustacheDataType> dataTypes = new TreeSet<MustacheDataType>();
 
-    public OutputTemplate(AbstractDocumentSource docSource) throws GenerateException {
+    public OutputTemplate(AbstractDocumentSource docSource) {
         feedSource(docSource);
     }
 
@@ -84,7 +84,7 @@ public class OutputTemplate {
      * @param swaggerDoc
      * @return
      */
-    private MustacheDocument createMustacheDocument(ApiListing swaggerDoc) throws GenerateException {
+    private MustacheDocument createMustacheDocument(ApiListing swaggerDoc) {
         MustacheDocument mustacheDocument = new MustacheDocument(swaggerDoc);
 
         setApiVersion(swaggerDoc.apiVersion());
@@ -98,11 +98,7 @@ public class OutputTemplate {
             for (scala.collection.Iterator<Operation> opIt  = api.operations().iterator(); opIt.hasNext(); ) {
                 Operation op = opIt.next();
                 MustacheOperation mustacheOperation = null;
-                try {
-                    mustacheOperation = new MustacheOperation(mustacheDocument, op);
-                } catch (GenerateException e) {
-                    throw new GenerateException("Parse failed in "+op.toString() + " Error:" + e.getMessage());
-                }
+                mustacheOperation = new MustacheOperation(mustacheDocument, op);
                 mustacheApi.addOperation(mustacheOperation);
                 addResponseType(mustacheDocument, mustacheOperation.getResponseClass());
             }
@@ -156,7 +152,7 @@ public class OutputTemplate {
         }
     }
 
-    private void feedSource(AbstractDocumentSource source) throws GenerateException {
+    private void feedSource(AbstractDocumentSource source) {
         for (ApiListing doc : source.getValidDocuments()) {
             if (doc.apis().isEmpty()){
                 continue;

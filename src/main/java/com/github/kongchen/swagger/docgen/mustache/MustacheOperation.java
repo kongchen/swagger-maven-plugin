@@ -44,7 +44,7 @@ public class MustacheOperation {
 
     List<MustacheSample> samples;
 
-    public MustacheOperation(MustacheDocument mustacheDocument, Operation op) throws GenerateException {
+    public MustacheOperation(MustacheDocument mustacheDocument, Operation op) {
         Buffer<Authorization> authorBuffer = op.authorizations().toBuffer();
         for(Authorization authorization : JavaConversions.asJavaList(authorBuffer)) {
             this.authorizations.add(new MustacheAuthorization(authorization));
