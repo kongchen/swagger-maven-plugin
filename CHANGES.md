@@ -1,5 +1,5 @@
-**02/01/2014 2.0.0-SNAPSHOT**
-- 02/01/2014 fully support swagger spec [1.2](https://github.com/wordnik/swagger-core/wiki/1.2-transition)
+**02/15/2014 2.0**
+- 02/01/2014 Fully support swagger spec [1.2](https://github.com/wordnik/swagger-core/wiki/1.2-transition), do not support swagger core 1.2.x any more.
              Fix issue #33 #35 #31 #20 #29
 - 02/01/2014 Fix issue #32
 
