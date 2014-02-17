@@ -28,7 +28,7 @@ public class MustacheDocument implements Comparable<MustacheDocument> {
     @JsonIgnore
     private final Map<String, Model> models = new HashMap<String, Model>();
 
-    private final int index;
+    private int index;
 
     private String resourcePath;
 
@@ -85,6 +85,11 @@ public class MustacheDocument implements Comparable<MustacheDocument> {
     public int getIndex() {
         return index;
     }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
 
     public void addApi(MustacheApi wapi) {
         apis.add(wapi);

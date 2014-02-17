@@ -160,6 +160,7 @@ public class OutputTemplate {
             MustacheDocument mustacheDocument = createMustacheDocument(doc);
             addMustacheDocument(mustacheDocument);
         }
+        handleAllZeroIndex();
         Collections.sort(apiDocuments, new Comparator<MustacheDocument>() {
             @Override
             public int compare(MustacheDocument o1, MustacheDocument o2) {
@@ -174,5 +175,22 @@ public class OutputTemplate {
 
     public void setDataTypes(Set<MustacheDataType> dataTypes) {
         this.dataTypes = dataTypes;
+    }
+
+    private void handleAllZeroIndex() {
+        if (apiDocuments.size() < 2) {
+            // only 1, index doesn't matter
+            return;
+        }
+        if (apiDocuments.get(0).getIndex() != apiDocuments.get(1).getIndex()) {
+            // different indexs, no special handling required
+            return;
+        }
+        int i = 0;
+        for (MustacheDocument apiDocument : apiDocuments) {
+            apiDocument.setIndex(i); // requires delete of final modifier
+            i++;
+        }
+
     }
 }
