@@ -16,7 +16,7 @@ public class Car {
     @ApiModelProperty(required = true, value = "car's id")
     private int id;
 
-    @ApiModelProperty(required = true, value = "The brand of the car")
+    @ApiModelProperty(required = true, value = "The brand of the car", allowableValues = "Ford,Toyota, Kia")
     private String brand;
 
     @ApiModelProperty(required = true, value = "The engine parameter of the car")

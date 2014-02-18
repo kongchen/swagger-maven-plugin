@@ -19,6 +19,8 @@ public class MustacheItem {
 
     private String notes;
 
+    private String allowableValue;
+
     public MustacheItem(String name, ModelProperty documentationSchema) {
 
         this.name = name;
@@ -28,6 +30,7 @@ public class MustacheItem {
         this.required = documentationSchema.required();
         this.notes = Utils.getStrInOption(documentationSchema.description());
         this.linkType = TypeUtils.filterBasicTypes(this.linkType);
+        this.allowableValue = Utils.allowableValuesToString(documentationSchema.allowableValues());
     }
 
     public String getName() {
@@ -84,6 +87,14 @@ public class MustacheItem {
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    public String getAllowableValue() {
+        return allowableValue;
+    }
+
+    public void setAllowableValue(String allowableValue) {
+        this.allowableValue = allowableValue;
     }
 
     public void setTypeAsArray(String elementType) {

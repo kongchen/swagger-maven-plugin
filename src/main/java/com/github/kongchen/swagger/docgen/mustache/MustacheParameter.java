@@ -4,13 +4,7 @@ package com.github.kongchen.swagger.docgen.mustache;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.kongchen.swagger.docgen.util.Utils;
-import com.wordnik.swagger.model.AllowableListValues;
-import com.wordnik.swagger.model.AllowableRangeValues;
-import com.wordnik.swagger.model.AllowableValues;
-import com.wordnik.swagger.model.AnyAllowableValues$;
 import com.wordnik.swagger.model.Parameter;
-import scala.collection.JavaConversions;
-import scala.collection.mutable.Buffer;
 
 import static com.github.kongchen.swagger.docgen.TypeUtils.getTrueType;
 
@@ -38,31 +32,8 @@ public class MustacheParameter {
         this.description = Utils.getStrInOption(para.description());
         this.type = para.dataType();
         this.defaultValue = Utils.getStrInOption(para.defaultValue());
-        this.allowableValue = allowableValuesToString(para.allowableValues());
+        this.allowableValue = Utils.allowableValuesToString(para.allowableValues());
         this.access = Utils.getStrInOption(para.paramAccess());
-    }
-
-    private String allowableValuesToString(AllowableValues para) {
-        if (para == null) {
-            return null;
-        }
-        String values = "";
-        if (para instanceof AllowableListValues) {
-            Buffer<String> buffer = ((AllowableListValues) para).values().toBuffer();
-            for (String aVlist : JavaConversions.asJavaList(buffer)) {
-                values += aVlist.trim() + ", ";
-            }
-            values = values.trim();
-            values = values.substring(0, values.length() - 1);
-
-        } else if (para instanceof AllowableRangeValues){
-            String max = ((AllowableRangeValues) para).max();
-            String min = ((AllowableRangeValues) para).min();
-            values = min + " to " + max;
-        } else if (para instanceof AnyAllowableValues$) {
-            return values;
-        }
-        return values;
     }
 
     String getDefaultValue() {
