@@ -168,9 +168,10 @@ public class MavenDocumentSourceTest {
                 type = getActualDataType(aClass, name);
             }
 
-            assertEquals(type, item.getType());
-            assertEquals(a.required(), item.isRequired());
-            assertEquals(a.value(), nullToEmpty(item.getDescription()));
+            assertEquals(aClass.toString() + " type", type, item.getType());
+            assertEquals(aClass.toString() + " required", a.required(), item.isRequired());
+            assertEquals(aClass.toString() + " value", a.value(), nullToEmpty(item.getDescription()));
+            assertEquals(aClass.toString() + " allowableValues", stringToList(a.allowableValues(), ","), stringToList(item.getAllowableValue(), ","));
         }
     }
 
@@ -287,5 +288,21 @@ public class MavenDocumentSourceTest {
 
     private String nullToEmpty(String item) {
         return item == null ? "" : item;
+    }
+
+    // helper function so that we ignore any spaces we trim off or add when we build a string
+    private List<String> stringToList(String srcStr, String token) {
+        if (srcStr == null) {
+            return null;
+        }
+
+        List<String> lst = new ArrayList<String>();
+        String[] array = srcStr.split(token);
+
+        for (String str : array) {
+            lst.add(str.trim());
+        }
+        return lst;
+
     }
 }
