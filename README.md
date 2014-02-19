@@ -12,7 +12,7 @@ This plugin has 2 serials of versions:
 
 See [change log](https://github.com/kongchen/swagger-maven-plugin/blob/master/CHANGES.md) for more details.
 
->To use SNAPSHOT version, you should add plugin repository first:
+>`2.1-SNAPSHOT` is the latest SNAPSHOT version. To use SNAPSHOT version, you should add plugin repository first:
 
 ```
 <pluginRepositories>
