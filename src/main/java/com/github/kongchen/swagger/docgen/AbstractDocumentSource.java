@@ -2,6 +2,7 @@ package com.github.kongchen.swagger.docgen;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.kongchen.swagger.docgen.mustache.OutputTemplate;
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
@@ -95,7 +96,7 @@ public abstract class AbstractDocumentSource {
         return validDocuments;
     }
 
-    public void toSwaggerDocuments() throws GenerateException {
+    public void toSwaggerDocuments(String basePath) throws GenerateException {
         if (swaggerPath == null) {
             return;
         }
@@ -114,8 +115,7 @@ public abstract class AbstractDocumentSource {
         cleanupOlds(dir);
 
         prepareServiceDocument();
-
-        writeInDirectory(dir, serviceDocument);
+        writeInDirectory(dir, serviceDocument, basePath);
         for (ApiListing doc : validDocuments) {
             writeInDirectory(dir, doc);
         }
@@ -183,12 +183,16 @@ public abstract class AbstractDocumentSource {
         }
     }
 
-    private void writeInDirectory(File dir, ResourceListing resourceListing) throws GenerateException {
+    private void writeInDirectory(File dir, ResourceListing resourceListing, String basePath) throws GenerateException {
         String filename = resourcePathToFilename(null);
         try {
             File serviceFile = createFile(dir, filename);
             String json = JsonSerializer.asJson(resourceListing);
             JsonNode tree = mapper.readTree(json);
+            if (basePath != null) {
+                ((ObjectNode)tree).put("basePath",basePath);
+            }
+
             JsonUtil.mapper().writerWithDefaultPrettyPrinter().writeValue(serviceFile, tree);
         } catch (IOException e) {
             throw new GenerateException(e);
