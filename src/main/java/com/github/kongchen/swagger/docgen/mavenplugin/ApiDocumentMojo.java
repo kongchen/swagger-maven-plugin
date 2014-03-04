@@ -62,7 +62,7 @@ public class ApiDocumentMojo extends AbstractMojo {
                 AbstractDocumentSource documentSource = new MavenDocumentSource(apiSource, getLog());
                 documentSource.loadDocuments();
                 documentSource.toDocuments();
-                documentSource.toSwaggerDocuments();
+                documentSource.toSwaggerDocuments(apiSource.getBasePath());
             }
 
         } catch (GenerateException e) {
