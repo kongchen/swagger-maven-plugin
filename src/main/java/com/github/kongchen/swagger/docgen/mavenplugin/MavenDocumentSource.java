@@ -19,6 +19,8 @@ import scala.collection.JavaConversions;
 import scala.collection.mutable.Buffer;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import static java.util.AbstractMap.SimpleEntry;
@@ -64,6 +66,16 @@ public class MavenDocumentSource extends AbstractDocumentSource {
             apiListingReferences.add(apiListingReference);
             acceptDocument(doc);
         }
+        // sort apiListingRefernce by position
+        Collections.sort(apiListingReferences, new Comparator<ApiListingReference>() {
+            @Override
+            public int compare(ApiListingReference o1, ApiListingReference o2) {
+                if (o1 == null && o2 == null) return 0;
+                if (o1 == null && o2 != null) return -1;
+                if (o1 != null && o2 == null) return 1;
+                return  o1.position() - o2.position();
+            }
+        });
         serviceDocument = new ResourceListing(swaggerConfig.apiVersion(), swaggerConfig.swaggerVersion(),
                 scala.collection.immutable.List.fromIterator(JavaConversions.asScalaIterator(apiListingReferences.iterator())),
                 scala.collection.immutable.List.fromIterator(JavaConversions.asScalaIterator(authorizationTypes.iterator())),
