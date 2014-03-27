@@ -9,10 +9,11 @@ This plugin has 2 serials of versions:
 
 - 2.x.x : For [Swagger core version >= 1.3.0] (https://github.com/wordnik/swagger-core/wiki/Changelog#v130-aug-12-2013) swagger-spec 1.2
 > **Latest version `2.0` is available in central repository.**
+`2.1-SNAPSHOT` is the latest SNAPSHOT version.
 
 See [change log](https://github.com/kongchen/swagger-maven-plugin/blob/master/CHANGES.md) for more details.
 
->`2.1-SNAPSHOT` is the latest SNAPSHOT version. To use SNAPSHOT version, you should add plugin repository first:
+> To use SNAPSHOT version, you should add plugin repository first:
 
 ```
 <pluginRepositories>
