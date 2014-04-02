@@ -8,12 +8,12 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.kongchen</groupId>
-    <artifactId>swagger-maven-plugin</artifactId>
+    <artifactId>swagger-plugin-parent</artifactId>
     <version>2.1-SNAPSHOT</version>
-    <packaging>maven-plugin</packaging>
-    <name>Swagger Maven Plugin</name>
+    <packaging>pom</packaging>
+    <name>Swagger Maven Plugin and core library parent</name>
     <description>
-        A maven build plugin which helps you generate API document during build phase
+        A maven build plugin and a core library which helps you generate API document during build phase
     </description>
     <url>https://github.com/kongchen/swagger-maven-plugin</url>
     <licenses>
@@ -42,83 +42,11 @@
         <github.global.server>github</github.global.server>
     </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-artifact</artifactId>
-            <version>${maven.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-plugin-api</artifactId>
-            <version>${maven.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-project</artifactId>
-            <version>${maven.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-model</artifactId>
-            <version>${maven.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-core</artifactId>
-            <version>2.0.9</version>
-        </dependency>
+    <modules>
+        <module>core</module>
+        <module>mavenplugin</module>
+    </modules>
 
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.2.2</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.github.spullara.mustache.java</groupId>
-            <artifactId>compiler</artifactId>
-            <version>0.8.12</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.wordnik</groupId>
-            <artifactId>swagger-jaxrs_2.10</artifactId>
-            <version>1.3.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.reflections</groupId>
-            <artifactId>reflections</artifactId>
-            <version>0.9.9-RC1</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.16</version>
-        </dependency>
-        <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-            <version>6.4</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>javax.ws.rs</groupId>
-            <artifactId>javax.ws.rs-api</artifactId>
-            <version>2.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.wordnik</groupId>
-            <artifactId>swagger-jersey-jaxrs_2.10</artifactId>
-            <version>1.3.2</version>
-        </dependency>
-
-    </dependencies>
     <build>
         <plugins>
             <plugin>

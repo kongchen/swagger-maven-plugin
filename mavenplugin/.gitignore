@@ -1,0 +1,5 @@
+/target/
+/apidocsf/
+/test.html
+.idea
+*.iml
