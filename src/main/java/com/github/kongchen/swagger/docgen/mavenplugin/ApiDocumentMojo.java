@@ -41,12 +41,9 @@ public class ApiDocumentMojo extends AbstractMojo {
         if (apiSources == null) {
             throw new MojoFailureException("You must configure at least one apiSources element");
         }
-        try {
-            Class<?> tryClass = Class.forName("com.wordnik.swagger.annotations.ApiErrors");
+        if (useSwaggerSpec11()) {
             throw new MojoExecutionException("You may use an old version of swagger which is not supported by swagger-maven-plugin 2.0+\n" +
-                    "swagger-maven-plugin 2.0+ only supports swagger-core 1.3.x");
-        } catch (ClassNotFoundException e) {
-            //ignore
+                "swagger-maven-plugin 2.0+ only supports swagger-core 1.3.x");
         }
 
         try {
@@ -69,6 +66,15 @@ public class ApiDocumentMojo extends AbstractMojo {
             throw new MojoFailureException(e.getMessage(), e);
         } catch (Exception e) {
             throw new MojoExecutionException(e.getMessage(), e);
+        }
+    }
+
+    private boolean useSwaggerSpec11() {
+        try {
+            Class<?> tryClass = Class.forName("com.wordnik.swagger.annotations.ApiErrors");
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
         }
     }
 }
