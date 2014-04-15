@@ -28,6 +28,7 @@ public class MustacheItem {
         this.linkType = this.type;
         this.description = Utils.getStrInOption(documentationSchema.description());
         this.required = documentationSchema.required();
+        this.access = Utils.getStrInOption(documentationSchema.access());
         this.notes = Utils.getStrInOption(documentationSchema.description());
         this.linkType = TypeUtils.filterBasicTypes(this.linkType);
         this.allowableValue = Utils.allowableValuesToString(documentationSchema.allowableValues());
