@@ -19,7 +19,7 @@ import java.util.List;
  * @goal generate
  * @phase compile
  * @configurator include-project-dependencies
- * @requiresDependencyResolution runtime
+ * @requiresDependencyResolution compile+runtime
  */
 public class ApiDocumentMojo extends AbstractMojo {
 
