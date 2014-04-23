@@ -46,16 +46,16 @@ public class IncludeProjectDependenciesComponentConfigurator extends AbstractCom
     }
 
     private void addProjectDependenciesToClassRealm(ExpressionEvaluator expressionEvaluator, ClassRealm containerRealm) throws ComponentConfigurationException {
-        List<String> runtimeClasspathElements;
+        List<String> compileClasspathElements;
         try {
             //noinspection unchecked
-            runtimeClasspathElements = (List<String>) expressionEvaluator.evaluate("${project.runtimeClasspathElements}");
+            compileClasspathElements = (List<String>) expressionEvaluator.evaluate("${project.compileClasspathElements}");
         } catch (ExpressionEvaluationException e) {
-            throw new ComponentConfigurationException("There was a problem evaluating: ${project.runtimeClasspathElements}", e);
+            throw new ComponentConfigurationException("There was a problem evaluating: ${project.compileClasspathElements}", e);
         }
 
         // Add the project dependencies to the ClassRealm
-        final URL[] urls = buildURLs(runtimeClasspathElements);
+        final URL[] urls = buildURLs(compileClasspathElements);
         for (URL url : urls) {
             containerRealm.addConstituent(url);
         }
