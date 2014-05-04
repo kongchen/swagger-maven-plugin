@@ -1,22 +1,25 @@
+**2.2-SNAPSHOT**
+- 05/04/2014: *Add a new parameter `swaggerUIDocBasePath`, which is only used in swagger output. `basePath` will not be horned in service.json if `swaggerUIDocBasePath` is configured.*
+
 **04/13/2014 2.1**
-- 04/13/2014 Several issues fixed
+- 04/13/2014: *Several issues fixed*
 
 
 **02/15/2014 2.0**
-- 02/01/2014 Fully support swagger spec [1.2](https://github.com/wordnik/swagger-core/wiki/1.2-transition), do not support swagger core 1.2.x any more.
-             Fix issue #33 #35 #31 #20 #29
-- 02/01/2014 Fix issue #32
+- 02/01/2014: *Fully support swagger spec [1.2](https://github.com/wordnik/swagger-core/wiki/1.2-transition), do not support swagger core 1.2.x any more.*
+             *Fix issue #33 #35 #31 #20 #29*
+- 02/01/2014: *Fix issue #32*
 
 
 
 **01/20/2014 1.1.3-SNAPSHOT**
-- 01/20/2014： *revert pull #27*
-- 01/20/2014： *accept pull #22*
-- 01/20/2014： *fix path issue when `useOutputFlatStructure` is false*
+- 01/20/2014: *revert pull #27*
+- 01/20/2014: *accept pull #22*
+- 01/20/2014: *fix path issue when `useOutputFlatStructure` is false*
 
 **01/19/2014 1.1.2**
-- 01/19/2014： *accept pull #27*
-- 01/19/2014： *accept pull #28*
+- 01/19/2014: *accept pull #27*
+- 01/19/2014: *accept pull #28*
 - 07/18/2013:  *add `useOutputFlatStructure` and `mustacheFileRoot` in configuration.* 
 - 07/23/2013:  *Maven 3.1.0 compat (pull#15)*
 - 07/31/2013:  *fix issue #17*
