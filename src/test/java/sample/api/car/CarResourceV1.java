@@ -1,7 +1,6 @@
 package sample.api.car;
 
 import com.wordnik.swagger.annotations.*;
-import javassist.NotFoundException;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;

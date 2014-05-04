@@ -65,6 +65,7 @@ See [change log](https://github.com/kongchen/swagger-maven-plugin/blob/master/CH
                                      https://raw.github.com/kongchen/api-doc-template/master/v2.0/markdown.mustache
                             </outputTemplate>
                             <outputPath>generated/strapdown.html</outputPath>
+                            <swaggerUIDocBasePath>http://www.example.com/apidocsf</swaggerUIDocBasePath>
                             <!--swaggerDirectory>generated/apidocs</swaggerDirectory-->
                             <!--useOutputFlatStructure>false</useOutputFlatStructure-->
                             <!--mustacheFileRoot>${basedir}/src/main/resources/</mustacheFileRoot-->
