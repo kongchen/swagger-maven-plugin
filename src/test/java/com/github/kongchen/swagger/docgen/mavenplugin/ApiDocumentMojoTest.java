@@ -39,10 +39,12 @@ public class ApiDocumentMojoTest {
         apiSource = new ApiSource();
         apiSource.setApiVersion("1.0");
         apiSource.setBasePath("http://example.com");
+        apiSource.setSwaggerUIDocBasePath("http://localhost/apidocsf");
         apiSource.setLocations("sample.api");
         apiSource.setOutputPath("temp.html");
         apiSource.setOutputTemplate("https://raw2.github.com/kongchen/api-doc-template/master/v1.1/strapdown.html.mustache");
         apiSource.setSwaggerDirectory(tmpSwaggerOutputDir);
+        apiSource.setUseOutputFlatStructure(false);
 
         apiSources.add(apiSource);
         mojo.setApiSources(apiSources);

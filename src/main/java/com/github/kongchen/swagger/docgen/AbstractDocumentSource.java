@@ -88,7 +88,14 @@ public abstract class AbstractDocumentSource {
     }
 
     protected void acceptDocument(ApiListing doc) {
-        ApiListing newDoc = new ApiListing(doc.apiVersion(), doc.swaggerVersion(), this.basePath, doc.resourcePath(), doc.produces(), doc.consumes(), doc.protocols(), doc.authorizations(), doc.apis(), doc.models(), doc.description(), doc.position());
+        String basePath;
+        // will append api's basePath. However, apiReader does not read it correctly by now
+        if (doc.basePath() != null) {
+            basePath = this.basePath + doc.basePath();
+        } else {
+            basePath = this.basePath;
+        }
+        ApiListing newDoc = new ApiListing(doc.apiVersion(), doc.swaggerVersion(), basePath, doc.resourcePath(), doc.produces(), doc.consumes(), doc.protocols(), doc.authorizations(), doc.apis(), doc.models(), doc.description(), doc.position());
         validDocuments.add(newDoc);
     }
 
@@ -96,7 +103,7 @@ public abstract class AbstractDocumentSource {
         return validDocuments;
     }
 
-    public void toSwaggerDocuments(String basePath) throws GenerateException {
+    public void toSwaggerDocuments(String swaggerUIDocBasePath) throws GenerateException {
         if (swaggerPath == null) {
             return;
         }
@@ -115,9 +122,10 @@ public abstract class AbstractDocumentSource {
         cleanupOlds(dir);
 
         prepareServiceDocument();
-        writeInDirectory(dir, serviceDocument, basePath);
+        writeInDirectory(dir, serviceDocument, swaggerUIDocBasePath);
         for (ApiListing doc : validDocuments) {
-            writeInDirectory(dir, doc);
+            //rewrite basePath in swagger-ui output file using the value in configuration file.
+            writeInDirectory(dir, doc, swaggerUIDocBasePath);
         }
     }
 
@@ -171,12 +179,15 @@ public abstract class AbstractDocumentSource {
         return name + ".json";
     }
 
-    private void writeInDirectory(File dir, ApiListing apiListing) throws GenerateException {
+    private void writeInDirectory(File dir, ApiListing apiListing, String basePath) throws GenerateException {
         String filename = resourcePathToFilename(apiListing.resourcePath());
         try {
             File serviceFile = createFile(dir, filename);
             String json = JsonSerializer.asJson(apiListing);
             JsonNode tree = mapper.readTree(json);
+            if (basePath != null) {
+                ((ObjectNode)tree).put("basePath",basePath);
+            }
             JsonUtil.mapper().writerWithDefaultPrettyPrinter().writeValue(serviceFile, tree);
         } catch (IOException e) {
             throw new GenerateException(e);

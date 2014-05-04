@@ -48,7 +48,17 @@ public class ApiSource {
 
     public String mustacheFileRoot;
 
+
+    /**
+     * @parameter
+     */
     public boolean useOutputFlatStructure = true;
+
+
+    /**
+     * @parameter
+     */
+    private String swaggerUIDocBasePath;
 
     public Set<Class> getValidClasses() throws GenerateException {
         Set<Class> classes = new HashSet<Class>();
@@ -139,4 +149,11 @@ public class ApiSource {
         this.swaggerDirectory = swaggerDirectory;
     }
 
+    public void setSwaggerUIDocBasePath(String swaggerUIDocBasePath) {
+        this.swaggerUIDocBasePath = swaggerUIDocBasePath;
+    }
+
+    public String getSwaggerUIDocBasePath() {
+        return swaggerUIDocBasePath;
+    }
 }
