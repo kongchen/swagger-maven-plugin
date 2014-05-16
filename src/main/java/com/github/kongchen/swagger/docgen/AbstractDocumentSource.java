@@ -122,10 +122,10 @@ public abstract class AbstractDocumentSource {
         cleanupOlds(dir);
 
         prepareServiceDocument();
+        //rewrite basePath in swagger-ui output file using the value in configuration file.
         writeInDirectory(dir, serviceDocument, swaggerUIDocBasePath);
         for (ApiListing doc : validDocuments) {
-            //rewrite basePath in swagger-ui output file using the value in configuration file.
-            writeInDirectory(dir, doc, swaggerUIDocBasePath);
+            writeInDirectory(dir, doc, basePath);
         }
     }
 
