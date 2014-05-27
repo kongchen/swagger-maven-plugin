@@ -4,12 +4,14 @@ This plugin helps you **generate API documents** in build phase according to [cu
 [Versions](https://github.com/kongchen/swagger-maven-plugin/blob/master/CHANGES.md)
 ==
 This plugin has 2 serials of versions:
+
+- 2.x.x : For [Swagger core version >= 1.3.0] (https://github.com/wordnik/swagger-core/wiki/Changelog#v130-aug-12-2013) swagger-spec 1.2
+> **Latest version `2.2` is available in central repository.**
+`2.3-SNAPSHOT` is the latest SNAPSHOT version.
+
 - 1.x.x : For [Swagger core version 1.2.x](https://github.com/wordnik/swagger-core/wiki/Changelog#v125-jun-19-2013) swagger-spec 1.1
 > **Latest version `1.1.3-SNAPSHOT` is available in sonatype repository.**
 
-- 2.x.x : For [Swagger core version >= 1.3.0] (https://github.com/wordnik/swagger-core/wiki/Changelog#v130-aug-12-2013) swagger-spec 1.2
-> **Latest version `2.1` is available in central repository.**
-`2.2-SNAPSHOT` is the latest SNAPSHOT version.
 
 See [change log](https://github.com/kongchen/swagger-maven-plugin/blob/master/CHANGES.md) for more details.
 
