@@ -1,4 +1,4 @@
-**2.2-SNAPSHOT**
+**05/28/2014 2.2**
 - 05/04/2014: *Add a new parameter `swaggerUIDocBasePath`, which is only used in swagger output. `basePath` will not be horned in service.json if `swaggerUIDocBasePath` is configured.*
 
 **04/13/2014 2.1**
