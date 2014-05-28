@@ -187,6 +187,16 @@ public class MustacheDocument implements Comparable<MustacheDocument> {
                 mustacheItemList.add(mustacheItem);
             }
         }
+        Collections.sort(mustacheItemList, new Comparator<MustacheItem>() {
+            @Override
+            public int compare(MustacheItem o1, MustacheItem o2) {
+                if (o1 != null && o2 != null) {
+                    return o1.getPosition() - o2.getPosition();
+                } else {
+                    return 0;
+                }
+            }
+        });
         return mustacheItemList;
     }
 

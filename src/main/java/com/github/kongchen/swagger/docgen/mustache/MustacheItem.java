@@ -21,6 +21,8 @@ public class MustacheItem {
 
     private String allowableValue;
 
+    private int position;
+
     public MustacheItem(String name, ModelProperty documentationSchema) {
 
         this.name = name;
@@ -31,6 +33,7 @@ public class MustacheItem {
         this.notes = Utils.getStrInOption(documentationSchema.description());
         this.linkType = TypeUtils.filterBasicTypes(this.linkType);
         this.allowableValue = Utils.allowableValuesToString(documentationSchema.allowableValues());
+        this.position = documentationSchema.position();
     }
 
     public String getName() {
@@ -100,5 +103,9 @@ public class MustacheItem {
     public void setTypeAsArray(String elementType) {
         this.type = TypeUtils.AsArrayType(elementType);
         setLinkType(TypeUtils.filterBasicTypes(elementType));
+    }
+
+    public int getPosition() {
+        return position;
     }
 }
