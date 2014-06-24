@@ -67,8 +67,8 @@ See [change log](https://github.com/kongchen/swagger-maven-plugin/blob/master/CH
                                      https://raw.github.com/kongchen/api-doc-template/master/v2.0/markdown.mustache
                             </outputTemplate>
                             <outputPath>generated/strapdown.html</outputPath>
-                            <swaggerUIDocBasePath>http://www.example.com/apidocsf</swaggerUIDocBasePath>
                             <!--swaggerDirectory>generated/apidocs</swaggerDirectory-->
+                            <!--swaggerUIDocBasePath>http://www.example.com/restapi/doc</swaggerUIDocBasePath-->
                             <!--useOutputFlatStructure>false</useOutputFlatStructure-->
                             <!--mustacheFileRoot>${basedir}/src/main/resources/</mustacheFileRoot-->
                         </apiSource>
@@ -94,26 +94,30 @@ See [change log](https://github.com/kongchen/swagger-maven-plugin/blob/master/CH
 
 - One ```apiSource``` can be considered as a set of APIs for one ```apiVersion``` in API's ```basePath```.
 - Java classes containing Swagger's annotation ```@Api```, or Java packages containing those classes can be configured in ```locations```, using ```;``` as the delimiter.
-- ```outputTemplate``` is the path of the mustache template file.
-
- >It supports a remote path such as https://raw.github.com/kongchen/api-doc-template/master/v2.0/markdown.mustache
- but local file is highly recommanded because:
- 
-    > 1. You can modify the template to match your requirement easily.
-    > 2. Mustache can use `>localfile` for mustache partials, but you should put the partials in `mustacheFileRoot` if any.
-
-     >E.g: The template https://raw.github.com/kongchen/api-doc-template/master/v2.0/strapdown.html.mustache uses
-     [`markdown.mustache`](https://raw.github.com/kongchen/api-doc-template/master/v2.0/markdown.mustache) as a partial by this way,
-     to use `strapdown.html.mustache` you should put `markdown.mustache` in your local path and tell the path to plugin via `mustacheFileRoot`.
-- ```outputPath``` is the path of your output file, not existed parent directory of the file will be created.
+- ```outputTemplate``` is the path of a mustache template file, see more details in next section.
+- ```mustacheFileRoot``` is the root path of your mustach template file, see more details in next section.
+- ```outputPath``` is the path of your output file, not existed parent directories will be created.
 - If ```swaggerDirectory``` is configured, the plugin will also generate a Swagger resource listing suitable for feeding to swagger-ui.
   - ```useOutputFlatStructure``` indicates whether swagger output will be created in subdirs by path defined in @com.wordnik.swagger.annotations.Api#value (false), or the filename will be the path with replaced slashes to underscores (true). Default: true
+  - Generally, the `baseUrl` in `service.json` is always as same as `<basePath>` you specified. However, you can use ```swaggerUIDocBasePath``` to overwrite it.
 
 You can specify several ```apiSources``` with different api versions and base paths.
 
 # About the template file
-There's a [standalone project](https://github.com/kongchen/api-doc-template) for the template files, see more details there and welcome to pull.
 
+```outputTemplate``` is the path of a mustache template file.
+
+It supports a remote path such as https://raw.github.com/kongchen/api-doc-template/master/v2.0/markdown.mustache but local file is highly recommanded because:
+
+1. You can modify the template to match your requirement easily.
+1. Mustache can use `>localfile` for mustache partials, but you should put the partials in `mustacheFileRoot` if any.
+
+>E.g: 
+The template https://raw.github.com/kongchen/api-doc-template/master/v2.0/strapdown.html.mustache uses
+     [`markdown.mustache`](https://raw.github.com/kongchen/api-doc-template/master/v2.0/markdown.mustache) as a partial by this way,
+     to use `strapdown.html.mustache` you should put `markdown.mustache` in your local path and tell the path to plugin via `mustacheFileRoot`.
+
+There's a [standalone project](https://github.com/kongchen/api-doc-template) for the template files, see more details there and welcome to send pull request.
 
 # A Sample
 Check out this [sample project](https://github.com/kongchen/swagger-maven-example) to see how this happens.
