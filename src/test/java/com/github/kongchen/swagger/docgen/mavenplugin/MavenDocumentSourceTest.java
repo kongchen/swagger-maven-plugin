@@ -38,6 +38,7 @@ public class MavenDocumentSourceTest {
         apiSource.setOutputPath("sample.html");
         apiSource.setOutputTemplate("https://github.com/kongchen/api-doc-template/blob/master/v1.1/html.mustache");
         apiSource.setSwaggerDirectory(null);
+        apiSource.setOverridingModels("swagger-overriding-models.json");
     }
 
     @Test

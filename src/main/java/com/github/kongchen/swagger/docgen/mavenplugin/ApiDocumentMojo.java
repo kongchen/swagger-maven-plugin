@@ -2,6 +2,9 @@ package com.github.kongchen.swagger.docgen.mavenplugin;
 
 import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
 import com.github.kongchen.swagger.docgen.GenerateException;
+import com.wordnik.swagger.converter.ModelConverters;
+import com.wordnik.swagger.converter.OverrideConverter;
+
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -57,6 +60,7 @@ public class ApiDocumentMojo extends AbstractMojo {
                     }
                 }
                 AbstractDocumentSource documentSource = new MavenDocumentSource(apiSource, getLog());
+                documentSource.loadOverridingModels();
                 documentSource.loadDocuments();
                 documentSource.toDocuments();
                 documentSource.toSwaggerDocuments(

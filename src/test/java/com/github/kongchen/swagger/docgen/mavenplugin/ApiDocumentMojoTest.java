@@ -45,6 +45,7 @@ public class ApiDocumentMojoTest {
         apiSource.setOutputTemplate("https://raw2.github.com/kongchen/api-doc-template/master/v1.1/strapdown.html.mustache");
         apiSource.setSwaggerDirectory(tmpSwaggerOutputDir);
         apiSource.setUseOutputFlatStructure(false);
+        apiSource.setOverridingModels("/swagger-overriding-models.json");
 
         apiSources.add(apiSource);
         mojo.setApiSources(apiSources);
