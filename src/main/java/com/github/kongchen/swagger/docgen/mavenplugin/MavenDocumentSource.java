@@ -12,7 +12,9 @@ import com.wordnik.swagger.model.ApiListing;
 import com.wordnik.swagger.model.ApiListingReference;
 import com.wordnik.swagger.model.AuthorizationType;
 import com.wordnik.swagger.model.ResourceListing;
+
 import org.apache.maven.plugin.logging.Log;
+
 import scala.None;
 import scala.Option;
 import scala.collection.JavaConversions;
@@ -22,8 +24,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-
-import static java.util.AbstractMap.SimpleEntry;
 
 /**
  * Created with IntelliJ IDEA.
@@ -36,7 +36,7 @@ public class MavenDocumentSource extends AbstractDocumentSource {
 
     public MavenDocumentSource(ApiSource apiSource, Log log) {
         super(new LogAdapter(log),
-                apiSource.getOutputPath(), apiSource.getOutputTemplate(), apiSource.getSwaggerDirectory(), apiSource.mustacheFileRoot, apiSource.isUseOutputFlatStructure());
+                apiSource.getOutputPath(), apiSource.getOutputTemplate(), apiSource.getSwaggerDirectory(), apiSource.mustacheFileRoot, apiSource.isUseOutputFlatStructure(), apiSource.getOverridingModels());
 
         setApiVersion(apiSource.getApiVersion());
         setBasePath(apiSource.getBasePath());
