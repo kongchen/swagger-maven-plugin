@@ -5,6 +5,8 @@ import com.wordnik.swagger.annotations.ApiModelProperty;
 
 import java.util.List;
 
+import org.joda.time.DateTime;
+
 /**
  * Created with IntelliJ IDEA.
  *
@@ -33,6 +35,9 @@ public class Car {
 
     @ApiModelProperty(required = false, value = "Repair history")
     private List<String> repairHistory;
+
+    @ApiModelProperty(required = false, value = "First registration", dataType = "Date")
+    private DateTime firstRegistration;
 
     public List<String> getRepairHistory() {
         return repairHistory;
@@ -89,4 +94,12 @@ public class Car {
     public void setId(int id) {
         this.id = id;
     }
+
+	public DateTime getFirstRegistration() {
+		return firstRegistration;
+	}
+
+	public void setFirstRegistration(DateTime firstRegistration) {
+		this.firstRegistration = firstRegistration;
+	}
 }
