@@ -71,6 +71,7 @@ See [change log](https://github.com/kongchen/swagger-maven-plugin/blob/master/CH
                             <!--swaggerUIDocBasePath>http://www.example.com/restapi/doc</swaggerUIDocBasePath-->
                             <!--useOutputFlatStructure>false</useOutputFlatStructure-->
                             <!--mustacheFileRoot>${basedir}/src/main/resources/</mustacheFileRoot-->
+                            <!--overridingModels>/swagger-overriding-models.json</overridingModels-->
                         </apiSource>
                     </apiSources>
                 </configuration>
@@ -100,6 +101,7 @@ See [change log](https://github.com/kongchen/swagger-maven-plugin/blob/master/CH
 - If ```swaggerDirectory``` is configured, the plugin will also generate a Swagger resource listing suitable for feeding to swagger-ui.
   - ```useOutputFlatStructure``` indicates whether swagger output will be created in subdirs by path defined in @com.wordnik.swagger.annotations.Api#value (false), or the filename will be the path with replaced slashes to underscores (true). Default: true
   - Generally, the `baseUrl` in `service.json` is always as same as `<basePath>` you specified. However, you can use ```swaggerUIDocBasePath``` to overwrite it.
+- ```overridingModels``` is the name of *overridingModels* file, see more details in next section.
 
 You can specify several ```apiSources``` with different api versions and base paths.
 
@@ -118,6 +120,28 @@ The template https://raw.github.com/kongchen/api-doc-template/master/v2.0/strapd
      to use `strapdown.html.mustache` you should put `markdown.mustache` in your local path and tell the path to plugin via `mustacheFileRoot`.
 
 There's a [standalone project](https://github.com/kongchen/api-doc-template) for the template files, see more details there and welcome to send pull request.
+
+# About the overridingModels file
+
+```overridingModels``` is the name of *overridingModels* file.
+
+It will be loaded with [Class#getResourceAsStream](http://docs.oracle.com/javase/7/docs/api/java/lang/Class.html#getResourceAsStream(java.lang.String)).
+
+Example file below. Note that you can name every mapping the way you want - it's not used for anything. *className* and *jsonString* are used as described [here](https://github.com/wordnik/swagger-core/wiki/overriding-models#in-java-with-swagger-core-version-13x) to create *OverrideConverter* and add it to the *ModelConverters*. 
+```json
+{
+	"DateTimeMapping" :
+	{
+		"className" : "org.joda.time.DateTime",
+		"jsonString" : "{\"id\": \"DateTime\",\"properties\": {\"value\": {\"required\": true, \"description\": \"Date in ISO-8601 format\", \"notes\": \"Add any notes you like here\", \"type\": \"string\", \"format\": \"date-time\"}}}"
+	},
+	"DateMidnightMapping" :
+	{
+		"className" : "org.joda.time.DateMidnight",
+		"jsonString" : "{\"id\": \"DateTime\",\"properties\": {\"value\": {\"required\": true, \"description\": \"Date in ISO-8601 format\", \"notes\": \"Add any notes you like here\", \"type\": \"string\", \"format\": \"date-time\"}}}"
+	}
+}
+```
 
 # A Sample
 Check out this [sample project](https://github.com/kongchen/swagger-maven-example) to see how this happens.

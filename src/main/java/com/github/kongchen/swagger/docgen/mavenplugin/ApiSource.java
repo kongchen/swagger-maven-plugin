@@ -60,6 +60,11 @@ public class ApiSource {
      */
     private String swaggerUIDocBasePath;
 
+    /**
+     * @parameter
+     */
+    private String overridingModels;
+
     public Set<Class> getValidClasses() throws GenerateException {
         Set<Class> classes = new HashSet<Class>();
         if (getLocations() == null) {
@@ -156,4 +161,12 @@ public class ApiSource {
     public String getSwaggerUIDocBasePath() {
         return swaggerUIDocBasePath;
     }
+
+	public String getOverridingModels() {
+		return overridingModels;
+	}
+
+	public void setOverridingModels(String overridingModels) {
+		this.overridingModels = overridingModels;
+	}
 }

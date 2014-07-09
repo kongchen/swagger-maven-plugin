@@ -8,12 +8,14 @@ import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
 import com.github.kongchen.swagger.docgen.LogAdapter;
 import com.wordnik.swagger.model.ApiDescription;
 import com.wordnik.swagger.model.ApiListing;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Logger;
+
 import scala.collection.Iterator;
 
 import java.io.IOException;
@@ -35,8 +37,8 @@ public class RemoteDocumentSource extends AbstractDocumentSource {
 
     private boolean withFormatSuffix = true;
 
-    public RemoteDocumentSource(LogAdapter logAdapter, URI requestURI, String outputTpl, String outputPath, String swaggerOutput, String mustacheFileRoot, boolean useOutputFlatStructure) {
-        super(logAdapter, outputPath, outputTpl, swaggerOutput, mustacheFileRoot, useOutputFlatStructure);
+    public RemoteDocumentSource(LogAdapter logAdapter, URI requestURI, String outputTpl, String outputPath, String swaggerOutput, String mustacheFileRoot, boolean useOutputFlatStructure, String overridingModels) {
+        super(logAdapter, outputPath, outputTpl, swaggerOutput, mustacheFileRoot, useOutputFlatStructure, overridingModels);
         LOG = new LogAdapter(Logger.getLogger(RemoteDocumentSource.class));
         this.requestURI = requestURI;
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
