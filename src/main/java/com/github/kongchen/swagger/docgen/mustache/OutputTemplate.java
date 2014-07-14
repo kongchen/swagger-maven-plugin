@@ -186,6 +186,7 @@ public class OutputTemplate {
             // different indexs, no special handling required
             return;
         }
+        Collections.sort(apiDocuments);
         int i = 0;
         for (MustacheDocument apiDocument : apiDocuments) {
             apiDocument.setIndex(i); // requires delete of final modifier
