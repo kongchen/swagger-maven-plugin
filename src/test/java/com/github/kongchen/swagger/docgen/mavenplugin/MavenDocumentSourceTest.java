@@ -89,9 +89,9 @@ public class MavenDocumentSourceTest {
                             Assert.assertEquals("application/json, application/*",
                                     op.getRequestHeader().getParas().get(0).getAllowableValue());
                             Assert.assertEquals(op.getErrorResponses().size(), 2);
-                            Assert.assertEquals(op.getErrorResponses().get(0).message(), "Invalid ID supplied");
-                            Assert.assertEquals(op.getErrorResponses().get(0).code(), 400);
-                            Assert.assertEquals(op.getErrorResponses().get(1).code(), 404);
+                            Assert.assertEquals(op.getErrorResponses().get(0).getMessage(), "Invalid ID supplied");
+                            Assert.assertEquals(op.getErrorResponses().get(0).getCode(), 400);
+                            Assert.assertEquals(op.getErrorResponses().get(1).getCode(), 404);
                             Assert.assertEquals(op.getAuthorizations().get(0).getType(), "oauth2");
                             Assert.assertEquals(op.getAuthorizations().get(0).getAuthorizationScopes().get(0).description(), "car1 des get");
                         }
