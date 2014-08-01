@@ -95,9 +95,9 @@ See [change log](https://github.com/kongchen/swagger-maven-plugin/blob/master/CH
 
 - One ```apiSource``` can be considered as a set of APIs for one ```apiVersion``` in API's ```basePath```.
 - Java classes containing Swagger's annotation ```@Api```, or Java packages containing those classes can be configured in ```locations```, using ```;``` as the delimiter.
-- ```outputTemplate``` is the path of a mustache template file, see more details in next section.
+- ```outputTemplate``` is the path of a mustache template file, see more details in next section. If you don't want to generate html api just don't set it.
 - ```mustacheFileRoot``` is the root path of your mustach template file, see more details in next section.
-- ```outputPath``` is the path of your output file, not existed parent directories will be created.
+- ```outputPath``` is the path of your output file, not existed parent directories will be created. If you don't want to generate html api just don't set it.
 - If ```swaggerDirectory``` is configured, the plugin will also generate a Swagger resource listing suitable for feeding to swagger-ui.
   - ```useOutputFlatStructure``` indicates whether swagger output will be created in subdirs by path defined in @com.wordnik.swagger.annotations.Api#value (false), or the filename will be the path with replaced slashes to underscores (true). Default: true
   - Generally, the `baseUrl` in `service.json` is always as same as `<basePath>` you specified. However, you can use ```swaggerUIDocBasePath``` to overwrite it.
