@@ -52,17 +52,23 @@ public class ApiDocumentMojo extends AbstractMojo {
         try {
             getLog().debug(apiSources.toString());
             for (ApiSource apiSource : apiSources) {
-                File outputDirectory = new File(apiSource.getOutputPath()).getParentFile();
-                if (outputDirectory != null && !outputDirectory.exists()) {
-                    if (!outputDirectory.mkdirs()) {
-                        throw new MojoExecutionException("Create directory[" +
-                                apiSource.getOutputPath() + "] for output failed.");
-                    }
-                }
+
                 AbstractDocumentSource documentSource = new MavenDocumentSource(apiSource, getLog());
                 documentSource.loadOverridingModels();
                 documentSource.loadDocuments();
-                documentSource.toDocuments();
+				if (apiSource.getOutputPath() != null){
+					File outputDirectory = new File(apiSource.getOutputPath()).getParentFile();
+					if (outputDirectory != null && !outputDirectory.exists()) {
+						if (!outputDirectory.mkdirs()) {
+							throw new MojoExecutionException("Create directory[" +
+									apiSource.getOutputPath() + "] for output failed.");
+						}
+					}
+				}
+				if (apiSource.getOutputTemplate()!=null)
+				{
+					documentSource.toDocuments();
+				}
                 documentSource.toSwaggerDocuments(
                         apiSource.getSwaggerUIDocBasePath() == null
                                 ? apiSource.getBasePath()
