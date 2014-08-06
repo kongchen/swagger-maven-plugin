@@ -26,6 +26,8 @@ public class OutputTemplate {
 
     private Set<MustacheDataType> dataTypes = new TreeSet<MustacheDataType>();
 
+    private Set<MustacheEnumType> enumTypes = new TreeSet<MustacheEnumType>();
+
     public OutputTemplate(AbstractDocumentSource docSource) {
         feedSource(docSource);
     }
@@ -42,6 +44,10 @@ public class OutputTemplate {
 
     public Set<MustacheDataType> getDataTypes() {
         return dataTypes;
+    }
+
+    public Set<MustacheEnumType> getEnumTypes() {
+        return enumTypes;
     }
 
     public void addDateType(MustacheDocument mustacheDocument, MustacheDataType dataType) {
@@ -101,6 +107,9 @@ public class OutputTemplate {
                 mustacheOperation = new MustacheOperation(mustacheDocument, op);
                 mustacheApi.addOperation(mustacheOperation);
                 addResponseType(mustacheDocument, mustacheOperation.getResponseClass());
+                for (MustacheResponseClass responseClass : mustacheOperation.getResponseClasses()) {
+                    addResponseType(mustacheDocument, responseClass);
+                }
             }
 
             mustacheDocument.addApi(mustacheApi);
@@ -110,6 +119,10 @@ public class OutputTemplate {
             MustacheDataType dataType = new MustacheDataType(mustacheDocument, requestType);
 
             addDateType(mustacheDocument, dataType);
+        }
+
+        for (MustacheEnumType enumType : mustacheDocument.getEnumTypes()) {
+            enumTypes.add(enumType);
         }
 
         Set<String> missedTypes = new LinkedHashSet<String>();
