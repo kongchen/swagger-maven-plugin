@@ -65,7 +65,12 @@ public class ApiSource {
      */
     private String overridingModels;
 
-    public Set<Class> getValidClasses() throws GenerateException {
+	/**
+	 * Information about swagger filter that will be used for prefiltering
+	 */
+	private String swaggerInternalFilter;
+
+	public Set<Class> getValidClasses() throws GenerateException {
         Set<Class> classes = new HashSet<Class>();
         if (getLocations() == null) {
             Set<Class<?>> c = new Reflections("").getTypesAnnotatedWith(Api.class);
@@ -168,5 +173,15 @@ public class ApiSource {
 
 	public void setOverridingModels(String overridingModels) {
 		this.overridingModels = overridingModels;
+	}
+
+	public String getSwaggerInternalFilter()
+	{
+		return swaggerInternalFilter;
+	}
+
+	public void setSwaggerInternalFilter(String swaggerInternalFilter)
+	{
+		this.swaggerInternalFilter = swaggerInternalFilter;
 	}
 }

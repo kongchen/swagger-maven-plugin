@@ -4,20 +4,22 @@ import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
 import com.github.kongchen.swagger.docgen.GenerateException;
 import com.github.kongchen.swagger.docgen.LogAdapter;
 import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.config.FilterFactory;
+import com.wordnik.swagger.config.FilterFactory$;
 import com.wordnik.swagger.config.SwaggerConfig;
 import com.wordnik.swagger.core.SwaggerSpec;
+import com.wordnik.swagger.core.filter.SpecFilter;
+import com.wordnik.swagger.core.filter.SwaggerSpecFilter;
 import com.wordnik.swagger.jaxrs.JaxrsApiReader;
 import com.wordnik.swagger.jaxrs.reader.DefaultJaxrsApiReader;
-import com.wordnik.swagger.model.ApiListing;
-import com.wordnik.swagger.model.ApiListingReference;
-import com.wordnik.swagger.model.AuthorizationType;
-import com.wordnik.swagger.model.ResourceListing;
+import com.wordnik.swagger.model.*;
 
 import org.apache.maven.plugin.logging.Log;
 
 import scala.None;
 import scala.Option;
 import scala.collection.JavaConversions;
+import scala.collection.immutable.Map$;
 import scala.collection.mutable.Buffer;
 
 import java.util.ArrayList;
@@ -34,6 +36,8 @@ import java.util.List;
 public class MavenDocumentSource extends AbstractDocumentSource {
     private final ApiSource apiSource;
 
+	private final SpecFilter specFilter = new SpecFilter();
+
     public MavenDocumentSource(ApiSource apiSource, Log log) {
         super(new LogAdapter(log),
                 apiSource.getOutputPath(), apiSource.getOutputTemplate(), apiSource.getSwaggerDirectory(), apiSource.mustacheFileRoot, apiSource.isUseOutputFlatStructure(), apiSource.getOverridingModels());
@@ -49,7 +53,22 @@ public class MavenDocumentSource extends AbstractDocumentSource {
         swaggerConfig.setApiVersion(apiSource.getApiVersion());
         swaggerConfig.setSwaggerVersion(SwaggerSpec.version());
         List<ApiListingReference> apiListingReferences = new ArrayList<ApiListingReference>();
-        List<AuthorizationType> authorizationTypes = new ArrayList<AuthorizationType>();
+
+		if (apiSource.getSwaggerInternalFilter()!=null)
+		{
+			FilterFactory$ filterFactory = FilterFactory$.MODULE$;
+			try
+			{
+				LOG.info("Setting filter configuration: " + apiSource.getSwaggerInternalFilter());
+				filterFactory.filter_$eq((SwaggerSpecFilter) Class.forName(apiSource.getSwaggerInternalFilter()).newInstance());
+			}
+			catch (Exception e)
+			{
+				throw new GenerateException("Cannot load: " + apiSource.getSwaggerInternalFilter() , e);
+			}
+		}
+
+		List<AuthorizationType> authorizationTypes = new ArrayList<AuthorizationType>();
         for (Class c : apiSource.getValidClasses()) {
             ApiListing doc;
             try {
@@ -91,6 +110,9 @@ public class MavenDocumentSource extends AbstractDocumentSource {
 
         if (None.canEqual(apiListing)) return null;
 
-        return apiListing.get();
+		return specFilter.filter(apiListing.get(), FilterFactory.filter(),
+				Map$.MODULE$.<String, scala.collection.immutable.List<String>>empty(),
+				Map$.MODULE$.<String,String>empty(),
+				Map$.MODULE$.<String, scala.collection.immutable.List<String>>empty());
     }
 }
