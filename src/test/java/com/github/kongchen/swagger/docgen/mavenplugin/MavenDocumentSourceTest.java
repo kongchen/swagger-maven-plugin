@@ -114,7 +114,7 @@ public class MavenDocumentSourceTest {
         }
 
 
-        assertEquals(8, outputTemplate.getDataTypes().size());
+        assertEquals(9, outputTemplate.getDataTypes().size());
         List<MustacheDataType> typeList = new LinkedList<MustacheDataType>();
         for (MustacheDataType type : outputTemplate.getDataTypes()) {
             typeList.add(type);
@@ -128,13 +128,14 @@ public class MavenDocumentSourceTest {
             }
         });
         assertDataTypeInList(typeList, 0, Address.class);
-        assertDataTypeInList(typeList, 1, sample.model.Car.class);
-        assertDataTypeInList(typeList, 2, Customer.class);
-        assertDataTypeInList(typeList, 3, Email.class);
-        assertDataTypeInList(typeList, 4, ForGeneric.class);
-        assertDataTypeInList(typeList, 5, G1.class);
-        assertDataTypeInList(typeList, 6, G2.class);
-        assertDataTypeInList(typeList, 7, sample.model.v2.Car.class);
+        assertDataTypeInList(typeList, 1, BadIdResponse.class);
+        assertDataTypeInList(typeList, 2, sample.model.Car.class);
+        assertDataTypeInList(typeList, 3, Customer.class);
+        assertDataTypeInList(typeList, 4, Email.class);
+        assertDataTypeInList(typeList, 5, ForGeneric.class);
+        assertDataTypeInList(typeList, 6, G1.class);
+        assertDataTypeInList(typeList, 7, G2.class);
+        assertDataTypeInList(typeList, 8, sample.model.v2.Car.class);
     }
 
 	@Test
@@ -158,9 +159,9 @@ public class MavenDocumentSourceTest {
 							Assert.assertEquals(0, op.getParameters().size());
 
 							Assert.assertEquals(op.getErrorResponses().size(), 2);
-							Assert.assertEquals(op.getErrorResponses().get(0).message(), "Invalid ID supplied");
-							Assert.assertEquals(op.getErrorResponses().get(0).code(), 400);
-							Assert.assertEquals(op.getErrorResponses().get(1).code(), 404);
+							Assert.assertEquals(op.getErrorResponses().get(0).getMessage(), "Invalid ID supplied");
+							Assert.assertEquals(op.getErrorResponses().get(0).getCode(), 400);
+							Assert.assertEquals(op.getErrorResponses().get(1).getCode(), 404);
 							Assert.assertEquals(op.getAuthorizations().get(0).getType(), "oauth2");
 							Assert.assertEquals(op.getAuthorizations().get(0).getAuthorizationScopes().get(0).description(), "car1 des get");
 						}
@@ -180,7 +181,7 @@ public class MavenDocumentSourceTest {
 		}
 
 
-		assertEquals(8, outputTemplate.getDataTypes().size());
+		assertEquals(9, outputTemplate.getDataTypes().size());
 		List<MustacheDataType> typeList = new LinkedList<MustacheDataType>();
 		for (MustacheDataType type : outputTemplate.getDataTypes()) {
 			typeList.add(type);
@@ -193,14 +194,15 @@ public class MavenDocumentSourceTest {
 				return o1.getName().compareTo(o2.getName());
 			}
 		});
-		assertDataTypeInList(typeList, 0, Address.class);
-		assertDataTypeInList(typeList, 1, sample.model.Car.class);
-		assertDataTypeInList(typeList, 2, Customer.class);
-		assertDataTypeInList(typeList, 3, Email.class);
-		assertDataTypeInList(typeList, 4, ForGeneric.class);
-		assertDataTypeInList(typeList, 5, G1.class);
-		assertDataTypeInList(typeList, 6, G2.class);
-		assertDataTypeInList(typeList, 7, sample.model.v2.Car.class);
+        assertDataTypeInList(typeList, 0, Address.class);
+        assertDataTypeInList(typeList, 1, BadIdResponse.class);
+        assertDataTypeInList(typeList, 2, sample.model.Car.class);
+        assertDataTypeInList(typeList, 3, Customer.class);
+        assertDataTypeInList(typeList, 4, Email.class);
+        assertDataTypeInList(typeList, 5, ForGeneric.class);
+        assertDataTypeInList(typeList, 6, G1.class);
+        assertDataTypeInList(typeList, 7, G2.class);
+        assertDataTypeInList(typeList, 8, sample.model.v2.Car.class);
 	}
 
 
