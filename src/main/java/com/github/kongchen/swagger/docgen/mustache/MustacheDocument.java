@@ -43,26 +43,11 @@ public class MustacheDocument implements Comparable<MustacheDocument> {
     private Set<String> responseTypes = new LinkedHashSet<String>();
 
     @JsonIgnore
-    private Set<MustacheEnumType> enumTypes = new LinkedHashSet<MustacheEnumType>();
-
-    @JsonIgnore
     private int apiIndex = 1;
 
     public MustacheDocument(ApiListing apiListing) {
         if (!apiListing.models().isEmpty()) {
             models.putAll(JavaConversions.mapAsJavaMap(apiListing.models().get()));
-            for (Map.Entry<String, Model> entry : JavaConversions.mapAsJavaMap(apiListing.models().get()).entrySet()) {
-                Model model = entry.getValue();
-                for (Map.Entry<String, ModelProperty> propertyEntry : JavaConversions.mapAsJavaMap(model.properties()).entrySet()) {
-                    ModelProperty property = propertyEntry.getValue();
-                    AllowableValues allowableValues = property.allowableValues();
-                    if (allowableValues instanceof AllowableListValues) {
-                        AllowableListValues listValues = (AllowableListValues)allowableValues;
-                        List<String> values = JavaConversions.asJavaList(listValues.values());
-                        enumTypes.add(new MustacheEnumType(property.type(), values));
-                    }
-                }
-            }
         }
         this.resourcePath = apiListing.resourcePath();
         this.index = apiListing.position();
@@ -95,10 +80,6 @@ public class MustacheDocument implements Comparable<MustacheDocument> {
 
     public Set<String> getResponseTypes() {
         return responseTypes;
-    }
-
-    public Set<MustacheEnumType> getEnumTypes() {
-        return enumTypes;
     }
 
     public int getIndex() {
