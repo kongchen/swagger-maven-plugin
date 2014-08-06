@@ -67,6 +67,7 @@ public class ApiSource {
 
 	/**
 	 * Information about swagger filter that will be used for prefiltering
+     * @parameter
 	 */
 	private String swaggerInternalFilter;
 
@@ -175,13 +176,11 @@ public class ApiSource {
 		this.overridingModels = overridingModels;
 	}
 
-	public String getSwaggerInternalFilter()
-	{
-		return swaggerInternalFilter;
-	}
+    public String getSwaggerInternalFilter() {
+        return swaggerInternalFilter;
+    }
 
-	public void setSwaggerInternalFilter(String swaggerInternalFilter)
-	{
-		this.swaggerInternalFilter = swaggerInternalFilter;
-	}
+    public void setSwaggerInternalFilter(String swaggerInternalFilter) {
+        this.swaggerInternalFilter = swaggerInternalFilter;
+    }
 }

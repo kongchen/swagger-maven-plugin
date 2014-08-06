@@ -14,6 +14,7 @@ import sample.model.*;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -31,7 +32,7 @@ public class MavenDocumentSourceTest {
 
 
     private ApiSource prepare() {
-		ApiSource apiSource = new ApiSource();
+        ApiSource apiSource = new ApiSource();
         apiSource.setApiVersion("1.0");
         apiSource.setBasePath("http://example.com");
         apiSource.setLocations("sample.api.car;sample.api.garage");
@@ -39,12 +40,12 @@ public class MavenDocumentSourceTest {
         apiSource.setOutputTemplate("https://github.com/kongchen/api-doc-template/blob/master/v1.1/html.mustache");
         apiSource.setSwaggerDirectory(null);
         apiSource.setOverridingModels("swagger-overriding-models.json");
-		return apiSource;
+        return apiSource;
     }
 
     @Test
     public void testIssue17() throws Exception, GenerateException {
-		ApiSource apiSource = prepare();
+        ApiSource apiSource = prepare();
         String locations = apiSource.getLocations();
         apiSource.setLocations("issue17");
         AbstractDocumentSource documentSource = new MavenDocumentSource(apiSource, new SystemStreamLog());
@@ -58,7 +59,7 @@ public class MavenDocumentSourceTest {
 
     @Test
     public void test() throws Exception, GenerateException {
-		ApiSource apiSource = prepare();
+        ApiSource apiSource = prepare();
         AbstractDocumentSource documentSource = new MavenDocumentSource(apiSource, new SystemStreamLog());
         documentSource.loadDocuments();
         OutputTemplate outputTemplate = new OutputTemplate(documentSource);
@@ -78,19 +79,19 @@ public class MavenDocumentSourceTest {
                             Assert.assertEquals("ETag", op.getResponseHeader().getParas().get(0).getName());
 
                             Assert.assertEquals("carId",
-                                    op.getRequestPath().getParas().get(0).getName());
+                                                op.getRequestPath().getParas().get(0).getName());
                             Assert.assertEquals("1.0 to 10.0",
-                                    op.getRequestPath().getParas().get(0).getAllowableValue());
+                                                op.getRequestPath().getParas().get(0).getAllowableValue());
 
                             Assert.assertEquals("e",
-                                    op.getRequestQuery().getParas().get(0).getName());
+                                                op.getRequestQuery().getParas().get(0).getName());
 
                             Assert.assertEquals("Accept",
-                                    op.getRequestHeader().getParas().get(0).getName());
+                                                op.getRequestHeader().getParas().get(0).getName());
                             Assert.assertEquals("MediaType",
-                                    op.getRequestHeader().getParas().get(0).getType());
+                                                op.getRequestHeader().getParas().get(0).getType());
                             Assert.assertEquals("application/json, application/*",
-                                    op.getRequestHeader().getParas().get(0).getAllowableValue());
+                                                op.getRequestHeader().getParas().get(0).getAllowableValue());
                             Assert.assertEquals(op.getErrorResponses().size(), 2);
                             Assert.assertEquals(op.getErrorResponses().get(0).message(), "Invalid ID supplied");
                             Assert.assertEquals(op.getErrorResponses().get(0).code(), 400);
@@ -137,71 +138,71 @@ public class MavenDocumentSourceTest {
         assertDataTypeInList(typeList, 7, sample.model.v2.Car.class);
     }
 
-	@Test
-	public void testSwaggerFilter() throws Exception, GenerateException {
-		ApiSource apiSource = prepare();
-		apiSource.setSwaggerInternalFilter(TestSwaggerSpecFilter.class.getName());
-		AbstractDocumentSource documentSource = new MavenDocumentSource(apiSource, new SystemStreamLog());
-		documentSource.loadDocuments();
-		OutputTemplate outputTemplate = new OutputTemplate(documentSource);
-		assertEquals(apiSource.getApiVersion(), outputTemplate.getApiVersion());
-		assertEquals(3, outputTemplate.getApiDocuments().size());
-		for (MustacheDocument doc : outputTemplate.getApiDocuments()) {
-			if (doc.getIndex() == 1) {
-				Assert.assertEquals(doc.getResourcePath(), "/car");
-				for (MustacheApi api : doc.getApis()) {
-					assertTrue(api.getUrl().startsWith(apiSource.getBasePath()));
-					assertFalse(api.getPath().contains("{format}"));
-					for (MustacheOperation op : api.getOperations()) {
-						if (op.getOpIndex() == 2) {
+    @Test
+    public void testSwaggerFilter() throws Exception, GenerateException {
+        ApiSource apiSource = prepare();
+        apiSource.setSwaggerInternalFilter(TestSwaggerSpecFilter.class.getName());
+        AbstractDocumentSource documentSource = new MavenDocumentSource(apiSource, new SystemStreamLog());
+        documentSource.loadDocuments();
+        OutputTemplate outputTemplate = new OutputTemplate(documentSource);
+        assertEquals(apiSource.getApiVersion(), outputTemplate.getApiVersion());
+        assertEquals(3, outputTemplate.getApiDocuments().size());
+        for (MustacheDocument doc : outputTemplate.getApiDocuments()) {
+            if (doc.getIndex() == 1) {
+                Assert.assertEquals(doc.getResourcePath(), "/car");
+                for (MustacheApi api : doc.getApis()) {
+                    assertTrue(api.getUrl().startsWith(apiSource.getBasePath()));
+                    assertFalse(api.getPath().contains("{format}"));
+                    for (MustacheOperation op : api.getOperations()) {
+                        if (op.getOpIndex() == 2) {
 
-							Assert.assertEquals(0, op.getParameters().size());
+                            Assert.assertEquals(0, op.getParameters().size());
 
-							Assert.assertEquals(op.getErrorResponses().size(), 2);
-							Assert.assertEquals(op.getErrorResponses().get(0).message(), "Invalid ID supplied");
-							Assert.assertEquals(op.getErrorResponses().get(0).code(), 400);
-							Assert.assertEquals(op.getErrorResponses().get(1).code(), 404);
-							Assert.assertEquals(op.getAuthorizations().get(0).getType(), "oauth2");
-							Assert.assertEquals(op.getAuthorizations().get(0).getAuthorizationScopes().get(0).description(), "car1 des get");
-						}
-						if (op.getOpIndex() == 1) {
-							Assert.assertEquals(op.getSummary(), "search cars");
-						}
-					}
-				}
-			}
-			if (doc.getIndex() == 2) {
-				Assert.assertEquals(doc.getResourcePath(), "/v2/car");
-			}
-			if (doc.getIndex() == 3) {
-				Assert.assertEquals(doc.getResourcePath(), "/garage");
-			}
+                            Assert.assertEquals(op.getErrorResponses().size(), 2);
+                            Assert.assertEquals(op.getErrorResponses().get(0).message(), "Invalid ID supplied");
+                            Assert.assertEquals(op.getErrorResponses().get(0).code(), 400);
+                            Assert.assertEquals(op.getErrorResponses().get(1).code(), 404);
+                            Assert.assertEquals(op.getAuthorizations().get(0).getType(), "oauth2");
+                            Assert.assertEquals(op.getAuthorizations().get(0).getAuthorizationScopes().get(0).description(), "car1 des get");
+                        }
+                        if (op.getOpIndex() == 1) {
+                            Assert.assertEquals(op.getSummary(), "search cars");
+                        }
+                    }
+                }
+            }
+            if (doc.getIndex() == 2) {
+                Assert.assertEquals(doc.getResourcePath(), "/v2/car");
+            }
+            if (doc.getIndex() == 3) {
+                Assert.assertEquals(doc.getResourcePath(), "/garage");
+            }
 
-		}
+        }
 
 
-		assertEquals(8, outputTemplate.getDataTypes().size());
-		List<MustacheDataType> typeList = new LinkedList<MustacheDataType>();
-		for (MustacheDataType type : outputTemplate.getDataTypes()) {
-			typeList.add(type);
-		}
-		Collections.sort(typeList, new Comparator<MustacheDataType>() {
+        assertEquals(8, outputTemplate.getDataTypes().size());
+        List<MustacheDataType> typeList = new LinkedList<MustacheDataType>();
+        for (MustacheDataType type : outputTemplate.getDataTypes()) {
+            typeList.add(type);
+        }
+        Collections.sort(typeList, new Comparator<MustacheDataType>() {
 
-			@Override
-			public int compare(MustacheDataType o1, MustacheDataType o2) {
+            @Override
+            public int compare(MustacheDataType o1, MustacheDataType o2) {
 
-				return o1.getName().compareTo(o2.getName());
-			}
-		});
-		assertDataTypeInList(typeList, 0, Address.class);
-		assertDataTypeInList(typeList, 1, sample.model.Car.class);
-		assertDataTypeInList(typeList, 2, Customer.class);
-		assertDataTypeInList(typeList, 3, Email.class);
-		assertDataTypeInList(typeList, 4, ForGeneric.class);
-		assertDataTypeInList(typeList, 5, G1.class);
-		assertDataTypeInList(typeList, 6, G2.class);
-		assertDataTypeInList(typeList, 7, sample.model.v2.Car.class);
-	}
+                return o1.getName().compareTo(o2.getName());
+            }
+        });
+        assertDataTypeInList(typeList, 0, Address.class);
+        assertDataTypeInList(typeList, 1, sample.model.Car.class);
+        assertDataTypeInList(typeList, 2, Customer.class);
+        assertDataTypeInList(typeList, 3, Email.class);
+        assertDataTypeInList(typeList, 4, ForGeneric.class);
+        assertDataTypeInList(typeList, 5, G1.class);
+        assertDataTypeInList(typeList, 6, G2.class);
+        assertDataTypeInList(typeList, 7, sample.model.v2.Car.class);
+    }
 
 
     private void assertDataTypeInList(List<MustacheDataType> typeList, int indexInList,

@@ -13,17 +13,14 @@ import java.util.Map;
  *
  * @author marek
  */
-public class TestSwaggerSpecFilter implements SwaggerSpecFilter
-{
-	@Override
-	public boolean isOperationAllowed(Operation operation, ApiDescription api, Map<String, List<String>> params, Map<String, String> cookies, Map<String, List<String>> headers)
-	{
-		return true;
-	}
+public class TestSwaggerSpecFilter implements SwaggerSpecFilter {
+    @Override
+    public boolean isOperationAllowed(Operation operation, ApiDescription api, Map<String, List<String>> params, Map<String, String> cookies, Map<String, List<String>> headers) {
+        return true;
+    }
 
-	@Override
-	public boolean isParamAllowed(Parameter parameter, Operation operation, ApiDescription api, Map<String, List<String>> params, Map<String, String> cookies, Map<String, List<String>> headers)
-	{
-		return false;
-	}
+    @Override
+    public boolean isParamAllowed(Parameter parameter, Operation operation, ApiDescription api, Map<String, List<String>> params, Map<String, String> cookies, Map<String, List<String>> headers) {
+        return false;
+    }
 }

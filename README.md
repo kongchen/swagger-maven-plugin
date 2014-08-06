@@ -103,7 +103,8 @@ See [change log](https://github.com/kongchen/swagger-maven-plugin/blob/master/CH
   - ```useOutputFlatStructure``` indicates whether swagger output will be created in subdirs by path defined in @com.wordnik.swagger.annotations.Api#value (false), or the filename will be the path with replaced slashes to underscores (true). Default: true
   - Generally, the `baseUrl` in `service.json` is always as same as `<basePath>` you specified. However, you can use ```swaggerUIDocBasePath``` to overwrite it.
 - ```overridingModels``` is the name of *overridingModels* file, see more details in next section.
-- ```swaggerInternalFilter``` should be full name of class implementing com.wordnik.swagger.core.filter.SpecFilter. This allow you to filter both methods and parameters from generated api. 
+- ```swaggerInternalFilter``` should be full name of class implementing `com.wordnik.swagger.core.filter.SpecFilter`. This allows 
+you to filter both methods and parameters from generated api. 
 
 You can specify several ```apiSources``` with different api versions and base paths.
 
