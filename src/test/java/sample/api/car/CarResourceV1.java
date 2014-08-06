@@ -1,6 +1,7 @@
 package sample.api.car;
 
 import com.wordnik.swagger.annotations.*;
+import sample.model.BadIdResponse;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -20,7 +21,7 @@ public class CarResourceV1 {
     @ApiOperation(value = "Find car by ID", notes = "To get car info by car's Id",
             response = sample.model.Car.class, position = 2,
     authorizations = @Authorization(value = "oauth2", scopes = {@AuthorizationScope(scope = "car1", description = "car1 des get")}))
-    @ApiResponses(value = {@ApiResponse(code = 400, message = "Invalid ID supplied"),
+    @ApiResponses(value = {@ApiResponse(code = 400, message = "Invalid ID supplied", response = BadIdResponse.class),
             @ApiResponse(code = 404, message = "Car not found")})
     @ApiImplicitParams(value = {@ApiImplicitParam(name = "ETag", paramType = "response_header", value = "version", dataType = "string")})
     public Response getCarById(
