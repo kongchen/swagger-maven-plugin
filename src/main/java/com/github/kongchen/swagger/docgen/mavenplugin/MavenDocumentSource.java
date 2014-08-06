@@ -36,11 +36,11 @@ import java.util.List;
 public class MavenDocumentSource extends AbstractDocumentSource {
     private final ApiSource apiSource;
 
-	private final SpecFilter specFilter = new SpecFilter();
+    private final SpecFilter specFilter = new SpecFilter();
 
     public MavenDocumentSource(ApiSource apiSource, Log log) {
         super(new LogAdapter(log),
-                apiSource.getOutputPath(), apiSource.getOutputTemplate(), apiSource.getSwaggerDirectory(), apiSource.mustacheFileRoot, apiSource.isUseOutputFlatStructure(), apiSource.getOverridingModels());
+              apiSource.getOutputPath(), apiSource.getOutputTemplate(), apiSource.getSwaggerDirectory(), apiSource.mustacheFileRoot, apiSource.isUseOutputFlatStructure(), apiSource.getOverridingModels());
 
         setApiVersion(apiSource.getApiVersion());
         setBasePath(apiSource.getBasePath());
@@ -49,30 +49,26 @@ public class MavenDocumentSource extends AbstractDocumentSource {
 
     @Override
     public void loadDocuments() throws GenerateException {
-        SwaggerConfig swaggerConfig =  new SwaggerConfig();
+        SwaggerConfig swaggerConfig = new SwaggerConfig();
         swaggerConfig.setApiVersion(apiSource.getApiVersion());
         swaggerConfig.setSwaggerVersion(SwaggerSpec.version());
         List<ApiListingReference> apiListingReferences = new ArrayList<ApiListingReference>();
 
-		if (apiSource.getSwaggerInternalFilter()!=null)
-		{
-			FilterFactory$ filterFactory = FilterFactory$.MODULE$;
-			try
-			{
-				LOG.info("Setting filter configuration: " + apiSource.getSwaggerInternalFilter());
-				filterFactory.filter_$eq((SwaggerSpecFilter) Class.forName(apiSource.getSwaggerInternalFilter()).newInstance());
-			}
-			catch (Exception e)
-			{
-				throw new GenerateException("Cannot load: " + apiSource.getSwaggerInternalFilter() , e);
-			}
-		}
+        if (apiSource.getSwaggerInternalFilter() != null) {
+            FilterFactory$ filterFactory = FilterFactory$.MODULE$;
+            try {
+                LOG.info("Setting filter configuration: " + apiSource.getSwaggerInternalFilter());
+                filterFactory.filter_$eq((SwaggerSpecFilter) Class.forName(apiSource.getSwaggerInternalFilter()).newInstance());
+            } catch (Exception e) {
+                throw new GenerateException("Cannot load: " + apiSource.getSwaggerInternalFilter(), e);
+            }
+        }
 
-		List<AuthorizationType> authorizationTypes = new ArrayList<AuthorizationType>();
+        List<AuthorizationType> authorizationTypes = new ArrayList<AuthorizationType>();
         for (Class c : apiSource.getValidClasses()) {
             ApiListing doc;
             try {
-                doc  = getDocFromClass(c, swaggerConfig, getBasePath());
+                doc = getDocFromClass(c, swaggerConfig, getBasePath());
             } catch (Exception e) {
                 throw new GenerateException(e);
             }
@@ -92,13 +88,13 @@ public class MavenDocumentSource extends AbstractDocumentSource {
                 if (o1 == null && o2 == null) return 0;
                 if (o1 == null && o2 != null) return -1;
                 if (o1 != null && o2 == null) return 1;
-                return  o1.position() - o2.position();
+                return o1.position() - o2.position();
             }
         });
         serviceDocument = new ResourceListing(swaggerConfig.apiVersion(), swaggerConfig.swaggerVersion(),
-                scala.collection.immutable.List.fromIterator(JavaConversions.asScalaIterator(apiListingReferences.iterator())),
-                scala.collection.immutable.List.fromIterator(JavaConversions.asScalaIterator(authorizationTypes.iterator())),
-                swaggerConfig.info());
+                                              scala.collection.immutable.List.fromIterator(JavaConversions.asScalaIterator(apiListingReferences.iterator())),
+                                              scala.collection.immutable.List.fromIterator(JavaConversions.asScalaIterator(authorizationTypes.iterator())),
+                                              swaggerConfig.info());
     }
 
     private ApiListing getDocFromClass(Class c, SwaggerConfig swaggerConfig, String basePath) throws Exception {
@@ -110,9 +106,9 @@ public class MavenDocumentSource extends AbstractDocumentSource {
 
         if (None.canEqual(apiListing)) return null;
 
-		return specFilter.filter(apiListing.get(), FilterFactory.filter(),
-				Map$.MODULE$.<String, scala.collection.immutable.List<String>>empty(),
-				Map$.MODULE$.<String,String>empty(),
-				Map$.MODULE$.<String, scala.collection.immutable.List<String>>empty());
+        return specFilter.filter(apiListing.get(), FilterFactory.filter(),
+                                 Map$.MODULE$.<String, scala.collection.immutable.List<String>>empty(),
+                                 Map$.MODULE$.<String, String>empty(),
+                                 Map$.MODULE$.<String, scala.collection.immutable.List<String>>empty());
     }
 }
