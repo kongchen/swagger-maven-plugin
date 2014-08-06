@@ -63,16 +63,9 @@ Search cars by query
 
 
 ###### Errors
-<table border="1">
-    <tr>
-        <th>Status Code</th>
-        <th>Reason</th>
-    </tr>
-        <tr>
-            <td>400</td>
-            <td>Bad query</td>
-        </tr>
-</table>
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 400    | Bad query | - |
 
 
 - - -
@@ -123,16 +116,9 @@ remove a car
 
 
 ###### Errors
-<table border="1">
-    <tr>
-        <th>Status Code</th>
-        <th>Reason</th>
-    </tr>
-        <tr>
-            <td>403</td>
-            <td>version not match</td>
-        </tr>
-</table>
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 403    | version not match | - |
 
 
 - - -
@@ -216,20 +202,10 @@ To get car info by car's Id
 
 
 ###### Errors
-<table border="1">
-    <tr>
-        <th>Status Code</th>
-        <th>Reason</th>
-    </tr>
-        <tr>
-            <td>400</td>
-            <td>Invalid ID supplied</td>
-        </tr>
-        <tr>
-            <td>404</td>
-            <td>Car not found</td>
-        </tr>
-</table>
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 400    | Invalid ID supplied | [BadIdResponse](#BadIdResponse) |
+| 404    | Car not found | - |
 
 
 - - -
@@ -269,20 +245,10 @@ To get car info by car's Id
 
 
 ###### Errors
-<table border="1">
-    <tr>
-        <th>Status Code</th>
-        <th>Reason</th>
-    </tr>
-        <tr>
-            <td>400</td>
-            <td>Invalid ID supplied</td>
-        </tr>
-        <tr>
-            <td>404</td>
-            <td>Car not found</td>
-        </tr>
-</table>
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 400    | Invalid ID supplied | - |
+| 404    | Car not found | - |
 
 
 - - -
@@ -338,20 +304,10 @@ To repair car
 
 
 ###### Errors
-<table border="1">
-    <tr>
-        <th>Status Code</th>
-        <th>Reason</th>
-    </tr>
-        <tr>
-            <td>400</td>
-            <td>Invalid ID supplied</td>
-        </tr>
-        <tr>
-            <td>404</td>
-            <td>Garage not found</td>
-        </tr>
-</table>
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 400    | Invalid ID supplied | - |
+| 404    | Garage not found | - |
 
 
 - - -
@@ -386,20 +342,10 @@ To get garage info
 
 
 ###### Errors
-<table border="1">
-    <tr>
-        <th>Status Code</th>
-        <th>Reason</th>
-    </tr>
-        <tr>
-            <td>400</td>
-            <td>Invalid ID supplied</td>
-        </tr>
-        <tr>
-            <td>404</td>
-            <td>Garage not found</td>
-        </tr>
-</table>
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 400    | Invalid ID supplied | - |
+| 404    | Garage not found | - |
 
 
 - - -
@@ -442,6 +388,34 @@ To get garage info
 
 
 
+## <a name="BadIdResponse">BadIdResponse</a>
+
+<table border="1">
+    <tr>
+        <th>type</th>
+        <th>required</th>
+        <th>access</th>
+        <th>description</th>
+        <th>notes</th>
+    </tr>
+        <tr>
+            <td>string</td>
+            <td>optional</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+        </tr>
+        <tr>
+            <td>int</td>
+            <td>optional</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+        </tr>
+</table>
+
+
+
 ## <a name="Car">Car</a>
 
 <table border="1">
@@ -470,14 +444,16 @@ To get garage info
             <td>boolean</td>
             <td>required</td>
             <td>-</td>
-            <td>Indicate the car is MT or AT</td>
+            <td>Indicate the car is MT or AT Allowable
+            values:AT, MT</td>
             <td>Indicate the car is MT or AT</td>
         </tr>
         <tr>
             <td>string</td>
             <td>required</td>
             <td>-</td>
-            <td>The brand of the car</td>
+            <td>The brand of the car Allowable
+            values:Ford, Toyota, Kia</td>
             <td>The brand of the car</td>
         </tr>
         <tr>

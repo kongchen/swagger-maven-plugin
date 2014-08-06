@@ -26,6 +26,7 @@ public class MustacheOperation {
     private final String notes;
 
     private final MustacheResponseClass responseClass;
+    private List<MustacheResponseClass> responseClasses = new ArrayList<MustacheResponseClass>();
 
     private final String nickname;
     private final List<MustacheAuthorization> authorizations = new ArrayList<MustacheAuthorization>();
@@ -40,7 +41,7 @@ public class MustacheOperation {
 
     private static final Pattern genericInNotes = Pattern.compile("(/\\*.*<)((\\w+|((\\w+\\.)+\\w+))|(((\\w+|((\\w+\\.)+\\w+)),)+(\\w+|((\\w+\\.)+\\w+))))(>.*\\*/)");
 
-    private List<ResponseMessage> errorResponses;
+    private List<MustacheResponseMessage> errorResponses = new ArrayList<MustacheResponseMessage>();
 
     List<MustacheSample> samples;
 
@@ -59,7 +60,14 @@ public class MustacheOperation {
         this.parameters = mustacheDocument.analyzeParameters(JavaConversions.asJavaList(buffer));
         responseClass = new MustacheResponseClass(op.responseClass() + notesAndGenericStr.getValue());
         Buffer<ResponseMessage> errorbuffer = op.responseMessages().toBuffer();
-        this.errorResponses = JavaConversions.asJavaList(errorbuffer);
+        List<ResponseMessage> responseMessages = JavaConversions.asJavaList(errorbuffer);
+        for (ResponseMessage responseMessage : responseMessages) {
+            if (!responseMessage.responseModel().isEmpty()) {
+                String className = responseMessage.responseModel().get();
+                this.responseClasses.add(new MustacheResponseClass(className));
+            }
+            this.errorResponses.add(new MustacheResponseMessage(responseMessage));
+        }
         if (parameters == null) {
             return;
         }
@@ -165,11 +173,15 @@ public class MustacheOperation {
         return parameters;
     }
 
-    public List<ResponseMessage> getErrorResponses() {
+    public List<MustacheResponseMessage> getErrorResponses() {
         return errorResponses;
     }
 
     public MustacheResponseClass getResponseClass() {
         return responseClass;
+    }
+
+    public List<MustacheResponseClass> getResponseClasses() {
+        return responseClasses;
     }
 }

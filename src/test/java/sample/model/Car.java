@@ -24,7 +24,7 @@ public class Car {
     @ApiModelProperty(required = true, value = "The engine parameter of the car")
     private String engine;
 
-    @ApiModelProperty(required = true, value = "Indicate the car is MT or AT")
+    @ApiModelProperty(required = true, value = "Indicate the car is MT or AT", allowableValues = "AT, MT")
     private boolean mt;
 
     @ApiModelProperty(required = true, value = "The price of the car", access = "readOnly")

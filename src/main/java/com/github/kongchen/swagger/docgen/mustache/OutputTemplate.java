@@ -101,6 +101,9 @@ public class OutputTemplate {
                 mustacheOperation = new MustacheOperation(mustacheDocument, op);
                 mustacheApi.addOperation(mustacheOperation);
                 addResponseType(mustacheDocument, mustacheOperation.getResponseClass());
+                for (MustacheResponseClass responseClass : mustacheOperation.getResponseClasses()) {
+                    addResponseType(mustacheDocument, responseClass);
+                }
             }
 
             mustacheDocument.addApi(mustacheApi);
