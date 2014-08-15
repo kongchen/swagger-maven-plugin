@@ -1,34 +1,33 @@
 package com.github.kongchen.swagger.docgen.mavenplugin;
 
+import java.io.File;
+import java.util.List;
+
 import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
 import com.github.kongchen.swagger.docgen.GenerateException;
-import com.wordnik.swagger.converter.ModelConverters;
-import com.wordnik.swagger.converter.OverrideConverter;
-
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-
-import java.io.File;
-import java.util.List;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 
 /**
  * Created with IntelliJ IDEA.
  * User: kongchen
  * Date: 3/7/13
  */
-
-/**
- * @goal generate
- * @phase compile
- * @configurator include-project-dependencies
- * @requiresDependencyResolution compile+runtime
- */
+@Mojo( name = "generate", defaultPhase = LifecyclePhase.COMPILE, configurator = "include-project-dependencies", 
+       requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME)
 public class ApiDocumentMojo extends AbstractMojo {
 
     /**
-     * @parameter
+     * A set of apiSources.
+     * One apiSource can be considered as a set of APIs for one apiVersion in a basePath
+     * 
      */
+    @Parameter
     private List<ApiSource> apiSources;
 
     public List<ApiSource> getApiSources() {

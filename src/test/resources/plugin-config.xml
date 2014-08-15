@@ -1,0 +1,52 @@
+<project>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.github.kongchen</groupId>
+                <artifactId>swagger-maven-plugin</artifactId>
+                <version>2.3-SNAPSHOT</version>
+                <configuration>
+                    <apiSources>
+                        <apiSource>
+                            <locations>sample.api</locations>
+                            <apiVersion>1.0</apiVersion>
+                            <basePath>http://example.com</basePath>
+                            <apiInfo>
+                                <title>Swagger Maven Plugin Sample</title>
+                                <!-- use markdown here because I'm using markdown template, 
+                                if you need to use html or other template, you should escape your description for xml -->
+                                <description>
+                                    This is a sample of [swagger-maven-plugin](http://www.github.com/kongchen/swagger-maven-plugin).
+                                    The plugin helps you generate **Swagger JSON** and **customized API document** in build phase.
+                                </description>
+                                <termsOfServiceUrl>http://www.github.com/kongchen/swagger-maven-plugin</termsOfServiceUrl>
+                                <contact>kongchen#gmail$com</contact>
+                                <license>Apache 2.0</license>
+                                <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0.html</licenseUrl>
+                            </apiInfo>
+                            
+                            <outputTemplate>
+                                https://raw.github.com/kongchen/api-doc-template/master/v2.0/strapdown.html.mustache
+                            </outputTemplate>
+                            <outputPath>${basedir}/generated/document.html</outputPath>
+                            <swaggerDirectory>generated/swagger-ui</swaggerDirectory>
+                            <swaggerUIDocBasePath>http://www.example.com/restapi/doc</swaggerUIDocBasePath>
+                            <useOutputFlatStructure>false</useOutputFlatStructure>
+                            <mustacheFileRoot>${basedir}/src/main/resources/</mustacheFileRoot>
+                            <!--<overridingModels>/swagger-overriding-models.json</overridingModels>-->
+                            <!--<swaggerInternalFilter>com.wordnik.swagger.config.DefaultSpecFilter</swaggerInternalFilter>-->
+                        </apiSource>
+                    </apiSources>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
