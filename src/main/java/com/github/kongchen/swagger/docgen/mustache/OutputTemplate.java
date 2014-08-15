@@ -1,16 +1,16 @@
 package com.github.kongchen.swagger.docgen.mustache;
 
+import java.util.*;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsonschema.JsonSchema;
 import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
-import com.github.kongchen.swagger.docgen.GenerateException;
 import com.github.kongchen.swagger.docgen.TypeUtils;
+import com.github.kongchen.swagger.docgen.mavenplugin.ApiSourceInfo;
 import com.github.kongchen.swagger.docgen.util.Utils;
 import com.wordnik.swagger.model.ApiDescription;
 import com.wordnik.swagger.model.ApiListing;
 import com.wordnik.swagger.model.Operation;
-
-import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -21,6 +21,8 @@ public class OutputTemplate {
     private String basePath;
 
     private String apiVersion;
+    
+    private ApiSourceInfo apiInfo;
 
     private List<MustacheDocument> apiDocuments = new ArrayList<MustacheDocument>();
 
@@ -79,6 +81,14 @@ public class OutputTemplate {
         this.apiVersion = apiVersion;
     }
 
+    public ApiSourceInfo getApiInfo() {
+        return apiInfo;
+    }
+
+    public void setApiInfo(ApiSourceInfo apiInfo) {
+        this.apiInfo = apiInfo;
+    }
+
     /**
      * Create mustache document according to a swagger document apilisting
      * @param swaggerDoc
@@ -86,9 +96,7 @@ public class OutputTemplate {
      */
     private MustacheDocument createMustacheDocument(ApiListing swaggerDoc) {
         MustacheDocument mustacheDocument = new MustacheDocument(swaggerDoc);
-
-        setApiVersion(swaggerDoc.apiVersion());
-        setBasePath(swaggerDoc.basePath());
+        
         for (scala.collection.Iterator<ApiDescription> it = swaggerDoc.apis().iterator(); it.hasNext(); ) {
             ApiDescription api = it.next();
             mustacheDocument.setDescription(Utils.getStrInOption(api.description()));
@@ -156,6 +164,9 @@ public class OutputTemplate {
     }
 
     private void feedSource(AbstractDocumentSource source) {
+        setApiVersion(source.getApiVersion());
+        setBasePath(source.getBasePath());
+        setApiInfo(source.getApiInfo());
         for (ApiListing doc : source.getValidDocuments()) {
             if (doc.apis().isEmpty()){
                 continue;

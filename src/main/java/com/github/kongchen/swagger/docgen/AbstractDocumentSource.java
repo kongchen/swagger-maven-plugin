@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.github.kongchen.swagger.docgen.mavenplugin.ApiSourceInfo;
 import com.github.kongchen.swagger.docgen.mustache.OutputTemplate;
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
@@ -53,6 +54,8 @@ public abstract class AbstractDocumentSource {
 	private String basePath;
 
 	private String apiVersion;
+    
+    private ApiSourceInfo apiInfo;
 
 	private ObjectMapper mapper = new ObjectMapper();
 
@@ -96,7 +99,15 @@ public abstract class AbstractDocumentSource {
 		return outputTemplate;
 	}
 
-	protected void acceptDocument(ApiListing doc) {
+    public ApiSourceInfo getApiInfo() {
+        return apiInfo;
+    }
+
+    public void setApiInfo(ApiSourceInfo apiInfo) {
+        this.apiInfo = apiInfo;
+    }
+
+    protected void acceptDocument(ApiListing doc) {
 		String basePath;
 		// will append api's basePath. However, apiReader does not read it
 		// correctly by now
