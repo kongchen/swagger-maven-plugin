@@ -30,27 +30,27 @@ Api Version: {{apiVersion}}
 {{{notes}}}
 
 ###### URL
-    {{url}}
+{{url}}
 ###### Parameters
 {{#parameters}}
 - {{paramType}}
 
-    <table border="1">
-        <tr>
-            <th>Parameter</th>
-            <th>Required</th>
-            <th>Description</th>
-            <th>Data Type</th>
-        </tr>
-        {{#paras}}
-        <tr>
-            <th>{{name}}</th>
-            <td>{{required}}</td>
-            <td>{{description}}</td>
-            <td>{{#linkType}}<a href="#{{linkType}}">{{type}}</a>{{/linkType}}{{^linkType}}{{type}}{{/linkType}}</td>
-        </tr>
-        {{/paras}}
-    </table>
+<table border="1">
+    <tr>
+        <th>Parameter</th>
+        <th>Required</th>
+        <th>Description</th>
+        <th>Data Type</th>
+    </tr>
+    {{#paras}}
+    <tr>
+        <th>{{name}}</th>
+        <td>{{required}}</td>
+        <td>{{description}}</td>
+        <td>{{#linkType}}<a href="#{{linkType}}">{{type}}</a>{{/linkType}}{{^linkType}}{{type}}{{/linkType}}</td>
+    </tr>
+    {{/paras}}
+</table>
 {{/parameters}}
 
 {{#responseClass}}
@@ -106,14 +106,14 @@ Api Version: {{apiVersion}}
         <th>notes</th>
     </tr>
     {{#items}}
-        <tr>
-            <td>{{#linkType}}<a href="#{{linkType}}">{{type}}</a>{{/linkType}}{{^linkType}}{{type}}{{/linkType}}</td>
-            <td>{{#required}}required{{/required}}{{^required}}optional{{/required}}</td>
-            <td>{{#access}}{{{access}}}{{/access}}{{^access}}-{{/access}}</td>
-            <td>{{#description}}{{{description}}}{{/description}}{{^description}}-{{/description}}{{#allowableValue}} Allowable
-            values:{{.}}{{/allowableValue}}</td>
-            <td>{{#notes}}{{{notes}}}{{/notes}}{{^notes}}-{{/notes}}</td>
-        </tr>
+    <tr>
+        <td>{{#linkType}}<a href="#{{linkType}}">{{type}}</a>{{/linkType}}{{^linkType}}{{type}}{{/linkType}}</td>
+        <td>{{#required}}required{{/required}}{{^required}}optional{{/required}}</td>
+        <td>{{#access}}{{{access}}}{{/access}}{{^access}}-{{/access}}</td>
+        <td>{{#description}}{{{description}}}{{/description}}{{^description}}-{{/description}}{{#allowableValue}} Allowable
+        values:{{.}}{{/allowableValue}}</td>
+        <td>{{#notes}}{{{notes}}}{{/notes}}{{^notes}}-{{/notes}}</td>
+    </tr>
     {{/items}}
 </table>
 
