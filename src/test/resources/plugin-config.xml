@@ -33,8 +33,8 @@
                             <swaggerUIDocBasePath>http://www.example.com/restapi/doc</swaggerUIDocBasePath>
                             <useOutputFlatStructure>false</useOutputFlatStructure>
                             <mustacheFileRoot>${basedir}/src/main/resources/</mustacheFileRoot>
-                            <!--<overridingModels>/swagger-overriding-models.json</overridingModels>-->
-                            <!--<swaggerInternalFilter>com.wordnik.swagger.config.DefaultSpecFilter</swaggerInternalFilter>-->
+                            <overridingModels>/swagger-overriding-models.json</overridingModels>
+                            <swaggerInternalFilter>com.wordnik.swagger.config.DefaultSpecFilter</swaggerInternalFilter>
                         </apiSource>
                     </apiSources>
                 </configuration>

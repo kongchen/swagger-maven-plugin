@@ -99,6 +99,7 @@ public class MavenDocumentSource extends AbstractDocumentSource {
     }
 
     private Option<ApiInfo> toSwaggerApiInfo(ApiSourceInfo info) {
+        if (info == null) return Option.empty();
         return Option.apply(new ApiInfo(info.getTitle(), info.getDescription(),
             info.getTermsOfServiceUrl(), info.getContact(),
             info.getLicense(), info.getLicenseUrl()));

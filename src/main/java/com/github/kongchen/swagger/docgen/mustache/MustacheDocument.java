@@ -147,8 +147,7 @@ public class MustacheDocument implements Comparable<MustacheDocument> {
         if (models.get(mustacheParameter.getLinkType()) == null) {
             mustacheParameter.setName(para.name());
         } else {
-            if (mustacheParameter.getLinkType() != null
-                    && !para.paramType().equals(ApiValues.TYPE_HEADER())) {
+            if (mustacheParameter.getLinkType() != null) {
                 requestTypes.add(mustacheParameter.getLinkType());
             }
             if (para.name() != null) {

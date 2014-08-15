@@ -11,21 +11,14 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
-import com.github.kongchen.swagger.docgen.GenerateException;
 import com.github.kongchen.swagger.docgen.mavenplugin.ApiDocumentMojo;
 import com.github.kongchen.swagger.docgen.mavenplugin.ApiSource;
-import com.github.kongchen.swagger.docgen.mavenplugin.MavenDocumentSource;
-import com.github.kongchen.swagger.docgen.mustache.OutputTemplate;
-import com.wordnik.swagger.model.ApiInfo;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugin.logging.SystemStreamLog;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.BeforeTest;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -33,8 +26,8 @@ import org.testng.annotations.Test;
  * Created by chekong on 8/15/14.
  */
 public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
-    
-    private File swaggerOutputDir =    new File(getBasedir(), "generated/swagger-ui");
+
+    private File swaggerOutputDir = new File(getBasedir(), "generated/swagger-ui");
     private File docOutput = new File(getBasedir(), "generated/document.html");
     private ApiDocumentMojo mojo;
 
@@ -48,14 +41,14 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
         } catch (Exception e) {
             //ignore
         }
-        
+
         File testPom = new File(getBasedir(), "target/test-classes/plugin-config.xml");
         mojo = (ApiDocumentMojo) lookupMojo("generate", testPom);
     }
 
     @Test
     public void testGeneratedDoc() throws Exception {
-        
+
         mojo.execute();
         FileInputStream testOutputIs = new FileInputStream(docOutput);
         InputStream expectIs = this.getClass().getResourceAsStream("/sample.html");
@@ -65,7 +58,7 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
             int expect = expectIs.read();
             int actual = testOutputIs.read();
 
-            Assert.assertEquals( expect, actual, ""+count);
+            Assert.assertEquals(expect, actual, "" + count);
             if (expect == -1) {
                 break;
             }
@@ -74,10 +67,10 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
 
     @Test
     public void testSwaggerOutput() throws Exception {
-        
+
         mojo.execute();
 
-        
+
         List<File> outputFiles = new ArrayList<File>();
 
         Collections.addAll(outputFiles, swaggerOutputDir.listFiles());
@@ -96,7 +89,7 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
         JsonNode node = objectMapper.readTree(FileUtils.readFileToByteArray(new File(swaggerOutputDir, "service.json")));
         JsonNode apis = node.get("apis");
         Assert.assertEquals(apis.size(), 3);
-        List<String> pathInService = new ArrayList<String> ();
+        List<String> pathInService = new ArrayList<String>();
         for (JsonNode api : apis) {
             pathInService.add(api.get("path").asText());
         }
@@ -110,7 +103,7 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
     public void testSwaggerOutputFlat() throws Exception {
         List<ApiSource> apisources = (List<ApiSource>) getVariableValueFromObject(mojo, "apiSources");
         apisources.get(0).setUseOutputFlatStructure(true);
-        setVariableValueToObject(mojo, "apiSources", apisources);        
+        setVariableValueToObject(mojo, "apiSources", apisources);
         mojo.execute();
 
         List<String> flatfiles = new ArrayList<String>();
@@ -126,7 +119,7 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
         JsonNode node = objectMapper.readTree(FileUtils.readFileToByteArray(new File(swaggerOutputDir, "service.json")));
         JsonNode apis = node.get("apis");
         Assert.assertEquals(apis.size(), 3);
-        List<String> pathInService = new ArrayList<String> ();
+        List<String> pathInService = new ArrayList<String>();
         for (JsonNode api : apis) {
             pathInService.add(api.get("path").asText());
         }
@@ -135,7 +128,7 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
         Assert.assertEquals(pathInService.get(1), "/garage.{format}");
         Assert.assertEquals(pathInService.get(2), "/v2_car.{format}");
     }
-    
+
     @Test
     public void testNullSwaggerOutput() throws Exception {
         List<ApiSource> apisources = (List<ApiSource>) getVariableValueFromObject(mojo, "apiSources");
@@ -143,9 +136,9 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
         setVariableValueToObject(mojo, "apiSources", apisources);
         mojo.execute();
         Assert.assertFalse(swaggerOutputDir.exists());
-        
+
     }
-    
+
     @Test
     public void testNullMustacheOutput() throws Exception {
         List<ApiSource> apisources = (List<ApiSource>) getVariableValueFromObject(mojo, "apiSources");
@@ -153,10 +146,18 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
         setVariableValueToObject(mojo, "apiSources", apisources);
         mojo.execute();
         Assert.assertFalse(docOutput.exists());
-        
+
     }
-    
-    public void testOverrideModels() {
+
+    @Test
+    public void testOverrideModels() throws MojoFailureException, MojoExecutionException, IOException {
+        mojo.execute();
+        File carfile = new File(swaggerOutputDir, "car.json");
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode tree = objectMapper.readTree(carfile);
+        Assert.assertEquals("Content-Type in HTTP request/response header",
+                            tree.get("models").get("MediaType").get("properties")
+                                .get("value").get("description").asText());
         
     }
 
