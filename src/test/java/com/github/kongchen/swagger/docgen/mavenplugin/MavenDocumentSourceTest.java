@@ -12,6 +12,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import sample.model.*;
 
+import javax.ws.rs.core.MediaType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.lang.reflect.Field;
@@ -114,7 +115,7 @@ public class MavenDocumentSourceTest {
         }
 
 
-        assertEquals(9, outputTemplate.getDataTypes().size());
+        assertEquals(10, outputTemplate.getDataTypes().size());
         List<MustacheDataType> typeList = new LinkedList<MustacheDataType>();
         for (MustacheDataType type : outputTemplate.getDataTypes()) {
             typeList.add(type);
@@ -135,7 +136,8 @@ public class MavenDocumentSourceTest {
         assertDataTypeInList(typeList, 5, ForGeneric.class);
         assertDataTypeInList(typeList, 6, G1.class);
         assertDataTypeInList(typeList, 7, G2.class);
-        assertDataTypeInList(typeList, 8, sample.model.v2.Car.class);
+        assertDataTypeInList(typeList, 8, MediaType.class);
+        assertDataTypeInList(typeList, 9, sample.model.v2.Car.class);
     }
 
 	@Test
