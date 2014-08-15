@@ -44,6 +44,7 @@ public class MavenDocumentSource extends AbstractDocumentSource {
 
         setApiVersion(apiSource.getApiVersion());
         setBasePath(apiSource.getBasePath());
+        setApiInfo(apiSource.getApiInfo());
         this.apiSource = apiSource;
     }
 
@@ -94,7 +95,13 @@ public class MavenDocumentSource extends AbstractDocumentSource {
         serviceDocument = new ResourceListing(swaggerConfig.apiVersion(), swaggerConfig.swaggerVersion(),
                                               scala.collection.immutable.List.fromIterator(JavaConversions.asScalaIterator(apiListingReferences.iterator())),
                                               scala.collection.immutable.List.fromIterator(JavaConversions.asScalaIterator(authorizationTypes.iterator())),
-                                              swaggerConfig.info());
+                                              toSwaggerApiInfo(apiSource.getApiInfo()));
+    }
+
+    private Option<ApiInfo> toSwaggerApiInfo(ApiSourceInfo info) {
+        return Option.apply(new ApiInfo(info.getTitle(), info.getDescription(),
+            info.getTermsOfServiceUrl(), info.getContact(),
+            info.getLicense(), info.getLicenseUrl()));
     }
 
     private ApiListing getDocFromClass(Class c, SwaggerConfig swaggerConfig, String basePath) throws Exception {
