@@ -35,44 +35,43 @@ See [change log](https://github.com/kongchen/swagger-maven-plugin/blob/master/CH
 # Usage
 
 ```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
-    …
-    <dependencies>
-        ...
-        <dependency>
-            <groupId>com.wordnik</groupId>
-            <artifactId>swagger-jaxrs_2.10</artifactId>
-            <version>1.3.2</version>
-        </dependency>
-        ...
-    </dependencies>
+<project>
     <build>
         <plugins>
-            ...
             <plugin>
                 <groupId>com.github.kongchen</groupId>
                 <artifactId>swagger-maven-plugin</artifactId>
-                <version>2.0</version>
+                <version>2.3-SNAPSHOT</version>
                 <configuration>
                     <apiSources>
                         <apiSource>
-                            <locations>com.foo.bar.apis;com.foo.bar.apis.internal.Resource</locations>
-                            <apiVersion>v1</apiVersion>
-                            <basePath>http://www.example.com</basePath>
+                            <locations>sample.api</locations>
+                            <apiVersion>1.0</apiVersion>
+                            <basePath>http://example.com</basePath>
+                            <apiInfo>
+                                <title>Swagger Maven Plugin Sample</title>
+                                <!-- use markdown here because I'm using markdown template, 
+                                if you need to use html or other template, you should escape your description for xml -->
+                                <description>
+                                    This is a sample of [swagger-maven-plugin](http://www.github.com/kongchen/swagger-maven-plugin).
+                                    The plugin helps you generate **Swagger JSON** and **customized API document** in build phase.
+                                </description>
+                                <termsOfServiceUrl>http://www.github.com/kongchen/swagger-maven-plugin</termsOfServiceUrl>
+                                <contact>kongchen#gmail$com</contact>
+                                <license>Apache 2.0</license>
+                                <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0.html</licenseUrl>
+                            </apiInfo>
+                            
                             <outputTemplate>
-                                     https://raw.github.com/kongchen/api-doc-template/master/v2.0/markdown.mustache
+                                https://raw.github.com/kongchen/api-doc-template/master/v2.0/strapdown.html.mustache
                             </outputTemplate>
-                            <outputPath>generated/strapdown.html</outputPath>
-                            <!--swaggerDirectory>generated/apidocs</swaggerDirectory-->
-                            <!--swaggerUIDocBasePath>http://www.example.com/restapi/doc</swaggerUIDocBasePath-->
-                            <!--useOutputFlatStructure>false</useOutputFlatStructure-->
-                            <!--mustacheFileRoot>${basedir}/src/main/resources/</mustacheFileRoot-->
-                            <!--overridingModels>/swagger-overriding-models.json</overridingModels-->
-                            <!--swaggerInternalFilter>com.wordnik.swagger.config.DefaultSpecFilter</swaggerInternalFilter-->
+                            <outputPath>${basedir}/generated/document.html</outputPath>
+                            <swaggerDirectory>generated/swagger-ui</swaggerDirectory>
+                            <swaggerUIDocBasePath>http://www.example.com/restapi/doc</swaggerUIDocBasePath>
+                            <useOutputFlatStructure>false</useOutputFlatStructure>
+                            <mustacheFileRoot>${basedir}/src/main/resources/</mustacheFileRoot>
+                            <overridingModels>/swagger-overriding-models.json</overridingModels>
+                            <swaggerInternalFilter>com.wordnik.swagger.config.DefaultSpecFilter</swaggerInternalFilter>
                         </apiSource>
                     </apiSources>
                 </configuration>
@@ -85,16 +84,12 @@ See [change log](https://github.com/kongchen/swagger-maven-plugin/blob/master/CH
                     </execution>
                 </executions>
             </plugin>
-            ...
         </plugins>
     </build>
-    ...
-
-
 </project>
 ```
 
-- One ```apiSource``` can be considered as a set of APIs for one ```apiVersion``` in API's ```basePath```.
+- One ```apiSource``` can be considered as a set of APIs for one ```apiVersion``` in API's ```basePath```, and you can define your api's information in ```<apiInfo>```.
 - Java classes containing Swagger's annotation ```@Api```, or Java packages containing those classes can be configured in ```locations```, using ```;``` as the delimiter.
 - ```outputTemplate``` is the path of a mustache template file, see more details in next section. If you don't want to generate html api just don't set it.
 - ```mustacheFileRoot``` is the root path of your mustach template file, see more details in next section.
