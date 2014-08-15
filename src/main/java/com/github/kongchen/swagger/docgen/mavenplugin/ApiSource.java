@@ -1,77 +1,76 @@
 package com.github.kongchen.swagger.docgen.mavenplugin;
 
-import com.github.kongchen.swagger.docgen.GenerateException;
-import com.wordnik.swagger.annotations.Api;
-import org.reflections.Reflections;
-
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+
+import com.github.kongchen.swagger.docgen.GenerateException;
+import com.wordnik.swagger.annotations.Api;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.reflections.Reflections;
 
 /**
  * Created with IntelliJ IDEA.
  * User: kongchen
  * Date: 3/7/13
  */
-
 public class ApiSource {
 
     /**
-     * @parameter
+     * Java classes containing Swagger's annotation <code>@Api</code>, or Java packages containing those classes 
+     * can be configured here, use ; as the delimiter if you have more than one location.
      */
+    @Parameter(required = true)
     private String locations;
+    
+    @Parameter(name = "apiInfo", required = false)
+    private ApiSourceInfo apiInfo;
 
     /**
-     * @parameter
+     * The version of your APIs 
      */
+    @Parameter(required = true)
     private String apiVersion;
 
     /**
-     * @parameter
+     * The basePath of your APIs. 
      */
+    @Parameter(required = true)
     private String basePath;
 
     /**
-     * @parameter
+     * <code>outputTemplate</code> is the path of a mustache template file, 
+     * see more details in next section. 
+     * If you don't want to generate extra api documents, just don't set it.
      */
+    @Parameter(required = false)
     private String outputTemplate;
 
-    /**
-     * @parameter
-     */
+    @Parameter
     private String outputPath;
 
-    /**
-     * @parameter
-     */
+    @Parameter
     private String swaggerDirectory;
 
+    @Parameter
     public String mustacheFileRoot;
 
-
-    /**
-     * @parameter
-     */
+    @Parameter
     public boolean useOutputFlatStructure = true;
 
-
-    /**
-     * @parameter
-     */
+    @Parameter
     private String swaggerUIDocBasePath;
 
-    /**
-     * @parameter
-     */
+    @Parameter
     private String overridingModels;
 
-	/**
-	 * Information about swagger filter that will be used for prefiltering
-     * @parameter
-	 */
-	private String swaggerInternalFilter;
+    /**
+     * Information about swagger filter that will be used for prefiltering
+     */
+    @Parameter
+    private String swaggerInternalFilter;
 
-	public Set<Class> getValidClasses() throws GenerateException {
+    public Set<Class> getValidClasses() throws GenerateException {
         Set<Class> classes = new HashSet<Class>();
         if (getLocations() == null) {
             Set<Class<?>> c = new Reflections("").getTypesAnnotatedWith(Api.class);
@@ -94,6 +93,14 @@ public class ApiSource {
             }
         }
         return classes;
+    }
+
+    public ApiSourceInfo getApiInfo() {
+        return apiInfo;
+    }
+
+    public void setApiInfo(ApiSourceInfo apiInfo) {
+        this.apiInfo = apiInfo;
     }
 
     public String getLocations() {
@@ -168,13 +175,13 @@ public class ApiSource {
         return swaggerUIDocBasePath;
     }
 
-	public String getOverridingModels() {
-		return overridingModels;
-	}
+    public String getOverridingModels() {
+        return overridingModels;
+    }
 
-	public void setOverridingModels(String overridingModels) {
-		this.overridingModels = overridingModels;
-	}
+    public void setOverridingModels(String overridingModels) {
+        this.overridingModels = overridingModels;
+    }
 
     public String getSwaggerInternalFilter() {
         return swaggerInternalFilter;
