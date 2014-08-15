@@ -1,91 +1,57 @@
 # Swagger Maven Plugin [![Build Status](https://travis-ci.org/kongchen/swagger-maven-plugin.png)](https://travis-ci.org/kongchen/swagger-maven-plugin)
 This plugin helps you **generate API documents** in build phase according to [customized output templates](https://github.com/kongchen/api-doc-template).
 
-[Versions](https://github.com/kongchen/swagger-maven-plugin/blob/master/CHANGES.md)
-==
-This plugin has 2 serials of versions:
-
-- 2.x.x : For [Swagger core version >= 1.3.0] (https://github.com/wordnik/swagger-core/wiki/Changelog#v130-aug-12-2013) swagger-spec 1.2
-> **Latest version `2.2` is available in central repository.**
-`2.3-SNAPSHOT` is the latest SNAPSHOT version.
-
-- 1.x.x : For [Swagger core version 1.2.x](https://github.com/wordnik/swagger-core/wiki/Changelog#v125-jun-19-2013) swagger-spec 1.1
-> **Latest version `1.1.3-SNAPSHOT` is available in sonatype repository.**
-
-
-See [change log](https://github.com/kongchen/swagger-maven-plugin/blob/master/CHANGES.md) for more details.
-
-> To use SNAPSHOT version, you should add plugin repository first:
-
-```
-<pluginRepositories>
-  <pluginRepository>
-    <id>sonatype-snapshot</id>
-    <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-    <releases>
-      <enabled>false</enabled>
-    </releases>
-    <snapshots>
-      <enabled>true</enabled>
-    </snapshots>
-  </pluginRepository>
-</pluginRepositories>
-```
-
 # Usage
 
 ```xml
 <project>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>com.github.kongchen</groupId>
-                <artifactId>swagger-maven-plugin</artifactId>
-                <version>2.3-SNAPSHOT</version>
-                <configuration>
-                    <apiSources>
-                        <apiSource>
-                            <locations>sample.api</locations>
-                            <apiVersion>1.0</apiVersion>
-                            <basePath>http://example.com</basePath>
-                            <apiInfo>
-                                <title>Swagger Maven Plugin Sample</title>
-                                <!-- use markdown here because I'm using markdown template, 
-                                if you need to use html or other template, you should escape your description for xml -->
-                                <description>
-                                    This is a sample of [swagger-maven-plugin](http://www.github.com/kongchen/swagger-maven-plugin).
-                                    The plugin helps you generate **Swagger JSON** and **customized API document** in build phase.
-                                </description>
-                                <termsOfServiceUrl>http://www.github.com/kongchen/swagger-maven-plugin</termsOfServiceUrl>
-                                <contact>kongchen#gmail$com</contact>
-                                <license>Apache 2.0</license>
-                                <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0.html</licenseUrl>
-                            </apiInfo>
-                            
-                            <outputTemplate>
-                                https://raw.github.com/kongchen/api-doc-template/master/v2.0/strapdown.html.mustache
-                            </outputTemplate>
-                            <outputPath>${basedir}/generated/document.html</outputPath>
-                            <swaggerDirectory>generated/swagger-ui</swaggerDirectory>
-                            <swaggerUIDocBasePath>http://www.example.com/restapi/doc</swaggerUIDocBasePath>
-                            <useOutputFlatStructure>false</useOutputFlatStructure>
-                            <mustacheFileRoot>${basedir}/src/main/resources/</mustacheFileRoot>
-                            <overridingModels>/swagger-overriding-models.json</overridingModels>
-                            <swaggerInternalFilter>com.wordnik.swagger.config.DefaultSpecFilter</swaggerInternalFilter>
-                        </apiSource>
-                    </apiSources>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>com.github.kongchen</groupId>
+        <artifactId>swagger-maven-plugin</artifactId>
+        <version>2.3-SNAPSHOT</version>
+        <configuration>
+          <apiSources>
+            <apiSource>
+              <locations>sample.api</locations>
+              <apiVersion>1.0</apiVersion>
+              <basePath>http://example.com</basePath>
+              <apiInfo>
+                <title>Swagger Maven Plugin Sample</title>
+                <description>
+                  This is a sample of [swagger-maven-plugin](http://www.github.com/kongchen/swagger-maven-plugin).
+                  The plugin helps you generate **Swagger JSON** and **customized API document** in build phase.
+                </description>
+                <termsOfServiceUrl>http://www.github.com/kongchen/swagger-maven-plugin</termsOfServiceUrl>
+                <contact>kongchen#gmail$com</contact>
+                <license>Apache 2.0</license>
+                <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0.html</licenseUrl>
+              </apiInfo>
+              <outputTemplate>
+                https://raw.github.com/kongchen/api-doc-template/master/v2.0/strapdown.html.mustache
+              </outputTemplate>
+              <outputPath>${basedir}/generated/document.html</outputPath>
+              <swaggerDirectory>generated/swagger-ui</swaggerDirectory>
+              <swaggerUIDocBasePath>http://www.example.com/restapi/doc</swaggerUIDocBasePath>
+              <useOutputFlatStructure>false</useOutputFlatStructure>
+              <mustacheFileRoot>${basedir}/src/main/resources/</mustacheFileRoot>
+              <overridingModels>/swagger-overriding-models.json</overridingModels>
+              <swaggerInternalFilter>com.wordnik.swagger.config.DefaultSpecFilter</swaggerInternalFilter>
+            </apiSource>
+          </apiSources>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>compile</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>
 ```
 
@@ -139,6 +105,35 @@ Example file below. Note that you can name every mapping the way you want - it's
 		"jsonString" : "{\"id\": \"DateTime\",\"properties\": {\"value\": {\"required\": true, \"description\": \"Date in ISO-8601 format\", \"notes\": \"Add any notes you like here\", \"type\": \"string\", \"format\": \"date-time\"}}}"
 	}
 }
+```
+
+[Versions](https://github.com/kongchen/swagger-maven-plugin/blob/master/CHANGES.md)
+==
+
+This plugin has 2 serials of versions:
+
+- 2.x.x : For [Swagger core version >= 1.3.0] (https://github.com/wordnik/swagger-core/wiki/Changelog#v130-aug-12-2013) swagger-spec 1.2
+> **Latest version `2.2` is available in central repository.**
+`2.3-SNAPSHOT` is the latest SNAPSHOT version.
+
+- 1.x.x : For [Swagger core version 1.2.x](https://github.com/wordnik/swagger-core/wiki/Changelog#v125-jun-19-2013) swagger-spec 1.1
+> **Latest version `1.1.3-SNAPSHOT` is available in sonatype repository.**
+
+> To use SNAPSHOT version, you should add plugin repository in your pom.xml first:
+
+```
+<pluginRepositories>
+  <pluginRepository>
+    <id>sonatype-snapshot</id>
+    <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+    <releases>
+      <enabled>false</enabled>
+    </releases>
+    <snapshots>
+      <enabled>true</enabled>
+    </snapshots>
+  </pluginRepository>
+</pluginRepositories>
 ```
 
 # A Sample
