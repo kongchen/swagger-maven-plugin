@@ -3,8 +3,10 @@ This plugin helps you **generate API documents** in build phase according to [cu
 
 # Usage
 
+
 ```xml
 <project>
+  ...
   <build>
     <plugins>
       <plugin>
@@ -17,17 +19,12 @@ This plugin helps you **generate API documents** in build phase according to [cu
               <locations>sample.api</locations>
               <apiVersion>1.0</apiVersion>
               <basePath>http://example.com</basePath>
-              <apiInfo>
-                <title>Swagger Maven Plugin Sample</title>
-                <description>
-                  This is a sample of [swagger-maven-plugin](http://www.github.com/kongchen/swagger-maven-plugin).
-                  The plugin helps you generate **Swagger JSON** and **customized API document** in build phase.
-                </description>
-                <termsOfServiceUrl>http://www.github.com/kongchen/swagger-maven-plugin</termsOfServiceUrl>
-                <contact>kongchen#gmail$com</contact>
-                <license>Apache 2.0</license>
-                <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0.html</licenseUrl>
-              </apiInfo>
+              <title>Swagger Maven Plugin Sample</title>
+              <description>Hellow world!</description>
+              <termsOfServiceUrl>http://www.github.com/kongchen/swagger-maven-plugin</termsOfServiceUrl>
+              <contact>kongchen#gmail$com</contact>
+              <license>Apache 2.0</license>
+              <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0.html</licenseUrl>
               <outputTemplate>
                 https://raw.github.com/kongchen/api-doc-template/master/v2.0/strapdown.html.mustache
               </outputTemplate>
@@ -50,28 +47,60 @@ This plugin helps you **generate API documents** in build phase according to [cu
           </execution>
         </executions>
       </plugin>
+      ...
     </plugins>
   </build>
 </project>
 ```
 
-- One ```apiSource``` can be considered as a set of APIs for one ```apiVersion``` in API's ```basePath```, and you can define your api's information in ```<apiInfo>```.
-- Java classes containing Swagger's annotation ```@Api```, or Java packages containing those classes can be configured in ```locations```, using ```;``` as the delimiter.
-- ```outputTemplate``` is the path of a mustache template file, see more details in next section. If you don't want to generate html api just don't set it.
-- ```mustacheFileRoot``` is the root path of your mustach template file, see more details in next section.
-- ```outputPath``` is the path of your output file, not existed parent directories will be created. If you don't want to generate html api just don't set it.
-- If ```swaggerDirectory``` is configured, the plugin will also generate a Swagger resource listing suitable for feeding to swagger-ui.
-  - ```useOutputFlatStructure``` indicates whether swagger output will be created in subdirs by path defined in @com.wordnik.swagger.annotations.Api#value (false), or the filename will be the path with replaced slashes to underscores (true). Default: true
-  - Generally, the `baseUrl` in `service.json` is always as same as `<basePath>` you specified. However, you can use ```swaggerUIDocBasePath``` to overwrite it.
-- ```overridingModels``` is the name of *overridingModels* file, see more details in next section.
-- ```swaggerInternalFilter``` should be full name of class implementing `com.wordnik.swagger.core.filter.SpecFilter`. This allows 
-you to filter both methods and parameters from generated api. 
+One ```apiSource``` can be considered as a set of APIs for one ```apiVersion``` in API's ```basePath```, here's the parameter list of `apiSource`:
+
+## Required parameters
+| name | description |
+|------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `locations` | Java classes containing Swagger's annotation ```@Api```, or Java packages containing those classes can be configured here, using ```;``` as the delimiter. |
+| `apiVersion` | The version of the api source. |
+| `basePath` | The base path of this api source. |
+
+## Optional parameters
+### General parameters
+
+| **name** | **description** |
+|------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `title` | The title of your API document. |
+| `description` | The brief introduction of your API document. |
+| `termsOfServiceUrl` | The URL of your API's terms of service. |
+| `contact` | should be an email here. |
+| `license` | Your API's license. |
+| `licenseUrl` | The license's URL. |
+| `overridingModels` | The name of *overridingModels* file, see more details in sections below. |
+| `swaggerInternalFilter` | If not null, the value should be full name of class implementing `com.wordnik.swagger.core.filter.SpecFilter`. This allows you to filter both methods and parameters from generated api. |
+
+
+### Generate-by-template related parameters
+
+| **name**| **description** |
+|-----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `outputTemplate` | The path of a mustache template file, see more details in sections below.|
+| `mustacheFileRoot` | The root path of your mustache template file. |
+| `outputPath` | The path of generate-by-template document, not existed parent directories will be created. If you don't want to generate html api just don't set it. |
+
+
+### Generate Swager JSON related parameters
+
+
+| **name**| **description** |
+|-----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `swaggerDirectory` | The directory of generated Swagger JSON files. If null, no Swagger JSON will be generated. |
+| `useOutputFlatStructure` | Indicates whether Swagger JSON will be created in subdirs by path defined in @com.wordnik.swagger.annotations.Api#value (false), or the filename will be the path with replaced slashes to underscores (true). Default: `true` |
+| `swaggerUIDocBasePath` | Generally, the `baseUrl` in Swagger JSON's `service.json` is always as same as `basePath` you specified above. However, you can use this parameter to overwrite it. |
+
 
 You can specify several ```apiSources``` with different api versions and base paths.
 
 # About the template file
 
-```outputTemplate``` is the path of a mustache template file.
+You need to specify a mustache template file in ```outputTemplate```.
 
 It supports a remote path such as https://raw.github.com/kongchen/api-doc-template/master/v2.0/markdown.mustache but local file is highly recommanded because:
 
@@ -119,7 +148,7 @@ This plugin has 2 serials of versions:
 - 1.x.x : For [Swagger core version 1.2.x](https://github.com/wordnik/swagger-core/wiki/Changelog#v125-jun-19-2013) swagger-spec 1.1
 > **Latest version `1.1.3-SNAPSHOT` is available in sonatype repository.**
 
-> To use SNAPSHOT version, you should add plugin repository in your pom.xml first:
+> To use SNAPSHOT version, you need to add plugin repository in your pom.xml first:
 
 ```
 <pluginRepositories>
@@ -139,7 +168,8 @@ This plugin has 2 serials of versions:
 # A Sample
 Check out this [sample project](https://github.com/kongchen/swagger-maven-example) to see how this happens.
 
-# Dependency conflict
+# FAQ
+## Dependency conflict
 If you have package depedency conflict issues, such as jackson, joda-time, or [jsr311-api](https://github.com/kongchen/swagger-maven-plugin/issues/81). Run `mvn dependency:tree` to check which package introduces the one conflicts with yours and exclude it using `<exclusion/>` in pom.xml.
 > e.g. exclude `javax.ws.rs:jsr311-api:jar:1.1.1:compile` from `swagger-jaxrs_2.10`:
 ```xml
