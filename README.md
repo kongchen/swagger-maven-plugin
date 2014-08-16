@@ -6,50 +6,52 @@ This plugin helps you **generate API documents** in build phase according to [cu
 
 ```xml
 <project>
-  ...
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>com.github.kongchen</groupId>
-        <artifactId>swagger-maven-plugin</artifactId>
-        <version>2.3-SNAPSHOT</version>
-        <configuration>
-          <apiSources>
-            <apiSource>
-              <locations>sample.api</locations>
-              <apiVersion>1.0</apiVersion>
-              <basePath>http://example.com</basePath>
-              <title>Swagger Maven Plugin Sample</title>
-              <description>Hellow world!</description>
-              <termsOfServiceUrl>http://www.github.com/kongchen/swagger-maven-plugin</termsOfServiceUrl>
-              <contact>kongchen#gmail$com</contact>
-              <license>Apache 2.0</license>
-              <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0.html</licenseUrl>
-              <outputTemplate>
-                https://raw.github.com/kongchen/api-doc-template/master/v2.0/strapdown.html.mustache
-              </outputTemplate>
-              <outputPath>${basedir}/generated/document.html</outputPath>
-              <swaggerDirectory>generated/swagger-ui</swaggerDirectory>
-              <swaggerUIDocBasePath>http://www.example.com/restapi/doc</swaggerUIDocBasePath>
-              <useOutputFlatStructure>false</useOutputFlatStructure>
-              <mustacheFileRoot>${basedir}/src/main/resources/</mustacheFileRoot>
-              <overridingModels>/swagger-overriding-models.json</overridingModels>
-              <swaggerInternalFilter>com.wordnik.swagger.config.DefaultSpecFilter</swaggerInternalFilter>
-            </apiSource>
-          </apiSources>
-        </configuration>
-        <executions>
-          <execution>
-            <phase>compile</phase>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      ...
-    </plugins>
-  </build>
+...
+<build>
+<plugins>
+<plugin>
+  <groupId>com.github.kongchen</groupId>
+  <artifactId>swagger-maven-plugin</artifactId>
+  <version>2.3-SNAPSHOT</version>
+  <configuration>
+    <apiSources>
+      <apiSource>
+        <locations>sample.api</locations>
+        <apiVersion>1.0</apiVersion>
+        <basePath>http://example.com</basePath>
+        <!--<apiInfo>-->
+        <!--  <title>Swagger Maven Plugin Sample</title>-->
+        <!--  <description>Hellow world!</description>-->
+        <!--  <termsOfServiceUrl>http://www.github.com/kongchen/swagger-maven-plugin</termsOfServiceUrl>-->
+        <!--  <contact>kongchen#gmail$com</contact>-->
+        <!--  <license>Apache 2.0</license>-->
+        <!--  <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0.html</licenseUrl>-->
+        <!--</apiInfo>-->
+        <outputTemplate>
+          https://raw.github.com/kongchen/api-doc-template/master/v2.0/strapdown.html.mustache
+        </outputTemplate>
+        <outputPath>${basedir}/generated/document.html</outputPath>
+        <swaggerDirectory>generated/swagger-ui</swaggerDirectory>
+        <swaggerUIDocBasePath>http://www.example.com/restapi/doc</swaggerUIDocBasePath>
+        <useOutputFlatStructure>false</useOutputFlatStructure>
+        <mustacheFileRoot>${basedir}/src/main/resources/</mustacheFileRoot>
+        <overridingModels>/swagger-overriding-models.json</overridingModels>
+        <swaggerInternalFilter>com.wordnik.swagger.config.DefaultSpecFilter</swaggerInternalFilter>
+      </apiSource>
+    </apiSources>
+  </configuration>
+  <executions>
+    <execution>
+      <phase>compile</phase>
+        <goals>
+          <goal>generate</goal>
+        </goals>
+    </execution>
+    </executions>
+</plugin>
+...
+</plugins>
+</build>
 </project>
 ```
 
@@ -67,14 +69,22 @@ One ```apiSource``` can be considered as a set of APIs for one ```apiVersion``` 
 
 | **name** | **description** |
 |------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `apiInfo` | Some information of the API document. |
+| `overridingModels` | The name of *overridingModels* file, see more details in sections below. |
+| `swaggerInternalFilter` | If not null, the value should be full name of class implementing `com.wordnik.swagger.core.filter.SpecFilter`. This allows you to filter both methods and parameters from generated api. |
+
+
+The parameters of `apiInfo`:
+
+| **name** | **description** |
+|------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `title` | The title of your API document. |
 | `description` | The brief introduction of your API document. |
 | `termsOfServiceUrl` | The URL of your API's terms of service. |
 | `contact` | should be an email here. |
 | `license` | Your API's license. |
 | `licenseUrl` | The license's URL. |
-| `overridingModels` | The name of *overridingModels* file, see more details in sections below. |
-| `swaggerInternalFilter` | If not null, the value should be full name of class implementing `com.wordnik.swagger.core.filter.SpecFilter`. This allows you to filter both methods and parameters from generated api. |
+
 
 
 ### Generate-by-template related parameters
