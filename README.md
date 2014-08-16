@@ -1,5 +1,6 @@
 # Swagger Maven Plugin [![Build Status](https://travis-ci.org/kongchen/swagger-maven-plugin.png)](https://travis-ci.org/kongchen/swagger-maven-plugin)
-This plugin helps you **generate API documents** in build phase according to [customized output templates](https://github.com/kongchen/api-doc-template).
+This plugin can let your Swagger annotated project generate **Swagger JSON** and your **customized API documents** in build phase.
+
 
 # Usage
 
@@ -12,7 +13,7 @@ This plugin helps you **generate API documents** in build phase according to [cu
 <plugin>
   <groupId>com.github.kongchen</groupId>
   <artifactId>swagger-maven-plugin</artifactId>
-  <version>2.3-SNAPSHOT</version>
+  <version>2.3</version>
   <configuration>
     <apiSources>
       <apiSource>
