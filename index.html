@@ -1,1 +1,383 @@
-Hello
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Swagger-maven-plugin : A maven build plugin which helps you generate Swagger JSON and API document during build phase">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Swagger-maven-plugin</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/kongchen/swagger-maven-plugin">View on GitHub</a>
+
+          <h1 id="project_title">Swagger-maven-plugin</h1>
+          <h2 id="project_tagline">A maven build plugin which helps you generate Swagger JSON and API document during build phase</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/kongchen/swagger-maven-plugin/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/kongchen/swagger-maven-plugin/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a name="swagger-maven-plugin-" class="anchor" href="#swagger-maven-plugin-"><span class="octicon octicon-link"></span></a>Swagger Maven Plugin <a href="https://travis-ci.org/kongchen/swagger-maven-plugin"><img src="https://travis-ci.org/kongchen/swagger-maven-plugin.png" alt="Build Status"></a>
+</h1>
+
+<p>This plugin can let your Swagger annotated project generate <strong>Swagger JSON</strong> and your <strong>customized API documents</strong> in build phase.</p>
+
+<h1>
+<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h1>
+
+<div class="highlight highlight-xml"><pre><span class="nt">&lt;project&gt;</span>
+...
+<span class="nt">&lt;build&gt;</span>
+<span class="nt">&lt;plugins&gt;</span>
+<span class="nt">&lt;plugin&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>com.github.kongchen<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>swagger-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;version&gt;</span>2.3<span class="nt">&lt;/version&gt;</span>
+  <span class="nt">&lt;configuration&gt;</span>
+    <span class="nt">&lt;apiSources&gt;</span>
+      <span class="nt">&lt;apiSource&gt;</span>
+<span class="c">&lt;!--Required parameters BEGIN--&gt;</span>
+        <span class="nt">&lt;locations&gt;</span>sample.api<span class="nt">&lt;/locations&gt;</span>
+        <span class="nt">&lt;apiVersion&gt;</span>1.0<span class="nt">&lt;/apiVersion&gt;</span>
+        <span class="nt">&lt;basePath&gt;</span>http://example.com<span class="nt">&lt;/basePath&gt;</span>
+<span class="c">&lt;!--Required parameters END--&gt;</span>
+
+<span class="c">&lt;!--Optional parameters BEGIN--&gt;</span>
+        <span class="c">&lt;!---General parameters BEGIN---&gt;</span>
+        <span class="nt">&lt;apiInfo&gt;</span>
+          <span class="nt">&lt;title&gt;</span>Swagger Maven Plugin Sample<span class="nt">&lt;/title&gt;</span>
+          <span class="nt">&lt;description&gt;</span>Hellow world!<span class="nt">&lt;/description&gt;</span>
+          <span class="nt">&lt;termsOfServiceUrl&gt;</span>http://www.github.com/kongchen/swagger-maven-plugin<span class="nt">&lt;/termsOfServiceUrl&gt;</span>
+          <span class="nt">&lt;contact&gt;</span>kongchen#gmail$com<span class="nt">&lt;/contact&gt;</span>
+          <span class="nt">&lt;license&gt;</span>Apache 2.0<span class="nt">&lt;/license&gt;</span>
+          <span class="nt">&lt;licenseUrl&gt;</span>http://www.apache.org/licenses/LICENSE-2.0.html<span class="nt">&lt;/licenseUrl&gt;</span>
+        <span class="nt">&lt;/apiInfo&gt;</span>
+        <span class="nt">&lt;overridingModels&gt;</span>/swagger-overriding-models.json<span class="nt">&lt;/overridingModels&gt;</span>
+        <span class="nt">&lt;swaggerInternalFilter&gt;</span>com.wordnik.swagger.config.DefaultSpecFilter<span class="nt">&lt;/swaggerInternalFilter&gt;</span>
+        <span class="c">&lt;!---General parameters END---&gt;</span>
+
+        <span class="c">&lt;!---Document generation parameters BEGIN---&gt;</span>
+        <span class="nt">&lt;outputTemplate&gt;</span>
+          https://raw.github.com/kongchen/api-doc-template/master/v2.0/strapdown.html.mustache
+        <span class="nt">&lt;/outputTemplate&gt;</span>
+        <span class="nt">&lt;mustacheFileRoot&gt;</span>${basedir}/src/main/resources/<span class="nt">&lt;/mustacheFileRoot&gt;</span>
+        <span class="nt">&lt;outputPath&gt;</span>${basedir}/generated/document.html<span class="nt">&lt;/outputPath&gt;</span>
+        <span class="c">&lt;!---Document generation parameters END---&gt;</span>
+
+        <span class="c">&lt;!---Swagger JSON parameters BEGIN---&gt;</span>
+        <span class="nt">&lt;swaggerDirectory&gt;</span>generated/swagger-ui<span class="nt">&lt;/swaggerDirectory&gt;</span>
+        <span class="nt">&lt;swaggerUIDocBasePath&gt;</span>http://www.example.com/restapi/doc<span class="nt">&lt;/swaggerUIDocBasePath&gt;</span>
+        <span class="nt">&lt;useOutputFlatStructure&gt;</span>false<span class="nt">&lt;/useOutputFlatStructure&gt;</span>
+        <span class="c">&lt;!---Swagger JSON parameters END---&gt;</span>
+<span class="c">&lt;!--Optional parameters END--&gt;</span>
+      <span class="nt">&lt;/apiSource&gt;</span>
+    <span class="nt">&lt;/apiSources&gt;</span>
+  <span class="nt">&lt;/configuration&gt;</span>
+  <span class="nt">&lt;executions&gt;</span>
+    <span class="nt">&lt;execution&gt;</span>
+      <span class="nt">&lt;phase&gt;</span>compile<span class="nt">&lt;/phase&gt;</span>
+        <span class="nt">&lt;goals&gt;</span>
+          <span class="nt">&lt;goal&gt;</span>generate<span class="nt">&lt;/goal&gt;</span>
+        <span class="nt">&lt;/goals&gt;</span>
+    <span class="nt">&lt;/execution&gt;</span>
+    <span class="nt">&lt;/executions&gt;</span>
+<span class="nt">&lt;/plugin&gt;</span>
+...
+<span class="nt">&lt;/plugins&gt;</span>
+<span class="nt">&lt;/build&gt;</span>
+<span class="nt">&lt;/project&gt;</span>
+</pre></div>
+
+<p>One <code>apiSource</code> can be considered as a set of APIs for one <code>apiVersion</code> in API's <code>basePath</code>, here's the parameter list of <code>apiSource</code>:</p>
+
+<h2>
+<a name="required-parameters" class="anchor" href="#required-parameters"><span class="octicon octicon-link"></span></a>Required parameters</h2>
+
+<table>
+<thead><tr>
+<th><strong>Name</strong></th>
+<th><strong>Type</strong></th>
+<th><strong>Description</strong></th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>locations</code></td>
+<td>string</td>
+<td>Java classes containing Swagger's annotation <code>@Api</code>, or Java packages containing those classes can be configured here, using <code>;</code> as the delimiter.</td>
+</tr>
+<tr>
+<td><code>apiVersion</code></td>
+<td>string</td>
+<td>The version of the api source.</td>
+</tr>
+<tr>
+<td><code>basePath</code></td>
+<td>string</td>
+<td>The base path of this api source.</td>
+</tr>
+</tbody>
+</table><h2>
+<a name="optional-parameters" class="anchor" href="#optional-parameters"><span class="octicon octicon-link"></span></a>Optional parameters</h2>
+
+<h3>
+<a name="general-parameters" class="anchor" href="#general-parameters"><span class="octicon octicon-link"></span></a>General parameters</h3>
+
+<table>
+<thead><tr>
+<th><strong>Name</strong></th>
+<th><strong>Type</strong></th>
+<th><strong>Description</strong></th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>apiInfo</code></td>
+<td><code>ApiInfo</code></td>
+<td>Some information of the API document.</td>
+</tr>
+<tr>
+<td><code>overridingModels</code></td>
+<td>File</td>
+<td>The name of <em>overridingModels</em> file, see more details in sections below.</td>
+</tr>
+<tr>
+<td><code>swaggerInternalFilter</code></td>
+<td>string</td>
+<td>If not null, the value should be full name of class implementing <code>com.wordnik.swagger.core.filter.SpecFilter</code>. This allows you to filter both methods and parameters from generated api.</td>
+</tr>
+</tbody>
+</table><p>The parameters of <code>ApiInfo</code>:</p>
+
+<table>
+<thead><tr>
+<th><strong>Name</strong></th>
+<th><strong>Type</strong></th>
+<th><strong>Description</strong></th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>title</code></td>
+<td>string</td>
+<td>The title of your API document.</td>
+</tr>
+<tr>
+<td><code>description</code></td>
+<td>string</td>
+<td>The brief introduction of your API document.</td>
+</tr>
+<tr>
+<td><code>termsOfServiceUrl</code></td>
+<td>string</td>
+<td>The URL of your API's terms of service.</td>
+</tr>
+<tr>
+<td><code>contact</code></td>
+<td>string</td>
+<td>should be an email here.</td>
+</tr>
+<tr>
+<td><code>license</code></td>
+<td>string</td>
+<td>Your API's license.</td>
+</tr>
+<tr>
+<td><code>licenseUrl</code></td>
+<td>string</td>
+<td>The license's URL.</td>
+</tr>
+</tbody>
+</table><h3>
+<a name="document-generation-parameters" class="anchor" href="#document-generation-parameters"><span class="octicon octicon-link"></span></a>Document generation parameters</h3>
+
+<table>
+<thead><tr>
+<th><strong>Name</strong></th>
+<th><strong>Type</strong></th>
+<th><strong>Description</strong></th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>outputTemplate</code></td>
+<td>URI</td>
+<td>The path of a mustache template file, see more details in sections below.</td>
+</tr>
+<tr>
+<td><code>mustacheFileRoot</code></td>
+<td>File</td>
+<td>The root path of your mustache template file.</td>
+</tr>
+<tr>
+<td><code>outputPath</code></td>
+<td>File</td>
+<td>The path of generate-by-template document, not existed parent directories will be created. If you don't want to generate html api just don't set it.</td>
+</tr>
+</tbody>
+</table><h3>
+<a name="swager-json-parameters" class="anchor" href="#swager-json-parameters"><span class="octicon octicon-link"></span></a>Swager JSON parameters</h3>
+
+<table>
+<thead><tr>
+<th><strong>Name</strong></th>
+<th><strong>Type</strong></th>
+<th><strong>Description</strong></th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>swaggerDirectory</code></td>
+<td>File</td>
+<td>The directory of generated Swagger JSON files. If null, no Swagger JSON will be generated.</td>
+</tr>
+<tr>
+<td><code>useOutputFlatStructure</code></td>
+<td>boolean</td>
+<td>Indicates whether Swagger JSON will be created in subdirs by path defined in @com.wordnik.swagger.annotations.Api#value (false), or the filename will be the path with replaced slashes to underscores (true). Default: <code>true</code>
+</td>
+</tr>
+<tr>
+<td><code>swaggerUIDocBasePath</code></td>
+<td>string</td>
+<td>Generally, the <code>baseUrl</code> in Swagger JSON's <code>service.json</code> is always as same as <code>basePath</code> you specified above. However, you can use this parameter to overwrite it.</td>
+</tr>
+</tbody>
+</table><p>You can specify several <code>apiSources</code> with different api versions and base paths.</p>
+
+<h1>
+<a name="about-the-template-file" class="anchor" href="#about-the-template-file"><span class="octicon octicon-link"></span></a>About the template file</h1>
+
+<p>You need to specify a mustache template file in <code>outputTemplate</code>.</p>
+
+<p>It supports a remote path such as <a href="https://raw.github.com/kongchen/api-doc-template/master/v2.0/markdown.mustache">https://raw.github.com/kongchen/api-doc-template/master/v2.0/markdown.mustache</a> but local file is highly recommanded because:</p>
+
+<ol>
+<li>You can modify the template to match your requirement easily.</li>
+<li>Mustache can use <code>&gt;localfile</code> for mustache partials, but you should put the partials in <code>mustacheFileRoot</code> if any.</li>
+</ol><blockquote>
+<p>E.g: 
+The template <a href="https://raw.github.com/kongchen/api-doc-template/master/v2.0/strapdown.html.mustache">https://raw.github.com/kongchen/api-doc-template/master/v2.0/strapdown.html.mustache</a> uses
+     <a href="https://raw.github.com/kongchen/api-doc-template/master/v2.0/markdown.mustache"><code>markdown.mustache</code></a> as a partial by this way,
+     to use <code>strapdown.html.mustache</code> you should put <code>markdown.mustache</code> in your local path and tell the path to plugin via <code>mustacheFileRoot</code>.</p>
+</blockquote>
+
+<p>There's a <a href="https://github.com/kongchen/api-doc-template">standalone project</a> for the template files, see more details there and welcome to send pull request.</p>
+
+<h1>
+<a name="about-the-overridingmodels-file" class="anchor" href="#about-the-overridingmodels-file"><span class="octicon octicon-link"></span></a>About the overridingModels file</h1>
+
+<p><code>overridingModels</code> is the name of <em>overridingModels</em> file.</p>
+
+<p>It will be loaded with <a href="http://docs.oracle.com/javase/7/docs/api/java/lang/Class.html#getResourceAsStream(java.lang.String)">Class#getResourceAsStream</a>.</p>
+
+<p>Example file below. Note that you can name every mapping the way you want - it's not used for anything. <em>className</em> and <em>jsonString</em> are used as described <a href="https://github.com/wordnik/swagger-core/wiki/overriding-models#in-java-with-swagger-core-version-13x">here</a> to create <em>OverrideConverter</em> and add it to the <em>ModelConverters</em>. </p>
+
+<div class="highlight highlight-json"><pre><span class="p">{</span>
+    <span class="nt">"DateTimeMapping"</span> <span class="p">:</span>
+    <span class="p">{</span>
+        <span class="nt">"className"</span> <span class="p">:</span> <span class="s2">"org.joda.time.DateTime"</span><span class="p">,</span>
+        <span class="nt">"jsonString"</span> <span class="p">:</span> <span class="s2">"{\"id\": \"DateTime\",\"properties\": {\"value\": {\"required\": true, \"description\": \"Date in ISO-8601 format\", \"notes\": \"Add any notes you like here\", \"type\": \"string\", \"format\": \"date-time\"}}}"</span>
+    <span class="p">},</span>
+    <span class="nt">"DateMidnightMapping"</span> <span class="p">:</span>
+    <span class="p">{</span>
+        <span class="nt">"className"</span> <span class="p">:</span> <span class="s2">"org.joda.time.DateMidnight"</span><span class="p">,</span>
+        <span class="nt">"jsonString"</span> <span class="p">:</span> <span class="s2">"{\"id\": \"DateTime\",\"properties\": {\"value\": {\"required\": true, \"description\": \"Date in ISO-8601 format\", \"notes\": \"Add any notes you like here\", \"type\": \"string\", \"format\": \"date-time\"}}}"</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+<h1>
+<a name="versions" class="anchor" href="#versions"><span class="octicon octicon-link"></span></a><a href="https://github.com/kongchen/swagger-maven-plugin/blob/master/CHANGES.md">Versions</a>
+</h1>
+
+<p>This plugin has 2 serials of versions:</p>
+
+<ul>
+<li>
+<p>2.x.x : For <a href="https://github.com/wordnik/swagger-core/wiki/Changelog#v130-aug-12-2013">Swagger core version &gt;= 1.3.0</a> swagger-spec 1.2</p>
+
+<blockquote>
+<p><strong>Latest version <code>2.3</code> is available in central repository.</strong>
+<code>2.3.1-SNAPSHOT</code> is the latest SNAPSHOT version.</p>
+</blockquote>
+</li>
+<li>
+<p>1.x.x : For <a href="https://github.com/wordnik/swagger-core/wiki/Changelog#v125-jun-19-2013">Swagger core version 1.2.x</a> swagger-spec 1.1</p>
+
+<blockquote>
+<p><strong>Latest version <code>1.1.3-SNAPSHOT</code> is available in sonatype repository.</strong></p>
+</blockquote>
+</li>
+</ul><blockquote>
+<p>To use SNAPSHOT version, you need to add plugin repository in your pom.xml first:</p>
+</blockquote>
+
+<pre><code>&lt;pluginRepositories&gt;
+  &lt;pluginRepository&gt;
+    &lt;id&gt;sonatype-snapshot&lt;/id&gt;
+    &lt;url&gt;https://oss.sonatype.org/content/repositories/snapshots/&lt;/url&gt;
+    &lt;releases&gt;
+      &lt;enabled&gt;false&lt;/enabled&gt;
+    &lt;/releases&gt;
+    &lt;snapshots&gt;
+      &lt;enabled&gt;true&lt;/enabled&gt;
+    &lt;/snapshots&gt;
+  &lt;/pluginRepository&gt;
+&lt;/pluginRepositories&gt;
+</code></pre>
+
+<h1>
+<a name="a-sample" class="anchor" href="#a-sample"><span class="octicon octicon-link"></span></a>A Sample</h1>
+
+<p>Check out this <a href="https://github.com/kongchen/swagger-maven-example">sample project</a> to see how this happens.</p>
+
+<h1>
+<a name="faq" class="anchor" href="#faq"><span class="octicon octicon-link"></span></a>FAQ</h1>
+
+<h2>
+<a name="dependency-conflict" class="anchor" href="#dependency-conflict"><span class="octicon octicon-link"></span></a>Dependency conflict</h2>
+
+<p>If you have package depedency conflict issues, such as jackson, joda-time, or <a href="https://github.com/kongchen/swagger-maven-plugin/issues/81">jsr311-api</a>. Run <code>mvn dependency:tree</code> to check which package introduces the one conflicts with yours and exclude it using <code>&lt;exclusion/&gt;</code> in pom.xml.</p>
+
+<blockquote>
+<p>e.g. exclude <code>javax.ws.rs:jsr311-api:jar:1.1.1:compile</code> from <code>swagger-jaxrs_2.10</code>:</p>
+
+<div class="highlight highlight-xml"><pre>    <span class="nt">&lt;dependency&gt;</span>
+        <span class="nt">&lt;groupId&gt;</span>com.wordnik<span class="nt">&lt;/groupId&gt;</span>
+        <span class="nt">&lt;artifactId&gt;</span>swagger-jaxrs_2.10<span class="nt">&lt;/artifactId&gt;</span>
+        <span class="nt">&lt;version&gt;</span>1.3.2<span class="nt">&lt;/version&gt;</span>
+        <span class="nt">&lt;exclusions&gt;</span>
+            <span class="nt">&lt;exclusion&gt;</span>
+                <span class="nt">&lt;groupId&gt;</span>javax.ws.rs<span class="nt">&lt;/groupId&gt;</span>
+                <span class="nt">&lt;artifactId&gt;</span>jsr311-api<span class="nt">&lt;/artifactId&gt;</span>
+            <span class="nt">&lt;/exclusion&gt;</span>
+        <span class="nt">&lt;/exclusions&gt;</span>
+    <span class="nt">&lt;/dependency&gt;</span>   
+</pre></div>
+</blockquote>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Swagger-maven-plugin maintained by <a href="https://github.com/kongchen">kongchen</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
