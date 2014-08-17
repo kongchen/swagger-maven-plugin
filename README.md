@@ -17,27 +17,40 @@ This plugin can let your Swagger annotated project generate **Swagger JSON** and
   <configuration>
     <apiSources>
       <apiSource>
+<!--Required parameters BEGIN-->
         <locations>sample.api</locations>
         <apiVersion>1.0</apiVersion>
         <basePath>http://example.com</basePath>
-        <!--<apiInfo>-->
-        <!--  <title>Swagger Maven Plugin Sample</title>-->
-        <!--  <description>Hellow world!</description>-->
-        <!--  <termsOfServiceUrl>http://www.github.com/kongchen/swagger-maven-plugin</termsOfServiceUrl>-->
-        <!--  <contact>kongchen#gmail$com</contact>-->
-        <!--  <license>Apache 2.0</license>-->
-        <!--  <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0.html</licenseUrl>-->
-        <!--</apiInfo>-->
+<!--Required parameters END-->
+
+<!--Optional parameters BEGIN-->
+        <!---General parameters BEGIN--->
+        <apiInfo>
+          <title>Swagger Maven Plugin Sample</title>
+          <description>Hellow world!</description>
+          <termsOfServiceUrl>http://www.github.com/kongchen/swagger-maven-plugin</termsOfServiceUrl>
+          <contact>kongchen#gmail$com</contact>
+          <license>Apache 2.0</license>
+          <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0.html</licenseUrl>
+        </apiInfo>
+        <overridingModels>/swagger-overriding-models.json</overridingModels>
+        <swaggerInternalFilter>com.wordnik.swagger.config.DefaultSpecFilter</swaggerInternalFilter>
+        <!---General parameters END--->
+
+        <!---Document generation parameters BEGIN--->
         <outputTemplate>
           https://raw.github.com/kongchen/api-doc-template/master/v2.0/strapdown.html.mustache
         </outputTemplate>
+        <mustacheFileRoot>${basedir}/src/main/resources/</mustacheFileRoot>
         <outputPath>${basedir}/generated/document.html</outputPath>
+        <!---Document generation parameters END--->
+
+        <!---Swagger JSON parameters BEGIN--->
         <swaggerDirectory>generated/swagger-ui</swaggerDirectory>
         <swaggerUIDocBasePath>http://www.example.com/restapi/doc</swaggerUIDocBasePath>
         <useOutputFlatStructure>false</useOutputFlatStructure>
-        <mustacheFileRoot>${basedir}/src/main/resources/</mustacheFileRoot>
-        <overridingModels>/swagger-overriding-models.json</overridingModels>
-        <swaggerInternalFilter>com.wordnik.swagger.config.DefaultSpecFilter</swaggerInternalFilter>
+        <!---Swagger JSON parameters END--->
+<!--Optional parameters END-->
       </apiSource>
     </apiSources>
   </configuration>
@@ -88,7 +101,7 @@ The parameters of `apiInfo`:
 
 
 
-### Generate-by-template related parameters
+### Document generation parameters
 
 | **name**| **description** |
 |-----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -97,7 +110,7 @@ The parameters of `apiInfo`:
 | `outputPath` | The path of generate-by-template document, not existed parent directories will be created. If you don't want to generate html api just don't set it. |
 
 
-### Generate Swager JSON related parameters
+### Swager JSON parameters
 
 
 | **name**| **description** |
