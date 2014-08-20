@@ -165,7 +165,7 @@ Example file below. Note that you can name every mapping the way you want - it's
 
 This plugin has 2 serials of versions:
 
-- 2.x.x : For [Swagger core version >= 1.3.0] (https://github.com/wordnik/swagger-core/wiki/Changelog#v130-aug-12-2013) swagger-spec 1.2
+- 2.x.x : For [Swagger core version >= 1.3.0] (https://github.com/wordnik/swagger-core/wiki/Changelog#v130-aug-12-2013) [swagger-spec 1.2](https://github.com/wordnik/swagger-spec/blob/master/versions/1.2.md)
 > **Latest version `2.3` is available in central repository.**
 `2.3.1-SNAPSHOT` is the latest SNAPSHOT version.
 
