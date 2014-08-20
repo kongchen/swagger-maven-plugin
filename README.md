@@ -24,7 +24,7 @@ This plugin can let your Swagger annotated project generate **Swagger JSON** and
 <!--Required parameters END-->
 
 <!--Optional parameters BEGIN-->
-        <!---General parameters BEGIN--->
+        <!---General parameters BEGIN-->
         <apiInfo>
           <title>Swagger Maven Plugin Sample</title>
           <description>Hellow world!</description>
@@ -35,21 +35,21 @@ This plugin can let your Swagger annotated project generate **Swagger JSON** and
         </apiInfo>
         <overridingModels>/swagger-overriding-models.json</overridingModels>
         <swaggerInternalFilter>com.wordnik.swagger.config.DefaultSpecFilter</swaggerInternalFilter>
-        <!---General parameters END--->
+        <!---General parameters END-->
 
-        <!---Document generation parameters BEGIN--->
+        <!---Document generation parameters BEGIN-->
         <outputTemplate>
           https://raw.github.com/kongchen/api-doc-template/master/v2.0/strapdown.html.mustache
         </outputTemplate>
         <mustacheFileRoot>${basedir}/src/main/resources/</mustacheFileRoot>
         <outputPath>${basedir}/generated/document.html</outputPath>
-        <!---Document generation parameters END--->
+        <!---Document generation parameters END-->
 
-        <!---Swagger JSON parameters BEGIN--->
+        <!---Swagger JSON parameters BEGIN-->
         <swaggerDirectory>generated/swagger-ui</swaggerDirectory>
         <swaggerUIDocBasePath>http://www.example.com/restapi/doc</swaggerUIDocBasePath>
         <useOutputFlatStructure>false</useOutputFlatStructure>
-        <!---Swagger JSON parameters END--->
+        <!---Swagger JSON parameters END-->
 <!--Optional parameters END-->
       </apiSource>
     </apiSources>
