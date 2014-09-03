@@ -123,7 +123,7 @@ public class MustacheDocument implements Comparable<MustacheDocument> {
 
     public List<MustacheParameterSet> analyzeParameters(List<Parameter> parameters) {
         if (parameters == null) return null;
-        List<MustacheParameterSet> list = new LinkedList<MustacheParameterSet>();
+        List<MustacheParameterSet> list = new ArrayList<MustacheParameterSet>();
 
         Map<String, List<MustacheParameter>> paraMap = toParameterTypeMap(parameters);
 
