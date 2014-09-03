@@ -33,22 +33,6 @@ Search cars by query
 ###### URL
 http://example.com/car.json
 ###### Parameters
-- query
-
-<table border="1">
-    <tr>
-        <th>Parameter</th>
-        <th>Required</th>
-        <th>Description</th>
-        <th>Data Type</th>
-    </tr>
-    <tr>
-        <th>query</th>
-        <td>false</td>
-        <td></td>
-        <td>string</td>
-    </tr>
-</table>
 - header
 
 <table border="1">
@@ -63,6 +47,22 @@ http://example.com/car.json
         <td>false</td>
         <td></td>
         <td><a href="#MediaType">MediaType</a></td>
+    </tr>
+</table>
+- query
+
+<table border="1">
+    <tr>
+        <th>Parameter</th>
+        <th>Required</th>
+        <th>Description</th>
+        <th>Data Type</th>
+    </tr>
+    <tr>
+        <th>query</th>
+        <td>false</td>
+        <td></td>
+        <td>string</td>
     </tr>
 </table>
 
@@ -86,22 +86,6 @@ remove a car
 ###### URL
 http://example.com/car.json
 ###### Parameters
-- query
-
-<table border="1">
-    <tr>
-        <th>Parameter</th>
-        <th>Required</th>
-        <th>Description</th>
-        <th>Data Type</th>
-    </tr>
-    <tr>
-        <th>id</th>
-        <td>false</td>
-        <td>carId</td>
-        <td>string</td>
-    </tr>
-</table>
 - header
 
 <table border="1">
@@ -115,6 +99,22 @@ http://example.com/car.json
         <th>version</th>
         <td>false</td>
         <td></td>
+        <td>string</td>
+    </tr>
+</table>
+- query
+
+<table border="1">
+    <tr>
+        <th>Parameter</th>
+        <th>Required</th>
+        <th>Description</th>
+        <th>Data Type</th>
+    </tr>
+    <tr>
+        <th>id</th>
+        <td>false</td>
+        <td>carId</td>
         <td>string</td>
     </tr>
 </table>
@@ -140,6 +140,38 @@ To get car info by car's Id
 ###### URL
 http://example.com/car.json/{carId}
 ###### Parameters
+- header
+
+<table border="1">
+    <tr>
+        <th>Parameter</th>
+        <th>Required</th>
+        <th>Description</th>
+        <th>Data Type</th>
+    </tr>
+    <tr>
+        <th>Accept</th>
+        <td>false</td>
+        <td></td>
+        <td><a href="#MediaType">MediaType</a></td>
+    </tr>
+</table>
+- path
+
+<table border="1">
+    <tr>
+        <th>Parameter</th>
+        <th>Required</th>
+        <th>Description</th>
+        <th>Data Type</th>
+    </tr>
+    <tr>
+        <th>carId</th>
+        <td>true</td>
+        <td>ID of car that needs to be fetched</td>
+        <td>string</td>
+    </tr>
+</table>
 - query
 
 <table border="1">
@@ -170,38 +202,6 @@ http://example.com/car.json/{carId}
         <td>false</td>
         <td>version</td>
         <td>string</td>
-    </tr>
-</table>
-- path
-
-<table border="1">
-    <tr>
-        <th>Parameter</th>
-        <th>Required</th>
-        <th>Description</th>
-        <th>Data Type</th>
-    </tr>
-    <tr>
-        <th>carId</th>
-        <td>true</td>
-        <td>ID of car that needs to be fetched</td>
-        <td>string</td>
-    </tr>
-</table>
-- header
-
-<table border="1">
-    <tr>
-        <th>Parameter</th>
-        <th>Required</th>
-        <th>Description</th>
-        <th>Data Type</th>
-    </tr>
-    <tr>
-        <th>Accept</th>
-        <td>false</td>
-        <td></td>
-        <td><a href="#MediaType">MediaType</a></td>
     </tr>
 </table>
 
@@ -274,22 +274,6 @@ To repair car
 ###### URL
 http://example.com/garage.json/{garageId}
 ###### Parameters
-- body
-
-<table border="1">
-    <tr>
-        <th>Parameter</th>
-        <th>Required</th>
-        <th>Description</th>
-        <th>Data Type</th>
-    </tr>
-    <tr>
-        <th>body</th>
-        <td>true</td>
-        <td>broken car1</td>
-        <td><a href="#Car">Car</a></td>
-    </tr>
-</table>
 - path
 
 <table border="1">
@@ -304,6 +288,22 @@ http://example.com/garage.json/{garageId}
         <td>true</td>
         <td>ID of garage</td>
         <td>string</td>
+    </tr>
+</table>
+- body
+
+<table border="1">
+    <tr>
+        <th>Parameter</th>
+        <th>Required</th>
+        <th>Description</th>
+        <th>Data Type</th>
+    </tr>
+    <tr>
+        <th>body</th>
+        <td>true</td>
+        <td>broken car1</td>
+        <td><a href="#Car">Car</a></td>
     </tr>
 </table>
 

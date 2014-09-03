@@ -87,6 +87,10 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
 
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode node = objectMapper.readTree(FileUtils.readFileToByteArray(new File(swaggerOutputDir, "service.json")));
+
+        JsonNode basePathNode = node.get("basePath");
+        Assert.assertEquals(basePathNode.textValue(), "http://www.example.com/restapi/doc");
+
         JsonNode apis = node.get("apis");
         Assert.assertEquals(apis.size(), 3);
         List<String> pathInService = new ArrayList<String>();
@@ -117,6 +121,45 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
 
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode node = objectMapper.readTree(FileUtils.readFileToByteArray(new File(swaggerOutputDir, "service.json")));
+
+        JsonNode basePathNode = node.get("basePath");
+        Assert.assertEquals(basePathNode.textValue(), "http://www.example.com/restapi/doc");
+
+        JsonNode apis = node.get("apis");
+        Assert.assertEquals(apis.size(), 3);
+        List<String> pathInService = new ArrayList<String>();
+        for (JsonNode api : apis) {
+            pathInService.add(api.get("path").asText());
+        }
+        Collections.sort(pathInService);
+        Assert.assertEquals(pathInService.get(0), "/car.{format}");
+        Assert.assertEquals(pathInService.get(1), "/garage.{format}");
+        Assert.assertEquals(pathInService.get(2), "/v2_car.{format}");
+    }
+
+    @Test
+    public void testSwaggerOutputFlatWithoutSwaggerUiPath() throws Exception {
+        List<ApiSource> apisources = (List<ApiSource>) getVariableValueFromObject(mojo, "apiSources");
+        apisources.get(0).setUseOutputFlatStructure(true);
+        apisources.get(0).setSwaggerUIDocBasePath(null);
+        setVariableValueToObject(mojo, "apiSources", apisources);
+        mojo.execute();
+
+        List<String> flatfiles = new ArrayList<String>();
+
+        Collections.addAll(flatfiles, swaggerOutputDir.list());
+        Collections.sort(flatfiles);
+        Assert.assertEquals(flatfiles.get(0), "car.json");
+        Assert.assertEquals(flatfiles.get(1), "garage.json");
+        Assert.assertEquals(flatfiles.get(2), "service.json");
+        Assert.assertEquals(flatfiles.get(3), "v2_car.json");
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode node = objectMapper.readTree(FileUtils.readFileToByteArray(new File(swaggerOutputDir, "service.json")));
+
+        JsonNode basePathNode = node.get("basePath");
+        Assert.assertEquals(basePathNode.textValue(), "http://example.com");
+
         JsonNode apis = node.get("apis");
         Assert.assertEquals(apis.size(), 3);
         List<String> pathInService = new ArrayList<String>();

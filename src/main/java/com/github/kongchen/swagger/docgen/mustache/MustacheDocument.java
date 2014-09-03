@@ -1,7 +1,7 @@
 package com.github.kongchen.swagger.docgen.mustache;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.github.kongchen.swagger.docgen.GenerateException;
+import com.github.kongchen.swagger.docgen.DocTemplateConstants;
 import com.github.kongchen.swagger.docgen.util.Utils;
 import com.wordnik.swagger.core.ApiValues;
 import com.wordnik.swagger.core.util.ModelUtil;
@@ -44,6 +44,17 @@ public class MustacheDocument implements Comparable<MustacheDocument> {
 
     @JsonIgnore
     private int apiIndex = 1;
+
+    @JsonIgnore
+    private static final Map<String, Integer> hashValueMap = new HashMap<String, Integer>();
+
+    static {
+        hashValueMap.put(ApiValues.TYPE_HEADER(), 1);
+        hashValueMap.put(ApiValues.TYPE_PATH(), 2);
+        hashValueMap.put(ApiValues.TYPE_QUERY(), 3);
+        hashValueMap.put(ApiValues.TYPE_BODY(), 4);
+        hashValueMap.put(DocTemplateConstants.TYPE_RESPONSE_HEADER, 5);
+    }
 
     public MustacheDocument(ApiListing apiListing) {
         if (!apiListing.models().isEmpty()) {
@@ -120,6 +131,22 @@ public class MustacheDocument implements Comparable<MustacheDocument> {
             list.add(new MustacheParameterSet(entry));
         }
 
+        // make sure parameter order is 1.header 2.path 3.query 4.body 5.response header
+        list.sort(new Comparator<MustacheParameterSet>() {
+
+            @Override
+            public int compare(MustacheParameterSet o1, MustacheParameterSet o2) {
+                return hashValue(o1) - hashValue(o2);
+            }
+
+            private int hashValue(MustacheParameterSet parameterSet) {
+                if (parameterSet == null || parameterSet.getParamType() == null) {
+                    return 0;
+                } else {
+                    return hashValueMap.get(parameterSet.getParamType());
+                }
+            }
+        });
         return list;
     }
 
@@ -177,9 +204,9 @@ public class MustacheDocument implements Comparable<MustacheDocument> {
                 ModelRef item = itemOption.isEmpty() ? null : itemOption.get();
 
                 if (mustacheItem.getType().equalsIgnoreCase(ARRAY)
-                        || mustacheItem.getType().equalsIgnoreCase(LIST)) {
+                    || mustacheItem.getType().equalsIgnoreCase(LIST)) {
                     handleArrayType(mustacheItem, item);
-                } else if (models.get(mustacheItem.getType())!= null) {
+                } else if (models.get(mustacheItem.getType()) != null) {
                     responseTypes.add(mustacheItem.getType());
                 }
 
@@ -222,7 +249,7 @@ public class MustacheDocument implements Comparable<MustacheDocument> {
         if (modelMap == null || modelMap.isEmpty()) {
             return null;
         }
-        for (String key: modelMap.keySet()) {
+        for (String key : modelMap.keySet()) {
             models.put(key, modelMap.get(key));
         }
         return modelMap.keySet().iterator().next();
