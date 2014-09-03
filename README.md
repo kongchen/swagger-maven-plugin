@@ -1,9 +1,99 @@
 # Swagger Maven Plugin [![Build Status](https://travis-ci.org/kongchen/swagger-maven-plugin.png)](https://travis-ci.org/kongchen/swagger-maven-plugin)
 This plugin can let your Swagger annotated project generate **Swagger JSON** and your **customized API documents** in build phase.
 
+You must already known what is Swagger JSON, check the results of this plugin generates [here](https://github.com/kongchen/swagger-maven-example/tree/master/generated/swagger-ui) to see if it is what you want.
+
+What is *customized API document*? Here're two screenshots:
+<img src="https://cloud.githubusercontent.com/assets/1485800/4130419/c121d19c-3336-11e4-921f-ca8207ed9053.png" width="50%"/>
+<img src="https://cloud.githubusercontent.com/assets/1485800/4130438/28359ea4-3337-11e4-8c1a-5d9b06854e3f.png" width="50%"/>
+
 
 # Usage
 
+## Minimal Configuartion for Swagger JSON
+
+```xml
+<project>
+...
+<build>
+<plugins>
+<plugin>
+  <groupId>com.github.kongchen</groupId>
+  <artifactId>swagger-maven-plugin</artifactId>
+  <version>2.3</version>
+  <configuration>
+    <apiSources>
+      <apiSource>
+        <locations>sample.api</locations>
+        <apiVersion>1.0</apiVersion>
+        <basePath>http://example.com</basePath>
+        <swaggerDirectory>generated/swagger-ui</swaggerDirectory>
+      </apiSource>
+    </apiSources>
+  </configuration>
+  <executions>
+    <execution>
+      <phase>compile</phase>
+        <goals>
+          <goal>generate</goal>
+        </goals>
+    </execution>
+  </executions>
+</plugin>
+...
+</plugins>
+</build>
+</project>
+```
+
+### Minimal Configuration for customized API Document
+
+```xml
+<project>
+...
+<build>
+<plugins>
+<plugin>
+  <groupId>com.github.kongchen</groupId>
+  <artifactId>swagger-maven-plugin</artifactId>
+  <version>2.3</version>
+  <configuration>
+    <apiSources>
+      <apiSource>
+        <locations>sample.api</locations>
+        <apiVersion>1.0</apiVersion>
+        <basePath>http://example.com</basePath>
+        <outputTemplate>/markdown.mustache</outputTemplate>
+        <mustacheFileRoot>${basedir}/src/main/resources/</mustacheFileRoot>
+        <outputPath>${basedir}/generated/document.html</outputPath>
+      </apiSource>
+    </apiSources>
+  </configuration>
+  <executions>
+    <execution>
+      <phase>compile</phase>
+        <goals>
+          <goal>generate</goal>
+        </goals>
+    </execution>
+  </executions>
+</plugin>
+...
+</plugins>
+</build>
+</project>
+```
+
+## Minimal Configuration for Swagger JSON & customized API Document
+
+Just merge the above 2 configuartions together.
+
+
+## Compelete Configuration
+
+The compelete configuration for the plugin lists below, you'll see some advanced configurations there.
+
+If you cannot wait to try out the plugin, here's a [sample project](https://github.com/kongchen/swagger-maven-example), go to see how it happens.
 
 ```xml
 <project>
@@ -188,9 +278,6 @@ This plugin has 2 serials of versions:
   </pluginRepository>
 </pluginRepositories>
 ```
-
-# A Sample
-Check out this [sample project](https://github.com/kongchen/swagger-maven-example) to see how this happens.
 
 # FAQ
 ## Dependency conflict
