@@ -123,16 +123,16 @@ public class MustacheDocument implements Comparable<MustacheDocument> {
 
     public List<MustacheParameterSet> analyzeParameters(List<Parameter> parameters) {
         if (parameters == null) return null;
-        List<MustacheParameterSet> list = new ArrayList<MustacheParameterSet>();
+        List<MustacheParameterSet> parameterList = new ArrayList<MustacheParameterSet>();
 
         Map<String, List<MustacheParameter>> paraMap = toParameterTypeMap(parameters);
 
         for (Map.Entry<String, List<MustacheParameter>> entry : paraMap.entrySet()) {
-            list.add(new MustacheParameterSet(entry));
+            parameterList.add(new MustacheParameterSet(entry));
         }
 
         // make sure parameter order is 1.header 2.path 3.query 4.body 5.response header
-        list.sort(new Comparator<MustacheParameterSet>() {
+        parameterList.sort(new Comparator<MustacheParameterSet>() {
 
             @Override
             public int compare(MustacheParameterSet o1, MustacheParameterSet o2) {
@@ -147,7 +147,7 @@ public class MustacheDocument implements Comparable<MustacheDocument> {
                 }
             }
         });
-        return list;
+        return parameterList;
     }
 
     private Map<String, List<MustacheParameter>> toParameterTypeMap(List<Parameter> parameters) {
