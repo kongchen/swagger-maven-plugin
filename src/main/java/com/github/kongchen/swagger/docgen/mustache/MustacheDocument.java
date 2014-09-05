@@ -132,7 +132,7 @@ public class MustacheDocument implements Comparable<MustacheDocument> {
         }
 
         // make sure parameter order is 1.header 2.path 3.query 4.body 5.response header
-        parameterList.sort(new Comparator<MustacheParameterSet>() {
+        Collections.sort(parameterList, new Comparator<MustacheParameterSet>() {
 
             @Override
             public int compare(MustacheParameterSet o1, MustacheParameterSet o2) {
