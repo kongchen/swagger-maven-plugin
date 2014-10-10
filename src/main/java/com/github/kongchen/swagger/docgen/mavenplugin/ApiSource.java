@@ -70,6 +70,9 @@ public class ApiSource {
     @Parameter
     private String swaggerInternalFilter;
 
+	@Parameter
+	private String swaggerApiReader;
+
     public Set<Class> getValidClasses() throws GenerateException {
         Set<Class> classes = new HashSet<Class>();
         if (getLocations() == null) {
@@ -190,4 +193,13 @@ public class ApiSource {
     public void setSwaggerInternalFilter(String swaggerInternalFilter) {
         this.swaggerInternalFilter = swaggerInternalFilter;
     }
+
+	public String getSwaggerApiReader() {
+		return swaggerApiReader;
+	}
+
+	public void setSwaggerApiReader(String swaggerApiReader) {
+		this.swaggerApiReader = swaggerApiReader;
+	}
+    
 }

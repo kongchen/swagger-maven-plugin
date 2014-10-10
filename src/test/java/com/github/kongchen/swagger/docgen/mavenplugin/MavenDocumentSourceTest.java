@@ -2,19 +2,22 @@ package com.github.kongchen.swagger.docgen.mavenplugin;
 
 import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
 import com.github.kongchen.swagger.docgen.GenerateException;
+import com.github.kongchen.swagger.docgen.TestSwaggerApiReader;
 import com.github.kongchen.swagger.docgen.TypeUtils;
 import com.github.kongchen.swagger.docgen.filter.TestSwaggerSpecFilter;
 import com.github.kongchen.swagger.docgen.mustache.*;
 import com.wordnik.swagger.annotations.ApiModelProperty;
+
 import org.apache.maven.plugin.logging.SystemStreamLog;
 import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
 import sample.model.*;
 
 import javax.ws.rs.core.MediaType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -207,6 +210,54 @@ public class MavenDocumentSourceTest {
         assertDataTypeInList(typeList, 8, sample.model.v2.Car.class);
 	}
 
+	@Test
+	public void testSwaggerApiReader() throws Exception {
+		ApiSource apiSource = prepare();
+		apiSource.setSwaggerApiReader(TestSwaggerApiReader.class.getName());
+		AbstractDocumentSource documentSource = new MavenDocumentSource(apiSource, new SystemStreamLog());
+		documentSource.loadDocuments();
+		OutputTemplate outputTemplate = new OutputTemplate(documentSource);
+		assertEquals(apiSource.getApiVersion(), outputTemplate.getApiVersion());
+		assertEquals(3, outputTemplate.getApiDocuments().size());
+		for (MustacheDocument doc : outputTemplate.getApiDocuments()) {
+			if (doc.getIndex() == 1) {
+				Assert.assertEquals(doc.getResourcePath(), "/car");
+				for (MustacheApi api : doc.getApis()) {
+					assertTrue(api.getUrl().startsWith(apiSource.getBasePath()));
+					assertFalse(api.getPath().contains("{format}"));
+					for (MustacheOperation op : api.getOperations()) {
+						Assert.assertEquals(op.getSummary(), "summary by the test swagger test filter");
+					}
+				}
+			}
+
+		}
+	}
+
+	@Test
+	public void testSwaggerApiReaderDefaultConfig() throws Exception {
+		ApiSource apiSource = prepare();
+		AbstractDocumentSource documentSource = new MavenDocumentSource(apiSource, new SystemStreamLog());
+		documentSource.loadDocuments();
+		OutputTemplate outputTemplate = new OutputTemplate(documentSource);
+		assertEquals(apiSource.getApiVersion(), outputTemplate.getApiVersion());
+		assertEquals(3, outputTemplate.getApiDocuments().size());
+		for (MustacheDocument doc : outputTemplate.getApiDocuments()) {
+			if (doc.getIndex() == 1) {
+				Assert.assertEquals(doc.getResourcePath(), "/car");
+				for (MustacheApi api : doc.getApis()) {
+					assertTrue(api.getUrl().startsWith(apiSource.getBasePath()));
+					assertFalse(api.getPath().contains("{format}"));
+					for (MustacheOperation op : api.getOperations()) {
+						if (op.getOpIndex() == 1) {
+							Assert.assertEquals(op.getSummary(), "search cars");
+						}
+					}
+				}
+			}
+
+		}
+	}
 
     private void assertDataTypeInList(List<MustacheDataType> typeList, int indexInList,
                                       Class<?> aClass) throws NoSuchMethodException, NoSuchFieldException {
