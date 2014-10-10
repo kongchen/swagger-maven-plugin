@@ -125,6 +125,7 @@ If you cannot wait to try out the plugin, here's a [sample project](https://gith
         </apiInfo>
         <overridingModels>/swagger-overriding-models.json</overridingModels>
         <swaggerInternalFilter>com.wordnik.swagger.config.DefaultSpecFilter</swaggerInternalFilter>
+        <swaggerApiReader>com.wordnik.swagger.jaxrs.reader.DefaultJaxrsApiReader</swaggerApiReader>
         <!---General parameters END-->
 
         <!---Document generation parameters BEGIN-->
@@ -176,6 +177,7 @@ One ```apiSource``` can be considered as a set of APIs for one ```apiVersion``` 
 | `apiInfo` | Some information of the API document. |
 | `overridingModels` | The name of *overridingModels* file, see more details in sections below. |
 | `swaggerInternalFilter` | If not null, the value should be full name of class implementing `com.wordnik.swagger.core.filter.SpecFilter`. This allows you to filter both methods and parameters from generated api. |
+| `swaggerApiReader` | If not null, the value should be full name of class implementing `com.wordnik.swagger.reader.ClassReader`. This allows you flexibly implement/override the reader's implementation. Default is `com.wordnik.swagger.jaxrs.reader.DefaultJaxrsApiReader` |
 
 
 The parameters of `apiInfo`:
