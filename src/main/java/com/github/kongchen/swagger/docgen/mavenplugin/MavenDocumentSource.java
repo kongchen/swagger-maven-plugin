@@ -13,6 +13,7 @@ import com.wordnik.swagger.core.filter.SwaggerSpecFilter;
 import com.wordnik.swagger.jaxrs.JaxrsApiReader;
 import com.wordnik.swagger.jaxrs.reader.DefaultJaxrsApiReader;
 import com.wordnik.swagger.model.*;
+import com.wordnik.swagger.reader.ClassReader;
 
 import org.apache.maven.plugin.logging.Log;
 
@@ -109,7 +110,7 @@ public class MavenDocumentSource extends AbstractDocumentSource {
         Api resource = (Api) c.getAnnotation(Api.class);
 
         if (resource == null) return null;
-        JaxrsApiReader reader = new DefaultJaxrsApiReader();
+        ClassReader reader = getApiReader();
         Option<ApiListing> apiListing = reader.read(basePath, c, swaggerConfig);
 
         if (None.canEqual(apiListing)) return null;
@@ -119,4 +120,15 @@ public class MavenDocumentSource extends AbstractDocumentSource {
                                  Map$.MODULE$.<String, String>empty(),
                                  Map$.MODULE$.<String, scala.collection.immutable.List<String>>empty());
     }
+
+	private ClassReader getApiReader() throws Exception {
+		if (apiSource.getSwaggerApiReader() == null) return new DefaultJaxrsApiReader();
+		try {
+			LOG.info("Reading api reader configuration: " + apiSource.getSwaggerApiReader());
+			return (ClassReader) Class.forName(apiSource.getSwaggerApiReader()).newInstance();
+		} catch (Exception e) {
+			throw new GenerateException("Cannot load swagger api reader: "
+					+ apiSource.getSwaggerApiReader(), e);
+		}
+	}
 }
