@@ -22,7 +22,7 @@ public class RemoteDocumentSourceTest {
 
     }
 
-    @Test
+    @Test(enabled = false)
     public void testLoadDocuments() throws Exception {
         RemoteDocumentSource remoteDocumentSource = new RemoteDocumentSource(
                 new LogAdapter(Logger.getLogger("test")),
