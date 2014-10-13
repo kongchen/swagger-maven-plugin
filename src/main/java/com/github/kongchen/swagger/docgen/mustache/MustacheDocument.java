@@ -53,7 +53,10 @@ public class MustacheDocument implements Comparable<MustacheDocument> {
         hashValueMap.put(ApiValues.TYPE_PATH(), 2);
         hashValueMap.put(ApiValues.TYPE_QUERY(), 3);
         hashValueMap.put(ApiValues.TYPE_BODY(), 4);
-        hashValueMap.put(DocTemplateConstants.TYPE_RESPONSE_HEADER, 5);
+        hashValueMap.put(ApiValues.TYPE_FORM(), 5);
+        hashValueMap.put(ApiValues.TYPE_COOKIE(), 6);
+        hashValueMap.put(ApiValues.TYPE_MATRIX(), 7);
+        hashValueMap.put(DocTemplateConstants.TYPE_RESPONSE_HEADER, 8);
     }
 
     public MustacheDocument(ApiListing apiListing) {
