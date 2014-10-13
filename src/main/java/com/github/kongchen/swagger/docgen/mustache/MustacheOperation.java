@@ -46,9 +46,11 @@ public class MustacheOperation {
     List<MustacheSample> samples;
 
     public MustacheOperation(MustacheDocument mustacheDocument, Operation op) {
-        Buffer<Authorization> authorBuffer = op.authorizations().toBuffer();
-        for(Authorization authorization : JavaConversions.asJavaList(authorBuffer)) {
-            this.authorizations.add(new MustacheAuthorization(authorization));
+        if (op.authorizations() != null && op.authorizations().size() > 0) {
+            Buffer<Authorization> authorBuffer = op.authorizations().toBuffer();
+            for(Authorization authorization : JavaConversions.asJavaList(authorBuffer)) {
+                this.authorizations.add(new MustacheAuthorization(authorization));
+            }
         }
         this.opIndex = op.position();
         this.httpMethod = op.method();
@@ -56,17 +58,21 @@ public class MustacheOperation {
         this.notes = notesAndGenericStr.getKey();
         this.summary = op.summary();
         this.nickname = op.nickname();
-        Buffer<Parameter> buffer = op.parameters().toBuffer();
-        this.parameters = mustacheDocument.analyzeParameters(JavaConversions.asJavaList(buffer));
+        if (op.parameters() != null) {
+            Buffer<Parameter> buffer = op.parameters().toBuffer();
+            this.parameters = mustacheDocument.analyzeParameters(JavaConversions.asJavaList(buffer));
+        }
         responseClass = new MustacheResponseClass(op.responseClass() + notesAndGenericStr.getValue());
-        Buffer<ResponseMessage> errorbuffer = op.responseMessages().toBuffer();
-        List<ResponseMessage> responseMessages = JavaConversions.asJavaList(errorbuffer);
-        for (ResponseMessage responseMessage : responseMessages) {
-            if (!responseMessage.responseModel().isEmpty()) {
-                String className = responseMessage.responseModel().get();
-                this.responseClasses.add(new MustacheResponseClass(className));
+        if (op.responseMessages() != null) {
+            Buffer<ResponseMessage> errorbuffer = op.responseMessages().toBuffer();
+            List<ResponseMessage> responseMessages = JavaConversions.asJavaList(errorbuffer);
+            for (ResponseMessage responseMessage : responseMessages) {
+                if (!responseMessage.responseModel().isEmpty()) {
+                    String className = responseMessage.responseModel().get();
+                    this.responseClasses.add(new MustacheResponseClass(className));
+                }
+                this.errorResponses.add(new MustacheResponseMessage(responseMessage));
             }
-            this.errorResponses.add(new MustacheResponseMessage(responseMessage));
         }
         if (parameters == null) {
             return;

@@ -51,7 +51,7 @@ public abstract class AbstractDocumentSource {
 
 	List<ApiListing> validDocuments = new ArrayList<ApiListing>();
 
-	private String basePath;
+	private String basePath = "";
 
 	private String apiVersion;
     
@@ -112,12 +112,10 @@ public abstract class AbstractDocumentSource {
 		// will append api's basePath. However, apiReader does not read it
 		// correctly by now
 		if (doc.basePath() != null) {
-			basePath = this.basePath + doc.basePath();
-		} else {
-			basePath = this.basePath;
+			this.basePath = doc.basePath();
 		}
 		ApiListing newDoc = new ApiListing(doc.apiVersion(),
-				doc.swaggerVersion(), basePath, doc.resourcePath(),
+				doc.swaggerVersion(), this.basePath, doc.resourcePath(),
 				doc.produces(), doc.consumes(), doc.protocols(),
 				doc.authorizations(), doc.apis(), doc.models(),
 				doc.description(), doc.position());
