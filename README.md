@@ -9,6 +9,7 @@ What is *customized API document*? Here're two screenshots:
 
 
 # Usage
+There's a [sample here](https://github.com/kongchen/swagger-maven-example), fork it and have a try.
 
 ## Minimal Configuartion for Swagger JSON
 
