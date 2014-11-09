@@ -36,6 +36,10 @@ public class MustacheDocument implements Comparable<MustacheDocument> {
 
     private List<MustacheApi> apis = new ArrayList<MustacheApi>();
 
+    private List<MustacheContentType> responseContentTypes = new ArrayList<MustacheContentType>();
+
+    private List<MustacheContentType> parameterContentTypes = new ArrayList<MustacheContentType>();
+
     @JsonIgnore
     private Set<String> requestTypes = new LinkedHashSet<String>();
 
@@ -66,6 +70,8 @@ public class MustacheDocument implements Comparable<MustacheDocument> {
         this.resourcePath = apiListing.resourcePath();
         this.index = apiListing.position();
         this.apis = new ArrayList<MustacheApi>(apiListing.apis().size());
+        this.responseContentTypes = new ArrayList<MustacheContentType>(apiListing.produces().size());
+        this.parameterContentTypes = new ArrayList<MustacheContentType>(apiListing.consumes().size());
     }
 
     public void setResourcePath(String resourcePath) {
@@ -100,6 +106,14 @@ public class MustacheDocument implements Comparable<MustacheDocument> {
         return index;
     }
 
+    public List<MustacheContentType> getResponseContentTypes() {
+        return responseContentTypes;
+    }
+
+    public List<MustacheContentType> getParameterContentTypes() {
+        return parameterContentTypes;
+    }
+    
     public void setIndex(int index) {
         this.index = index;
     }
@@ -122,6 +136,14 @@ public class MustacheDocument implements Comparable<MustacheDocument> {
             responseTypes.add(newName);
         }
 
+    }
+
+    public void addResponseContentTypes(MustacheContentType responseContentTypes) {
+        this.responseContentTypes.add(responseContentTypes);
+    }
+
+    public void addParameterContentTypes(MustacheContentType parameterContentTypes) {
+        this.parameterContentTypes.add(parameterContentTypes);
     }
 
     public List<MustacheParameterSet> analyzeParameters(List<Parameter> parameters) {
