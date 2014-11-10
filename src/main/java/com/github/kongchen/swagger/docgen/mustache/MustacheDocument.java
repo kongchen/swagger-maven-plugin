@@ -66,6 +66,7 @@ public class MustacheDocument implements Comparable<MustacheDocument> {
         this.resourcePath = apiListing.resourcePath();
         this.index = apiListing.position();
         this.apis = new ArrayList<MustacheApi>(apiListing.apis().size());
+        this.description = Utils.getStrInOption(apiListing.description());
     }
 
     public void setResourcePath(String resourcePath) {
