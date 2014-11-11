@@ -113,6 +113,7 @@ public class OutputTemplate {
                 }
             }
 
+            apiList.add(mustacheApi);
         }
 
         // sort Apis by path
