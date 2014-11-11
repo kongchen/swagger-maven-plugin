@@ -2,6 +2,8 @@ package com.github.kongchen.swagger.docgen.mustache;
 
 import java.util.*;
 
+import scala.collection.JavaConversions;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsonschema.JsonSchema;
 import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
@@ -138,6 +140,16 @@ public class OutputTemplate {
             addDateType(mustacheDocument, dataType);
         }
         filterDatatypes(dataTypes);
+
+        List<String> produces = JavaConversions.asJavaList(swaggerDoc.produces());
+        for (String produce : produces) {
+            mustacheDocument.addResponseContentTypes(new MustacheContentType(produce));
+        }
+
+        List<String> consumes = JavaConversions.asJavaList(swaggerDoc.consumes());
+        for (String consume : consumes) {
+            mustacheDocument.addParameterContentTypes(new MustacheContentType(consume));
+        }
 
         return mustacheDocument;
     }

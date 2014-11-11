@@ -33,6 +33,10 @@ public class MustacheOperation {
 
     private List<MustacheParameterSet> parameters;
 
+    private final List<MustacheContentType> responseContentTypes = new ArrayList<MustacheContentType>();
+
+    private final List<MustacheContentType> parameterContentTypes = new ArrayList<MustacheContentType>();
+
     private MustacheParameterSet requestQuery;
     private MustacheParameterSet requestHeader;
     private MustacheParameterSet requestBody;
@@ -89,6 +93,16 @@ public class MustacheOperation {
             } else if (para.getParamType().equals(DocTemplateConstants.TYPE_RESPONSE_HEADER)) {
                 this.responseHeader = para;
             }
+        }
+
+        List<String> produces = JavaConversions.asJavaList(op.produces());
+        for (String produce : produces) {
+            this.responseContentTypes.add(new MustacheContentType(produce));
+        }
+
+        List<String> consumes = JavaConversions.asJavaList(op.consumes());
+        for (String consume : consumes) {
+            this.parameterContentTypes.add(new MustacheContentType(consume));
         }
     }
 
@@ -190,4 +204,13 @@ public class MustacheOperation {
     public List<MustacheResponseClass> getResponseClasses() {
         return responseClasses;
     }
+
+    public List<MustacheContentType> getResponseContentTypes() {
+        return responseContentTypes;
+    }
+
+    public List<MustacheContentType> getParameterContentTypes() {
+        return parameterContentTypes;
+    }
+
 }
