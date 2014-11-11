@@ -99,7 +99,6 @@ public class OutputTemplate {
         
         for (scala.collection.Iterator<ApiDescription> it = swaggerDoc.apis().iterator(); it.hasNext(); ) {
             ApiDescription api = it.next();
-            mustacheDocument.setDescription(Utils.getStrInOption(api.description()));
 
             MustacheApi mustacheApi = new MustacheApi(swaggerDoc.basePath(), api);
 
