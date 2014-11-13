@@ -28,8 +28,11 @@ public class OutputTemplate {
 
     private Set<MustacheDataType> dataTypes = new TreeSet<MustacheDataType>();
 
+    private boolean sortApis;
+
     public OutputTemplate(AbstractDocumentSource docSource) {
         feedSource(docSource);
+        this.sortApis = docSource.isSortApis();
     }
 
     public static String getJsonSchema() {
@@ -116,13 +119,14 @@ public class OutputTemplate {
             apiList.add(mustacheApi);
         }
 
-        // sort Apis by path
-        Collections.sort(apiList, new Comparator<MustacheApi>() {
-          @Override
-          public int compare(MustacheApi o1, MustacheApi o2) {
-            return o1.getPath().compareTo(o2.getPath());
-          }
-        });
+        if (sortApis) {
+            Collections.sort(apiList, new Comparator<MustacheApi>() {
+                @Override
+                public int compare(MustacheApi o1, MustacheApi o2) {
+                    return o1.getPath().compareTo(o2.getPath());
+                }
+            });
+        }
 
         mustacheDocument.setApis(apiList);
 

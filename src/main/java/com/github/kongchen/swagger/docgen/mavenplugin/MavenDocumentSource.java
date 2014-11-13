@@ -41,7 +41,7 @@ public class MavenDocumentSource extends AbstractDocumentSource {
 
     public MavenDocumentSource(ApiSource apiSource, Log log) {
         super(new LogAdapter(log),
-              apiSource.getOutputPath(), apiSource.getOutputTemplate(), apiSource.getSwaggerDirectory(), apiSource.mustacheFileRoot, apiSource.isUseOutputFlatStructure(), apiSource.getOverridingModels());
+              apiSource.getOutputPath(), apiSource.getOutputTemplate(), apiSource.getSwaggerDirectory(), apiSource.mustacheFileRoot, apiSource.isUseOutputFlatStructure(), apiSource.getOverridingModels(), apiSource.isSortApis());
 
         setApiVersion(apiSource.getApiVersion());
         setBasePath(apiSource.getBasePath());

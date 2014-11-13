@@ -40,8 +40,8 @@ public class RemoteDocumentSource extends AbstractDocumentSource {
 
     private boolean withFormatSuffix = true;
 
-    public RemoteDocumentSource(LogAdapter logAdapter, URI requestURI, String outputTpl, String outputPath, String swaggerOutput, String mustacheFileRoot, boolean useOutputFlatStructure, String overridingModels) {
-        super(logAdapter, outputPath, outputTpl, swaggerOutput, mustacheFileRoot, useOutputFlatStructure, overridingModels);
+    public RemoteDocumentSource(LogAdapter logAdapter, URI requestURI, String outputTpl, String outputPath, String swaggerOutput, String mustacheFileRoot, boolean useOutputFlatStructure, String overridingModels, boolean sortApis) {
+        super(logAdapter, outputPath, outputTpl, swaggerOutput, mustacheFileRoot, useOutputFlatStructure, overridingModels, sortApis);
         LOG = new LogAdapter(Logger.getLogger(RemoteDocumentSource.class));
         this.requestURI = requestURI;
         mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
