@@ -95,6 +95,11 @@ public class MavenDocumentSourceTest {
                                     op.getRequestHeader().getParas().get(0).getType());
                             Assert.assertEquals("application/json, application/*",
                                     op.getRequestHeader().getParas().get(0).getAllowableValue());
+                            Assert.assertEquals(op.getResponseMessages().size(), 2);
+                            Assert.assertEquals(op.getResponseMessages().get(0).getMessage(), "Invalid ID supplied");
+                            Assert.assertEquals(op.getResponseMessages().get(0).getCode(), 400);
+                            Assert.assertEquals(op.getResponseMessages().get(1).getCode(), 404);
+                            // Testing deprecated method. Should remove tests when deprecated method is gone
                             Assert.assertEquals(op.getErrorResponses().size(), 2);
                             Assert.assertEquals(op.getErrorResponses().get(0).getMessage(), "Invalid ID supplied");
                             Assert.assertEquals(op.getErrorResponses().get(0).getCode(), 400);
@@ -163,6 +168,11 @@ public class MavenDocumentSourceTest {
 
 							Assert.assertEquals(0, op.getParameters().size());
 
+							Assert.assertEquals(op.getResponseMessages().size(), 2);
+							Assert.assertEquals(op.getResponseMessages().get(0).getMessage(), "Invalid ID supplied");
+							Assert.assertEquals(op.getResponseMessages().get(0).getCode(), 400);
+							Assert.assertEquals(op.getResponseMessages().get(1).getCode(), 404);
+							// Testing deprecated method. Should remove tests when deprecated method is gone
 							Assert.assertEquals(op.getErrorResponses().size(), 2);
 							Assert.assertEquals(op.getErrorResponses().get(0).getMessage(), "Invalid ID supplied");
 							Assert.assertEquals(op.getErrorResponses().get(0).getCode(), 400);
