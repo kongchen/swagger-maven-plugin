@@ -14,12 +14,12 @@
  *  limitations under the License.
  */
 
-package com.wordnik.swagger.sample.resource;
+package com.wordnik.sample.resource;
 
+import com.wordnik.sample.data.PetData;
 import com.wordnik.swagger.annotations.*;
-import com.wordnik.swagger.sample.data.PetData;
-import com.wordnik.swagger.sample.model.Pet;
-import com.wordnik.swagger.sample.exception.NotFoundException;
+import com.wordnik.sample.model.Pet;
+import com.wordnik.swagger.annotations.ApiResponse;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.MediaType;
@@ -49,12 +49,12 @@ public class PetResource {
       @ApiResponse(code = 404, message = "Pet not found") })
   public Response getPetById(
       @ApiParam(value = "ID of pet that needs to be fetched", allowableValues = "range[1,5]", required = true) @PathParam("petId") Long petId)
-      throws NotFoundException {
+      throws com.wordnik.sample.exception.NotFoundException {
     Pet pet = petData.getPetbyId(petId);
     if (null != pet) {
       return Response.ok().entity(pet).build();
     } else {
-      throw new NotFoundException(404, "Pet not found");
+      throw new com.wordnik.sample.exception.NotFoundException(404, "Pet not found");
     }
   }
 
@@ -129,6 +129,6 @@ public class PetResource {
    @ApiParam(value = "Updated status of the pet", required = false)@FormParam("status") String status) {
     System.out.println(name);
     System.out.println(status);
-    return Response.ok().entity(new com.wordnik.swagger.sample.model.ApiResponse(200, "SUCCESS")).build();
+    return Response.ok().entity(new com.wordnik.sample.model.ApiResponse(200, "SUCCESS")).build();
   }
 }

@@ -1,23 +1,18 @@
 package com.github.kongchen.swagger.maven;
 
 import com.github.kongchen.swagger.AbstractDocumentSource;
-import com.github.kongchen.swagger.ApiReader;
 import com.github.kongchen.swagger.GenerateException;
 import com.github.kongchen.swagger.LogAdapter;
-import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.config.FilterFactory;
 import com.wordnik.swagger.core.filter.SpecFilter;
 import com.wordnik.swagger.core.filter.SwaggerSpecFilter;
-import com.wordnik.swagger.models.Model;
-import com.wordnik.swagger.models.Path;
+import com.wordnik.swagger.jaxrs.Reader;
 import com.wordnik.swagger.models.Scheme;
 import com.wordnik.swagger.models.Swagger;
-import com.wordnik.swagger.models.auth.SecurityScheme;
 import org.apache.maven.plugin.logging.Log;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -46,6 +41,7 @@ public class MavenDocumentSource extends AbstractDocumentSource {
         swagger.setHost(apiSource.getHost());
         swagger.setInfo(apiSource.getInfo());
         swagger.setBasePath(apiSource.getBasePath());
+
         this.apiSource = apiSource;
     }
 
@@ -59,43 +55,8 @@ public class MavenDocumentSource extends AbstractDocumentSource {
                 throw new GenerateException("Cannot load: " + apiSource.getSwaggerInternalFilter(), e);
             }
         }
+        swagger = new Reader(swagger).read(apiSource.getValidClasses());
 
-        for (Class c : apiSource.getValidClasses()) {
-            Swagger sw;
-            try {
-                sw = getDocFromClass(c);
-            } catch (Exception e) {
-                throw new GenerateException(e);
-            }
-
-            if (sw == null) continue;
-
-            LOG.info("Detect Resource:" + c.getName());
-            if (sw.getSecurityDefinitions() != null) {
-                for (Map.Entry<String, SecurityScheme> entry : sw.getSecurityDefinitions().entrySet()) {
-                    this.swagger.securityDefinition(entry.getKey(), entry.getValue());
-                }
-            }
-            if (sw.getPaths() != null) {
-                if (this.swagger.getPaths() == null) {
-                    this.swagger.paths(sw.getPaths());
-                } else {
-                    for (Map.Entry<String, Path> entry : sw.getPaths().entrySet()) {
-                        this.swagger.getPaths().put(entry.getKey(), entry.getValue());
-                    }
-                }
-            }
-
-            if (sw.getDefinitions() != null) {
-                for (Map.Entry<String, Model> entry : sw.getDefinitions().entrySet()) {
-
-                    swagger.addDefinition(entry.getKey(), entry.getValue());
-                }
-            }
-        }
-
-        swagger.setBasePath(getBasePath());
-        swagger.setInfo(apiSource.getInfo());
 
         if (FilterFactory.getFilter() != null) {
             swagger = new SpecFilter().filter(swagger, FilterFactory.getFilter(),
@@ -103,26 +64,5 @@ public class MavenDocumentSource extends AbstractDocumentSource {
                 new HashMap<String, List<String>>());
         }
 
-    }
-
-    private Swagger getDocFromClass(Class c) throws Exception {
-        Api resource = (Api) c.getAnnotation(Api.class);
-
-        if (resource == null) return null;
-
-        Swagger swagger = getApiReader().read(c);
-
-        return swagger;
-    }
-
-    private ApiReader getApiReader() throws Exception {
-        if (apiSource.getSwaggerApiReader() == null) return new DefaultJaxrsReader();
-        try {
-            LOG.info("Reading api reader configuration: " + apiSource.getSwaggerApiReader());
-            return (ApiReader) Class.forName(apiSource.getSwaggerApiReader()).newInstance();
-        } catch (Exception e) {
-            throw new GenerateException("Cannot load swagger api reader: "
-                    + apiSource.getSwaggerApiReader(), e);
-        }
     }
 }
