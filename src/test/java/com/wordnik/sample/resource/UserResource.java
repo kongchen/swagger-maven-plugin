@@ -14,13 +14,13 @@
  *  limitations under the License.
  */
 
-package com.wordnik.swagger.sample.resource;
+package com.wordnik.sample.resource;
 
 import com.wordnik.swagger.annotations.*;
-import com.wordnik.swagger.sample.data.UserData;
-import com.wordnik.swagger.sample.model.User;
-import com.wordnik.swagger.sample.exception.ApiException;
-import com.wordnik.swagger.sample.exception.NotFoundException;
+import com.wordnik.sample.data.UserData;
+import com.wordnik.sample.model.User;
+import com.wordnik.sample.exception.ApiException;
+import com.wordnik.sample.exception.NotFoundException;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.*;

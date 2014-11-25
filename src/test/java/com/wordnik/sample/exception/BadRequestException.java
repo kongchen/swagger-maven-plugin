@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package com.wordnik.swagger.sample.exception;
+package com.wordnik.sample.exception;
 
 public class BadRequestException extends ApiException{
   private int code;

@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package com.wordnik.swagger.sample.model;
+package com.wordnik.sample.model;
 
 import com.wordnik.swagger.annotations.*;
 

@@ -14,12 +14,30 @@
  *  limitations under the License.
  */
 
-package com.wordnik.swagger.sample.exception;
+package com.wordnik.sample.model;
 
-public class NotFoundException extends ApiException {
-  private int code;
-  public NotFoundException (int code, String msg) {
-    super(code, msg);
-    this.code = code;
+import javax.xml.bind.annotation.*;
+
+@XmlRootElement(name = "Tag")
+public class Tag {
+  private long id;
+  private String name;
+
+  @XmlElement(name = "id")
+  public long getId() {
+    return id;
+  }
+
+  public void setId(long id) {
+    this.id = id;
+  }
+
+  @XmlElement(name = "name")
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
   }
 }

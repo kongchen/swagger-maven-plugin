@@ -54,10 +54,6 @@ public abstract class AbstractDocumentSource {
 
 	public abstract void loadDocuments() throws Exception, GenerateException, GenerateException;
 
-	public String getBasePath() {
-		return swagger.getBasePath();
-	}
-
 	public void toSwaggerDocuments(String swaggerUIDocBasePath)
 			throws GenerateException {
 		if (swaggerPath == null) {

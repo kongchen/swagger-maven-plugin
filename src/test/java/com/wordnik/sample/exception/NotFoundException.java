@@ -14,12 +14,12 @@
  *  limitations under the License.
  */
 
-package com.wordnik.swagger.sample.exception;
+package com.wordnik.sample.exception;
 
-public class ApiException extends Exception{
+public class NotFoundException extends ApiException {
   private int code;
-  public ApiException (int code, String msg) {
-    super(msg);
+  public NotFoundException (int code, String msg) {
+    super(code, msg);
     this.code = code;
   }
 }
