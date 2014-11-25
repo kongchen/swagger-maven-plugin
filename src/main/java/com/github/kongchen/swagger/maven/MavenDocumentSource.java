@@ -1,17 +1,23 @@
 package com.github.kongchen.swagger.maven;
 
-import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
-import com.github.kongchen.smp.ApiReader;
-import com.github.kongchen.swagger.docgen.GenerateException;
-import com.github.kongchen.swagger.docgen.LogAdapter;
+import com.github.kongchen.swagger.AbstractDocumentSource;
+import com.github.kongchen.swagger.ApiReader;
+import com.github.kongchen.swagger.GenerateException;
+import com.github.kongchen.swagger.LogAdapter;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.config.FilterFactory;
 import com.wordnik.swagger.core.filter.SpecFilter;
 import com.wordnik.swagger.core.filter.SwaggerSpecFilter;
+import com.wordnik.swagger.models.Model;
+import com.wordnik.swagger.models.Path;
+import com.wordnik.swagger.models.Scheme;
 import com.wordnik.swagger.models.Swagger;
+import com.wordnik.swagger.models.auth.SecurityScheme;
 import org.apache.maven.plugin.logging.Log;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -22,22 +28,30 @@ import java.util.*;
 public class MavenDocumentSource extends AbstractDocumentSource {
     private final ApiSource apiSource;
 
-    private final SpecFilter specFilter = new SpecFilter();
-
     public MavenDocumentSource(ApiSource apiSource, Log log) {
         super(new LogAdapter(log),
-                apiSource.getOutputPath(), apiSource.getOutputTemplate(), apiSource.getSwaggerDirectory(), apiSource.mustacheFileRoot, apiSource.isUseOutputFlatStructure(), apiSource.getOverridingModels());
+                apiSource.getOutputPath(), apiSource.getTemplatePath(),
+                apiSource.getSwaggerDirectory(), apiSource.getOverridingModels());
+        swagger = new Swagger();
+        if (apiSource.getSchemes() != null) {
+            if (apiSource.getSchemes().contains(",")) {
+                for(String scheme: apiSource.getSchemes().split(",")) {
+                    swagger.scheme(Scheme.forValue(scheme));
+                }
+            } else {
+                swagger.scheme(Scheme.forValue(apiSource.getSchemes()));
+            }
+        }
 
-        setApiVersion(apiSource.getApiVersion());
-        setBasePath(apiSource.getBasePath());
-        setApiInfo(apiSource.getInfo());
+        swagger.setHost(apiSource.getHost());
+        swagger.setInfo(apiSource.getInfo());
+        swagger.setBasePath(apiSource.getBasePath());
+        swagger.getInfo().setVersion(apiSource.getApiVersion());
         this.apiSource = apiSource;
     }
 
     @Override
     public void loadDocuments() throws GenerateException {
-        swagger = new Swagger();
-
         if (apiSource.getSwaggerInternalFilter() != null) {
             try {
                 LOG.info("Setting filter configuration: " + apiSource.getSwaggerInternalFilter());
@@ -48,46 +62,58 @@ public class MavenDocumentSource extends AbstractDocumentSource {
         }
 
         for (Class c : apiSource.getValidClasses()) {
-            Swagger swagger;
+            Swagger sw;
             try {
-                 swagger = getDocFromClass(c);
+                sw = getDocFromClass(c);
             } catch (Exception e) {
                 throw new GenerateException(e);
             }
 
-            if (swagger == null) continue;
+            if (sw == null) continue;
 
             LOG.info("Detect Resource:" + c.getName());
-            swagger.getSecurityDefinitions().forEach(this.swagger::securityDefinition);
-            swagger.getPaths().forEach(this.swagger.getPaths()::put);
-            swagger.getDefinitions().forEach(this.swagger::addDefinition);
+            if (sw.getSecurityDefinitions() != null) {
+                for (Map.Entry<String, SecurityScheme> entry : sw.getSecurityDefinitions().entrySet()) {
+                    this.swagger.securityDefinition(entry.getKey(), entry.getValue());
+                }
+            }
+            if (sw.getPaths() != null) {
+                if (this.swagger.getPaths() == null) {
+                    this.swagger.paths(sw.getPaths());
+                } else {
+                    for (Map.Entry<String, Path> entry : sw.getPaths().entrySet()) {
+                        this.swagger.getPaths().put(entry.getKey(), entry.getValue());
+                    }
+                }
+            }
+
+            if (sw.getDefinitions() != null) {
+                for (Map.Entry<String, Model> entry : sw.getDefinitions().entrySet()) {
+
+                    swagger.addDefinition(entry.getKey(), entry.getValue());
+                }
+            }
         }
 
         swagger.setBasePath(getBasePath());
         swagger.setInfo(apiSource.getInfo());
 
-    }
+        if (FilterFactory.getFilter() != null) {
+            swagger = new SpecFilter().filter(swagger, FilterFactory.getFilter(),
+                new HashMap<String, List<String>>(), new HashMap<String, String>(),
+                new HashMap<String, List<String>>());
+        }
 
-//    private Option<ApiInfo> toSwaggerApiInfo(ApiSourceInfo info) {
-//        if (info == null) return Option.empty();
-//        return Option.apply(new ApiInfo(info.getTitle(), info.getDescription(),
-//            info.getTermsOfServiceUrl(), info.getContact(),
-//            info.getLicense(), info.getLicenseUrl()));
-//    }
+    }
 
     private Swagger getDocFromClass(Class c) throws Exception {
         Api resource = (Api) c.getAnnotation(Api.class);
 
         if (resource == null) return null;
 
+        Swagger swagger = getApiReader().read(c);
 
-        ApiReader reader = getApiReader();
-        Swagger swagger = reader.read(c);
-
-
-        return specFilter.filter(swagger, FilterFactory.getFilter(), new HashMap<String, List<String>>(),
-                new HashMap<String, String>(), new HashMap<String, List<String>>());
-
+        return swagger;
     }
 
     private ApiReader getApiReader() throws Exception {

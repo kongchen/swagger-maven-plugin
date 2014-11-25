@@ -1,14 +1,13 @@
 package com.github.kongchen.swagger.maven;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-
-import com.github.kongchen.swagger.docgen.GenerateException;
+import com.github.kongchen.swagger.GenerateException;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.models.Info;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.reflections.Reflections;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -40,12 +39,26 @@ public class ApiSource {
     private String basePath;
 
     /**
-     * <code>outputTemplate</code> is the path of a mustache template file, 
+     * The host (name or ip) serving the API.
+     * This MUST be the host only and does not include the scheme nor sub-paths.
+     * It MAY include a port. If the host is not included, the host serving the documentation
+     * is to be used (including the port). The host does not support path templating.
+     */
+    private String host;
+
+    /**
+     * The transfer protocol of the API. Values MUST be from the list: "http", "https", "ws", "wss"
+     * use ',' as delimiter
+     */
+    private String schemes;
+
+    /**
+     * <code>templatePath</code> is the path of a mustache template file,
      * see more details in next section. 
      * If you don't want to generate extra api documents, just don't set it.
      */
     @Parameter(required = false)
-    private String outputTemplate;
+    private String templatePath;
 
     @Parameter
     private String outputPath;
@@ -54,16 +67,7 @@ public class ApiSource {
     private String swaggerDirectory;
 
     @Parameter
-    public String mustacheFileRoot;
-
-    @Parameter
-    public boolean useOutputFlatStructure = true;
-
-    @Parameter
     private String swaggerUIDocBasePath;
-
-    @Parameter
-    private String overridingModels;
 
     /**
      * Information about swagger filter that will be used for prefiltering
@@ -73,9 +77,10 @@ public class ApiSource {
 
 	@Parameter
 	private String swaggerApiReader;
+    private String overridingModels;
 
-    public Set<Class> getValidClasses() throws GenerateException {
-        Set<Class> classes = new HashSet<Class>();
+    public Set<Class<?>> getValidClasses() throws GenerateException {
+        Set<Class<?>> classes = new HashSet<Class<?>>();
         if (getLocations() == null) {
             Set<Class<?>> c = new Reflections("").getTypesAnnotatedWith(Api.class);
             classes.addAll(c);
@@ -90,12 +95,12 @@ public class ApiSource {
                 classes.addAll(new Reflections(locations).getTypesAnnotatedWith(Api.class));
             }
         }
-        Iterator<Class> it = classes.iterator();
-        while (it.hasNext()) {
-            if (it.next().getName().startsWith("com.wordnik.swagger")) {
-                it.remove();
-            }
-        }
+//        Iterator<Class> it = classes.iterator();
+//        while (it.hasNext()) {
+//            if (it.next().getName().startsWith("com.wordnik.swagger")) {
+//                it.remove();
+//            }
+//        }
         return classes;
     }
 
@@ -115,28 +120,12 @@ public class ApiSource {
         this.locations = locations;
     }
 
-    public String getOutputTemplate() {
-        return outputTemplate;
+    public String getTemplatePath() {
+        return templatePath;
     }
 
-    public void setOutputTemplate(String outputTemplate) {
-        this.outputTemplate = outputTemplate;
-    }
-
-    public String getMustacheFileRoot() {
-        return mustacheFileRoot;
-    }
-
-    public void setMustacheFileRoot(String mustacheFileRoot) {
-        this.mustacheFileRoot = mustacheFileRoot;
-    }
-
-    public boolean isUseOutputFlatStructure() {
-        return useOutputFlatStructure;
-    }
-
-    public void setUseOutputFlatStructure(boolean useOutputFlatStructure) {
-        this.useOutputFlatStructure = useOutputFlatStructure;
+    public void setTemplatePath(String templatePath) {
+        this.templatePath = templatePath;
     }
 
     public String getOutputPath() {
@@ -179,14 +168,6 @@ public class ApiSource {
         return swaggerUIDocBasePath;
     }
 
-    public String getOverridingModels() {
-        return overridingModels;
-    }
-
-    public void setOverridingModels(String overridingModels) {
-        this.overridingModels = overridingModels;
-    }
-
     public String getSwaggerInternalFilter() {
         return swaggerInternalFilter;
     }
@@ -202,5 +183,29 @@ public class ApiSource {
 	public void setSwaggerApiReader(String swaggerApiReader) {
 		this.swaggerApiReader = swaggerApiReader;
 	}
-    
+
+    public void setInfo(Info info) {
+        this.info = info;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public String getSchemes() {
+        return schemes;
+    }
+
+    public void setSchemes(String schemes) {
+        this.schemes = schemes;
+    }
+
+    public String getOverridingModels() {
+        return overridingModels;
+    }
 }
+

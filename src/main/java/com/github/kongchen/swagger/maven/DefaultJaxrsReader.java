@@ -1,6 +1,7 @@
 package com.github.kongchen.swagger.maven;
 
-import com.github.kongchen.smp.ApiReader;
+
+import com.github.kongchen.swagger.ApiReader;
 import com.wordnik.swagger.jaxrs.Reader;
 import com.wordnik.swagger.models.Swagger;
 
