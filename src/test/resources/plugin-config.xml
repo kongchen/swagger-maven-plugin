@@ -4,37 +4,45 @@
             <plugin>
                 <groupId>com.github.kongchen</groupId>
                 <artifactId>swagger-maven-plugin</artifactId>
-                <version>2.3-SNAPSHOT</version>
+                <version>3.0-SNAPSHOT</version>
                 <configuration>
                     <apiSources>
                         <apiSource>
-                            <locations>sample.api</locations>
-                            <apiVersion>1.0</apiVersion>
-                            <basePath>http://example.com</basePath>
-                            <apiInfo>
+                            <locations>com.wordnik.swagger.sample</locations>
+                            <apiVersion>v1</apiVersion>
+                            <schemes>http,https</schemes>
+                            <host>www.example.com:8080</host>
+                            <basePath>/api</basePath>
+                            <info>
                                 <title>Swagger Maven Plugin Sample</title>
-                                <!-- use markdown here because I'm using markdown template, 
-                                if you need to use html or other template, you should escape your description for xml -->
+                                <!-- use markdown here because I'm using markdown for output,
+                                if you need to use html or other markup language, you need to use your target language,
+                                 and note escape your description for xml -->
                                 <description>
-                                    This is a sample of [swagger-maven-plugin](http://www.github.com/kongchen/swagger-maven-plugin).
-                                    The plugin helps you generate **Swagger JSON** and **customized API document** in build phase.
+                                    This is a sample.
                                 </description>
-                                <termsOfServiceUrl>http://www.github.com/kongchen/swagger-maven-plugin</termsOfServiceUrl>
-                                <contact>kongchen#gmail$com</contact>
-                                <license>Apache 2.0</license>
-                                <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0.html</licenseUrl>
-                            </apiInfo>
-                            
-                            <outputTemplate>
-                                https://raw.github.com/kongchen/api-doc-template/master/v2.0/strapdown.html.mustache
-                            </outputTemplate>
+                                <termsOfService>http://www.github.com/kongchen/swagger-maven-plugin
+                                </termsOfService>
+                                <contact>
+                                    <email>kongchen@gmail.com</email>
+                                    <name>Kong Chen</name>
+                                    <url>http://kongch.com</url>
+                                </contact>
+                                <license>
+                                    <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
+                                    <name>Apache 2.0</name>
+                                </license>
+                            </info>
+                            <!--Support classpath or file absolute path here.
+                            1) classpath e.g: "classpath:/markdown.hbs", "classpath:/templates/hello.html"
+                            2) file e.g: "${basedir}/src/main/resources/markdown.hbs",
+                                "${basedir}/src/main/resources/template/hello.html"-->
+                            <templatePath>
+                                ${basedir}/src/test/resources/strapdown.html.hbs
+                            </templatePath>
                             <outputPath>${basedir}/generated/document.html</outputPath>
-                            <swaggerDirectory>generated/swagger-ui</swaggerDirectory>
+                            <swaggerDirectory>${basedir}/generated/swagger-ui</swaggerDirectory>
                             <swaggerUIDocBasePath>http://www.example.com/restapi/doc</swaggerUIDocBasePath>
-                            <useOutputFlatStructure>false</useOutputFlatStructure>
-                            <mustacheFileRoot>${basedir}/src/main/resources/</mustacheFileRoot>
-                            <overridingModels>/swagger-overriding-models.json</overridingModels>
-                            <swaggerInternalFilter>com.wordnik.swagger.config.DefaultSpecFilter</swaggerInternalFilter>
                         </apiSource>
                     </apiSources>
                 </configuration>

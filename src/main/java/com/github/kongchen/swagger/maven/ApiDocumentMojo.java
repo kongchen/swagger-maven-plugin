@@ -3,8 +3,8 @@ package com.github.kongchen.swagger.maven;
 import java.io.File;
 import java.util.List;
 
-import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
-import com.github.kongchen.swagger.docgen.GenerateException;
+import com.github.kongchen.swagger.AbstractDocumentSource;
+import com.github.kongchen.swagger.GenerateException;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -48,6 +48,11 @@ public class ApiDocumentMojo extends AbstractMojo {
                 "swagger-maven-plugin 2.0+ only supports swagger-core 1.3.x");
         }
 
+        if (useSwaggerSpec13()) {
+            throw new MojoExecutionException("You may use an old version of swagger which is not supported by swagger-maven-plugin 3.0+\n" +
+                    "swagger-maven-plugin 3.0+ only supports swagger spec 2.0");
+        }
+
         try {
             getLog().debug(apiSources.toString());
             for (ApiSource apiSource : apiSources) {
@@ -64,7 +69,9 @@ public class ApiDocumentMojo extends AbstractMojo {
 						}
 					}
 				}
-				if (apiSource.getOutputTemplate()!=null)
+
+                documentSource.reorderApis();
+				if (apiSource.getTemplatePath()!=null)
 				{
 					documentSource.toDocuments();
 				}
@@ -84,6 +91,15 @@ public class ApiDocumentMojo extends AbstractMojo {
     private boolean useSwaggerSpec11() {
         try {
             Class<?> tryClass = Class.forName("com.wordnik.swagger.annotations.ApiErrors");
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
+
+    private boolean useSwaggerSpec13() {
+        try {
+            Class<?> tryClass = Class.forName("com.wordnik.swagger.model.ApiListing");
             return true;
         } catch (ClassNotFoundException e) {
             return false;

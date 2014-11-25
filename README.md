@@ -64,7 +64,7 @@ There's a [sample here](https://github.com/kongchen/swagger-maven-example), fork
         <locations>sample.api</locations>
         <apiVersion>1.0</apiVersion>
         <basePath>http://example.com</basePath>
-        <outputTemplate>/markdown.mustache</outputTemplate>
+        <templatePath>/markdown.mustache</templatePath>
         <mustacheFileRoot>${basedir}/src/main/resources/</mustacheFileRoot>
         <outputPath>${basedir}/generated/document.html</outputPath>
       </apiSource>
@@ -130,9 +130,9 @@ If you cannot wait to try out the plugin, here's a [sample project](https://gith
         <!---General parameters END-->
 
         <!---Document generation parameters BEGIN-->
-        <outputTemplate>
+        <templatePath>
           https://raw.github.com/kongchen/api-doc-template/master/v2.0/strapdown.html.mustache
-        </outputTemplate>
+        </templatePath>
         <mustacheFileRoot>${basedir}/src/main/resources/</mustacheFileRoot>
         <outputPath>${basedir}/generated/document.html</outputPath>
         <!---Document generation parameters END-->
@@ -198,7 +198,7 @@ The parameters of `apiInfo`:
 
 | **name**| **description** |
 |-----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `outputTemplate` | The path of a mustache template file, see more details in sections below.|
+| `templatePath` | The path of a mustache template file, see more details in sections below.|
 | `mustacheFileRoot` | The root path of your mustache template file. |
 | `outputPath` | The path of generate-by-template document, not existed parent directories will be created. If you don't want to generate html api just don't set it. |
 
@@ -217,7 +217,7 @@ You can specify several ```apiSources``` with different api versions and base pa
 
 # About the template file
 
-You need to specify a mustache template file in ```outputTemplate```.
+You need to specify a mustache template file in ```templatePath```.
 
 It supports a remote path such as https://raw.github.com/kongchen/api-doc-template/master/v2.0/markdown.mustache but local file is highly recommanded because:
 
