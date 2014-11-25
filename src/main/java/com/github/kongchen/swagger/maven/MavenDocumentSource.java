@@ -46,7 +46,6 @@ public class MavenDocumentSource extends AbstractDocumentSource {
         swagger.setHost(apiSource.getHost());
         swagger.setInfo(apiSource.getInfo());
         swagger.setBasePath(apiSource.getBasePath());
-        swagger.getInfo().setVersion(apiSource.getApiVersion());
         this.apiSource = apiSource;
     }
 

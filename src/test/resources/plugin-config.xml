@@ -9,19 +9,20 @@
                     <apiSources>
                         <apiSource>
                             <locations>com.wordnik.swagger.sample</locations>
-                            <apiVersion>v1</apiVersion>
                             <schemes>http,https</schemes>
                             <host>www.example.com:8080</host>
                             <basePath>/api</basePath>
                             <info>
                                 <title>Swagger Maven Plugin Sample</title>
+                                <version>v1</version>
                                 <!-- use markdown here because I'm using markdown for output,
                                 if you need to use html or other markup language, you need to use your target language,
                                  and note escape your description for xml -->
                                 <description>
                                     This is a sample.
                                 </description>
-                                <termsOfService>http://www.github.com/kongchen/swagger-maven-plugin
+                                <termsOfService>
+                                    http://www.github.com/kongchen/swagger-maven-plugin
                                 </termsOfService>
                                 <contact>
                                     <email>kongchen@gmail.com</email>
@@ -33,16 +34,13 @@
                                     <name>Apache 2.0</name>
                                 </license>
                             </info>
-                            <!--Support classpath or file absolute path here.
+                            <!-- Support classpath or file absolute path here.
                             1) classpath e.g: "classpath:/markdown.hbs", "classpath:/templates/hello.html"
                             2) file e.g: "${basedir}/src/main/resources/markdown.hbs",
-                                "${basedir}/src/main/resources/template/hello.html"-->
-                            <templatePath>
-                                ${basedir}/src/test/resources/strapdown.html.hbs
-                            </templatePath>
+                                "${basedir}/src/main/resources/template/hello.html" -->
+                            <templatePath>${basedir}/src/test/resources/strapdown.html.hbs</templatePath>
                             <outputPath>${basedir}/generated/document.html</outputPath>
                             <swaggerDirectory>${basedir}/generated/swagger-ui</swaggerDirectory>
-                            <swaggerUIDocBasePath>http://www.example.com/restapi/doc</swaggerUIDocBasePath>
                         </apiSource>
                     </apiSources>
                 </configuration>

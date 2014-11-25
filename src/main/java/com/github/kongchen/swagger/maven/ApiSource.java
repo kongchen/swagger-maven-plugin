@@ -27,12 +27,6 @@ public class ApiSource {
     private Info info;
 
     /**
-     * The version of your APIs 
-     */
-    @Parameter(required = true)
-    private String apiVersion;
-
-    /**
      * The basePath of your APIs. 
      */
     @Parameter(required = true)
@@ -134,14 +128,6 @@ public class ApiSource {
 
     public void setOutputPath(String outputPath) {
         this.outputPath = outputPath;
-    }
-
-    public String getApiVersion() {
-        return apiVersion;
-    }
-
-    public void setApiVersion(String apiVersion) {
-        this.apiVersion = apiVersion;
     }
 
     public String getBasePath() {
