@@ -9,24 +9,14 @@ import com.github.jknack.handlebars.Options;
 import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.helper.StringHelpers;
 import com.github.jknack.handlebars.io.TemplateLoader;
-import com.wordnik.swagger.jaxrs.listing.SwaggerSerializers;
-import com.wordnik.swagger.models.Operation;
-import com.wordnik.swagger.models.Path;
-import com.wordnik.swagger.models.Response;
-import com.wordnik.swagger.models.Swagger;
+import com.wordnik.swagger.models.*;
 import com.wordnik.swagger.util.Json;
 import org.apache.commons.io.FileUtils;
 
 import java.io.*;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.util.Comparator;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 /**
  * Created with IntelliJ IDEA.
@@ -47,6 +37,7 @@ public abstract class AbstractDocumentSource {
 	protected Swagger swagger;
 
 	private ObjectMapper mapper = new ObjectMapper();
+	private boolean isSorted = false;
 
 	public AbstractDocumentSource(LogAdapter logAdapter, String outputPath,
 								  String outputTpl, String swaggerOutput, String overridingModels) {
@@ -63,6 +54,10 @@ public abstract class AbstractDocumentSource {
 			throws GenerateException {
 		if (swaggerPath == null) {
 			return;
+		}
+		if (!isSorted) {
+			Utils.sortSwagger(swagger);
+			isSorted = true;
 		}
 		File dir = new File(swaggerPath);
 		if (dir.isFile()) {
@@ -167,6 +162,10 @@ public abstract class AbstractDocumentSource {
 
 	public void toDocuments() throws GenerateException {
 
+		if (!isSorted) {
+			Utils.sortSwagger(swagger);
+			isSorted = true;
+		}
 		LOG.info("Writing doc to " + outputPath + "...");
 
 		FileOutputStream fileOutputStream;
@@ -237,43 +236,7 @@ public abstract class AbstractDocumentSource {
 		return strurl.substring(0,idx);
 	}
 
-	public void reorderApis() throws GenerateException {
-		TreeMap<String, Path> sortedMap = new TreeMap<String, Path>(new Comparator<String>() {
-			@Override
-			public int compare(String o1, String o2) {
-				return o1.compareTo(o2);
-			}
-		});
-		sortedMap.putAll(swagger.getPaths());
-		swagger.paths(sortedMap);
 
-		for(Path path : swagger.getPaths().values()) {
-			String methods[] = {"Get", "Delete", "Post", "Put", "Options", "Patch"};
-			for (String m : methods) {
-				reorderResponses(path, m);
-			}
-		}
-
-	}
-
-
-	private void reorderResponses(Path path, String method) throws GenerateException {
-		try {
-			Method m = Path.class.getDeclaredMethod("get" + method);
-			Operation op = (Operation) m.invoke(path);
-			if (op == null) return;
-			Map<String, Response> responses = op.getResponses();
-			TreeMap<String, Response> res = new TreeMap<String, Response>();
-			res.putAll(responses);
-			op.setResponses(res);
-		} catch (NoSuchMethodException e) {
-			throw new GenerateException(e);
-		} catch (InvocationTargetException e) {
-			throw new GenerateException(e);
-		} catch (IllegalAccessException e) {
-			throw new GenerateException(e);
-		}
-	}
 }
 
 

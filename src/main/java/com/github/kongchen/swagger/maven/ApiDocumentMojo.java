@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.github.kongchen.swagger.AbstractDocumentSource;
 import com.github.kongchen.swagger.GenerateException;
+import com.github.kongchen.swagger.Utils;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -70,7 +71,6 @@ public class ApiDocumentMojo extends AbstractMojo {
 					}
 				}
 
-                documentSource.reorderApis();
 				if (apiSource.getTemplatePath()!=null)
 				{
 					documentSource.toDocuments();
