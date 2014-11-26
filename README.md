@@ -4,8 +4,9 @@ This plugin can let your Swagger annotated project generate **Swagger JSON** and
 [**Swagger JSON**](http://petstore.swagger.wordnik.com/v2/swagger.json) is a json file which represents your APIs fully follows [Swagger Spec 2.0](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md).
 
 **Customized API document** looks like this:
-<img src="https://cloud.githubusercontent.com/assets/1485800/4130419/c121d19c-3336-11e4-921f-ca8207ed9053.png" width="40%"/>
-<img src="https://cloud.githubusercontent.com/assets/1485800/4130438/28359ea4-3337-11e4-8c1a-5d9b06854e3f.png" width="40%"/>
+
+<img src="https://cloud.githubusercontent.com/assets/1485800/4130419/c121d19c-3336-11e4-921f-ca8207ed9053.png" width="35%"/>
+<img src="https://cloud.githubusercontent.com/assets/1485800/4130438/28359ea4-3337-11e4-8c1a-5d9b06854e3f.png" width="35%"/>
 
 
 # Example
