@@ -43,7 +43,7 @@ public class AbstractDocumentSourceTest {
     }
 
     private AbstractDocumentSource getAbstractDocumentSource(final boolean useOutputFlatStructure) {
-        return new AbstractDocumentSource(new LogAdapter((Logger) null), null, null, null, null, useOutputFlatStructure, null) {
+        return new AbstractDocumentSource(new LogAdapter((Logger) null), null, null, null, null, useOutputFlatStructure, null, false) {
             @Override
             public void loadDocuments() throws Exception, GenerateException {
 

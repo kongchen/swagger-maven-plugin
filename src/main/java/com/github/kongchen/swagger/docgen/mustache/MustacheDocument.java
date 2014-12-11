@@ -119,9 +119,8 @@ public class MustacheDocument implements Comparable<MustacheDocument> {
         this.index = index;
     }
 
-
-    public void addApi(MustacheApi wapi) {
-        apis.add(wapi);
+    public void setApis(List<MustacheApi> apis) {
+      this.apis = apis;
     }
 
     public void addResponseType(MustacheResponseClass clz) {
