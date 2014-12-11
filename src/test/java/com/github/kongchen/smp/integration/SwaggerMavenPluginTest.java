@@ -1,14 +1,5 @@
 package com.github.kongchen.smp.integration;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.kongchen.swagger.docgen.mavenplugin.ApiDocumentMojo;
@@ -21,6 +12,15 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Created by chekong on 8/15/14.
@@ -52,6 +52,27 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
         mojo.execute();
         FileInputStream testOutputIs = new FileInputStream(docOutput);
         InputStream expectIs = this.getClass().getResourceAsStream("/sample.html");
+        int count = 0;
+        while (true) {
+            count++;
+            int expect = expectIs.read();
+            int actual = testOutputIs.read();
+
+            Assert.assertEquals(expect, actual, "" + count);
+            if (expect == -1) {
+                break;
+            }
+        }
+    }
+
+    @Test
+    public void testSortApis() throws Exception {
+        List<ApiSource> apisources = (List<ApiSource>) getVariableValueFromObject(mojo, "apiSources");
+        apisources.get(0).setApiSortComparator("com.github.kongchen.smp.integration.ApiComparator");
+        setVariableValueToObject(mojo, "apiSources", apisources);
+        mojo.execute();
+        FileInputStream testOutputIs = new FileInputStream(docOutput);
+        InputStream expectIs = this.getClass().getResourceAsStream("/sorted-sample.html");
         int count = 0;
         while (true) {
             count++;

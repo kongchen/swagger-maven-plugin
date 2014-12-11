@@ -1,25 +1,23 @@
 package com.github.kongchen.swagger.docgen.remote;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
 import com.github.kongchen.swagger.docgen.LogAdapter;
 import com.github.kongchen.swagger.docgen.remote.model.*;
 import com.github.kongchen.swagger.docgen.util.Utils;
-import com.wordnik.swagger.model.*;
-
+import com.wordnik.swagger.model.ApiListing;
+import com.wordnik.swagger.model.ApiListingReference;
+import com.wordnik.swagger.model.AuthorizationType;
+import com.wordnik.swagger.model.ResourceListing;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Logger;
-
-import scala.Option;
 
 import java.io.IOException;
 import java.net.URI;
@@ -40,8 +38,10 @@ public class RemoteDocumentSource extends AbstractDocumentSource {
 
     private boolean withFormatSuffix = true;
 
-    public RemoteDocumentSource(LogAdapter logAdapter, URI requestURI, String outputTpl, String outputPath, String swaggerOutput, String mustacheFileRoot, boolean useOutputFlatStructure, String overridingModels, boolean sortApis) {
-        super(logAdapter, outputPath, outputTpl, swaggerOutput, mustacheFileRoot, useOutputFlatStructure, overridingModels, sortApis);
+    public RemoteDocumentSource(LogAdapter logAdapter, URI requestURI, String outputTpl, String outputPath,
+                                String swaggerOutput, String mustacheFileRoot, boolean useOutputFlatStructure,
+                                String overridingModels, String apiComparator) {
+        super(logAdapter, outputPath, outputTpl, swaggerOutput, mustacheFileRoot, useOutputFlatStructure, overridingModels, apiComparator);
         LOG = new LogAdapter(Logger.getLogger(RemoteDocumentSource.class));
         this.requestURI = requestURI;
         mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);

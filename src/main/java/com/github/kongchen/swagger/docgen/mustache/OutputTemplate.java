@@ -1,7 +1,9 @@
 package com.github.kongchen.swagger.docgen.mustache;
 
+import java.lang.reflect.Method;
 import java.util.*;
 
+import com.github.kongchen.swagger.docgen.GenerateException;
 import scala.collection.JavaConversions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,7 +11,6 @@ import com.fasterxml.jackson.databind.jsonschema.JsonSchema;
 import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
 import com.github.kongchen.swagger.docgen.TypeUtils;
 import com.github.kongchen.swagger.docgen.mavenplugin.ApiSourceInfo;
-import com.github.kongchen.swagger.docgen.util.Utils;
 import com.wordnik.swagger.model.ApiDescription;
 import com.wordnik.swagger.model.ApiListing;
 import com.wordnik.swagger.model.Operation;
@@ -29,12 +30,10 @@ public class OutputTemplate {
     private List<MustacheDocument> apiDocuments = new ArrayList<MustacheDocument>();
 
     private Set<MustacheDataType> dataTypes = new TreeSet<MustacheDataType>();
-
-    private boolean sortApis;
+    private Comparator<MustacheApi> apiComparator;
 
     public OutputTemplate(AbstractDocumentSource docSource) {
         feedSource(docSource);
-        this.sortApis = docSource.isSortApis();
     }
 
     public static String getJsonSchema() {
@@ -121,13 +120,8 @@ public class OutputTemplate {
             apiList.add(mustacheApi);
         }
 
-        if (sortApis) {
-            Collections.sort(apiList, new Comparator<MustacheApi>() {
-                @Override
-                public int compare(MustacheApi o1, MustacheApi o2) {
-                    return o1.getPath().compareTo(o2.getPath());
-                }
-            });
+        if (this.apiComparator != null) {
+            Collections.sort(apiList, this.apiComparator);
         }
 
         mustacheDocument.setApis(apiList);
@@ -192,6 +186,7 @@ public class OutputTemplate {
         setApiVersion(source.getApiVersion());
         setBasePath(source.getBasePath());
         setApiInfo(source.getApiInfo());
+        this.apiComparator = source.getApiSortComparator();
         for (ApiListing doc : source.getValidDocuments()) {
             if (doc.apis().isEmpty()){
                 continue;

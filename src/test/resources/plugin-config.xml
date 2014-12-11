@@ -24,7 +24,7 @@
                                 <license>Apache 2.0</license>
                                 <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0.html</licenseUrl>
                             </apiInfo>
-                            
+                            <!--<apiSortComparator>com.github.kongchen.smp.integration.ApiComparator</apiSortComparator>-->
                             <outputTemplate>
                                 https://raw.github.com/kongchen/api-doc-template/master/v2.0/strapdown.html.mustache
                             </outputTemplate>

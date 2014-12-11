@@ -65,7 +65,7 @@ public class ApiSource {
     private String overridingModels;
 
     @Parameter
-    private boolean sortApis;
+    private String apiSortComparator;
 
     /**
      * Information about swagger filter that will be used for prefiltering
@@ -205,11 +205,11 @@ public class ApiSource {
 		this.swaggerApiReader = swaggerApiReader;
 	}
 
-  public boolean isSortApis() {
-    return sortApis;
+  public String getApiSortComparator() {
+    return apiSortComparator;
   }
 
-  public void setSortApis(boolean sortApis) {
-    this.sortApis = sortApis;
+  public void setApiSortComparator(String apiSortComparator) {
+    this.apiSortComparator = apiSortComparator;
   }
 }

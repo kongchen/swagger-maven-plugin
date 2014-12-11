@@ -124,6 +124,7 @@ If you cannot wait to try out the plugin, here's a [sample project](https://gith
           <license>Apache 2.0</license>
           <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0.html</licenseUrl>
         </apiInfo>
+        <apiSortComparator>com.foo.bar.YourApiComarator</apiSortComparator>
         <overridingModels>/swagger-overriding-models.json</overridingModels>
         <swaggerInternalFilter>com.wordnik.swagger.config.DefaultSpecFilter</swaggerInternalFilter>
         <swaggerApiReader>com.wordnik.swagger.jaxrs.reader.DefaultJaxrsApiReader</swaggerApiReader>
@@ -198,6 +199,7 @@ The parameters of `apiInfo`:
 
 | **name**| **description** |
 |-----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `apiSortComparator` | You can specify an comparator to sort your apis in output document. The class should implements `Comparator<MustacheApi>`. Default is null which means there the order of your apis will be as same as the `swaggerApiReader`.|
 | `outputTemplate` | The path of a mustache template file, see more details in sections below.|
 | `mustacheFileRoot` | The root path of your mustache template file. |
 | `outputPath` | The path of generate-by-template document, not existed parent directories will be created. If you don't want to generate html api just don't set it. |
