@@ -10,7 +10,6 @@ import com.wordnik.swagger.config.SwaggerConfig;
 import com.wordnik.swagger.core.SwaggerSpec;
 import com.wordnik.swagger.core.filter.SpecFilter;
 import com.wordnik.swagger.core.filter.SwaggerSpecFilter;
-import com.wordnik.swagger.jaxrs.JaxrsApiReader;
 import com.wordnik.swagger.jaxrs.reader.DefaultJaxrsApiReader;
 import com.wordnik.swagger.model.*;
 import com.wordnik.swagger.reader.ClassReader;
@@ -40,8 +39,9 @@ public class MavenDocumentSource extends AbstractDocumentSource {
     private final SpecFilter specFilter = new SpecFilter();
 
     public MavenDocumentSource(ApiSource apiSource, Log log) {
-        super(new LogAdapter(log),
-              apiSource.getOutputPath(), apiSource.getOutputTemplate(), apiSource.getSwaggerDirectory(), apiSource.mustacheFileRoot, apiSource.isUseOutputFlatStructure(), apiSource.getOverridingModels(), apiSource.isSortApis());
+        super(new LogAdapter(log), apiSource.getOutputPath(), apiSource.getOutputTemplate(),
+                apiSource.getSwaggerDirectory(), apiSource.mustacheFileRoot, apiSource.isUseOutputFlatStructure(),
+                apiSource.getOverridingModels(), apiSource.getApiSortComparator());
 
         setApiVersion(apiSource.getApiVersion());
         setBasePath(apiSource.getBasePath());

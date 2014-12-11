@@ -30,7 +30,7 @@ public class RemoteDocumentSourceTest {
 //                "/home/chekong/workspace/kongchen/swagger-maven-example/templates/strapdown.html.mustache",
                 "/Users/kongchen/workspace/swagger-maven-example/templates/strapdown.html.mustache",
                 "/tmp/output.html",
-                "/tmp", null, false, null, false);
+                "/tmp", null, false, null, null);
         remoteDocumentSource.loadDocuments();
 
         remoteDocumentSource.toDocuments();

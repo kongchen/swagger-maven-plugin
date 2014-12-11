@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.kongchen.swagger.docgen.mavenplugin.ApiSourceInfo;
+import com.github.kongchen.swagger.docgen.mustache.MustacheApi;
 import com.github.kongchen.swagger.docgen.mustache.OutputTemplate;
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
@@ -22,12 +23,14 @@ import scala.collection.Iterator;
 import scala.collection.JavaConversions;
 
 import java.io.*;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -65,11 +68,11 @@ public abstract class AbstractDocumentSource {
 
 	private String overridingModels;
 
-  private boolean sortApis;
+	private Comparator<MustacheApi> apiSortComparator;
 
 	public AbstractDocumentSource(LogAdapter logAdapter, String outputPath,
 			String outputTpl, String swaggerOutput, String mustacheFileRoot,
-			boolean useOutputFlatStructure1, String overridingModels, boolean sortApis) {
+			boolean useOutputFlatStructure1, String overridingModels, String apiSortComparator) {
 		LOG = logAdapter;
 		this.outputPath = outputPath;
 		this.templatePath = outputTpl;
@@ -77,7 +80,31 @@ public abstract class AbstractDocumentSource {
 		this.useOutputFlatStructure = useOutputFlatStructure1;
 		this.swaggerPath = swaggerOutput;
 		this.overridingModels = overridingModels;
-    this.sortApis = sortApis;
+        this.apiSortComparator = newComparator(apiSortComparator);
+	}
+
+	private Comparator<MustacheApi> newComparator(String apiSortComparator){
+		Comparator<MustacheApi> apiComparator;
+		if (apiSortComparator == null) return null;
+		try {
+			Class<Comparator<MustacheApi>> clz = (Class<Comparator<MustacheApi>>) Class.forName(apiSortComparator);
+			Method m = clz.getDeclaredMethod("compare", MustacheApi.class, MustacheApi.class);
+			apiComparator = clz.newInstance();
+			return apiComparator;
+
+		} catch (ClassNotFoundException e) {
+			LOG.warn("You specified an illegal comparator for apis.");
+			return null;
+		} catch (NoSuchMethodException e) {
+			LOG.warn("You specified an illegal comparator for apis.");
+			return null;
+		} catch (InstantiationException e) {
+			LOG.warn("You specified an illegal comparator for apis.");
+			return null;
+		} catch (IllegalAccessException e) {
+			LOG.warn("You specified an illegal comparator for apis.");
+			return null;
+		}
 	}
 
 	public abstract void loadDocuments() throws Exception, GenerateException;
@@ -98,17 +125,9 @@ public abstract class AbstractDocumentSource {
 		this.apiVersion = apiVersion;
 	}
 
-  public boolean isSortApis() {
-    return sortApis;
-  }
-
-  public void setSortApis(boolean sortApis) {
-    this.sortApis = sortApis;
-  }
-
-  public OutputTemplate getOutputTemplate() {
-		return outputTemplate;
-	}
+    public OutputTemplate getOutputTemplate() {
+        return outputTemplate;
+    }
 
     public ApiSourceInfo getApiInfo() {
         return apiInfo;
@@ -381,5 +400,9 @@ public abstract class AbstractDocumentSource {
 		} else {
 			return new DefaultMustacheFactory(new File(mustacheFileRoot));
 		}
+	}
+
+	public Comparator<MustacheApi> getApiSortComparator() {
+		return apiSortComparator;
 	}
 }
