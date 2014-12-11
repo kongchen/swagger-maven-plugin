@@ -30,8 +30,11 @@ public class OutputTemplate {
 
     private Set<MustacheDataType> dataTypes = new TreeSet<MustacheDataType>();
 
+    private boolean sortApis;
+
     public OutputTemplate(AbstractDocumentSource docSource) {
         feedSource(docSource);
+        this.sortApis = docSource.isSortApis();
     }
 
     public static String getJsonSchema() {
@@ -59,7 +62,6 @@ public class OutputTemplate {
                 continue;
             }
             addDateType(mustacheDocument, new MustacheDataType(mustacheDocument, trueType));
-
         }
     }
 
@@ -98,6 +100,8 @@ public class OutputTemplate {
      */
     private MustacheDocument createMustacheDocument(ApiListing swaggerDoc) {
         MustacheDocument mustacheDocument = new MustacheDocument(swaggerDoc);
+
+        final List<MustacheApi> apiList = new ArrayList<MustacheApi>(swaggerDoc.apis().length());
         
         for (scala.collection.Iterator<ApiDescription> it = swaggerDoc.apis().iterator(); it.hasNext(); ) {
             ApiDescription api = it.next();
@@ -106,8 +110,7 @@ public class OutputTemplate {
 
             for (scala.collection.Iterator<Operation> opIt  = api.operations().iterator(); opIt.hasNext(); ) {
                 Operation op = opIt.next();
-                MustacheOperation mustacheOperation = null;
-                mustacheOperation = new MustacheOperation(mustacheDocument, op);
+                MustacheOperation mustacheOperation = new MustacheOperation(mustacheDocument, op);
                 mustacheApi.addOperation(mustacheOperation);
                 addResponseType(mustacheDocument, mustacheOperation.getResponseClass());
                 for (MustacheResponseClass responseClass : mustacheOperation.getResponseClasses()) {
@@ -115,8 +118,19 @@ public class OutputTemplate {
                 }
             }
 
-            mustacheDocument.addApi(mustacheApi);
+            apiList.add(mustacheApi);
         }
+
+        if (sortApis) {
+            Collections.sort(apiList, new Comparator<MustacheApi>() {
+                @Override
+                public int compare(MustacheApi o1, MustacheApi o2) {
+                    return o1.getPath().compareTo(o2.getPath());
+                }
+            });
+        }
+
+        mustacheDocument.setApis(apiList);
 
         for (String requestType : mustacheDocument.getRequestTypes()) {
             MustacheDataType dataType = new MustacheDataType(mustacheDocument, requestType);
