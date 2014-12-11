@@ -65,9 +65,11 @@ public abstract class AbstractDocumentSource {
 
 	private String overridingModels;
 
+  private boolean sortApis;
+
 	public AbstractDocumentSource(LogAdapter logAdapter, String outputPath,
 			String outputTpl, String swaggerOutput, String mustacheFileRoot,
-			boolean useOutputFlatStructure1, String overridingModels) {
+			boolean useOutputFlatStructure1, String overridingModels, boolean sortApis) {
 		LOG = logAdapter;
 		this.outputPath = outputPath;
 		this.templatePath = outputTpl;
@@ -75,6 +77,7 @@ public abstract class AbstractDocumentSource {
 		this.useOutputFlatStructure = useOutputFlatStructure1;
 		this.swaggerPath = swaggerOutput;
 		this.overridingModels = overridingModels;
+    this.sortApis = sortApis;
 	}
 
 	public abstract void loadDocuments() throws Exception, GenerateException;
@@ -95,7 +98,15 @@ public abstract class AbstractDocumentSource {
 		this.apiVersion = apiVersion;
 	}
 
-	public OutputTemplate getOutputTemplate() {
+  public boolean isSortApis() {
+    return sortApis;
+  }
+
+  public void setSortApis(boolean sortApis) {
+    this.sortApis = sortApis;
+  }
+
+  public OutputTemplate getOutputTemplate() {
 		return outputTemplate;
 	}
 
