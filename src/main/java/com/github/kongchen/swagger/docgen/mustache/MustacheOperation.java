@@ -45,7 +45,7 @@ public class MustacheOperation {
 
     private static final Pattern genericInNotes = Pattern.compile("(/\\*.*<)((\\w+|((\\w+\\.)+\\w+))|(((\\w+|((\\w+\\.)+\\w+)),)+(\\w+|((\\w+\\.)+\\w+))))(>.*\\*/)");
 
-    private List<MustacheResponseMessage> errorResponses = new ArrayList<MustacheResponseMessage>();
+    private List<MustacheResponseMessage> responseMessages = new ArrayList<MustacheResponseMessage>();
 
     List<MustacheSample> samples;
 
@@ -75,7 +75,7 @@ public class MustacheOperation {
                     String className = responseMessage.responseModel().get();
                     this.responseClasses.add(new MustacheResponseClass(className));
                 }
-                this.errorResponses.add(new MustacheResponseMessage(responseMessage));
+                this.responseMessages.add(new MustacheResponseMessage(responseMessage));
             }
         }
         if (parameters == null) {
@@ -193,8 +193,16 @@ public class MustacheOperation {
         return parameters;
     }
 
+    public List<MustacheResponseMessage> getResponseMessages() {
+        return responseMessages;
+    }
+
+    /**
+     * @deprecated Use {@link #getResponseMessages} instead
+     */
+    @Deprecated
     public List<MustacheResponseMessage> getErrorResponses() {
-        return errorResponses;
+        return responseMessages;
     }
 
     public MustacheResponseClass getResponseClass() {
