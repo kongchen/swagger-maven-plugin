@@ -21,7 +21,7 @@ There's a [sample here](https://github.com/kongchen/swagger-maven-example), fork
 <plugin>
   <groupId>com.github.kongchen</groupId>
   <artifactId>swagger-maven-plugin</artifactId>
-  <version>2.3</version>
+  <version>2.3.2</version>
   <configuration>
     <apiSources>
       <apiSource>
@@ -57,7 +57,7 @@ There's a [sample here](https://github.com/kongchen/swagger-maven-example), fork
 <plugin>
   <groupId>com.github.kongchen</groupId>
   <artifactId>swagger-maven-plugin</artifactId>
-  <version>2.3</version>
+  <version>2.3.2</version>
   <configuration>
     <apiSources>
       <apiSource>
@@ -104,7 +104,7 @@ If you cannot wait to try out the plugin, here's a [sample project](https://gith
 <plugin>
   <groupId>com.github.kongchen</groupId>
   <artifactId>swagger-maven-plugin</artifactId>
-  <version>2.3</version>
+  <version>2.3.2</version>
   <configuration>
     <apiSources>
       <apiSource>
@@ -261,8 +261,8 @@ Example file below. Note that you can name every mapping the way you want - it's
 This plugin has 2 serials of versions:
 
 - 2.x.x : For [Swagger core version >= 1.3.0] (https://github.com/wordnik/swagger-core/wiki/Changelog#v130-aug-12-2013) [swagger-spec 1.2](https://github.com/wordnik/swagger-spec/blob/master/versions/1.2.md)
-> **Latest version `2.3` is available in central repository.**
-`2.3.1-SNAPSHOT` is the latest SNAPSHOT version.
+> **Latest version `2.3.2` is available in central repository.**
+`2.3.3-SNAPSHOT` is the latest SNAPSHOT version.
 
 - 1.x.x : For [Swagger core version 1.2.x](https://github.com/wordnik/swagger-core/wiki/Changelog#v125-jun-19-2013) swagger-spec 1.1
 > **Latest version `1.1.3-SNAPSHOT` is available in sonatype repository.**
