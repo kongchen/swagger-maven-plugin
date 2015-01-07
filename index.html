@@ -1,46 +1,58 @@
 <!DOCTYPE html>
 <html>
+
   <head>
     <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <title>Swagger-maven-plugin by kongchen</title>
+    <meta name="description" content="Swagger-maven-plugin : A maven build plugin which helps you generate Swagger JSON and API document during build phase">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Swagger-maven-plugin</title>
   </head>
 
   <body>
-    <div id="container">
-      <div class="inner">
 
-        <header>
-          <h1>Swagger-maven-plugin</h1>
-          <h2>A maven build plugin which helps you generate Swagger JSON and API document during build phase</h2>
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/kongchen/swagger-maven-plugin">View on GitHub</a>
+
+          <h1 id="project_title">Swagger-maven-plugin</h1>
+          <h2 id="project_tagline">A maven build plugin which helps you generate Swagger JSON and API document during build phase</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/kongchen/swagger-maven-plugin/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/kongchen/swagger-maven-plugin/tarball/master">Download this project as a tar.gz file</a>
+            </section>
         </header>
+    </div>
 
-        <section id="downloads" class="clearfix">
-          <a href="https://github.com/kongchen/swagger-maven-plugin/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
-          <a href="https://github.com/kongchen/swagger-maven-plugin/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
-          <a href="https://github.com/kongchen/swagger-maven-plugin" id="view-on-github" class="button"><span>View on GitHub</span></a>
-        </section>
-
-        <hr>
-
-        <section id="main_content">
-          <h1>
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
 <a id="swagger-maven-plugin-" class="anchor" href="#swagger-maven-plugin-" aria-hidden="true"><span class="octicon octicon-link"></span></a>Swagger Maven Plugin <a href="https://travis-ci.org/kongchen/swagger-maven-plugin"><img src="https://travis-ci.org/kongchen/swagger-maven-plugin.png" alt="Build Status"></a>
 </h1>
+
+<h1>
+<a id="versions" class="anchor" href="#versions" aria-hidden="true"><span class="octicon octicon-link"></span></a>Versions</h1>
+
+<ul>
+<li>
+<a href="https://github.com/kongchen/swagger-maven-plugin/tree/dev2.0">3.0-SNAPSHOT</a> supports Swagger Spec <a href="https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md">2.0</a> (<strong>DRAFT</strong>)</li>
+<li>
+<a href="https://github.com/kongchen/swagger-maven-plugin/">2.3.2</a> supports Swagger Spec <a href="https://github.com/swagger-api/swagger-spec/blob/master/versions/1.2.md">1.2</a> (<strong>ACTIVE</strong>)</li>
+<li>
+<a href="https://github.com/kongchen/swagger-maven-plugin/tree/1.1.1">1.1.1</a> supports Swagger Spec 1.1. (<strong>No longer maintained</strong>)</li>
+</ul>
 
 <p>This plugin can let your Swagger annotated project generate <strong>Swagger JSON</strong> and your <strong>customized API documents</strong> in build phase.</p>
 
 <p>You must already known what is Swagger JSON, check the results of this plugin generates <a href="https://github.com/kongchen/swagger-maven-example/tree/master/generated/swagger-ui">here</a> to see if it is what you want.</p>
 
-<p>What is <em>customized API document</em>? Here're two screenshots:
-<img src="https://cloud.githubusercontent.com/assets/1485800/4130438/28359ea4-3337-11e4-8c1a-5d9b06854e3f.png" width="50%"></p>
+<p>What is <em>customized API document</em>? Here're a screenshot:
+<img src="https://cloud.githubusercontent.com/assets/1485800/4130438/28359ea4-3337-11e4-8c1a-5d9b06854e3f.png" width="50%" align="center"></p>
 
 <h1>
 <a id="usage" class="anchor" href="#usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Usage</h1>
@@ -59,26 +71,18 @@
         &lt;/<span class="pl-ent">plugin</span>&gt;
     &lt;/<span class="pl-ent">plugins</span>&gt;
 &lt;/<span class="pl-ent">build</span>&gt;</pre></div>
+      </section>
+    </div>
 
-<h1>
-<a id="versions" class="anchor" href="#versions" aria-hidden="true"><span class="octicon octicon-link"></span></a>Versions</h1>
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Swagger-maven-plugin maintained by <a href="https://github.com/kongchen">kongchen</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
 
-<ul>
-<li>
-<a href="https://github.com/kongchen/swagger-maven-plugin/tree/dev2.0">3.0-SNAPSHOT</a> supports Swagger Spec <a href="https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md">2.0</a> (<strong>DRAFT</strong>)</li>
-<li>
-<a href="https://github.com/kongchen/swagger-maven-plugin/">2.3.2</a> supports Swagger Spec <a href="https://github.com/swagger-api/swagger-spec/blob/master/versions/1.2.md">1.2</a> (<strong>ACTIVE</strong>)</li>
-<li>
-<a href="https://github.com/kongchen/swagger-maven-plugin/tree/1.1.1">1.1.1</a> supports Swagger Spec 1.1. (<strong>No longer maintained</strong>)</li>
-</ul>
-        </section>
-
-        <footer>
-          Swagger-maven-plugin is maintained by <a href="https://github.com/kongchen">kongchen</a><br>
-          This page was generated by <a href="http://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.
-        </footer>
-
-                  <script type="text/javascript">
+              <script type="text/javascript">
             var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
             document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
           </script>
@@ -89,7 +93,6 @@
             } catch(err) {}
           </script>
 
-      </div>
-    </div>
+
   </body>
 </html>
