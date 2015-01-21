@@ -36,7 +36,7 @@
 			<name>Kong Chen</name>
 			<timezone>+8</timezone>
 		</developer>
-			<developer>
+		<developer>
 			<id>tedleman</id>
 			<name>Troy Edleman</name>
 			<timezone>-5</timezone>
