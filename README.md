@@ -21,7 +21,7 @@ There's a [sample here](https://github.com/kongchen/swagger-maven-example), fork
 <plugin>
   <groupId>com.github.kongchen</groupId>
   <artifactId>swagger-maven-plugin</artifactId>
-  <version>2.3.2</version>
+  <version>2.3.3-SNAPSHOT</version>
   <configuration>
     <apiSources>
       <apiSource>
@@ -57,7 +57,7 @@ There's a [sample here](https://github.com/kongchen/swagger-maven-example), fork
 <plugin>
   <groupId>com.github.kongchen</groupId>
   <artifactId>swagger-maven-plugin</artifactId>
-  <version>2.3.2</version>
+  <version>2.3.3-SNAPSHOT</version>
   <configuration>
     <apiSources>
       <apiSource>
@@ -104,7 +104,7 @@ If you cannot wait to try out the plugin, here's a [sample project](https://gith
 <plugin>
   <groupId>com.github.kongchen</groupId>
   <artifactId>swagger-maven-plugin</artifactId>
-  <version>2.3.2</version>
+  <version>2.3.3-SNAPSHOT</version>
   <configuration>
     <apiSources>
       <apiSource>
@@ -128,6 +128,8 @@ If you cannot wait to try out the plugin, here's a [sample project](https://gith
         <overridingModels>/swagger-overriding-models.json</overridingModels>
         <swaggerInternalFilter>com.wordnik.swagger.config.DefaultSpecFilter</swaggerInternalFilter>
         <swaggerApiReader>com.wordnik.swagger.jaxrs.reader.DefaultJaxrsApiReader</swaggerApiReader>
+        <!--<swaggerApiReader>com.github.kongchen.swagger.docgen.spring.SpringMvcApiReader</swaggerApiReader>-->
+        <!-- ^^ If your project uses spring-mvc -->
         <!---General parameters END-->
 
         <!---Document generation parameters BEGIN-->
