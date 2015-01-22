@@ -52,7 +52,15 @@ public class ApiDocumentMojo extends AbstractMojo {
             getLog().debug(apiSources.toString());
             for (ApiSource apiSource : apiSources) {
 
-                AbstractDocumentSource documentSource = new MavenDocumentSource(apiSource, getLog());
+                AbstractDocumentSource documentSource;
+                
+                if(apiSource.getSwaggerApiReader() != null 
+                		&& apiSource.getSwaggerApiReader().contains("SpringMvcApiReader")){
+                	documentSource = new SpringMavenDocumentSource(apiSource, getLog());
+                }else{
+                	documentSource = new MavenDocumentSource(apiSource, getLog());
+                }
+                
                 documentSource.loadOverridingModels();
                 documentSource.loadDocuments();
 				if (apiSource.getOutputPath() != null){
