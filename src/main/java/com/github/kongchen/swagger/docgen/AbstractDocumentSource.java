@@ -1,5 +1,28 @@
 package com.github.kongchen.swagger.docgen;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+
+import scala.collection.Iterator;
+import scala.collection.JavaConversions;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,22 +39,6 @@ import com.wordnik.swagger.core.util.JsonUtil;
 import com.wordnik.swagger.model.ApiListing;
 import com.wordnik.swagger.model.ApiListingReference;
 import com.wordnik.swagger.model.ResourceListing;
-
-import org.apache.commons.io.FileUtils;
-
-import scala.collection.Iterator;
-import scala.collection.JavaConversions;
-
-import java.io.*;
-import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -272,37 +279,43 @@ public abstract class AbstractDocumentSource {
 
 	private void writeInDirectory(File dir, ApiListing apiListing,
 			String basePath) throws GenerateException {
-		String filename = resourcePathToFilename(apiListing.resourcePath());
-		try {
-			File serviceFile = createFile(dir, filename);
-			String json = JsonSerializer.asJson(apiListing);
-			JsonNode tree = mapper.readTree(json);
-			if (basePath != null) {
-				((ObjectNode) tree).put("basePath", basePath);
-			}
-			JsonUtil.mapper().writerWithDefaultPrettyPrinter()
-					.writeValue(serviceFile, tree);
-		} catch (IOException e) {
-			throw new GenerateException(e);
-		}
+		String json = JsonSerializer.asJson(apiListing);
+		writeInDirectory(dir, json, resourcePathToFilename(apiListing.resourcePath()), basePath);
 	}
 
 	private void writeInDirectory(File dir, ResourceListing resourceListing,
 			String basePath) throws GenerateException {
-		String filename = resourcePathToFilename(null);
-		try {
-			File serviceFile = createFile(dir, filename);
-			String json = JsonSerializer.asJson(resourceListing);
-			JsonNode tree = mapper.readTree(json);
-			if (basePath != null) {
-				((ObjectNode) tree).put("basePath", basePath);
-			}
-
-			JsonUtil.mapper().writerWithDefaultPrettyPrinter()
-					.writeValue(serviceFile, tree);
-		} catch (IOException e) {
-			throw new GenerateException(e);
-		}
+		String json = JsonSerializer.asJson(resourceListing);
+		writeInDirectory(dir, json, resourcePathToFilename(null), basePath);
+	}
+	
+	private void writeInDirectory( File dir, String json, String filename, String basePath ) throws GenerateException {
+	  OutputStream out = null;
+	  try {
+	    File serviceFile = createFile(dir, filename);
+	    JsonNode tree = mapper.readTree(json);
+	    if(basePath != null) {
+	      ((ObjectNode) tree).put("basePath",  basePath);
+	    }
+	    out = new FileOutputStream(serviceFile);
+	    writeContent(out, tree);
+	  } catch (IOException e) {
+        throw new GenerateException(e);
+      } finally {
+        IOUtils.closeQuietly(out);
+      }
+	}
+	
+	/**
+	 * Serializes json tree and writes to stream.
+	 * 
+	 * @param out OutputStream of where to write output to
+	 * @param tree the jsonNode representation of the swagger spec
+	 * @throws IOException if there is a problem writing to output stream
+	 */
+	protected void writeContent( final OutputStream out, final JsonNode tree) throws IOException {
+	  JsonUtil.mapper().writerWithDefaultPrettyPrinter()
+        .writeValue(out, tree);
 	}
 
 	protected File createFile(File dir, String outputResourcePath)
