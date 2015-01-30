@@ -155,10 +155,10 @@ public class SpringMvcApiReader  {
 	}
 	
 	private String generateFullPath(String path){
-		if(StringUtils.isNotEmpty(path) && path.charAt(0)=='/'){
-			return this.resourcePath+path;
-		}else{
-			return this.resourcePath+'/'+path;
+		if(StringUtils.isNotEmpty(path)){
+			return this.resourcePath + (path.startsWith("/") ? path : '/' + path);
+		} else {
+			return this.resourcePath;
 		}
 	}
 	
