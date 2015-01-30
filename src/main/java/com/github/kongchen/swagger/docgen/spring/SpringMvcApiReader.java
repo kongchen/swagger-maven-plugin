@@ -106,6 +106,13 @@ public class SpringMvcApiReader  {
 		List<Authorization> authorizations = Collections.emptyList();//TODO
 		String newBasePath="";
 		String description="";
+		
+		// Add the description from the controller api
+		Class<?> controller = resource.getControllerClass();
+		if( controller != null && controller.isAnnotationPresent(Api.class)) {
+		  Api api = (Api) controller.getAnnotation(Api.class);
+		  description = api.description();
+		}
 
 		resourcePath = resource.getControllerMapping();
 		newBasePath=generateBasePath(apiSource.getBasePath(),resourcePath); 
