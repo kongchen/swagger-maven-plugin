@@ -1,9 +1,6 @@
 package com.github.kongchen.swagger.docgen.spring;
 
-import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
-
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -13,38 +10,40 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
 
-import org.apache.maven.plugin.logging.Log;
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
-import com.github.kongchen.swagger.docgen.LogAdapter;
-import com.github.kongchen.swagger.docgen.TypeUtils;
+import scala.Option;
+import scala.Predef;
+import scala.Tuple2;
+import scala.collection.JavaConversions;
+import scala.collection.JavaConverters;
+import scala.collection.mutable.LinkedHashMap;
+
 import com.github.kongchen.swagger.docgen.mavenplugin.ApiSource;
 import com.google.common.base.CharMatcher;
-import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiModel;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
-import com.wordnik.swagger.annotations.ApiResponse;
-import com.wordnik.swagger.annotations.ApiResponses;
 import com.wordnik.swagger.config.SwaggerConfig;
 import com.wordnik.swagger.core.ApiValues;
 import com.wordnik.swagger.core.SwaggerSpec;
 import com.wordnik.swagger.model.AllowableListValues;
-import com.wordnik.swagger.model.AllowableValues;
-import com.wordnik.swagger.model.AnyAllowableValues;
 import com.wordnik.swagger.model.ApiDescription;
 import com.wordnik.swagger.model.ApiListing;
 import com.wordnik.swagger.model.Authorization;
@@ -53,24 +52,7 @@ import com.wordnik.swagger.model.ModelProperty;
 import com.wordnik.swagger.model.ModelRef;
 import com.wordnik.swagger.model.Operation;
 import com.wordnik.swagger.model.Parameter;
-import com.wordnik.swagger.model.ResourceListing;
 import com.wordnik.swagger.model.ResponseMessage;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
-import org.springframework.util.ClassUtils;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.WebRequest;
-
-import scala.Predef;
-import scala.Tuple2;
-import scala.Option;
-import scala.collection.JavaConversions;
-import scala.collection.JavaConverters;
-import scala.collection.mutable.LinkedHashMap;
-import scala.tools.asm.ClassReader;
 /**
  * 
  * @author tedleman
@@ -124,6 +106,13 @@ public class SpringMvcApiReader  {
 		List<Authorization> authorizations = Collections.emptyList();//TODO
 		String newBasePath="";
 		String description="";
+		
+		// Add the description from the controller api
+		Class<?> controller = resource.getControllerClass();
+		if( controller != null && controller.isAnnotationPresent(Api.class)) {
+		  Api api = (Api) controller.getAnnotation(Api.class);
+		  description = api.description();
+		}
 
 		resourcePath = resource.getControllerMapping();
 		newBasePath=generateBasePath(apiSource.getBasePath(),resourcePath); 
@@ -160,7 +149,7 @@ public class SpringMvcApiReader  {
 		}
 
 		//check for first & trailing backslash 
-		if(bPath.lastIndexOf('/')!=(bPath.length()-1)){
+		if(bPath.lastIndexOf('/')!=(bPath.length()-1) && StringUtils.isNotEmpty(domain)){
 			bPath = bPath+'/';
 		}
 		
@@ -173,10 +162,10 @@ public class SpringMvcApiReader  {
 	}
 	
 	private String generateFullPath(String path){
-		if(path.charAt(0)=='/'){
-			return this.resourcePath+path;
-		}else{
-			return this.resourcePath+'/'+path;
+		if(StringUtils.isNotEmpty(path)){
+			return this.resourcePath + (path.startsWith("/") ? path : '/' + path);
+		} else {
+			return this.resourcePath;
 		}
 	}
 	

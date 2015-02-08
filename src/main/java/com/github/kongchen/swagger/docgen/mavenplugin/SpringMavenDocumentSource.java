@@ -64,6 +64,7 @@ public class SpringMavenDocumentSource extends AbstractDocumentSource {
 		SwaggerConfig swaggerConfig =  new SwaggerConfig();
 		swaggerConfig.setApiVersion(apiSource.getApiVersion());
 		swaggerConfig.setSwaggerVersion(SwaggerSpec.version());
+		swaggerConfig.setApiInfo(toSwaggerApiInfo(apiSource.getApiInfo())); //TODO: can we pull this from spring?
 		List<ApiListingReference> apiListingReferences = new ArrayList<ApiListingReference>();
 		List<AuthorizationType> authorizationTypes = new ArrayList<AuthorizationType>();
 
@@ -154,11 +155,11 @@ public class SpringMavenDocumentSource extends AbstractDocumentSource {
 				swaggerConfig.info());
     }
 
-    private Option<ApiInfo> toSwaggerApiInfo(ApiSourceInfo info) {
-        if (info == null) return Option.empty();
-        return Option.apply(new ApiInfo(info.getTitle(), info.getDescription(),
-            info.getTermsOfServiceUrl(), info.getContact(),
-            info.getLicense(), info.getLicenseUrl()));
+    private ApiInfo toSwaggerApiInfo(ApiSourceInfo info) {
+      	if (info == null) return null;
+      	return new ApiInfo(info.getTitle(), info.getDescription(),
+          	info.getTermsOfServiceUrl(), info.getContact(),
+          	info.getLicense(), info.getLicenseUrl());
     }
     
     private ApiListing getDocFromSpringResource(SpringResource res, SwaggerConfig swaggerConfig) throws Exception{
