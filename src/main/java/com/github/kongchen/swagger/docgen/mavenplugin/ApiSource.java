@@ -75,6 +75,9 @@ public class ApiSource {
 
 	@Parameter
 	private String swaggerApiReader;
+	
+	@Parameter
+	private String swaggerDocumentSource;
 
     public Set<Class> getValidClasses() throws GenerateException {
         Set<Class> classes = new HashSet<Class>();
@@ -211,5 +214,13 @@ public class ApiSource {
 
   public void setApiSortComparator(String apiSortComparator) {
     this.apiSortComparator = apiSortComparator;
+  }
+
+  public String getSwaggerDocumentSource() {
+    return swaggerDocumentSource;
+  }
+
+  public void setSwaggerDocumentSource(String swaggerDocumentSource) {
+    this.swaggerDocumentSource = swaggerDocumentSource;
   }
 }
