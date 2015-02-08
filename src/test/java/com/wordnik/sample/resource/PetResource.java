@@ -16,14 +16,13 @@
 
 package com.wordnik.sample.resource;
 
-import com.wordnik.sample.data.PetData;
 import com.wordnik.swagger.annotations.*;
+import com.wordnik.sample.data.PetData;
 import com.wordnik.sample.model.Pet;
-import com.wordnik.swagger.annotations.ApiResponse;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 @Path("/pet")
 @Api(value = "/pet", description = "Operations about pets", authorizations = {
@@ -40,7 +39,7 @@ public class PetResource {
 
   @GET
   @Path("/{petId}")
-  @ApiOperation(value = "Find pet by ID", 
+  @ApiOperation(value = "Find pet by ID",
     notes = "Returns a pet when ID < 10.  ID > 10 or nonintegers will simulate API error conditions", 
     response = Pet.class,
     authorizations = @Authorization(value = "api_key", type = "api_key")
@@ -93,7 +92,7 @@ public class PetResource {
 
   @GET
   @Path("/findByStatus")
-  @ApiOperation(value = "Finds Pets by status", 
+  @ApiOperation(value = "Finds Pets by status",
     notes = "Multiple status values can be provided with comma seperated strings", 
     response = Pet.class, 
     responseContainer = "List")

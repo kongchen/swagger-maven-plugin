@@ -21,8 +21,8 @@ import com.wordnik.sample.data.StoreData;
 import com.wordnik.sample.model.Order;
 import com.wordnik.sample.exception.NotFoundException;
 
-import javax.ws.rs.core.Response;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Response;
 
 @Path("/store")
 @Api(value="/store" , description = "Operations about store")

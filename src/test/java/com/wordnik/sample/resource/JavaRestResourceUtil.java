@@ -17,7 +17,6 @@
 package com.wordnik.sample.resource;
 
 import java.text.SimpleDateFormat;
-
 import java.util.Date;
 
 public class JavaRestResourceUtil {

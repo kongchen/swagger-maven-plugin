@@ -16,11 +16,11 @@
 
 package com.wordnik.sample.model;
 
-import com.wordnik.swagger.annotations.*;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
-
-import javax.xml.bind.annotation.*;
 
 @XmlRootElement(name = "Order")
 public class Order {
