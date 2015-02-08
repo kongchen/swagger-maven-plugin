@@ -78,9 +78,11 @@ public class Utils {
         }
 
         //reorder definitions
-        TreeMap<String, Model> defs = new TreeMap<String, Model>(strcomp);
-        defs.putAll(swagger.getDefinitions());
-        swagger.setDefinitions(defs);
+        if (swagger.getDefinitions() != null) {
+            TreeMap<String, Model> defs = new TreeMap<String, Model>(strcomp);
+            defs.putAll(swagger.getDefinitions());
+            swagger.setDefinitions(defs);
+        }
 
     }
 
