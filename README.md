@@ -1,5 +1,5 @@
 # Swagger Maven Plugin [![Build Status](https://travis-ci.org/kongchen/swagger-maven-plugin.png)](https://travis-ci.org/kongchen/swagger-maven-plugin)
-This plugin can let your Swagger annotated project generate **Swagger JSON** and your **customized API documents** in build phase.
+This plugin can let your Swagger annotated project(JAX-RS or SpringMVC) generate **Swagger JSON** and your **customized API documents** in build phase.
 
 You must already known what is Swagger JSON, check the results of this plugin generates [here](https://github.com/kongchen/swagger-maven-example/tree/master/generated/swagger-ui) to see if it is what you want.
 
@@ -112,6 +112,7 @@ If you cannot wait to try out the plugin, here's a [sample project](https://gith
         <locations>sample.api</locations>
         <apiVersion>1.0</apiVersion>
         <basePath>http://example.com</basePath>
+        <supportSpringMvc>false</supportSpringMvc>
 <!--Required parameters END-->
 
 <!--Optional parameters BEGIN-->
@@ -128,8 +129,7 @@ If you cannot wait to try out the plugin, here's a [sample project](https://gith
         <overridingModels>/swagger-overriding-models.json</overridingModels>
         <swaggerInternalFilter>com.wordnik.swagger.config.DefaultSpecFilter</swaggerInternalFilter>
         <swaggerApiReader>com.wordnik.swagger.jaxrs.reader.DefaultJaxrsApiReader</swaggerApiReader>
-        <!--<swaggerApiReader>com.github.kongchen.swagger.docgen.spring.SpringMvcApiReader</swaggerApiReader>-->
-        <!-- ^^ If your project uses spring-mvc -->
+        <!-- ^^ Will be ignored when supportSpringMvc=true -->
         <!---General parameters END-->
 
         <!---Document generation parameters BEGIN-->
@@ -172,6 +172,7 @@ One ```apiSource``` can be considered as a set of APIs for one ```apiVersion``` 
 | `locations` | Java classes containing Swagger's annotation ```@Api```, or Java packages containing those classes can be configured here, using ```;``` as the delimiter. |
 | `apiVersion` | The version of the api source. |
 | `basePath` | The base path of this api source. |
+| `supportSpringMvc` | Set to true if your project is based on SpringMVC, and its default value is false which means this is a JAX-RS project. |
 
 ## Optional parameters
 ### General parameters
@@ -181,7 +182,7 @@ One ```apiSource``` can be considered as a set of APIs for one ```apiVersion``` 
 | `apiInfo` | Some information of the API document. |
 | `overridingModels` | The name of *overridingModels* file, see more details in sections below. |
 | `swaggerInternalFilter` | If not null, the value should be full name of class implementing `com.wordnik.swagger.core.filter.SpecFilter`. This allows you to filter both methods and parameters from generated api. |
-| `swaggerApiReader` | If not null, the value should be full name of class implementing `com.wordnik.swagger.reader.ClassReader`. This allows you flexibly implement/override the reader's implementation. Default is `com.wordnik.swagger.jaxrs.reader.DefaultJaxrsApiReader` |
+| `swaggerApiReader` | **Will be ignored when `supportSpringMvc` is true** If not null, the value should be full name of class implementing `com.wordnik.swagger.reader.ClassReader`. This allows you flexibly implement/override the reader's implementation. Default is `com.wordnik.swagger.jaxrs.reader.DefaultJaxrsApiReader` |
 
 
 The parameters of `apiInfo`:
