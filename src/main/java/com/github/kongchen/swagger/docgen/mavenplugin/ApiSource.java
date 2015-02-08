@@ -78,6 +78,9 @@ public class ApiSource {
 	
 	@Parameter
 	private String swaggerDocumentSource;
+    
+    @Parameter
+    private boolean supportSpringMvc;
 
     public Set<Class> getValidClasses() throws GenerateException {
         Set<Class> classes = new HashSet<Class>();
@@ -223,4 +226,12 @@ public class ApiSource {
   public void setSwaggerDocumentSource(String swaggerDocumentSource) {
     this.swaggerDocumentSource = swaggerDocumentSource;
   }
+
+    public boolean isSupportSpringMvc() {
+        return supportSpringMvc;
+    }
+
+    public void setSupportSpringMvc(boolean supportSpringMvc) {
+        this.supportSpringMvc = supportSpringMvc;
+    }
 }

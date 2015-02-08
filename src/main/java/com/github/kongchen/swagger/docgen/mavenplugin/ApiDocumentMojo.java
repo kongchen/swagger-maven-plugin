@@ -1,16 +1,13 @@
 package com.github.kongchen.swagger.docgen.mavenplugin;
 
 import java.io.File;
-import java.lang.reflect.Constructor;
 import java.util.List;
 
 import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
 import com.github.kongchen.swagger.docgen.GenerateException;
-
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -55,27 +52,12 @@ public class ApiDocumentMojo extends AbstractMojo {
             getLog().debug(apiSources.toString());
             for (ApiSource apiSource : apiSources) {
 
-                AbstractDocumentSource documentSource = null;
-                if( apiSource.getSwaggerDocumentSource() != null ) {
-                    try {
-                        Class<? extends AbstractDocumentSource> clazz = 
-                              (Class<? extends AbstractDocumentSource>) Class.forName(apiSource.getSwaggerDocumentSource())
-                              .asSubclass(AbstractDocumentSource.class);
-                        if( clazz != null ) {
-                            Constructor<? extends AbstractDocumentSource> constructor = 
-                                clazz.getConstructor(ApiSource.class, Log.class);
-                            documentSource = constructor.newInstance(apiSource, getLog());
-                        }
-                    } catch (ClassNotFoundException e) {
-                        getLog().error("DocumentSource not found: " + apiSource.getSwaggerDocumentSource(), e);
-                        throw e;
-                    } catch (ClassCastException e) {
-                        getLog().error(apiSource.getSwaggerDocumentSource() + " is not of type com.github.kongchen.swagger.docgen.AbstractDocumentSource", e);
-                        throw e;
-                    }
-                }
-                if( documentSource == null ) { // Default to MavenDocumentSource
-                    documentSource = new MavenDocumentSource(apiSource, getLog());
+                AbstractDocumentSource documentSource;
+
+                if(apiSource.isSupportSpringMvc()){
+                	documentSource = new SpringMavenDocumentSource(apiSource, getLog());
+                }else{
+                	documentSource = new MavenDocumentSource(apiSource, getLog());
                 }
                 
                 documentSource.loadOverridingModels();
