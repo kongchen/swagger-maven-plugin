@@ -8,7 +8,7 @@
                 <configuration>
                     <apiSources>
                         <apiSource>
-                            <locations>sample.api</locations>
+                            <locations>com.github.kongchen.jaxrs.api</locations>
                             <apiVersion>1.0</apiVersion>
                             <basePath>http://example.com</basePath>
                             <apiInfo>

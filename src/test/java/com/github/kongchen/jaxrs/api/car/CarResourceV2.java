@@ -1,6 +1,7 @@
-package sample.api.car;
+package com.github.kongchen.jaxrs.api.car;
 
 
+import com.github.kongchen.jaxrs.model.Customer;
 import com.wordnik.swagger.annotations.*;
 
 import javax.ws.rs.*;
@@ -19,7 +20,7 @@ public class CarResourceV2 {
     @GET
     @Path("/{carId}")
     @ApiOperation(value = "Find car by ID", notes = "To get car info by car's Id",
-            response = sample.model.Customer.class)
+            response = Customer.class)
     @ApiResponses(value = {@ApiResponse(code = 400, message = "Invalid ID supplied"),
             @ApiResponse(code = 404, message = "Car not found")})
     public Response getCarById(

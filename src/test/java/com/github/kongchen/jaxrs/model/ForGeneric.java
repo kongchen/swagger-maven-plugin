@@ -1,4 +1,4 @@
-package sample.model;
+package com.github.kongchen.jaxrs.model;
 
 import java.util.List;
 

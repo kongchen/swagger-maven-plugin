@@ -1,5 +1,7 @@
-package sample.api.garage;
+package com.github.kongchen.jaxrs.api.garage;
 
+import com.github.kongchen.jaxrs.model.Car;
+import com.github.kongchen.jaxrs.model.ForGeneric;
 import com.wordnik.swagger.annotations.*;
 
 import javax.ws.rs.*;
@@ -16,8 +18,8 @@ import javax.ws.rs.core.Response;
 public class GarageResourceV1 {
     @GET
     @Path("/{garageId}")
-    @ApiOperation(value = "Find garages by Id", notes = "To get garage info /* <sample.model.G1> */",
-               response = sample.model.ForGeneric.class, position = 2,
+    @ApiOperation(value = "Find garages by Id", notes = "To get garage info /* <com.github.kongchen.jaxrs.model.G1> */",
+               response = ForGeneric.class, position = 2,
     authorizations = @Authorization(value = "oauth2", scopes = {@AuthorizationScope(scope = "anything", description = "nothing")}))
     @ApiResponses(value = {@ApiResponse(code = 400, message = "Invalid ID supplied"),
             @ApiResponse(code = 404, message = "Garage not found")})
@@ -30,15 +32,15 @@ public class GarageResourceV1 {
 
     @POST
     @Path("/{garageId}")
-    @ApiOperation(value = "Repair a broken car in garage", notes = "To repair car /*<sample.model.G2,sample.model.v2.Car>*/",
-            response = sample.model.ForGeneric.class, position = 1,
+    @ApiOperation(value = "Repair a broken car in garage", notes = "To repair car /*<com.github.kongchen.jaxrs.model.G2,com.github.kongchen.jaxrs.model.v2.Car>*/",
+            response = ForGeneric.class, position = 1,
     authorizations = @Authorization(value = "oauth2", scopes = {@AuthorizationScope(scope = "anything", description = "nothing")}))
     @ApiResponses(value = {@ApiResponse(code = 400, message = "Invalid ID supplied"),
             @ApiResponse(code = 404, message = "Garage not found")})
     public Response getGarageById(
             @ApiParam(value = "ID of garage", allowableValues = "range[1,100]",
                     required = true) @PathParam("garageId") String garageId,
-            @ApiParam(value = "broken car1", required = true) sample.model.Car car)
+            @ApiParam(value = "broken car1", required = true) Car car)
             throws NotFoundException {
         return Response.noContent().build();
     }
