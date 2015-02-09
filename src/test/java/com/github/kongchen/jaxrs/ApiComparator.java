@@ -1,4 +1,4 @@
-package com.github.kongchen.smp.integration;
+package com.github.kongchen.jaxrs;
 
 import com.github.kongchen.swagger.docgen.mustache.MustacheApi;
 

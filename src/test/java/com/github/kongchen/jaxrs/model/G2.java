@@ -1,4 +1,4 @@
-package sample.model;
+package com.github.kongchen.jaxrs.model;
 
 /**
  * Created by chekong on 13-6-9.

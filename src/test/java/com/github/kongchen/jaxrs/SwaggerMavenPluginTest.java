@@ -1,4 +1,4 @@
-package com.github.kongchen.smp.integration;
+package com.github.kongchen.jaxrs;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -68,7 +68,7 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
     @Test
     public void testSortApis() throws Exception {
         List<ApiSource> apisources = (List<ApiSource>) getVariableValueFromObject(mojo, "apiSources");
-        apisources.get(0).setApiSortComparator("com.github.kongchen.smp.integration.ApiComparator");
+        apisources.get(0).setApiSortComparator("com.github.kongchen.jaxrs.ApiComparator");
         setVariableValueToObject(mojo, "apiSources", apisources);
         mojo.execute();
         FileInputStream testOutputIs = new FileInputStream(docOutput);

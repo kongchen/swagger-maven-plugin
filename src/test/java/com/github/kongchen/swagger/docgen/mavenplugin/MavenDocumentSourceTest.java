@@ -1,5 +1,7 @@
 package com.github.kongchen.swagger.docgen.mavenplugin;
 
+import com.github.kongchen.jaxrs.model.*;
+import com.github.kongchen.jaxrs.model.v2.Car;
 import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
 import com.github.kongchen.swagger.docgen.GenerateException;
 import com.github.kongchen.swagger.docgen.TestSwaggerApiReader;
@@ -7,17 +9,13 @@ import com.github.kongchen.swagger.docgen.TypeUtils;
 import com.github.kongchen.swagger.docgen.filter.TestSwaggerSpecFilter;
 import com.github.kongchen.swagger.docgen.mustache.*;
 import com.wordnik.swagger.annotations.ApiModelProperty;
-
 import org.apache.maven.plugin.logging.SystemStreamLog;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import sample.model.*;
-
 import javax.ws.rs.core.MediaType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -38,7 +36,7 @@ public class MavenDocumentSourceTest {
 		ApiSource apiSource = new ApiSource();
         apiSource.setApiVersion("1.0");
         apiSource.setBasePath("http://example.com");
-        apiSource.setLocations("sample.api.car;sample.api.garage");
+        apiSource.setLocations("com.github.kongchen.jaxrs.api.car;com.github.kongchen.jaxrs.api.garage");
         apiSource.setOutputPath("sample.html");
         apiSource.setOutputTemplate("https://github.com/kongchen/api-doc-template/blob/master/v1.1/html.mustache");
         apiSource.setSwaggerDirectory(null);
@@ -138,14 +136,14 @@ public class MavenDocumentSourceTest {
         });
         assertDataTypeInList(typeList, 0, Address.class);
         assertDataTypeInList(typeList, 1, BadIdResponse.class);
-        assertDataTypeInList(typeList, 2, sample.model.Car.class);
+        assertDataTypeInList(typeList, 2, com.github.kongchen.jaxrs.model.Car.class);
         assertDataTypeInList(typeList, 3, Customer.class);
         assertDataTypeInList(typeList, 4, Email.class);
         assertDataTypeInList(typeList, 5, ForGeneric.class);
         assertDataTypeInList(typeList, 6, G1.class);
         assertDataTypeInList(typeList, 7, G2.class);
         assertDataTypeInList(typeList, 8, MediaType.class);
-        assertDataTypeInList(typeList, 9, sample.model.v2.Car.class);
+        assertDataTypeInList(typeList, 9, com.github.kongchen.jaxrs.model.v2.Car.class);
     }
 
 	@Test
@@ -211,13 +209,13 @@ public class MavenDocumentSourceTest {
 		});
         assertDataTypeInList(typeList, 0, Address.class);
         assertDataTypeInList(typeList, 1, BadIdResponse.class);
-        assertDataTypeInList(typeList, 2, sample.model.Car.class);
+        assertDataTypeInList(typeList, 2, com.github.kongchen.jaxrs.model.Car.class);
         assertDataTypeInList(typeList, 3, Customer.class);
         assertDataTypeInList(typeList, 4, Email.class);
         assertDataTypeInList(typeList, 5, ForGeneric.class);
         assertDataTypeInList(typeList, 6, G1.class);
         assertDataTypeInList(typeList, 7, G2.class);
-        assertDataTypeInList(typeList, 8, sample.model.v2.Car.class);
+        assertDataTypeInList(typeList, 8, com.github.kongchen.jaxrs.model.v2.Car.class);
 	}
 
 	@Test

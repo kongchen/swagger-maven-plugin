@@ -25,7 +25,7 @@ There's a [sample here](https://github.com/kongchen/swagger-maven-example), fork
   <configuration>
     <apiSources>
       <apiSource>
-        <locations>sample.api</locations>
+        <locations>com.github.kongchen.smp.jaxrs.api</locations>
         <apiVersion>1.0</apiVersion>
         <basePath>http://example.com</basePath>
         <swaggerDirectory>generated/swagger-ui</swaggerDirectory>
@@ -61,7 +61,7 @@ There's a [sample here](https://github.com/kongchen/swagger-maven-example), fork
   <configuration>
     <apiSources>
       <apiSource>
-        <locations>sample.api</locations>
+        <locations>com.github.kongchen.smp.jaxrs.api</locations>
         <apiVersion>1.0</apiVersion>
         <basePath>http://example.com</basePath>
         <outputTemplate>/markdown.mustache</outputTemplate>
@@ -109,7 +109,7 @@ If you cannot wait to try out the plugin, here's a [sample project](https://gith
     <apiSources>
       <apiSource>
 <!--Required parameters BEGIN-->
-        <locations>sample.api</locations>
+        <locations>com.github.kongchen.smp.jaxrs.api</locations>
         <apiVersion>1.0</apiVersion>
         <basePath>http://example.com</basePath>
         <supportSpringMvc>false</supportSpringMvc>
