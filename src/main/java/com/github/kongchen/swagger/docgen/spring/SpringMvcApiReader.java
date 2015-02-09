@@ -210,10 +210,10 @@ public class SpringMvcApiReader {
         List<Parameter> parameters = new ArrayList<Parameter>();
         List<ResponseMessage> responseMessages = new ArrayList<ResponseMessage>();
 
-        apiOperation = (ApiOperation) m.getAnnotation(ApiOperation.class);
-        requestMapping = (RequestMapping) m.getAnnotation(RequestMapping.class);
-        responseBody = (ResponseBody) m.getAnnotation(ResponseBody.class);
-        responseStatus = (ResponseStatus) m.getAnnotation(ResponseStatus.class);
+        apiOperation = m.getAnnotation(ApiOperation.class);
+        requestMapping = m.getAnnotation(RequestMapping.class);
+        responseBody = m.getAnnotation(ResponseBody.class);
+        responseStatus = m.getAnnotation(ResponseStatus.class);
 
 
         if (m.getReturnType().equals(ResponseEntity.class)) {
@@ -221,7 +221,7 @@ public class SpringMvcApiReader {
         } else {
             clazz = m.getReturnType();
         }
-
+        Class<?> containerClz = clazz;
         clazz = getGenericSubtype(m.getReturnType(), m.getGenericReturnType());
 
         if (requestMapping.produces() != null) {
@@ -249,7 +249,11 @@ public class SpringMvcApiReader {
             responseMessages = generateResponseMessages(m);
         }
         if (responseBody != null) {
-            responseBodyName = (clazz.getSimpleName());
+            if (!containerClz.equals(clazz)) {
+                responseBodyName = containerClz.getSimpleName() + "[" + clazz.getSimpleName() + "]";
+            } else {
+                responseBodyName = (clazz.getSimpleName());
+            }
             addToModels(clazz);
         }
         if (requestMapping.method() != null && requestMapping.method().length != 0) {
