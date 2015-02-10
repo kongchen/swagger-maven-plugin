@@ -304,5 +304,3 @@ If you have package depedency conflict issues, such as jackson, joda-time, or [j
         </exclusions>
     </dependency>   
 ```
-
-[Developed with ![IntelliJ IDEA](https://www.jetbrains.com/idea/docs/logo_intellij_idea.png)](https://www.jetbrains.com/idea)
