@@ -86,11 +86,11 @@
             <td>
                 {{#ifeq type "array"}}
                 {{#items.$ref}}
-                    {{type}}[<a href="#/definitions/{{items.$ref}}">{{items.$ref}}</a>]
+                    {{type}}[<a href="{{items.$ref}}">{{basename items.$ref}}</a>]
                 {{/items.$ref}}
                 {{^items.$ref}}{{type}}[{{items.type}}]{{/items.$ref}}
                 {{else}}
-                    {{#$ref}}<a href="#/definitions/{{$ref}}">{{$ref}}</a>{{/$ref}}
+                    {{#$ref}}<a href="{{$ref}}">{{basename $ref}}</a>{{/$ref}}
                     {{^$ref}}{{type}}{{#format}} ({{format}}){{/format}}{{/$ref}}
                 {{/ifeq}}
             </td>
