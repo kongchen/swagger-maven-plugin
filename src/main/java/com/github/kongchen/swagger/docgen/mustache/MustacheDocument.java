@@ -165,7 +165,7 @@ public class MustacheDocument implements Comparable<MustacheDocument> {
             }
 
             private int hashValue(MustacheParameterSet parameterSet) {
-                if (parameterSet == null || parameterSet.getParamType() == null) {
+                if (parameterSet == null || parameterSet.getParamType() == null || parameterSet.getParamType().trim().length() == 0) {
                     return 0;
                 } else {
                     return hashValueMap.get(parameterSet.getParamType());
