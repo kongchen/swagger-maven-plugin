@@ -99,6 +99,7 @@ Api Version: {{apiVersion}}
 
 <table border="1">
     <tr>
+        <name>name</name>
         <th>type</th>
         <th>required</th>
         <th>access</th>
@@ -107,6 +108,7 @@ Api Version: {{apiVersion}}
     </tr>
     {{#items}}
     <tr>
+        <td>{{name}}</td>
         <td>{{#linkType}}<a href="#{{linkType}}">{{type}}</a>{{/linkType}}{{^linkType}}{{type}}{{/linkType}}</td>
         <td>{{#required}}required{{/required}}{{^required}}optional{{/required}}</td>
         <td>{{#access}}{{{access}}}{{/access}}{{^access}}-{{/access}}</td>
