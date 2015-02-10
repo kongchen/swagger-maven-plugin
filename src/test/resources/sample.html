@@ -365,6 +365,7 @@ http://example.com/garage.json/{garageId}
 
 <table border="1">
     <tr>
+        <name>name</name>
         <th>type</th>
         <th>required</th>
         <th>access</th>
@@ -372,6 +373,7 @@ http://example.com/garage.json/{garageId}
         <th>notes</th>
     </tr>
     <tr>
+        <td>location</td>
         <td>string</td>
         <td>optional</td>
         <td>-</td>
@@ -379,6 +381,7 @@ http://example.com/garage.json/{garageId}
         <td>The location</td>
     </tr>
     <tr>
+        <td>id</td>
         <td>int</td>
         <td>optional</td>
         <td>-</td>
@@ -386,6 +389,7 @@ http://example.com/garage.json/{garageId}
         <td>Address' indentifier</td>
     </tr>
     <tr>
+        <td>zip</td>
         <td>long</td>
         <td>optional</td>
         <td>-</td>
@@ -400,6 +404,7 @@ http://example.com/garage.json/{garageId}
 
 <table border="1">
     <tr>
+        <name>name</name>
         <th>type</th>
         <th>required</th>
         <th>access</th>
@@ -407,6 +412,7 @@ http://example.com/garage.json/{garageId}
         <th>notes</th>
     </tr>
     <tr>
+        <td>description</td>
         <td>string</td>
         <td>optional</td>
         <td>-</td>
@@ -414,6 +420,7 @@ http://example.com/garage.json/{garageId}
         <td>-</td>
     </tr>
     <tr>
+        <td>badPosition</td>
         <td>int</td>
         <td>optional</td>
         <td>-</td>
@@ -428,6 +435,7 @@ http://example.com/garage.json/{garageId}
 
 <table border="1">
     <tr>
+        <name>name</name>
         <th>type</th>
         <th>required</th>
         <th>access</th>
@@ -435,6 +443,7 @@ http://example.com/garage.json/{garageId}
         <th>notes</th>
     </tr>
     <tr>
+        <td>price</td>
         <td>float</td>
         <td>required</td>
         <td>-</td>
@@ -442,6 +451,7 @@ http://example.com/garage.json/{garageId}
         <td>The price of the car</td>
     </tr>
     <tr>
+        <td>firstRegistration</td>
         <td>Date</td>
         <td>optional</td>
         <td>-</td>
@@ -449,6 +459,7 @@ http://example.com/garage.json/{garageId}
         <td>First registration</td>
     </tr>
     <tr>
+        <td>mt</td>
         <td>boolean</td>
         <td>required</td>
         <td>-</td>
@@ -457,6 +468,7 @@ http://example.com/garage.json/{garageId}
         <td>Indicate the car is MT or AT</td>
     </tr>
     <tr>
+        <td>brand</td>
         <td>string</td>
         <td>required</td>
         <td>-</td>
@@ -465,6 +477,7 @@ http://example.com/garage.json/{garageId}
         <td>The brand of the car</td>
     </tr>
     <tr>
+        <td>engine</td>
         <td>string</td>
         <td>required</td>
         <td>-</td>
@@ -472,6 +485,7 @@ http://example.com/garage.json/{garageId}
         <td>The engine parameter of the car</td>
     </tr>
     <tr>
+        <td>repairHistory</td>
         <td>Array[string]</td>
         <td>optional</td>
         <td>-</td>
@@ -479,6 +493,7 @@ http://example.com/garage.json/{garageId}
         <td>Repair history</td>
     </tr>
     <tr>
+        <td>notes</td>
         <td>string</td>
         <td>optional</td>
         <td>-</td>
@@ -486,6 +501,7 @@ http://example.com/garage.json/{garageId}
         <td>Any other comments for the car</td>
     </tr>
     <tr>
+        <td>id</td>
         <td>int</td>
         <td>required</td>
         <td>-</td>
@@ -500,6 +516,7 @@ http://example.com/garage.json/{garageId}
 
 <table border="1">
     <tr>
+        <name>name</name>
         <th>type</th>
         <th>required</th>
         <th>access</th>
@@ -507,6 +524,7 @@ http://example.com/garage.json/{garageId}
         <th>notes</th>
     </tr>
     <tr>
+        <td>address</td>
         <td><a href="#Address">Address</a></td>
         <td>optional</td>
         <td>-</td>
@@ -514,6 +532,7 @@ http://example.com/garage.json/{garageId}
         <td>Customer's address</td>
     </tr>
     <tr>
+        <td>name</td>
         <td>string</td>
         <td>required</td>
         <td>-</td>
@@ -521,6 +540,7 @@ http://example.com/garage.json/{garageId}
         <td>Customer's name</td>
     </tr>
     <tr>
+        <td>email</td>
         <td><a href="#Email">Array[Email]</a></td>
         <td>optional</td>
         <td>-</td>
@@ -528,6 +548,7 @@ http://example.com/garage.json/{garageId}
         <td>The list of customer emails</td>
     </tr>
     <tr>
+        <td>surname</td>
         <td>string</td>
         <td>required</td>
         <td>-</td>
@@ -535,6 +556,7 @@ http://example.com/garage.json/{garageId}
         <td>Customer's surname</td>
     </tr>
     <tr>
+        <td>id</td>
         <td>int</td>
         <td>required</td>
         <td>-</td>
@@ -549,6 +571,7 @@ http://example.com/garage.json/{garageId}
 
 <table border="1">
     <tr>
+        <name>name</name>
         <th>type</th>
         <th>required</th>
         <th>access</th>
@@ -556,6 +579,7 @@ http://example.com/garage.json/{garageId}
         <th>notes</th>
     </tr>
     <tr>
+        <td>address</td>
         <td>string</td>
         <td>optional</td>
         <td>-</td>
@@ -563,6 +587,7 @@ http://example.com/garage.json/{garageId}
         <td>Email address</td>
     </tr>
     <tr>
+        <td>default</td>
         <td>boolean</td>
         <td>optional</td>
         <td>-</td>
@@ -570,6 +595,7 @@ http://example.com/garage.json/{garageId}
         <td>The flag shows if this email is a default email</td>
     </tr>
     <tr>
+        <td>id</td>
         <td>int</td>
         <td>optional</td>
         <td>-</td>
@@ -584,6 +610,7 @@ http://example.com/garage.json/{garageId}
 
 <table border="1">
     <tr>
+        <name>name</name>
         <th>type</th>
         <th>required</th>
         <th>access</th>
@@ -591,6 +618,7 @@ http://example.com/garage.json/{garageId}
         <th>notes</th>
     </tr>
     <tr>
+        <td>value</td>
         <td>string</td>
         <td>optional</td>
         <td>-</td>
@@ -598,6 +626,7 @@ http://example.com/garage.json/{garageId}
         <td>-</td>
     </tr>
     <tr>
+        <td>elements</td>
         <td><a href="#T">Array[T]</a></td>
         <td>optional</td>
         <td>-</td>
@@ -612,6 +641,7 @@ http://example.com/garage.json/{garageId}
 
 <table border="1">
     <tr>
+        <name>name</name>
         <th>type</th>
         <th>required</th>
         <th>access</th>
@@ -619,6 +649,7 @@ http://example.com/garage.json/{garageId}
         <th>notes</th>
     </tr>
     <tr>
+        <td>a1</td>
         <td>int</td>
         <td>optional</td>
         <td>-</td>
@@ -626,6 +657,7 @@ http://example.com/garage.json/{garageId}
         <td>-</td>
     </tr>
     <tr>
+        <td>g1</td>
         <td>string</td>
         <td>optional</td>
         <td>-</td>
@@ -640,6 +672,7 @@ http://example.com/garage.json/{garageId}
 
 <table border="1">
     <tr>
+        <name>name</name>
         <th>type</th>
         <th>required</th>
         <th>access</th>
@@ -647,6 +680,7 @@ http://example.com/garage.json/{garageId}
         <th>notes</th>
     </tr>
     <tr>
+        <td>a2</td>
         <td>string</td>
         <td>optional</td>
         <td>-</td>
@@ -661,6 +695,7 @@ http://example.com/garage.json/{garageId}
 
 <table border="1">
     <tr>
+        <name>name</name>
         <th>type</th>
         <th>required</th>
         <th>access</th>
@@ -668,6 +703,7 @@ http://example.com/garage.json/{garageId}
         <th>notes</th>
     </tr>
     <tr>
+        <td>value</td>
         <td>string</td>
         <td>required</td>
         <td>-</td>
@@ -682,6 +718,7 @@ http://example.com/garage.json/{garageId}
 
 <table border="1">
     <tr>
+        <name>name</name>
         <th>type</th>
         <th>required</th>
         <th>access</th>
@@ -689,6 +726,7 @@ http://example.com/garage.json/{garageId}
         <th>notes</th>
     </tr>
     <tr>
+        <td>mt</td>
         <td>boolean</td>
         <td>required</td>
         <td>-</td>
@@ -696,6 +734,7 @@ http://example.com/garage.json/{garageId}
         <td>Indicate the car is MT or AT</td>
     </tr>
     <tr>
+        <td>brand</td>
         <td>string</td>
         <td>required</td>
         <td>-</td>
@@ -703,6 +742,7 @@ http://example.com/garage.json/{garageId}
         <td>The brand of the car</td>
     </tr>
     <tr>
+        <td>engine</td>
         <td>string</td>
         <td>required</td>
         <td>-</td>
@@ -710,6 +750,7 @@ http://example.com/garage.json/{garageId}
         <td>The engine parameter of the car</td>
     </tr>
     <tr>
+        <td>notes</td>
         <td>string</td>
         <td>optional</td>
         <td>-</td>
@@ -717,6 +758,7 @@ http://example.com/garage.json/{garageId}
         <td>Any other comments for the car</td>
     </tr>
     <tr>
+        <td>id</td>
         <td>int</td>
         <td>required</td>
         <td>-</td>
