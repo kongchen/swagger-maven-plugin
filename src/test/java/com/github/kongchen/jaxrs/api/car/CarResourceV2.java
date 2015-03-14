@@ -23,10 +23,10 @@ public class CarResourceV2 {
             response = Customer.class)
     @ApiResponses(value = {@ApiResponse(code = 400, message = "Invalid ID supplied"),
             @ApiResponse(code = 404, message = "Car not found")})
-    public Response getCarById(
+    public Customer getCarById(
             @ApiParam(value = "ID of car that needs to be fetched", allowableValues = "range[10,20]",
                     required = true) @PathParam("carId") String carId)
             throws NotFoundException {
-        return Response.noContent().build();
+        return new Customer();
     }
 }

@@ -2,6 +2,8 @@ package com.github.kongchen.jaxrs.api.garage;
 
 import com.github.kongchen.jaxrs.model.Car;
 import com.github.kongchen.jaxrs.model.ForGeneric;
+import com.github.kongchen.jaxrs.model.G1;
+import com.github.kongchen.jaxrs.model.G2;
 import com.wordnik.swagger.annotations.*;
 
 import javax.ws.rs.*;
@@ -23,11 +25,11 @@ public class GarageResourceV1 {
     authorizations = @Authorization(value = "oauth2", scopes = {@AuthorizationScope(scope = "anything", description = "nothing")}))
     @ApiResponses(value = {@ApiResponse(code = 400, message = "Invalid ID supplied"),
             @ApiResponse(code = 404, message = "Garage not found")})
-    public Response getGarageById(
+    public ForGeneric<G1> getGarageById(
             @ApiParam(value = "ID of garage that needs to be fetched", allowableValues = "range[1,100]",
                     required = true) @PathParam("garageId") String garageId)
             throws NotFoundException {
-        return Response.noContent().build();
+        return new ForGeneric<G1>();
     }
 
     @POST
@@ -37,11 +39,11 @@ public class GarageResourceV1 {
     authorizations = @Authorization(value = "oauth2", scopes = {@AuthorizationScope(scope = "anything", description = "nothing")}))
     @ApiResponses(value = {@ApiResponse(code = 400, message = "Invalid ID supplied"),
             @ApiResponse(code = 404, message = "Garage not found")})
-    public Response getGarageById(
+    public ForGeneric<G2> getGarageById(
             @ApiParam(value = "ID of garage", allowableValues = "range[1,100]",
                     required = true) @PathParam("garageId") String garageId,
             @ApiParam(value = "broken car1", required = true) Car car)
             throws NotFoundException {
-        return Response.noContent().build();
+        return new ForGeneric<G2>();
     }
 }
