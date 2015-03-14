@@ -7,6 +7,8 @@ import com.github.kongchen.jaxrs.model.BadIdResponse;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -25,7 +27,7 @@ public class CarResourceV1 {
     @ApiResponses(value = {@ApiResponse(code = 400, message = "Invalid ID supplied", response = BadIdResponse.class),
             @ApiResponse(code = 404, message = "Car not found")})
     @ApiImplicitParams(value = {@ApiImplicitParam(name = "ETag", paramType = "response_header", value = "version", dataType = "string")})
-    public Response getCarById(
+    public Car getCarById(
             @ApiParam(value = "ID of car that needs to be fetched", allowableValues = "range[1,10]",
                     required = true) @PathParam("carId") String carId,
             @ApiParam(allowableValues = "application/json, application/*")
@@ -33,7 +35,7 @@ public class CarResourceV1 {
             @ApiParam(name = "e")
             @QueryParam("e") String e)
             throws NotFoundException {
-        return Response.noContent().build();
+        return new Car();
     }
 
     @GET
@@ -42,13 +44,13 @@ public class CarResourceV1 {
             authorizations =
             @Authorization(value = "oauth2", scopes = {@AuthorizationScope(scope = "car1", description = "car1 des")}))
     @ApiResponses(value = {@ApiResponse(code = 400, message = "Bad query")})
-    public Response getCars(
+    public List<Car> getCars(
             @ApiParam(allowableValues = "application/json, application/*")
             @HeaderParam("Accept") MediaType accept,
             @ApiParam(name = "query")
             @QueryParam("q") String q)
             throws NotFoundException {
-        return Response.noContent().build();
+        return new ArrayList<Car>();
     }
 
     @DELETE

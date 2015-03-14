@@ -21,6 +21,9 @@ public class Customer implements Entity<Integer>{
 
     private List<Email> emails;
 
+    @ApiModelProperty(required = false, value = "For test only")
+    private JAnimal animal;
+
     /**
      * {@inheritDoc}
      */
@@ -77,6 +80,14 @@ public class Customer implements Entity<Integer>{
 
     public void setAddress(Address address) {
         this.address = address;
+    }
+
+    public JAnimal getAnimal() {
+        return animal;
+    }
+
+    public void setAnimal(JAnimal animal) {
+        this.animal = animal;
     }
 }
 
