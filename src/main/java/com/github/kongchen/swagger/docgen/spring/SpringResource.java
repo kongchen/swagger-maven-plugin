@@ -38,7 +38,7 @@ public class SpringResource {
 		}
 		this.controllerMapping = req.value()[0];
 
-		String tempMapping=new String(this.controllerMapping);
+		String tempMapping= this.controllerMapping;
 		if(tempMapping.startsWith("/")){
 			tempMapping = tempMapping.substring(1);
 		}

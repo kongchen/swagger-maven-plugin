@@ -1,4 +1,4 @@
-package com.github.kongchen.jaxrs.model;
+package com.github.kongchen.model;
 
 import com.wordnik.swagger.annotations.ApiModelProperty;
 

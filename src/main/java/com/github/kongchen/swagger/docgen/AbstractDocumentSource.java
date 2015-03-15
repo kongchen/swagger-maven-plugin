@@ -64,16 +64,16 @@ public abstract class AbstractDocumentSource {
 	private String basePath = "";
 
 	private String apiVersion;
-    
+
     private ApiSourceInfo apiInfo;
 
-	private ObjectMapper mapper = new ObjectMapper();
+	protected ObjectMapper mapper = new ObjectMapper();
 
 	private OutputTemplate outputTemplate;
 
 	private boolean useOutputFlatStructure;
 
-	private String overridingModels;
+	protected String overridingModels;
 
 	private Comparator<MustacheApi> apiSortComparator;
 
@@ -288,7 +288,7 @@ public abstract class AbstractDocumentSource {
 		String json = JsonSerializer.asJson(resourceListing);
 		writeInDirectory(dir, json, resourcePathToFilename(null), basePath);
 	}
-	
+
 	private void writeInDirectory( File dir, String json, String filename, String basePath ) throws GenerateException {
 	  OutputStream out = null;
 	  try {
@@ -305,10 +305,10 @@ public abstract class AbstractDocumentSource {
         IOUtils.closeQuietly(out);
       }
 	}
-	
+
 	/**
 	 * Serializes json tree and writes to stream.
-	 * 
+	 *
 	 * @param out OutputStream of where to write output to
 	 * @param tree the jsonNode representation of the swagger spec
 	 * @throws IOException if there is a problem writing to output stream

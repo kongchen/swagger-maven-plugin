@@ -47,9 +47,6 @@ public class MustacheDocument implements Comparable<MustacheDocument> {
     private Set<String> responseTypes = new LinkedHashSet<String>();
 
     @JsonIgnore
-    private int apiIndex = 1;
-
-    @JsonIgnore
     private static final Map<String, Integer> hashValueMap = new HashMap<String, Integer>();
 
     static {
