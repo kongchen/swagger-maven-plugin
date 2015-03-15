@@ -137,7 +137,7 @@ public class SpringMvcApiReader {
                 operations.add(generateOperation(m));
             }
             //reorder operations
-            operations.sort(new Comparator<Operation>() {
+            Collections.sort(operations, new Comparator<Operation>() {
                 @Override
                 public int compare(Operation o1, Operation o2) {
                     return o1.position() - o2.position();
