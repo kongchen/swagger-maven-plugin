@@ -71,8 +71,7 @@ public class ApiDocumentMojo extends AbstractMojo {
 						}
 					}
 				}
-				if (apiSource.getOutputTemplate()!=null)
-				{
+				if (apiSource.getOutputTemplate()!=null) {
 					documentSource.toDocuments();
 				}
                 documentSource.toSwaggerDocuments(

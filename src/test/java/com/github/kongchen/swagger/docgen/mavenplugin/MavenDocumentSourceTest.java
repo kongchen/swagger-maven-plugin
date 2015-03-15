@@ -1,7 +1,6 @@
 package com.github.kongchen.swagger.docgen.mavenplugin;
 
-import com.github.kongchen.jaxrs.model.*;
-import com.github.kongchen.jaxrs.model.v2.Car;
+import com.github.kongchen.model.*;
 import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
 import com.github.kongchen.swagger.docgen.GenerateException;
 import com.github.kongchen.swagger.docgen.TestSwaggerApiReader;
@@ -121,7 +120,7 @@ public class MavenDocumentSourceTest {
         }
 
 
-        assertEquals(10, outputTemplate.getDataTypes().size());
+        assertEquals(12, outputTemplate.getDataTypes().size());
         List<MustacheDataType> typeList = new LinkedList<MustacheDataType>();
         for (MustacheDataType type : outputTemplate.getDataTypes()) {
             typeList.add(type);
@@ -136,14 +135,16 @@ public class MavenDocumentSourceTest {
         });
         assertDataTypeInList(typeList, 0, Address.class);
         assertDataTypeInList(typeList, 1, BadIdResponse.class);
-        assertDataTypeInList(typeList, 2, com.github.kongchen.jaxrs.model.Car.class);
+        assertDataTypeInList(typeList, 2, com.github.kongchen.model.Car.class);
         assertDataTypeInList(typeList, 3, Customer.class);
         assertDataTypeInList(typeList, 4, Email.class);
         assertDataTypeInList(typeList, 5, ForGeneric.class);
-        assertDataTypeInList(typeList, 6, G1.class);
-        assertDataTypeInList(typeList, 7, G2.class);
-        assertDataTypeInList(typeList, 8, MediaType.class);
-        assertDataTypeInList(typeList, 9, com.github.kongchen.jaxrs.model.v2.Car.class);
+        assertDataTypeInList(typeList, 6, ForGeneric2.class);
+        assertDataTypeInList(typeList, 7, G1.class);
+        assertDataTypeInList(typeList, 8, G2.class);
+        assertDataTypeInList(typeList, 9, JAnimal.class);
+        assertDataTypeInList(typeList, 10, MediaType.class);
+        assertDataTypeInList(typeList, 11, com.github.kongchen.model.v2.Car.class);
     }
 
 	@Test
@@ -194,28 +195,30 @@ public class MavenDocumentSourceTest {
 		}
 
 
-		assertEquals(9, outputTemplate.getDataTypes().size());
+		assertEquals(11, outputTemplate.getDataTypes().size());
 		List<MustacheDataType> typeList = new LinkedList<MustacheDataType>();
 		for (MustacheDataType type : outputTemplate.getDataTypes()) {
 			typeList.add(type);
 		}
 		Collections.sort(typeList, new Comparator<MustacheDataType>() {
 
-			@Override
-			public int compare(MustacheDataType o1, MustacheDataType o2) {
+            @Override
+            public int compare(MustacheDataType o1, MustacheDataType o2) {
 
-				return o1.getName().compareTo(o2.getName());
-			}
-		});
+                return o1.getName().compareTo(o2.getName());
+            }
+        });
         assertDataTypeInList(typeList, 0, Address.class);
         assertDataTypeInList(typeList, 1, BadIdResponse.class);
-        assertDataTypeInList(typeList, 2, com.github.kongchen.jaxrs.model.Car.class);
+        assertDataTypeInList(typeList, 2, com.github.kongchen.model.Car.class);
         assertDataTypeInList(typeList, 3, Customer.class);
         assertDataTypeInList(typeList, 4, Email.class);
         assertDataTypeInList(typeList, 5, ForGeneric.class);
-        assertDataTypeInList(typeList, 6, G1.class);
-        assertDataTypeInList(typeList, 7, G2.class);
-        assertDataTypeInList(typeList, 8, com.github.kongchen.jaxrs.model.v2.Car.class);
+        assertDataTypeInList(typeList, 6, ForGeneric2.class);
+        assertDataTypeInList(typeList, 7, G1.class);
+        assertDataTypeInList(typeList, 8, G2.class);
+        assertDataTypeInList(typeList, 9, JAnimal.class);
+        assertDataTypeInList(typeList, 10, com.github.kongchen.model.v2.Car.class);
 	}
 
 	@Test

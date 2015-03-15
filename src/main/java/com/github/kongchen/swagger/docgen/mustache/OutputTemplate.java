@@ -122,6 +122,13 @@ public class OutputTemplate {
 
         if (this.apiComparator != null) {
             Collections.sort(apiList, this.apiComparator);
+        } else {
+            apiList.sort(new Comparator<MustacheApi>() {
+                @Override
+                public int compare(MustacheApi o1, MustacheApi o2) {
+                    return o1.getPath().compareTo(o2.getPath());
+                }
+            });
         }
 
         mustacheDocument.setApis(apiList);

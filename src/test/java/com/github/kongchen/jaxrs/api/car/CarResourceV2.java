@@ -1,19 +1,18 @@
 package com.github.kongchen.jaxrs.api.car;
 
 
-import com.github.kongchen.jaxrs.model.Customer;
+import com.github.kongchen.model.Customer;
 import com.wordnik.swagger.annotations.*;
 
 import javax.ws.rs.*;
-import javax.ws.rs.core.Response;
 
 /**
  * Created with IntelliJ IDEA.
  * User: kongchen
  * Date: 5/13/13
  */
-@Path("/v2/car.json")
-@Api(value = "/v2/car", description = "Operations about cars", position = 2,
+@Path("/v2/car")
+@Api(value = "/v2/car", description = "Operations about cars v2", position = 2,
 authorizations = @Authorization(value = "oauth2", scopes = {@AuthorizationScope(scope = "car2", description = "nothing")}))
 @Produces( {"application/json"})
 public class CarResourceV2 {

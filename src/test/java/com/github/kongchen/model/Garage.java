@@ -1,4 +1,4 @@
-package com.github.kongchen.jaxrs.model;
+package com.github.kongchen.model;
 
 import com.wordnik.swagger.annotations.ApiModelProperty;
 
@@ -27,13 +27,13 @@ public class Garage {
     private String telephone;
 
     @ApiModelProperty(required = false, value = "Holding cars")
-    private List<com.github.kongchen.jaxrs.model.v2.Car> holdingCars;
+    private List<com.github.kongchen.model.v2.Car> holdingCars;
 
-    public List<com.github.kongchen.jaxrs.model.v2.Car> getHoldingCars() {
+    public List<com.github.kongchen.model.v2.Car> getHoldingCars() {
         return holdingCars;
     }
 
-    public void setHoldingCars(List<com.github.kongchen.jaxrs.model.v2.Car> holdingCars) {
+    public void setHoldingCars(List<com.github.kongchen.model.v2.Car> holdingCars) {
         this.holdingCars = holdingCars;
     }
 

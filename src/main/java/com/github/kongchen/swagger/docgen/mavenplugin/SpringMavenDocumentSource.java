@@ -1,30 +1,26 @@
 package com.github.kongchen.swagger.docgen.mavenplugin;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
 import com.github.kongchen.swagger.docgen.GenerateException;
 import com.github.kongchen.swagger.docgen.LogAdapter;
 import com.github.kongchen.swagger.docgen.spring.*;
 import com.github.kongchen.swagger.docgen.util.Utils;
 import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.config.FilterFactory;
-import com.wordnik.swagger.config.FilterFactory$;
 import com.wordnik.swagger.config.SwaggerConfig;
+import com.wordnik.swagger.converter.OverrideConverter;
 import com.wordnik.swagger.core.SwaggerSpec;
 import com.wordnik.swagger.core.filter.SpecFilter;
-import com.wordnik.swagger.core.filter.SwaggerSpecFilter;
-import com.wordnik.swagger.jaxrs.reader.DefaultJaxrsApiReader;
 import com.wordnik.swagger.model.*;
-import com.wordnik.swagger.reader.ClassReader;
 
 import org.apache.maven.plugin.logging.Log;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import scala.None;
-import scala.Option;
 import scala.collection.JavaConversions;
-import scala.collection.immutable.Map$;
-import scala.collection.mutable.Buffer;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,6 +41,12 @@ public class SpringMavenDocumentSource extends AbstractDocumentSource {
 
     private final SpecFilter specFilter = new SpecFilter();
 
+    public OverrideConverter getOverriderConverter() {
+        return overriderConverter;
+    }
+
+    private OverrideConverter overriderConverter;
+
     public SpringMavenDocumentSource(ApiSource apiSource, Log log) {
         super(new LogAdapter(log), apiSource.getOutputPath(), apiSource.getOutputTemplate(),
                 apiSource.getSwaggerDirectory(), apiSource.mustacheFileRoot, apiSource.isUseOutputFlatStructure(),
@@ -54,6 +56,36 @@ public class SpringMavenDocumentSource extends AbstractDocumentSource {
         setBasePath(apiSource.getBasePath());
         setApiInfo(apiSource.getApiInfo());
         this.apiSource = apiSource;
+    }
+
+    @Override
+    public void loadOverridingModels() throws GenerateException {
+        if (overridingModels != null) {
+            try {
+                JsonNode readTree = mapper.readTree(this.getClass()
+                        .getResourceAsStream(overridingModels));
+                OverrideConverter converter = new OverrideConverter();
+
+                for (JsonNode jsonNode : readTree) {
+                    JsonNode classNameNode = jsonNode.get("className");
+                    String className = classNameNode.asText();
+                    JsonNode jsonStringNode = jsonNode.get("jsonString");
+                    String jsonString = jsonStringNode.asText();
+
+                    converter.add(className, jsonString);
+                }
+                this.overriderConverter = converter;
+            } catch (JsonProcessingException e) {
+                throw new GenerateException(
+                        String.format(
+                                "Swagger-overridingModels[%s] must be a valid JSON file!",
+                                overridingModels), e);
+            } catch (IOException e) {
+                throw new GenerateException(String.format(
+                        "Swagger-overridingModels[%s] not found!",
+                        overridingModels), e);
+            }
+        }
     }
 
     @Override
@@ -70,10 +102,10 @@ public class SpringMavenDocumentSource extends AbstractDocumentSource {
         //get all methods from each controller & find their request mapping
         //create map - resource string (after first slash) as key, new SpringResource as value
         for (Class<?> c : apiSource.getValidClasses()) {
-            RequestMapping requestMapping = (RequestMapping) c.getAnnotation(RequestMapping.class);
+            RequestMapping requestMapping = c.getAnnotation(RequestMapping.class);
             String description = "";
             if (c.isAnnotationPresent(Api.class)) {
-                description = ((Api) c.getAnnotation(Api.class)).value();
+                description = c.getAnnotation(Api.class).value();
             }
             if (requestMapping != null && requestMapping.value().length != 0) {
                 //This try/catch block is to stop a bamboo build from failing due to NoClassDefFoundError
@@ -147,6 +179,7 @@ public class SpringMavenDocumentSource extends AbstractDocumentSource {
                 return o1.position() - o2.position();
             }
         });
+
         serviceDocument = new ResourceListing(swaggerConfig.apiVersion(), swaggerConfig.swaggerVersion(),
                 scala.collection.immutable.List.fromIterator(JavaConversions.asScalaIterator(apiListingReferences.iterator())),
                 scala.collection.immutable.List.fromIterator(JavaConversions.asScalaIterator(authorizationTypes.iterator())),
@@ -161,7 +194,7 @@ public class SpringMavenDocumentSource extends AbstractDocumentSource {
     }
 
     private ApiListing getDocFromSpringResource(SpringResource res, SwaggerConfig swaggerConfig) throws Exception {
-        SpringMvcApiReader reader = new SpringMvcApiReader(apiSource);
+        SpringMvcApiReader reader = new SpringMvcApiReader(apiSource, this.overriderConverter);
         ApiListing apiListing = reader.read(res, swaggerConfig);
         if (None.canEqual(apiListing)) return null;
         return apiListing;
