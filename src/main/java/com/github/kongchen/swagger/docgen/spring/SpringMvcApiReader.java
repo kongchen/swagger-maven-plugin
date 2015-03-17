@@ -387,7 +387,7 @@ public class SpringMvcApiReader {
         } else {
             ResponseStatus responseStatus = m.getAnnotation(ResponseStatus.class);
 
-            responseMessages.add(new ResponseMessage(responseStatus.value().value(), responseStatus.value().name(), DEFAULT_OPTION));
+            responseMessages.add(new ResponseMessage(responseStatus.value().value(), responseStatus.reason(), DEFAULT_OPTION));
         }
         return responseMessages;
     }
