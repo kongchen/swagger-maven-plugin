@@ -59,7 +59,7 @@ public class Utils {
     }
 
     public static void sortSwagger(Swagger swagger) throws GenerateException {
-        if (swagger == null) return;
+        if (swagger == null || swagger.getPaths() == null) return;
         Comparator<String> strcomp = new Comparator<String>() {
             @Override
             public int compare(String o1, String o2) {
