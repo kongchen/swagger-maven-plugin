@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class CarControllerV2 {
     @RequestMapping(value = "/{carId}", method = RequestMethod.GET)
     @ApiOperation(value = "Find car by ID", notes = "To get car info by car's Id",
-            response = Customer.class)
+            response = Customer.class, authorizations =  @Authorization(value = "oauth2", scopes = {@AuthorizationScope(scope = "car2", description = "car2 does get")}))
     @ApiResponses(value = {@ApiResponse(code = 400, message = "Invalid ID supplied"),
             @ApiResponse(code = 404, message = "Car not found")})
     @ResponseBody
