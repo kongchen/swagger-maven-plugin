@@ -147,6 +147,7 @@ public class MavenDocumentSourceTest {
         assertDataTypeInList(typeList, 11, com.github.kongchen.model.v2.Car.class);
     }
 
+
 	@Test
 	public void testSwaggerFilter() throws Exception, GenerateException {
 		ApiSource apiSource = prepare();
