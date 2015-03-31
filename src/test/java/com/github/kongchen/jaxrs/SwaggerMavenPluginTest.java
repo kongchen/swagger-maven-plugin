@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.kongchen.swagger.docgen.mavenplugin.ApiDocumentMojo;
 import com.github.kongchen.swagger.docgen.mavenplugin.ApiSource;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
@@ -14,7 +15,6 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Created by chekong on 8/15/14.
+ * @author chekong
  */
 public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
 
@@ -48,49 +48,39 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
 
     @Test
     public void testGeneratedDoc() throws Exception {
-
         mojo.execute();
-        FileInputStream testOutputIs = new FileInputStream(docOutput);
-        InputStream expectIs = this.getClass().getResourceAsStream("/sample.html");
-        int count = 0;
-        while (true) {
-            count++;
-            int expect = expectIs.read();
-            int actual = testOutputIs.read();
 
-            Assert.assertEquals(expect, actual, "" + count);
-            if (expect == -1) {
-                break;
-            }
+        final InputStream resource = getClass().getResourceAsStream("/sample.html");
+        final List<String> expect = IOUtils.readLines(resource);
+        final List<String> testOutput = FileUtils.readLines(docOutput);
+
+        Assert.assertEquals(expect.size(), testOutput.size());
+        for (int i = 0; i < expect.size(); i++) {
+            Assert.assertEquals(expect.get(i), testOutput.get(i));
         }
     }
 
     @Test
     public void testSortApis() throws Exception {
-        List<ApiSource> apisources = (List<ApiSource>) getVariableValueFromObject(mojo, "apiSources");
+        final List<ApiSource> apisources = (List<ApiSource>) getVariableValueFromObject(mojo, "apiSources");
         apisources.get(0).setApiSortComparator("com.github.kongchen.jaxrs.ApiComparator");
         setVariableValueToObject(mojo, "apiSources", apisources);
-        mojo.execute();
-        FileInputStream testOutputIs = new FileInputStream(docOutput);
-        InputStream expectIs = this.getClass().getResourceAsStream("/sorted-sample.html");
-        int count = 0;
-        while (true) {
-            count++;
-            int expect = expectIs.read();
-            int actual = testOutputIs.read();
 
-            Assert.assertEquals(expect, actual, "" + count);
-            if (expect == -1) {
-                break;
-            }
+        mojo.execute();
+
+        final InputStream resource = getClass().getResourceAsStream("/sorted-sample.html");
+        final List<String> expect = IOUtils.readLines(resource);
+        final List<String> testOutput = FileUtils.readLines(docOutput);
+
+        Assert.assertEquals(expect.size(), testOutput.size());
+        for (int i = 0; i < expect.size(); i++) {
+            Assert.assertEquals(expect.get(i), testOutput.get(i));
         }
     }
 
     @Test
     public void testSwaggerOutput() throws Exception {
-
         mojo.execute();
-
 
         List<File> outputFiles = new ArrayList<File>();
 
