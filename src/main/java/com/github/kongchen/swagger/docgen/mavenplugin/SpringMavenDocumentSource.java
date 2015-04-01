@@ -5,18 +5,23 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
 import com.github.kongchen.swagger.docgen.GenerateException;
 import com.github.kongchen.swagger.docgen.LogAdapter;
-import com.github.kongchen.swagger.docgen.spring.*;
+import com.github.kongchen.swagger.docgen.spring.SpringMvcApiReader;
+import com.github.kongchen.swagger.docgen.spring.SpringResource;
+import com.github.kongchen.swagger.docgen.util.AuthorizationUtils;
 import com.github.kongchen.swagger.docgen.util.Utils;
 import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.Authorization;
 import com.wordnik.swagger.config.SwaggerConfig;
 import com.wordnik.swagger.converter.OverrideConverter;
 import com.wordnik.swagger.core.SwaggerSpec;
 import com.wordnik.swagger.core.filter.SpecFilter;
-import com.wordnik.swagger.model.*;
-
+import com.wordnik.swagger.model.ApiInfo;
+import com.wordnik.swagger.model.ApiListing;
+import com.wordnik.swagger.model.ApiListingReference;
+import com.wordnik.swagger.model.AuthorizationType;
+import com.wordnik.swagger.model.ResourceListing;
 import org.apache.maven.plugin.logging.Log;
 import org.springframework.web.bind.annotation.RequestMapping;
-
 import scala.None;
 import scala.collection.JavaConversions;
 
@@ -60,11 +65,11 @@ public class SpringMavenDocumentSource extends AbstractDocumentSource {
 
     @Override
     public void loadOverridingModels() throws GenerateException {
+        OverrideConverter converter = new OverrideConverter();
         if (overridingModels != null) {
             try {
                 JsonNode readTree = mapper.readTree(this.getClass()
                         .getResourceAsStream(overridingModels));
-                OverrideConverter converter = new OverrideConverter();
 
                 for (JsonNode jsonNode : readTree) {
                     JsonNode classNameNode = jsonNode.get("className");
@@ -86,6 +91,7 @@ public class SpringMavenDocumentSource extends AbstractDocumentSource {
                         overridingModels), e);
             }
         }
+        this.overriderConverter = converter;
     }
 
     @Override
@@ -106,6 +112,12 @@ public class SpringMavenDocumentSource extends AbstractDocumentSource {
             String description = "";
             if (c.isAnnotationPresent(Api.class)) {
                 description = c.getAnnotation(Api.class).value();
+
+                Authorization[] authorizations = c.getAnnotation(Api.class).authorizations();
+                if(authorizations != null && authorizations.length > 0) {
+                    List<AuthorizationType> types = AuthorizationUtils.convertToAuthorizationTypes(authorizations);
+                    AuthorizationUtils.mergeAuthorizationTypes(authorizationTypes, types);
+                }
             }
             if (requestMapping != null && requestMapping.value().length != 0) {
                 //This try/catch block is to stop a bamboo build from failing due to NoClassDefFoundError

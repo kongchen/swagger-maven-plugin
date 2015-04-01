@@ -11,11 +11,13 @@ import com.wordnik.swagger.core.SwaggerSpec;
 import com.wordnik.swagger.core.filter.SpecFilter;
 import com.wordnik.swagger.core.filter.SwaggerSpecFilter;
 import com.wordnik.swagger.jaxrs.reader.DefaultJaxrsApiReader;
-import com.wordnik.swagger.model.*;
+import com.wordnik.swagger.model.ApiInfo;
+import com.wordnik.swagger.model.ApiListing;
+import com.wordnik.swagger.model.ApiListingReference;
+import com.wordnik.swagger.model.AuthorizationType;
+import com.wordnik.swagger.model.ResourceListing;
 import com.wordnik.swagger.reader.ClassReader;
-
 import org.apache.maven.plugin.logging.Log;
-
 import scala.None;
 import scala.Option;
 import scala.collection.JavaConversions;
@@ -83,7 +85,7 @@ public class MavenDocumentSource extends AbstractDocumentSource {
             apiListingReferences.add(apiListingReference);
             acceptDocument(doc);
         }
-        // sort apiListingRefernce by position
+        // sort apiListingReference by position
         Collections.sort(apiListingReferences, new Comparator<ApiListingReference>() {
             @Override
             public int compare(ApiListingReference o1, ApiListingReference o2) {
