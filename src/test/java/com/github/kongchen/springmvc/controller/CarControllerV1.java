@@ -28,7 +28,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/car")
-@Api(value = "/car", description = "Operations about cars v1", position = 1, protocols = "http")
+@Api(value = "/car", description = "Operations about cars v1", position = 1, protocols = "http",  authorizations = @Authorization(value = "oauth2", scopes = {@AuthorizationScope(scope = "car1", description = "car1 des get")}))
 public class CarControllerV1 {
     @RequestMapping(value = "/{carId}", method = RequestMethod.GET)
     @ApiOperation(value = "Find car by ID", notes = "To get car info by car's Id",
@@ -39,7 +39,7 @@ public class CarControllerV1 {
     @ApiImplicitParams(value = {@ApiImplicitParam(name = "ETag", paramType = "response_header", value = "version", dataType = "string")})
     @ResponseBody
     public Car getCarById(
-            @ApiParam(value = "ID of car that needs to be fetched", allowableValues = "range[1,10]",
+            @ApiParam(value = "ID of car that needs to be fetched", allowableValues = "range[1.0,10.0]",
                     required = true) @PathVariable("carId") String carId,
             @ApiParam(allowableValues = "application/json, application/*")
             @RequestHeader(value="Accept", required = false) MediaType accept,

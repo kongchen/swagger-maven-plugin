@@ -14,7 +14,19 @@ import com.wordnik.swagger.config.SwaggerConfig;
 import com.wordnik.swagger.converter.OverrideConverter;
 import com.wordnik.swagger.core.ApiValues;
 import com.wordnik.swagger.core.SwaggerSpec;
-import com.wordnik.swagger.model.*;
+import com.wordnik.swagger.model.AllowableListValues;
+import com.wordnik.swagger.model.AllowableRangeValues;
+import com.wordnik.swagger.model.AllowableValues;
+import com.wordnik.swagger.model.ApiDescription;
+import com.wordnik.swagger.model.ApiListing;
+import com.wordnik.swagger.model.Authorization;
+import com.wordnik.swagger.model.AuthorizationScope;
+import com.wordnik.swagger.model.Model;
+import com.wordnik.swagger.model.ModelProperty;
+import com.wordnik.swagger.model.ModelRef;
+import com.wordnik.swagger.model.Operation;
+import com.wordnik.swagger.model.Parameter;
+import com.wordnik.swagger.model.ResponseMessage;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.plexus.util.StringUtils;
 import org.springframework.http.ResponseEntity;
@@ -96,7 +108,7 @@ public class SpringMvcApiReader {
         List<Method> methods = resource.getMethods();
         List<String> protocols = new ArrayList<String>();
         List<ApiDescription> apiDescriptions = new ArrayList<ApiDescription>();
-        List<Authorization> authorizations = Collections.emptyList();//TODO
+        List<Authorization> authorizations = new ArrayList<Authorization>();
         String newBasePath = apiSource.getBasePath();
         String description = null;
         int position = 0;
@@ -107,6 +119,9 @@ public class SpringMvcApiReader {
             Api api = controller.getAnnotation(Api.class);
             description = api.description();
             position = api.position();
+            if (api.authorizations() != null && api.authorizations().length > 0) {
+                addAuthorization(authorizations, api.authorizations());
+            }
         }
 
         resourcePath = resource.getControllerMapping();
@@ -158,6 +173,16 @@ public class SpringMvcApiReader {
                 scala.collection.immutable.List.fromIterator(JavaConversions.asScalaIterator(apiDescriptions.iterator())),
                 generateModels(models), Option.apply(description), position);
         return apiListing;
+    }
+
+    private void addAuthorization(List<Authorization> authorizations, com.wordnik.swagger.annotations.Authorization[] annotations) {
+        for (com.wordnik.swagger.annotations.Authorization authorization : annotations) {
+            List<AuthorizationScope> scopes = new ArrayList<AuthorizationScope>();
+            for (com.wordnik.swagger.annotations.AuthorizationScope scope : authorization.scopes()) {
+                scopes.add(new AuthorizationScope(scope.scope(), scope.description()));
+            }
+            authorizations.add(new Authorization(authorization.value(), scopes.toArray(new AuthorizationScope[scopes.size()])));
+        }
     }
 
     //--------Swagger Resource Generators--------//
@@ -215,6 +240,7 @@ public class SpringMvcApiReader {
         List<String> opConsumes = new ArrayList<String>();
         List<Parameter> parameters = new ArrayList<Parameter>();
         List<ResponseMessage> responseMessages = new ArrayList<ResponseMessage>();
+        List<Authorization> authorizations = new ArrayList<Authorization>();
 
         apiOperation = m.getAnnotation(ApiOperation.class);
         requestMapping = m.getAnnotation(RequestMapping.class);
@@ -249,6 +275,9 @@ public class SpringMvcApiReader {
         if (apiOperation != null) {
             description = apiOperation.value();
             notes = apiOperation.notes();
+            if(apiOperation.authorizations() != null && apiOperation.authorizations().length > 0) {
+                addAuthorization(authorizations, apiOperation.authorizations());
+            }
         }
 
         responseMessages = generateResponseMessages(m);
@@ -272,7 +301,8 @@ public class SpringMvcApiReader {
                 description, notes, responseBodyName, m.getName(), apiOperation.position(),
                 scala.collection.immutable.List.fromIterator(JavaConversions.asScalaIterator(opProduces.iterator())),
                 scala.collection.immutable.List.fromIterator(JavaConversions.asScalaIterator(opConsumes.iterator())),
-                null, null,
+                null,
+                scala.collection.immutable.List.fromIterator(JavaConversions.asScalaIterator(authorizations.iterator())),
                 scala.collection.immutable.List.fromIterator(JavaConversions.asScalaIterator(parameters.iterator())),
                 scala.collection.immutable.List.fromIterator(JavaConversions.asScalaIterator(responseMessages.iterator())),
                 DEFAULT_OPTION);
