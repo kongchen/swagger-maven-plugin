@@ -1,8 +1,11 @@
 package com.github.kongchen.swagger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Helper;
 import com.github.jknack.handlebars.Options;
@@ -52,6 +55,7 @@ public abstract class AbstractDocumentSource {
 
 	public void toSwaggerDocuments(String swaggerUIDocBasePath)
 			throws GenerateException {
+		mapper.configure(SerializationFeature.WRITE_EMPTY_JSON_ARRAYS, false);
 		if (swaggerPath == null) {
 			return;
 		}
@@ -79,7 +83,8 @@ public abstract class AbstractDocumentSource {
 
 		File swaggerFile = new File(dir, "swagger.json");
 		try {
-			Json.pretty().writeValue(swaggerFile, swagger);
+			ObjectWriter jsonWriter = mapper.writer(new DefaultPrettyPrinter());
+			jsonWriter.writeValue(swaggerFile, swagger);
 		} catch (IOException e) {
 			throw new GenerateException(e);
 		}

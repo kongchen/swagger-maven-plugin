@@ -1,26 +1,22 @@
 package com.github.kongchen.smp.integration;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.kongchen.swagger.maven.ApiDocumentMojo;
 import com.github.kongchen.swagger.maven.ApiSource;
 import org.apache.commons.io.FileUtils;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Created by chekong on 8/15/14.
@@ -63,6 +59,19 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
                 break;
             }
         }
+
+        expectIs.close();
+
+        FileInputStream swaggerJson = new FileInputStream(new File(swaggerOutputDir, "swagger.json"));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(swaggerJson));
+        String s = reader.readLine();
+        while (s!=null) {
+            if(s.contains("\"parameters\" : [ ],")) {
+                assertFalse("should not have null parameters", true);
+            }
+            s = reader.readLine();
+        }
+
     }
 
     @Test
@@ -93,7 +102,7 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
         dataToBeReturned.add(new String[]{tempDirPath + "foo" + File.separator + "bar" + File
             .separator + "test.html"});
         dataToBeReturned.add(new String[]{tempDirPath + File.separator + "bar" + File.separator +
-                                              "test.html"});
+                "test.html"});
         dataToBeReturned.add(new String[]{tempDirPath + File.separator + "test.html"});
         dataToBeReturned.add(new String[]{"test.html"});
 
