@@ -357,20 +357,20 @@ http://example.com/garage/{garageId}
         <th>notes</th>
     </tr>
     <tr>
-        <td>location</td>
-        <td>string</td>
-        <td>optional</td>
-        <td>-</td>
-        <td>The location</td>
-        <td>The location</td>
-    </tr>
-    <tr>
         <td>id</td>
         <td><a href="#integer">integer</a></td>
         <td>optional</td>
         <td>-</td>
         <td>Address' indentifier</td>
         <td>Address' indentifier</td>
+    </tr>
+    <tr>
+        <td>location</td>
+        <td>string</td>
+        <td>optional</td>
+        <td>-</td>
+        <td>The location</td>
+        <td>The location</td>
     </tr>
     <tr>
         <td>zipCode</td>
@@ -427,14 +427,6 @@ http://example.com/garage/{garageId}
         <th>notes</th>
     </tr>
     <tr>
-        <td>id</td>
-        <td>int</td>
-        <td>required</td>
-        <td>-</td>
-        <td>car's id</td>
-        <td>car's id</td>
-    </tr>
-    <tr>
         <td>brand</td>
         <td>string</td>
         <td>required</td>
@@ -451,20 +443,28 @@ http://example.com/garage/{garageId}
         <td>The engine parameter of the car</td>
     </tr>
     <tr>
+        <td>firstRegistration</td>
+        <td><a href="#DateTime">DateTime</a></td>
+        <td>optional</td>
+        <td>-</td>
+        <td>First registration</td>
+        <td>First registration</td>
+    </tr>
+    <tr>
+        <td>id</td>
+        <td>int</td>
+        <td>required</td>
+        <td>-</td>
+        <td>car's id</td>
+        <td>car's id</td>
+    </tr>
+    <tr>
         <td>mt</td>
         <td>boolean</td>
         <td>required</td>
         <td>-</td>
         <td>Indicate the car is MT or AT</td>
         <td>Indicate the car is MT or AT</td>
-    </tr>
-    <tr>
-        <td>price</td>
-        <td>float</td>
-        <td>required</td>
-        <td>-</td>
-        <td>The price of the car</td>
-        <td>The price of the car</td>
     </tr>
     <tr>
         <td>notes</td>
@@ -475,20 +475,20 @@ http://example.com/garage/{garageId}
         <td>Any other comments for the car</td>
     </tr>
     <tr>
+        <td>price</td>
+        <td>float</td>
+        <td>required</td>
+        <td>-</td>
+        <td>The price of the car</td>
+        <td>The price of the car</td>
+    </tr>
+    <tr>
         <td>repairHistory</td>
         <td>Array[string]</td>
         <td>optional</td>
         <td>-</td>
         <td>Repair history</td>
         <td>Repair history</td>
-    </tr>
-    <tr>
-        <td>firstRegistration</td>
-        <td><a href="#DateTime">DateTime</a></td>
-        <td>optional</td>
-        <td>-</td>
-        <td>First registration</td>
-        <td>First registration</td>
     </tr>
 </table>
 
@@ -506,14 +506,6 @@ http://example.com/garage/{garageId}
         <th>notes</th>
     </tr>
     <tr>
-        <td>address</td>
-        <td><a href="#Address">Address</a></td>
-        <td>optional</td>
-        <td>-</td>
-        <td>Customer's address</td>
-        <td>Customer's address</td>
-    </tr>
-    <tr>
         <td>animal</td>
         <td><a href="#JAnimal">JAnimal</a></td>
         <td>optional</td>
@@ -522,12 +514,20 @@ http://example.com/garage/{garageId}
         <td>For test only</td>
     </tr>
     <tr>
-        <td>name</td>
-        <td>string</td>
-        <td>required</td>
+        <td>address</td>
+        <td><a href="#Address">Address</a></td>
+        <td>optional</td>
         <td>-</td>
-        <td>Customer's name</td>
-        <td>Customer's name</td>
+        <td>Customer's address</td>
+        <td>Customer's address</td>
+    </tr>
+    <tr>
+        <td>emails</td>
+        <td><a href="#Email">Array[Email]</a></td>
+        <td>optional</td>
+        <td>-</td>
+        <td>The list of customer emails</td>
+        <td>The list of customer emails</td>
     </tr>
     <tr>
         <td>id</td>
@@ -538,20 +538,20 @@ http://example.com/garage/{garageId}
         <td>Customer's identifier</td>
     </tr>
     <tr>
+        <td>name</td>
+        <td>string</td>
+        <td>required</td>
+        <td>-</td>
+        <td>Customer's name</td>
+        <td>Customer's name</td>
+    </tr>
+    <tr>
         <td>surname</td>
         <td>string</td>
         <td>required</td>
         <td>-</td>
         <td>Customer's surname</td>
         <td>Customer's surname</td>
-    </tr>
-    <tr>
-        <td>emails</td>
-        <td><a href="#Email">Array[Email]</a></td>
-        <td>optional</td>
-        <td>-</td>
-        <td>The list of customer emails</td>
-        <td>The list of customer emails</td>
     </tr>
 </table>
 
@@ -592,12 +592,12 @@ http://example.com/garage/{garageId}
         <th>notes</th>
     </tr>
     <tr>
-        <td>id</td>
-        <td><a href="#integer">integer</a></td>
+        <td>byDefault</td>
+        <td>boolean</td>
         <td>optional</td>
         <td>-</td>
-        <td>Email identifier</td>
-        <td>Email identifier</td>
+        <td>The flag shows if this email is a default email</td>
+        <td>The flag shows if this email is a default email</td>
     </tr>
     <tr>
         <td>email</td>
@@ -608,12 +608,12 @@ http://example.com/garage/{garageId}
         <td>Email address</td>
     </tr>
     <tr>
-        <td>byDefault</td>
-        <td>boolean</td>
+        <td>id</td>
+        <td><a href="#integer">integer</a></td>
         <td>optional</td>
         <td>-</td>
-        <td>The flag shows if this email is a default email</td>
-        <td>The flag shows if this email is a default email</td>
+        <td>Email identifier</td>
+        <td>Email identifier</td>
     </tr>
 </table>
 
@@ -685,20 +685,20 @@ http://example.com/garage/{garageId}
         <th>notes</th>
     </tr>
     <tr>
-        <td>type</td>
-        <td>string</td>
-        <td>optional</td>
-        <td>-</td>
-        <td>type of animal</td>
-        <td>type of animal</td>
-    </tr>
-    <tr>
         <td>date</td>
         <td><a href="#date">date</a></td>
         <td>optional</td>
         <td>-</td>
         <td>Date added to the zoo</td>
         <td>Date added to the zoo</td>
+    </tr>
+    <tr>
+        <td>type</td>
+        <td>string</td>
+        <td>optional</td>
+        <td>-</td>
+        <td>type of animal</td>
+        <td>type of animal</td>
     </tr>
 </table>
 

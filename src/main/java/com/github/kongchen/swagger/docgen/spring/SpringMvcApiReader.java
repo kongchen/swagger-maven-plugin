@@ -125,7 +125,6 @@ public class SpringMvcApiReader {
         }
 
         resourcePath = resource.getControllerMapping();
-//        newBasePath = generateBasePath(apiSource.getBasePath(), resourcePath);
 
         Map<String, List<Method>> apiMethodMap = new HashMap<String, List<Method>>();
         for (Method m : methods) {
@@ -137,7 +136,7 @@ public class SpringMvcApiReader {
                 } else {
                     path = resourcePath;
                 }
-                if(apiMethodMap.containsKey(path)) {
+                if (apiMethodMap.containsKey(path)) {
                     apiMethodMap.get(path).add(m);
                 } else {
                     List<Method> ms = new ArrayList<Method>();
@@ -148,7 +147,7 @@ public class SpringMvcApiReader {
         }
         for (String p : apiMethodMap.keySet()) {
             List<Operation> operations = new ArrayList<Operation>();
-            for(Method m : apiMethodMap.get(p)){
+            for (Method m : apiMethodMap.get(p)) {
                 operations.add(generateOperation(m));
             }
             //reorder operations
@@ -275,7 +274,7 @@ public class SpringMvcApiReader {
         if (apiOperation != null) {
             description = apiOperation.value();
             notes = apiOperation.notes();
-            if(apiOperation.authorizations() != null && apiOperation.authorizations().length > 0) {
+            if (apiOperation.authorizations() != null && apiOperation.authorizations().length > 0) {
                 addAuthorization(authorizations, apiOperation.authorizations());
             }
         }
@@ -358,12 +357,12 @@ public class SpringMvcApiReader {
                                 String min, max;
                                 Pattern pattern = Pattern.compile("\\[(.+),(.+)\\]");
                                 Matcher matcher = pattern.matcher(range);
-                                if(matcher.matches()){
+                                if (matcher.matches()) {
                                     min = matcher.group(1);
                                     max = matcher.group(2);
                                     allowed = new AllowableRangeValues(min, max);
                                 }
-                            }else {
+                            } else {
                                 String allowableValues = CharMatcher.anyOf("[] ").removeFrom(apiParam.allowableValues());
                                 if (!(allowableValues.equals(""))) {
                                     allowableValuesList = Arrays.asList(allowableValues.split(","));
@@ -445,7 +444,8 @@ public class SpringMvcApiReader {
 
         //<--Model properties from fields-->
         int x = 0;
-        for (Field field : clazz.getDeclaredFields()) {
+
+        for (Field field : sortFields(clazz)) {
             //Only use fields if they are annotated - otherwise use methods
             XmlElement xmlElement;
             ApiModelProperty amp;
@@ -484,7 +484,7 @@ public class SpringMvcApiReader {
 
         //<--Model properties from methods-->
         int i = 0;
-        for (Method m : clazz.getMethods()) {
+        for (Method m : sortMethods(clazz)) {
             boolean required = false;
             String description = "";
             ApiModelProperty amp;
@@ -509,25 +509,14 @@ public class SpringMvcApiReader {
             }
 
             //get model properties from methods
-            if ((m.getName().startsWith("get") || m.getName().startsWith("is"))
-                    && !(m.getName().equals("getClass"))) {
-                Class<?> c = m.getReturnType();
-                String name = "";
-                try {
-                    if (m.getName().startsWith("get")) {
-                        name = m.getName().substring(3);
-                    } else {
-                        name = m.getName().substring(2);
-                    }
-                    String firstLetter = name.substring(0, 1).toLowerCase(); //convert to camel case
-                    name = firstLetter + name.substring(1);
-                } catch (Exception e) {
-                }
+            String name = getModelNameFromGetterMethodName(m);
+            if (name != null) {
+
                 if (!(m.getReturnType().equals(clazz))) {
-                    addToModels(c); //recursive
+                    addToModels(m.getReturnType()); //recursive
                 }
                 if (!modelProps.contains(name)) {
-                    modelProps.put(name, generateModelProperty(c, i, required, modelRef, description));
+                    modelProps.put(name, generateModelProperty(m.getReturnType(), i, required, modelRef, description));
                 }
 
             }
@@ -537,6 +526,60 @@ public class SpringMvcApiReader {
         return new Model(clazz.getSimpleName(), clazz.getSimpleName(), clazz.getCanonicalName(), modelProps,
                 Option.apply(modelDescription), DEFAULT_OPTION, DEFAULT_OPTION,
                 scala.collection.immutable.List.fromIterator(JavaConversions.asScalaIterator(subTypes.iterator())));
+    }
+
+    private Field[] sortFields(Class<?> clazz) {
+        Field[] sortedFields = clazz.getDeclaredFields();
+        Arrays.sort(sortedFields, new Comparator<Field>() {
+            @Override
+            public int compare(Field o1, Field o2) {
+                return o1.getName().compareTo(o2.getName());
+            }
+        });
+        return sortedFields;
+    }
+
+    private Method[] sortMethods(Class<?> clazz) {
+        Method[] ms = clazz.getMethods();
+        Arrays.sort(ms, new Comparator<Method>() {
+            @Override
+            public int compare(Method o1, Method o2) {
+                String m1 = getModelNameFromGetterMethodName(o1);
+                String m2 = getModelNameFromGetterMethodName(o2);
+                if (m1 != null) {
+                    if (m2 != null) {
+                        return m1.compareTo(m2);
+                    } else {
+                        return 1;
+                    }
+                } else {
+                    if (m2 == null) {
+                        return o1.getName().compareTo(o2.getName());
+                    } else {
+                        return -1;
+                    }
+                }
+            }
+        });
+        return ms;
+    }
+
+    private String getModelNameFromGetterMethodName(Method m) {
+        String name = null;
+        if ((m.getName().startsWith("get") || m.getName().startsWith("is"))
+                && !(m.getName().equals("getClass"))) {
+            try {
+                if (m.getName().startsWith("get")) {
+                    name = m.getName().substring(3);
+                } else {
+                    name = m.getName().substring(2);
+                }
+                String firstLetter = name.substring(0, 1).toLowerCase(); //convert to camel case
+                name = firstLetter + name.substring(1);
+            } catch (Exception e) {
+            }
+        }
+        return name;
     }
 
     /**
