@@ -17,7 +17,7 @@ import java.util.Scanner;
 import java.util.regex.Pattern;
 
 public class MustacheOperation {
-    private final int opIndex;
+    private int opIndex;
 
     private final String httpMethod;
 
@@ -171,6 +171,10 @@ public class MustacheOperation {
 
     public int getOpIndex() {
         return opIndex;
+    }
+
+    public void setOpIndex(int opIndex) {
+        this.opIndex = opIndex;
     }
 
     public String getHttpMethod() {

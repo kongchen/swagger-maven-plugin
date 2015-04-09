@@ -276,5 +276,27 @@ public class MustacheDocument implements Comparable<MustacheDocument> {
         }
         return modelMap.keySet().iterator().next();
     }
+
+    public void resetApiPositions() {
+        List<Integer> ops = new ArrayList<Integer>(getApis().size());
+        for(int i = 0; i < getApis().size(); i++) {
+            ops.add(i, null);
+        }
+
+        //sort op first
+        Collections.sort(getApis(), new Comparator<MustacheApi>() {
+            @Override
+            public int compare(MustacheApi o1, MustacheApi o2) {
+                return o1.getApiIndex() - o2.getApiIndex();
+            }
+        });
+
+        java.util.Iterator<MustacheApi> it = getApis().iterator();
+        int count = 1;
+        while (it.hasNext()) {
+            MustacheApi op = it.next();
+            op.setApiIndex(count++);
+        }
+    }
 }
 

@@ -43,7 +43,7 @@ public class SpringMavenDocumentSourceTest {
                     assertTrue(api.getUrl().startsWith(apiSource.getBasePath()));
                     assertFalse(api.getPath().contains("{format}"));
                     for (MustacheOperation op : api.getOperations()) {
-                        if (op.getOpIndex() == 2) {
+                        if (api.getApiIndex() == 2 && op.getOpIndex() == 1) {
 
                             Assert.assertEquals(op.getParameters().size(), 3);
 
@@ -76,7 +76,7 @@ public class SpringMavenDocumentSourceTest {
                             Assert.assertEquals(op.getAuthorizations().get(0).getType(), "oauth2");
                             Assert.assertEquals(op.getAuthorizations().get(0).getAuthorizationScopes().get(0).description(), "car1 des get");
                         }
-                        if (op.getOpIndex() == 1) {
+                        if (api.getApiIndex() == 1 && op.getOpIndex() == 1) {
                             Assert.assertEquals(op.getSummary(), "search cars");
                         }
                     }
