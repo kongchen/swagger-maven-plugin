@@ -116,6 +116,8 @@ public class OutputTemplate {
                     addResponseType(mustacheDocument, responseClass);
                 }
             }
+            // make sure op position is different
+            mustacheApi.resetOperationPositions();
 
             apiList.add(mustacheApi);
         }
@@ -132,6 +134,7 @@ public class OutputTemplate {
         }
 
         mustacheDocument.setApis(apiList);
+        mustacheDocument.resetApiPositions();
 
         for (String requestType : mustacheDocument.getRequestTypes()) {
             MustacheDataType dataType = new MustacheDataType(mustacheDocument, requestType);
