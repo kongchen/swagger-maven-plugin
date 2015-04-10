@@ -1,4 +1,6 @@
 # Swagger Maven Plugin [![Build Status](https://travis-ci.org/kongchen/swagger-maven-plugin.png)](https://travis-ci.org/kongchen/swagger-maven-plugin)
+
+[![Join the chat at https://gitter.im/kongchen/swagger-maven-plugin](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/kongchen/swagger-maven-plugin?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 This plugin can let your Swagger annotated project(JAX-RS or SpringMVC) generate **Swagger JSON** and your **customized API documents** in build phase.
 
 You must already known what is Swagger JSON, check the results of this plugin generates [here](https://github.com/kongchen/swagger-maven-example/tree/master/generated/swagger-ui) to see if it is what you want.
