@@ -9,8 +9,10 @@ import com.github.kongchen.swagger.docgen.mustache.MustacheApi;
 import com.github.kongchen.swagger.docgen.mustache.OutputTemplate;
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
+import com.wordnik.swagger.converter.ModelConverter;
 import com.wordnik.swagger.converter.ModelConverters;
 import com.wordnik.swagger.converter.OverrideConverter;
+import com.wordnik.swagger.converter.SwaggerSchemaConverter;
 import com.wordnik.swagger.core.util.JsonSerializer;
 import com.wordnik.swagger.core.util.JsonUtil;
 import com.wordnik.swagger.model.ApiListing;
@@ -20,6 +22,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import scala.collection.Iterator;
 import scala.collection.JavaConversions;
+import scala.collection.mutable.ListBuffer;
 
 import java.io.*;
 import java.lang.reflect.Method;
@@ -67,12 +70,15 @@ public abstract class AbstractDocumentSource {
 
   protected String overridingModels;
 
+  protected String swaggerSchemaConverter;
+
   private Comparator<MustacheApi> apiSortComparator;
 
 
   public AbstractDocumentSource(LogAdapter logAdapter, String outputPath,
                                 String outputTpl, String swaggerOutput, String mustacheFileRoot,
-                                boolean useOutputFlatStructure1, String overridingModels, String apiSortComparator) {
+                                boolean useOutputFlatStructure1, String overridingModels, String apiSortComparator,
+                                String swaggerSchemaConverter) {
     LOG = logAdapter;
     this.outputPath = outputPath;
     this.templatePath = outputTpl;
@@ -81,6 +87,7 @@ public abstract class AbstractDocumentSource {
     this.swaggerPath = swaggerOutput;
     this.overridingModels = overridingModels;
     this.apiSortComparator = newComparator(apiSortComparator);
+    this.swaggerSchemaConverter = swaggerSchemaConverter;
   }
 
   private Comparator<MustacheApi> newComparator(String apiSortComparator) {
@@ -213,6 +220,16 @@ public abstract class AbstractDocumentSource {
             overridingModels), e);
       }
     }
+
+    if (swaggerSchemaConverter != null) {
+      try {
+        LOG.info("Setting converter configuration: " + swaggerSchemaConverter);
+        ModelConverters.addConverter((SwaggerSchemaConverter) Class.forName(swaggerSchemaConverter).newInstance(), true);
+      } catch (Exception e) {
+        throw new GenerateException("Cannot load: " + swaggerSchemaConverter, e);
+      }
+    }
+
   }
 
   private void cleanupOlds(File dir) {
