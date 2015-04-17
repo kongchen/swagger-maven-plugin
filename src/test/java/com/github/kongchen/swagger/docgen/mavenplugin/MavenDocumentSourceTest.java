@@ -5,6 +5,7 @@ import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
 import com.github.kongchen.swagger.docgen.GenerateException;
 import com.github.kongchen.swagger.docgen.TestSwaggerApiReader;
 import com.github.kongchen.swagger.docgen.TypeUtils;
+import com.github.kongchen.swagger.docgen.converter.TestSwaggerConverter;
 import com.github.kongchen.swagger.docgen.filter.TestSwaggerSpecFilter;
 import com.github.kongchen.swagger.docgen.mustache.*;
 import com.wordnik.swagger.annotations.ApiModelProperty;
@@ -270,6 +271,32 @@ public class MavenDocumentSourceTest {
 
     }
   }
+
+  @Test
+  public void testSwaggerConverter() throws Exception, GenerateException {
+    ApiSource apiSource = prepare();
+    apiSource.setSwaggerSchemaConverter(TestSwaggerConverter.class.getName());
+    AbstractDocumentSource documentSource = new MavenDocumentSource(apiSource, new SystemStreamLog());
+    documentSource.loadDocuments();
+    OutputTemplate outputTemplate = new OutputTemplate(documentSource);
+
+    assertEquals(12, outputTemplate.getDataTypes().size());
+    List<MustacheDataType> typeList = new LinkedList<MustacheDataType>();
+    for (MustacheDataType type : outputTemplate.getDataTypes()) {
+      typeList.add(type);
+    }
+    Collections.sort(typeList, new Comparator<MustacheDataType>() {
+
+      @Override
+      public int compare(MustacheDataType o1, MustacheDataType o2) {
+
+        return o1.getName().compareTo(o2.getName());
+      }
+    });
+    assertDataTypeInList(typeList, 0, Address.class);
+    //assertDataTypeInList(typeList, 10, com.github.kongchen.model.v2.Car.class);
+  }
+
 
   private void assertDataTypeInList(List<MustacheDataType> typeList, int indexInList,
                                     Class<?> aClass) throws NoSuchMethodException, NoSuchFieldException {

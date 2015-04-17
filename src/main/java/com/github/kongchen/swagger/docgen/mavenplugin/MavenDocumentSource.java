@@ -7,6 +7,8 @@ import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.config.FilterFactory;
 import com.wordnik.swagger.config.FilterFactory$;
 import com.wordnik.swagger.config.SwaggerConfig;
+import com.wordnik.swagger.converter.ModelConverters;
+import com.wordnik.swagger.converter.SwaggerSchemaConverter;
 import com.wordnik.swagger.core.SwaggerSpec;
 import com.wordnik.swagger.core.filter.SpecFilter;
 import com.wordnik.swagger.core.filter.SwaggerSpecFilter;
@@ -39,7 +41,7 @@ public class MavenDocumentSource extends AbstractDocumentSource {
   public MavenDocumentSource(ApiSource apiSource, Log log) {
     super(new LogAdapter(log), apiSource.getOutputPath(), apiSource.getOutputTemplate(),
         apiSource.getSwaggerDirectory(), apiSource.mustacheFileRoot, apiSource.isUseOutputFlatStructure(),
-        apiSource.getOverridingModels(), apiSource.getApiSortComparator());
+        apiSource.getOverridingModels(), apiSource.getApiSortComparator(), apiSource.getSwaggerSchemaConverter());
 
     setApiVersion(apiSource.getApiVersion());
     setBasePath(apiSource.getBasePath());

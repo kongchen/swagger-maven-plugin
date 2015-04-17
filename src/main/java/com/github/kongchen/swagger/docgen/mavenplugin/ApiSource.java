@@ -82,6 +82,9 @@ public class ApiSource {
   @Parameter
   private boolean supportSpringMvc;
 
+  @Parameter
+  private String swaggerSchemaConverter;
+
   public Set<Class> getValidClasses() throws GenerateException {
     Set<Class> classes = new HashSet<Class>();
     if (getLocations() == null) {
@@ -235,4 +238,11 @@ public class ApiSource {
     this.supportSpringMvc = supportSpringMvc;
   }
 
+  public String getSwaggerSchemaConverter() {
+    return swaggerSchemaConverter;
+  }
+
+  public void setSwaggerSchemaConverter(String swaggerSchemaConverter) {
+    this.swaggerSchemaConverter = swaggerSchemaConverter;
+  }
 }

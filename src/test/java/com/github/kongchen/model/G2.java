@@ -1,5 +1,7 @@
 package com.github.kongchen.model;
 
+import com.wordnik.swagger.annotations.ApiModelProperty;
+
 /**
  * Created by chekong on 13-6-9.
  */
