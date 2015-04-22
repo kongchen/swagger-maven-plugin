@@ -41,7 +41,7 @@ public class RemoteDocumentSource extends AbstractDocumentSource {
     public RemoteDocumentSource(LogAdapter logAdapter, URI requestURI, String outputTpl, String outputPath,
                                 String swaggerOutput, String mustacheFileRoot, boolean useOutputFlatStructure,
                                 String overridingModels, String apiComparator) {
-        super(logAdapter, outputPath, outputTpl, swaggerOutput, mustacheFileRoot, useOutputFlatStructure, overridingModels, apiComparator);
+        super(logAdapter, outputPath, outputTpl, swaggerOutput, mustacheFileRoot, useOutputFlatStructure, overridingModels, apiComparator, null);
         LOG = new LogAdapter(Logger.getLogger(RemoteDocumentSource.class));
         this.requestURI = requestURI;
         mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
