@@ -1,4 +1,4 @@
-package com.github.kongchen.swagger;
+package com.github.kongchen.swagger.docgen;
 
 /**
  * Created with IntelliJ IDEA.

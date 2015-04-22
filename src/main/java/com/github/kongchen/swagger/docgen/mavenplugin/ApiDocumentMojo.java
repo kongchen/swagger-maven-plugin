@@ -1,11 +1,10 @@
-package com.github.kongchen.swagger.maven;
+package com.github.kongchen.swagger.docgen.mavenplugin;
 
 import java.io.File;
 import java.util.List;
 
-import com.github.kongchen.swagger.AbstractDocumentSource;
+import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
 import com.github.kongchen.swagger.GenerateException;
-import com.github.kongchen.swagger.Utils;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;

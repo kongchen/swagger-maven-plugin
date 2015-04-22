@@ -1,4 +1,4 @@
-package com.github.kongchen.swagger;
+package com.github.kongchen.swagger.docgen;
 
 import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
 import com.github.jknack.handlebars.io.FileTemplateLoader;

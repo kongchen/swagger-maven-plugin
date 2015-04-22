@@ -1,8 +1,8 @@
-package com.github.kongchen.swagger.maven;
+package com.github.kongchen.swagger.docgen.mavenplugin;
 
-import com.github.kongchen.swagger.AbstractDocumentSource;
+import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
 import com.github.kongchen.swagger.GenerateException;
-import com.github.kongchen.swagger.LogAdapter;
+import com.github.kongchen.swagger.docgen.LogAdapter;
 import com.wordnik.swagger.config.FilterFactory;
 import com.wordnik.swagger.core.filter.SpecFilter;
 import com.wordnik.swagger.core.filter.SwaggerSpecFilter;

@@ -1,4 +1,4 @@
-package com.github.kongchen.swagger;
+package com.github.kongchen.swagger.docgen;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

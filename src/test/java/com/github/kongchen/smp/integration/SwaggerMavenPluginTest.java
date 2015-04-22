@@ -1,7 +1,7 @@
 package com.github.kongchen.smp.integration;
 
-import com.github.kongchen.swagger.maven.ApiDocumentMojo;
-import com.github.kongchen.swagger.maven.ApiSource;
+import com.github.kongchen.swagger.docgen.mavenplugin.ApiDocumentMojo;
+import com.github.kongchen.swagger.docgen.mavenplugin.ApiSource;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.testng.Assert;

@@ -1,4 +1,4 @@
-package com.github.kongchen.swagger;
+package com.github.kongchen.swagger.docgen;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;

@@ -1,4 +1,4 @@
-package com.github.kongchen.swagger.maven;
+package com.github.kongchen.swagger.docgen.mavenplugin;
 
 
 import org.codehaus.classworlds.ClassRealm;
