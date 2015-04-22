@@ -12,14 +12,12 @@ import com.github.kongchen.swagger.docgen.util.Utils;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.Authorization;
 import com.wordnik.swagger.config.SwaggerConfig;
+import com.wordnik.swagger.converter.ModelConverters;
 import com.wordnik.swagger.converter.OverrideConverter;
+import com.wordnik.swagger.converter.SwaggerSchemaConverter;
 import com.wordnik.swagger.core.SwaggerSpec;
 import com.wordnik.swagger.core.filter.SpecFilter;
-import com.wordnik.swagger.model.ApiInfo;
-import com.wordnik.swagger.model.ApiListing;
-import com.wordnik.swagger.model.ApiListingReference;
-import com.wordnik.swagger.model.AuthorizationType;
-import com.wordnik.swagger.model.ResourceListing;
+import com.wordnik.swagger.model.*;
 import org.apache.maven.plugin.logging.Log;
 import org.springframework.web.bind.annotation.RequestMapping;
 import scala.None;
@@ -27,13 +25,7 @@ import scala.collection.JavaConversions;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author tedleman
@@ -55,7 +47,7 @@ public class SpringMavenDocumentSource extends AbstractDocumentSource {
     public SpringMavenDocumentSource(ApiSource apiSource, Log log) {
         super(new LogAdapter(log), apiSource.getOutputPath(), apiSource.getOutputTemplate(),
                 apiSource.getSwaggerDirectory(), apiSource.mustacheFileRoot, apiSource.isUseOutputFlatStructure(),
-                apiSource.getOverridingModels(), apiSource.getApiSortComparator());
+                apiSource.getOverridingModels(), apiSource.getApiSortComparator(), apiSource.getSwaggerSchemaConverter());
 
         setApiVersion(apiSource.getApiVersion());
         setBasePath(apiSource.getBasePath());
@@ -103,6 +95,15 @@ public class SpringMavenDocumentSource extends AbstractDocumentSource {
         swaggerConfig.setApiInfo(toSwaggerApiInfo(apiSource.getApiInfo())); //TODO: can we pull this from spring?
         List<ApiListingReference> apiListingReferences = new ArrayList<ApiListingReference>();
         List<AuthorizationType> authorizationTypes = new ArrayList<AuthorizationType>();
+
+        if (apiSource.getSwaggerSchemaConverter() != null) {
+            try {
+                LOG.info("Setting converter configuration: " + apiSource.getSwaggerSchemaConverter());
+                ModelConverters.addConverter((SwaggerSchemaConverter) Class.forName(apiSource.getSwaggerSchemaConverter()).newInstance(), true);
+            } catch (Exception e) {
+                throw new GenerateException("Cannot load: " + apiSource.getSwaggerSchemaConverter(), e);
+            }
+        }
 
         //relate all methods to one base request mapping if multiple controllers exist for that mapping
         //get all methods from each controller & find their request mapping
