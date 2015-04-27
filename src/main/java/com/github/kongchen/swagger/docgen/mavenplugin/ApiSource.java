@@ -1,13 +1,14 @@
 package com.github.kongchen.swagger.docgen.mavenplugin;
 
-import com.github.kongchen.swagger.GenerateException;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
+import com.github.kongchen.swagger.docgen.GenerateException;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.models.Info;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.reflections.Reflections;
-
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -17,17 +18,17 @@ import java.util.Set;
 public class ApiSource {
 
     /**
-     * Java classes containing Swagger's annotation <code>@Api</code>, or Java packages containing those classes 
+     * Java classes containing Swagger's annotation <code>@Api</code>, or Java packages containing those classes
      * can be configured here, use ; as the delimiter if you have more than one location.
      */
     @Parameter(required = true)
     private String locations;
-    
+
     @Parameter(name = "info", required = true)
     private Info info;
 
     /**
-     * The basePath of your APIs. 
+     * The basePath of your APIs.
      */
     @Parameter(required = true)
     private String basePath;
@@ -47,8 +48,8 @@ public class ApiSource {
     private String schemes;
 
     /**
-     * <code>templatePath</code> is the path of a mustache template file,
-     * see more details in next section. 
+     * <code>templatePath</code> is the path of a hbs template file,
+     * see more details in next section.
      * If you don't want to generate extra api documents, just don't set it.
      */
     @Parameter(required = false)
@@ -63,15 +64,27 @@ public class ApiSource {
     @Parameter
     private String swaggerUIDocBasePath;
 
+    @Parameter
+    private String overridingModels;
+
+    @Parameter
+    private String apiSortComparator;
+
     /**
      * Information about swagger filter that will be used for prefiltering
      */
     @Parameter
     private String swaggerInternalFilter;
 
-	@Parameter
-	private String swaggerApiReader;
-    private String overridingModels;
+    @Parameter
+    private String swaggerApiReader;
+
+    @Parameter
+    private boolean supportSpringMvc;
+
+    @Parameter
+    private String swaggerSchemaConverter;
+
 
     public Set<Class<?>> getValidClasses() throws GenerateException {
         Set<Class<?>> classes = new HashSet<Class<?>>();
@@ -102,7 +115,7 @@ public class ApiSource {
         return info;
     }
 
-    public void setApiInfo(Info info) {
+    public void setInfo(Info info) {
         this.info = info;
     }
 
@@ -154,6 +167,14 @@ public class ApiSource {
         return swaggerUIDocBasePath;
     }
 
+    public String getHost() {
+        return host;
+    }
+
+    public void setOverridingModels(String overridingModels) {
+        this.overridingModels = overridingModels;
+    }
+
     public String getSwaggerInternalFilter() {
         return swaggerInternalFilter;
     }
@@ -162,20 +183,20 @@ public class ApiSource {
         this.swaggerInternalFilter = swaggerInternalFilter;
     }
 
-	public String getSwaggerApiReader() {
-		return swaggerApiReader;
-	}
-
-	public void setSwaggerApiReader(String swaggerApiReader) {
-		this.swaggerApiReader = swaggerApiReader;
-	}
-
-    public void setInfo(Info info) {
-        this.info = info;
+    public String getSwaggerApiReader() {
+        return swaggerApiReader;
     }
 
-    public String getHost() {
-        return host;
+    public void setSwaggerApiReader(String swaggerApiReader) {
+        this.swaggerApiReader = swaggerApiReader;
+    }
+
+    public String getApiSortComparator() {
+        return apiSortComparator;
+    }
+
+    public void setApiSortComparator(String apiSortComparator) {
+        this.apiSortComparator = apiSortComparator;
     }
 
     public void setHost(String host) {
@@ -192,6 +213,22 @@ public class ApiSource {
 
     public String getOverridingModels() {
         return overridingModels;
+    }
+
+    public boolean isSupportSpringMvc() {
+        return supportSpringMvc;
+    }
+
+    public void setSupportSpringMvc(boolean supportSpringMvc) {
+        this.supportSpringMvc = supportSpringMvc;
+    }
+
+    public String getSwaggerSchemaConverter() {
+        return swaggerSchemaConverter;
+    }
+
+    public void setSwaggerSchemaConverter(String swaggerSchemaConverter) {
+        this.swaggerSchemaConverter = swaggerSchemaConverter;
     }
 }
 

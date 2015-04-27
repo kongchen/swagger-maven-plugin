@@ -1,15 +1,15 @@
 package com.github.kongchen.swagger.docgen.mavenplugin;
 
 import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
-import com.github.kongchen.swagger.GenerateException;
+import com.github.kongchen.swagger.docgen.GenerateException;
 import com.github.kongchen.swagger.docgen.LogAdapter;
+import com.github.kongchen.swagger.docgen.Reader;
 import com.wordnik.swagger.config.FilterFactory;
 import com.wordnik.swagger.core.filter.SpecFilter;
 import com.wordnik.swagger.core.filter.SwaggerSpecFilter;
-import com.wordnik.swagger.jaxrs.Reader;
-import com.wordnik.swagger.models.Scheme;
-import com.wordnik.swagger.models.Swagger;
+//import com.wordnik.swagger.jaxrs.Reader;
 import org.apache.maven.plugin.logging.Log;
+
 
 import java.util.HashMap;
 import java.util.List;
@@ -21,28 +21,11 @@ import java.util.List;
  * 05/13/2013
  */
 public class MavenDocumentSource extends AbstractDocumentSource {
-    private final ApiSource apiSource;
+
+    private final SpecFilter specFilter = new SpecFilter();
 
     public MavenDocumentSource(ApiSource apiSource, Log log) {
-        super(new LogAdapter(log),
-                apiSource.getOutputPath(), apiSource.getTemplatePath(),
-                apiSource.getSwaggerDirectory(), apiSource.getOverridingModels());
-        swagger = new Swagger();
-        if (apiSource.getSchemes() != null) {
-            if (apiSource.getSchemes().contains(",")) {
-                for(String scheme: apiSource.getSchemes().split(",")) {
-                    swagger.scheme(Scheme.forValue(scheme));
-                }
-            } else {
-                swagger.scheme(Scheme.forValue(apiSource.getSchemes()));
-            }
-        }
-
-        swagger.setHost(apiSource.getHost());
-        swagger.setInfo(apiSource.getInfo());
-        swagger.setBasePath(apiSource.getBasePath());
-
-        this.apiSource = apiSource;
+        super(new LogAdapter(log), apiSource);
     }
 
     @Override
@@ -64,5 +47,5 @@ public class MavenDocumentSource extends AbstractDocumentSource {
                 new HashMap<String, List<String>>());
         }
 
-    }
+	}
 }

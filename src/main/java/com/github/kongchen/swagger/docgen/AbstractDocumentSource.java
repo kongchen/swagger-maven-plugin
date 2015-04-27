@@ -12,8 +12,8 @@ import com.github.jknack.handlebars.Options;
 import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.helper.StringHelpers;
 import com.github.jknack.handlebars.io.TemplateLoader;
+import com.github.kongchen.swagger.docgen.mavenplugin.ApiSource;
 import com.wordnik.swagger.models.*;
-import com.wordnik.swagger.util.Json;
 import org.apache.commons.io.FileUtils;
 
 import java.io.*;
@@ -27,108 +27,140 @@ import java.nio.charset.Charset;
  * @author: chekong 05/13/2013
  */
 public abstract class AbstractDocumentSource {
-	protected final LogAdapter LOG;
+    protected final ApiSource apiSource;
 
-	private final String outputPath;
+    protected final LogAdapter LOG;
 
-	private final String templatePath;
+    private final String outputPath;
 
-	private final String swaggerPath;
+    private final String templatePath;
 
-	private final String overridingModels;
+    private final String swaggerPath;
 
-	protected Swagger swagger;
+    private final String overridingModels;
+    ;
 
-	private ObjectMapper mapper = new ObjectMapper();
-	private boolean isSorted = false;
+    protected Swagger swagger;
 
-	public AbstractDocumentSource(LogAdapter logAdapter, String outputPath,
-								  String outputTpl, String swaggerOutput, String overridingModels) {
-		LOG = logAdapter;
-		this.outputPath = outputPath;
-		this.templatePath = outputTpl;
-		this.swaggerPath = swaggerOutput;
-		this.overridingModels = overridingModels;
-	}
+    private ObjectMapper mapper = new ObjectMapper();
+    private boolean isSorted = false;
 
-	public abstract void loadDocuments() throws Exception, GenerateException, GenerateException;
+    protected String swaggerSchemaConverter;
 
-	public void toSwaggerDocuments(String swaggerUIDocBasePath)
-			throws GenerateException {
-		mapper.configure(SerializationFeature.WRITE_EMPTY_JSON_ARRAYS, false);
-		if (swaggerPath == null) {
-			return;
-		}
-		if (!isSorted) {
-			Utils.sortSwagger(swagger);
-			isSorted = true;
-		}
-		File dir = new File(swaggerPath);
-		if (dir.isFile()) {
-			throw new GenerateException(String.format(
-					"Swagger-outputDirectory[%s] must be a directory!",
-					swaggerPath));
-		}
+    public AbstractDocumentSource(LogAdapter log, ApiSource apiSource) {
+        LOG = log;
+        this.outputPath = apiSource.getOutputPath();
+        this.templatePath = apiSource.getTemplatePath();
+        this.swaggerPath = apiSource.getSwaggerDirectory();
+        this.overridingModels = apiSource.getOverridingModels();
 
-		if (!dir.exists()) {
-			try {
-				FileUtils.forceMkdir(dir);
-			} catch (IOException e) {
-				throw new GenerateException(String.format(
-						"Create Swagger-outputDirectory[%s] failed.",
-						swaggerPath));
-			}
-		}
-		cleanupOlds(dir);
+        swagger = new com.wordnik.swagger.models.Swagger();
+        if (apiSource.getSchemes() != null) {
+            if (apiSource.getSchemes().contains(",")) {
+                for(String scheme: apiSource.getSchemes().split(",")) {
+                    swagger.scheme(com.wordnik.swagger.models.Scheme.forValue(scheme));
+                }
+            } else {
+                swagger.scheme(com.wordnik.swagger.models.Scheme.forValue(apiSource.getSchemes()));
+            }
+        }
 
-		File swaggerFile = new File(dir, "swagger.json");
-		try {
-			ObjectWriter jsonWriter = mapper.writer(new DefaultPrettyPrinter());
-			jsonWriter.writeValue(swaggerFile, swagger);
-		} catch (IOException e) {
-			throw new GenerateException(e);
-		}
-	}
+        swagger.setHost(apiSource.getHost());
+        swagger.setInfo(apiSource.getInfo());
+        swagger.setBasePath(apiSource.getBasePath());
 
-	public void loadOverridingModels() throws GenerateException {
-		if (overridingModels != null) {
-			try {
-				JsonNode readTree = mapper.readTree(this.getClass()
-						.getResourceAsStream(overridingModels));
-				for (JsonNode jsonNode : readTree) {
-					JsonNode classNameNode = jsonNode.get("className");
-					String className = classNameNode.asText();
-					JsonNode jsonStringNode = jsonNode.get("jsonString");
-					String jsonString = jsonStringNode.asText();
+        this.apiSource = apiSource;
+    }
 
 
-					// 1.5.0 does not support override models by now
-				}
-			} catch (JsonProcessingException e) {
-				throw new GenerateException(
-						String.format(
-								"Swagger-overridingModels[%s] must be a valid JSON file!",
-								overridingModels), e);
-			} catch (IOException e) {
-				throw new GenerateException(String.format(
-						"Swagger-overridingModels[%s] not found!",
-						overridingModels), e);
-			}
-		}
-	}
+    public abstract void loadDocuments() throws Exception, GenerateException;
 
-	private void cleanupOlds(File dir) {
-		if (dir.listFiles() != null) {
-			for (File f : dir.listFiles()) {
-				if (f.getName().endsWith("json")) {
-					f.delete();
-				}
-			}
-		}
-	}
+    public void toSwaggerDocuments(String swaggerUIDocBasePath)
+            throws GenerateException {
+        mapper.configure(SerializationFeature.WRITE_EMPTY_JSON_ARRAYS, false);
+        if (swaggerPath == null) {
+            return;
+        }
+        if (!isSorted) {
+            Utils.sortSwagger(swagger);
+            isSorted = true;
+        }
+        File dir = new File(swaggerPath);
+        if (dir.isFile()) {
+            throw new GenerateException(String.format(
+                    "Swagger-outputDirectory[%s] must be a directory!",
+                    swaggerPath));
+        }
 
-	private void writeInDirectory(File dir, Swagger swaggerDoc,
-			String basePath) throws GenerateException {
+        if (!dir.exists()) {
+            try {
+                FileUtils.forceMkdir(dir);
+            } catch (IOException e) {
+                throw new GenerateException(String.format(
+                        "Create Swagger-outputDirectory[%s] failed.",
+                        swaggerPath));
+            }
+        }
+        cleanupOlds(dir);
+
+        File swaggerFile = new File(dir, "swagger.json");
+        try {
+            ObjectWriter jsonWriter = mapper.writer(new DefaultPrettyPrinter());
+            jsonWriter.writeValue(swaggerFile, swagger);
+        } catch (IOException e) {
+            throw new GenerateException(e);
+        }
+    }
+
+    public void loadOverridingModels() throws GenerateException {
+        if (overridingModels != null) {
+            try {
+                JsonNode readTree = mapper.readTree(this.getClass()
+                        .getResourceAsStream(overridingModels));
+                for (JsonNode jsonNode : readTree) {
+                    JsonNode classNameNode = jsonNode.get("className");
+                    String className = classNameNode.asText();
+                    JsonNode jsonStringNode = jsonNode.get("jsonString");
+                    String jsonString = jsonStringNode.asText();
+
+                }
+            } catch (JsonProcessingException e) {
+                throw new GenerateException(
+                        String.format(
+                                "Swagger-overridingModels[%s] must be a valid JSON file!",
+                                overridingModels), e);
+            } catch (IOException e) {
+                throw new GenerateException(String.format(
+                        "Swagger-overridingModels[%s] not found!",
+                        overridingModels), e);
+            }
+        }
+
+        if (swaggerSchemaConverter != null) {
+            try {
+                LOG.info("Setting converter configuration: " + swaggerSchemaConverter);
+//                com.wordnik.swagger.converter.ModelConverters.getInstance().addConverter(
+//                        (SwaggerSchemaConverter) Class.forName(swaggerSchemaConverter).newInstance(), true);
+
+            } catch (Exception e) {
+                throw new GenerateException("Cannot load: " + swaggerSchemaConverter, e);
+            }
+        }
+
+    }
+
+    private void cleanupOlds(File dir) {
+        if (dir.listFiles() != null) {
+            for (File f : dir.listFiles()) {
+                if (f.getName().endsWith("json")) {
+                    f.delete();
+                }
+            }
+        }
+    }
+
+    private void writeInDirectory(File dir, Swagger swaggerDoc,
+                                  String basePath) throws GenerateException {
 
 //		try {
 //			File serviceFile = createFile(dir, filename);
@@ -143,111 +175,111 @@ public abstract class AbstractDocumentSource {
 //		} catch (IOException e) {
 //			throw new GenerateException(e);
 //		}
-	}
+    }
 
-	protected File createFile(File dir, String outputResourcePath)
-			throws IOException {
-		File serviceFile;
-		int i = outputResourcePath.lastIndexOf("/");
-		if (i != -1) {
-			String fileName = outputResourcePath.substring(i + 1);
-			String subDir = outputResourcePath.substring(0, i);
-			File finalDirectory = new File(dir, subDir);
-			finalDirectory.mkdirs();
-			serviceFile = new File(finalDirectory, fileName);
-		} else {
-			serviceFile = new File(dir, outputResourcePath);
-		}
-		while (!serviceFile.createNewFile()) {
-			serviceFile.delete();
-		}
-		LOG.info("Creating file " + serviceFile.getAbsolutePath());
-		return serviceFile;
-	}
+    protected File createFile(File dir, String outputResourcePath)
+            throws IOException {
+        File serviceFile;
+        int i = outputResourcePath.lastIndexOf("/");
+        if (i != -1) {
+            String fileName = outputResourcePath.substring(i + 1);
+            String subDir = outputResourcePath.substring(0, i);
+            File finalDirectory = new File(dir, subDir);
+            finalDirectory.mkdirs();
+            serviceFile = new File(finalDirectory, fileName);
+        } else {
+            serviceFile = new File(dir, outputResourcePath);
+        }
+        while (!serviceFile.createNewFile()) {
+            serviceFile.delete();
+        }
+        LOG.info("Creating file " + serviceFile.getAbsolutePath());
+        return serviceFile;
+    }
 
-	public void toDocuments() throws GenerateException {
+    public void toDocuments() throws GenerateException {
 
-		if (!isSorted) {
-			Utils.sortSwagger(swagger);
-			isSorted = true;
-		}
-		LOG.info("Writing doc to " + outputPath + "...");
+        if (!isSorted) {
+            Utils.sortSwagger(swagger);
+            isSorted = true;
+        }
+        LOG.info("Writing doc to " + outputPath + "...");
 
-		FileOutputStream fileOutputStream;
-		try {
-			fileOutputStream = new FileOutputStream(outputPath);
-		} catch (FileNotFoundException e) {
-			throw new GenerateException(e);
-		}
-		OutputStreamWriter writer = new OutputStreamWriter(fileOutputStream,
-				Charset.forName("UTF-8"));
+        FileOutputStream fileOutputStream;
+        try {
+            fileOutputStream = new FileOutputStream(outputPath);
+        } catch (FileNotFoundException e) {
+            throw new GenerateException(e);
+        }
+        OutputStreamWriter writer = new OutputStreamWriter(fileOutputStream,
+                Charset.forName("UTF-8"));
 
-		try {
-			TemplatePath tp = Utils.parseTemplateUrl(templatePath);
+        try {
+            TemplatePath tp = Utils.parseTemplateUrl(templatePath);
 
-			Handlebars handlebars = new Handlebars(tp.loader);
-			initHandlebars(handlebars);
+            Handlebars handlebars = new Handlebars(tp.loader);
+            initHandlebars(handlebars);
 
-			Template template = handlebars.compile(tp.name);
+            Template template = handlebars.compile(tp.name);
 
-			template.apply(swagger, writer);
-			writer.close();
-			LOG.info("Done!");
-		} catch (MalformedURLException e) {
-			throw new GenerateException(e);
-		} catch (IOException e) {
-			throw new GenerateException(e);
-		}
-	}
+            template.apply(swagger, writer);
+            writer.close();
+            LOG.info("Done!");
+        } catch (MalformedURLException e) {
+            throw new GenerateException(e);
+        } catch (IOException e) {
+            throw new GenerateException(e);
+        }
+    }
 
-	private void initHandlebars(Handlebars handlebars) {
-		handlebars.registerHelper("ifeq", new Helper<String>() {
-			@Override
-			public CharSequence apply(String value, Options options) throws IOException {
-				if (value == null || options.param(0) == null) return options.inverse();
-				if (value.equals(options.param(0))){
-					return options.fn();
-				}
-				return options.inverse();
-			}
-		});
+    private void initHandlebars(Handlebars handlebars) {
+        handlebars.registerHelper("ifeq", new Helper<String>() {
+            @Override
+            public CharSequence apply(String value, Options options) throws IOException {
+                if (value == null || options.param(0) == null) return options.inverse();
+                if (value.equals(options.param(0))) {
+                    return options.fn();
+                }
+                return options.inverse();
+            }
+        });
 
-		handlebars.registerHelper("basename", new Helper<String>() {
-			@Override
-			public CharSequence apply(String value, Options options) throws IOException {
-				if (value == null) return null;
-				int lastSlash = value.lastIndexOf("/");
-				if (lastSlash == -1) {
-					return value;
-				} else {
-					return value.substring(lastSlash + 1);
-				}
-			}
-		});
+        handlebars.registerHelper("basename", new Helper<String>() {
+            @Override
+            public CharSequence apply(String value, Options options) throws IOException {
+                if (value == null) return null;
+                int lastSlash = value.lastIndexOf("/");
+                if (lastSlash == -1) {
+                    return value;
+                } else {
+                    return value.substring(lastSlash + 1);
+                }
+            }
+        });
 
-		handlebars.registerHelper(StringHelpers.join.name(), StringHelpers.join);
-		handlebars.registerHelper(StringHelpers.lower.name(), StringHelpers.lower);
-	}
+        handlebars.registerHelper(StringHelpers.join.name(), StringHelpers.join);
+        handlebars.registerHelper(StringHelpers.lower.name(), StringHelpers.lower);
+    }
 
-	private String getUrlParent(URL url) {
+    private String getUrlParent(URL url) {
 
-		if (url == null) return null;
+        if (url == null) return null;
 
-		String strurl = url.toString();
-		int idx = strurl.lastIndexOf('/');
-		if (idx == -1) {
-			return strurl;
-		}
-		return strurl.substring(0,idx);
-	}
+        String strurl = url.toString();
+        int idx = strurl.lastIndexOf('/');
+        if (idx == -1) {
+            return strurl;
+        }
+        return strurl.substring(0, idx);
+    }
 
 
 }
 
 
 class TemplatePath {
-	String prefix;
-	String name;
-	String suffix;
-	public TemplateLoader loader;
+    String prefix;
+    String name;
+    String suffix;
+    public TemplateLoader loader;
 }

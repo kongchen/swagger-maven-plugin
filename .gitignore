@@ -3,3 +3,7 @@
 /test.html
 .idea
 *.iml
+/.settings/
+/.classpath
+/.project
+/generated/

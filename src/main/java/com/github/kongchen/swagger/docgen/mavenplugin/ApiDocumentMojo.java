@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.List;
 
 import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
-import com.github.kongchen.swagger.GenerateException;
+import com.github.kongchen.swagger.docgen.GenerateException;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -57,7 +57,14 @@ public class ApiDocumentMojo extends AbstractMojo {
             getLog().debug(apiSources.toString());
             for (ApiSource apiSource : apiSources) {
 
-                AbstractDocumentSource documentSource = new MavenDocumentSource(apiSource, getLog());
+                AbstractDocumentSource documentSource;
+
+                if(apiSource.isSupportSpringMvc()){
+                	documentSource = new SpringMavenDocumentSource(apiSource, getLog());
+                }else{
+                	documentSource = new MavenDocumentSource(apiSource, getLog());
+                }
+                
                 documentSource.loadOverridingModels();
                 documentSource.loadDocuments();
 				if (apiSource.getOutputPath() != null){
@@ -69,9 +76,7 @@ public class ApiDocumentMojo extends AbstractMojo {
 						}
 					}
 				}
-
-				if (apiSource.getTemplatePath()!=null)
-				{
+				if (apiSource.getTemplatePath()!=null) {
 					documentSource.toDocuments();
 				}
                 documentSource.toSwaggerDocuments(
