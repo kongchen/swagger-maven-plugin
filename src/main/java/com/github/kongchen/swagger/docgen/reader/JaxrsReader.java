@@ -1,6 +1,7 @@
-package com.github.kongchen.swagger.docgen;
+package com.github.kongchen.swagger.docgen.reader;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.kongchen.swagger.docgen.LogAdapter;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiResponse;
@@ -40,16 +41,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class Reader {
-    Logger LOGGER = LoggerFactory.getLogger(Reader.class);
+public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
+    Logger LOGGER = LoggerFactory.getLogger(JaxrsReader.class);
 
-    Swagger swagger;
     static ObjectMapper m = Json.mapper();
 
-    public Reader(Swagger swagger) {
-        this.swagger = swagger;
+    public JaxrsReader(Swagger swagger, LogAdapter LOG) {
+        super(swagger, LOG);
     }
 
+    @Override
     public Swagger read(Set<Class<?>> classes) {
         for (Class cls : classes)
             read(cls);
@@ -127,52 +128,6 @@ public class Reader {
         return swagger;
     }
 
-    private void updatePath(String operationPath, String httpMethod, Operation operation) {
-        if(httpMethod == null) {
-            return;
-        }
-        Path path = swagger.getPath(operationPath);
-        if (path == null) {
-            path = new Path();
-            swagger.path(operationPath, path);
-        }
-        path.set(httpMethod, operation);
-    }
-
-    private boolean canReadApi(boolean readHidden, Api api) {
-        return (api != null && readHidden) || (api != null && !api.hidden());
-    }
-
-    private void updateOperation(String[] apiConsumes, String[] apiProduces, Map<String, Tag> tags, List<SecurityRequirement> securities, Operation operation) {
-        if (operation == null) {
-            return;
-        }
-        if (operation.getConsumes() == null)
-            for (String mediaType : apiConsumes)
-                operation.consumes(mediaType);
-        if (operation.getProduces() == null)
-            for (String mediaType : apiProduces)
-                operation.produces(mediaType);
-
-        if (operation.getTags() == null) {
-            for (String tagString : tags.keySet())
-                operation.tag(tagString);
-        }
-        for (SecurityRequirement security : securities)
-            operation.security(security);
-    }
-
-    private void updateTagsForOperation(Operation operation, ApiOperation op) {
-        if (op != null) {
-            boolean hasExplicitTag = false;
-            for (String tag : op.tags()) {
-                if (!"".equals(tag)) {
-                    operation.tag(tag);
-                    swagger.tag(new Tag().name(tag));
-                }
-            }
-        }
-    }
 
     private void handleSubResource(String[] apiConsumes, String httpMethod, String[] apiProduces, Map<String, Tag> tags, Method method, String operationPath, Operation operation) {
         if (isSubResource(method)) {
@@ -181,6 +136,7 @@ public class Reader {
             Swagger subSwagger = read(responseClass, operationPath,httpMethod, true, apiConsumes, apiProduces, tags, operation.getParameters());
         }
     }
+
 
     private String[] updateOperationProduces(Class<?> cls, String[] parentProduces, String[] apiProduces, Operation operation) {
         Annotation annotation;
@@ -214,98 +170,9 @@ public class Reader {
         return apiConsumes;
     }
 
-    private void updateOperationProtocols(ApiOperation apiOperation, Operation operation) {
-        String protocols = apiOperation.protocols();
-        if (!"".equals(protocols)) {
-            String[] parts = protocols.split(",");
-            for (String part : parts) {
-                String trimmed = part.trim();
-                if (!"".equals(trimmed))
-                    operation.scheme(Scheme.forValue(trimmed));
-            }
-        }
-    }
-
-    private void updateOperationParameters(List<Parameter> parentParameters, Map<String, String> regexMap, Operation operation) {
-        if (parentParameters != null) {
-            for (Parameter param : parentParameters) {
-                operation.parameter(param);
-            }
-        }
-        for (Parameter param : operation.getParameters()) {
-            if (regexMap.get(param.getName()) != null) {
-                String pattern = regexMap.get(param.getName());
-                param.setPattern(pattern);
-            }
-        }
-    }
-
-    private String parseOperationPath(String operationPath, Map<String, String> regexMap) {
-        String[] pps = operationPath.split("/");
-        String[] pathParts = new String[pps.length];
 
 
-        for (int i = 0; i < pps.length; i++) {
-            String p = pps[i];
-            if (p.startsWith("{")) {
-                int pos = p.indexOf(":");
-                if (pos > 0) {
-                    String left = p.substring(1, pos);
-                    String right = p.substring(pos + 1, p.length() - 1);
-                    pathParts[i] = "{" + left + "}";
-                    regexMap.put(left, right);
-                } else
-                    pathParts[i] = p;
-            } else pathParts[i] = p;
-        }
-        StringBuilder pathBuilder = new StringBuilder();
-        for (String p : pathParts) {
-            if (!p.isEmpty())
-                pathBuilder.append("/").append(p);
-        }
-        operationPath = pathBuilder.toString();
-        return operationPath;
-    }
 
-    private List<SecurityRequirement> getSecurityRequirements(Api api) {
-        int position = api.position();
-        String produces = api.produces();
-        String consumes = api.consumes();
-        String schems = api.protocols();
-        Authorization[] authorizations = api.authorizations();
-
-        List<SecurityRequirement> securities = new ArrayList<SecurityRequirement>();
-        for (Authorization auth : authorizations) {
-            if (auth.value() != null && !"".equals(auth.value())) {
-                SecurityRequirement security = new SecurityRequirement();
-                security.setName(auth.value());
-                AuthorizationScope[] scopes = auth.scopes();
-                for (AuthorizationScope scope : scopes) {
-                    if (scope.scope() != null && !"".equals(scope.scope())) {
-                        security.addScope(scope.scope());
-                    }
-                }
-                securities.add(security);
-            }
-        }
-        return securities;
-    }
-
-    private Map<String, Tag> updateTagsForApi(Map<String, Tag> parentTags, Api api) {
-        // the value will be used as a tag for 2.0 UNLESS a Tags annotation is present
-        Set<String> tagStrings = extractTags(api);
-        Map<String, Tag> tags = new HashMap<String, Tag>();
-        for (String tagString : tagStrings) {
-            Tag tag = new Tag().name(tagString);
-            tags.put(tagString, tag);
-        }
-        if (parentTags != null)
-            tags.putAll(parentTags);
-        for (String tagName : tags.keySet()) {
-            swagger.tag(tags.get(tagName));
-        }
-        return tags;
-    }
 
     protected boolean isSubResource(Method method) {
         Type t = method.getGenericReturnType();
@@ -316,24 +183,6 @@ public class Reader {
         return false;
     }
 
-    protected Set<String> extractTags(Api api) {
-        Set<String> output = new LinkedHashSet<String>();
-
-        boolean hasExplicitTags = false;
-        for (String tag : api.tags()) {
-            if (!"".equals(tag)) {
-                hasExplicitTags = true;
-                output.add(tag);
-            }
-        }
-        if (!hasExplicitTags) {
-            // derive tag from api path + description
-            String tagString = api.value().replace("/", "");
-            if (!"".equals(tagString))
-                output.add(tagString);
-        }
-        return output;
-    }
 
     String getPath(javax.ws.rs.Path classLevelPath, javax.ws.rs.Path methodLevelPath, String parentPath) {
         if (classLevelPath == null && methodLevelPath == null)
@@ -369,43 +218,13 @@ public class Reader {
             return output;
     }
 
-    public Map<String, Property> parseResponseHeaders(com.wordnik.swagger.annotations.ResponseHeader[] headers) {
-        Map<String, Property> responseHeaders = null;
-        if (headers != null && headers.length > 0) {
-            for (com.wordnik.swagger.annotations.ResponseHeader header : headers) {
-                String name = header.name();
-                if (!"".equals(name)) {
-                    if (responseHeaders == null)
-                        responseHeaders = new HashMap<String, Property>();
-                    String description = header.description();
-                    Class<?> cls = header.response();
-                    String container = header.responseContainer();
 
-                    if (!cls.equals(java.lang.Void.class) && !"void".equals(cls.toString())) {
-                        Property responseProperty = null;
-                        Property property = ModelConverters.getInstance().readAsProperty(cls);
-                        if (property != null) {
-                            if ("list".equalsIgnoreCase(container))
-                                responseProperty = new ArrayProperty(property);
-                            else if ("map".equalsIgnoreCase(container))
-                                responseProperty = new MapProperty(property);
-                            else
-                                responseProperty = property;
-                            responseProperty.setDescription(description);
-                            responseHeaders.put(name, responseProperty);
-                        }
-                    }
-                }
-            }
-        }
-        return responseHeaders;
-    }
 
     public Operation parseMethod(Method method) {
         Operation operation = new Operation();
 
         ApiOperation apiOperation = (ApiOperation) method.getAnnotation(ApiOperation.class);
-        ApiResponses responseAnnotation = method.getAnnotation(ApiResponses.class);
+
 
         String operationId = method.getName();
         String responseContainer = null;
@@ -531,32 +350,9 @@ public class Reader {
         }
 
         List<ApiResponse> apiResponses = new ArrayList<ApiResponse>();
+        ApiResponses responseAnnotation = method.getAnnotation(ApiResponses.class);
         if (responseAnnotation != null) {
-            for (ApiResponse apiResponse : responseAnnotation.value()) {
-                Map<String, Property> responseHeaders = parseResponseHeaders(apiResponse.responseHeaders());
-
-                Response response = new Response()
-                        .description(apiResponse.message())
-                        .headers(responseHeaders);
-
-                if (apiResponse.code() == 0)
-                    operation.defaultResponse(response);
-                else
-                    operation.response(apiResponse.code(), response);
-
-                responseClass = apiResponse.response();
-                if (responseClass != null && !responseClass.equals(java.lang.Void.class)) {
-                    Map<String, Model> models = ModelConverters.getInstance().read(responseClass);
-                    for (String key : models.keySet()) {
-                        response.schema(new RefProperty().asDefault(key));
-                        swagger.model(key, models.get(key));
-                    }
-                    models = ModelConverters.getInstance().readAll(responseClass);
-                    for (String key : models.keySet()) {
-                        swagger.model(key, models.get(key));
-                    }
-                }
-            }
+            updateApiResponse(operation, responseAnnotation);
         }
         boolean isDeprecated = false;
         annotation = method.getAnnotation(Deprecated.class);
@@ -588,46 +384,7 @@ public class Reader {
         return operation;
     }
 
-    List<Parameter> getParameters(Class<?> cls, Type type, Annotation[] annotations) {
-        // look for path, query
-        boolean isArray = ParameterUtils.isMethodArgumentAnArray(cls, type);
-        Iterator<SwaggerExtension> chain = SwaggerExtensions.chain();
-        List<Parameter> parameters = null;
 
-        LOGGER.debug("getParameters for " + cls);
-        Set<Class<?>> classesToSkip = new HashSet<Class<?>>();
-        if (chain.hasNext()) {
-            SwaggerExtension extension = chain.next();
-            LOGGER.debug("trying extension " + extension);
-            parameters = extension.extractParameters(annotations, cls, isArray, classesToSkip, chain);
-        }
-
-        if (parameters.size() > 0) {
-            for (Parameter parameter : parameters) {
-                ParameterProcessor.applyAnnotations(swagger, parameter, cls, annotations, isArray);
-            }
-        } else {
-            LOGGER.debug("no parameter found, looking at body params");
-            if (classesToSkip.contains(cls) == false) {
-                if (type instanceof ParameterizedType) {
-                    ParameterizedType ti = (ParameterizedType) type;
-                    Type innerType = ti.getActualTypeArguments()[0];
-                    if (innerType instanceof Class) {
-                        Parameter param = ParameterProcessor.applyAnnotations(swagger, null, (Class) innerType, annotations, isArray);
-                        if (param != null) {
-                            parameters.add(param);
-                        }
-                    }
-                } else {
-                    Parameter param = ParameterProcessor.applyAnnotations(swagger, null, cls, annotations, isArray);
-                    if (param != null) {
-                        parameters.add(param);
-                    }
-                }
-            }
-        }
-        return parameters;
-    }
 
     public String extractOperationMethod(ApiOperation apiOperation, Method method, Iterator<SwaggerExtension> chain) {
         if (apiOperation.httpMethod() != null && !"".equals(apiOperation.httpMethod()))
@@ -655,24 +412,5 @@ public class Reader {
             return null;
     }
 
-    boolean isPrimitive(Class<?> cls) {
-        boolean out = false;
 
-        Property property = ModelConverters.getInstance().readAsProperty(cls);
-        if (property == null)
-            out = false;
-        else if ("integer".equals(property.getType()))
-            out = true;
-        else if ("string".equals(property.getType()))
-            out = true;
-        else if ("number".equals(property.getType()))
-            out = true;
-        else if ("boolean".equals(property.getType()))
-            out = true;
-        else if ("array".equals(property.getType()))
-            out = true;
-        else if ("file".equals(property.getType()))
-            out = true;
-        return out;
-    }
 }
