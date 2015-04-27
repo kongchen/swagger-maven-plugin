@@ -14,43 +14,48 @@
  *  limitations under the License.
  */
 
-package com.wordnik.sample.resource;
+package com.wordnik.springmvc;
 
-import com.wordnik.swagger.annotations.*;
+import com.wordnik.sample.JavaRestResourceUtil;
 import com.wordnik.sample.data.StoreData;
-import com.wordnik.sample.model.Order;
 import com.wordnik.sample.exception.NotFoundException;
+import com.wordnik.sample.model.Order;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
+import com.wordnik.swagger.annotations.ApiResponse;
+import com.wordnik.swagger.annotations.ApiResponses;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.Response;
-
-@Path("/store")
+@RequestMapping(value = "/store", produces = {"application/json", "application/xml"})
 @Api(value="/store" , description = "Operations about store")
-@Produces({"application/json", "application/xml"})
 public class PetStoreResource {
   static StoreData storeData = new StoreData();
   static JavaRestResourceUtil ru = new JavaRestResourceUtil();
 
-  @GET
-  @Path("/order/{orderId}")
+
+  @RequestMapping(value = "/order/{orderId}", method = RequestMethod.GET)
   @ApiOperation(value = "Find purchase order by ID",
     notes = "For valid response try integer IDs with value <= 5 or > 10. Other values will generated exceptions",
     response = Order.class)
   @ApiResponses(value = { @ApiResponse(code = 400, message = "Invalid ID supplied"),
       @ApiResponse(code = 404, message = "Order not found") })
-  public Response getOrderById(
-      @ApiParam(value = "ID of pet that needs to be fetched", allowableValues = "range[1,5]", required = true) @PathParam("orderId") String orderId)
-      throws NotFoundException {
+  public ResponseEntity<Order> getOrderById(
+      @ApiParam(value = "ID of pet that needs to be fetched", allowableValues = "range[1,5]", required = true) @PathVariable("orderId") String orderId)
+      throws com.wordnik.sample.exception.NotFoundException {
     Order order = storeData.findOrderById(ru.getLong(0, 10000, 0, orderId));
     if (null != order) {
-      return Response.ok().entity(order).build();
+      return new ResponseEntity<Order>(order, HttpStatus.OK);
     } else {
       throw new NotFoundException(404, "Order not found");
     }
   }
 
-  @POST
-  @Path("/order")
+  @RequestMapping(value = "/order", method = RequestMethod.POST)
   @ApiOperation(value = "Place an order for a pet")
   @ApiResponses({ @ApiResponse(code = 400, message = "Invalid Order") })
   public Order placeOrder(
@@ -60,15 +65,14 @@ public class PetStoreResource {
     return storeData.placeOrder(order);
   }
 
-  @DELETE
-  @Path("/order/{orderId}")
+  @RequestMapping(value = "/order/{orderId}", method = RequestMethod.DELETE)
   @ApiOperation(value = "Delete purchase order by ID",
     notes = "For valid response try integer IDs with value < 1000. Anything above 1000 or nonintegers will generate API errors")
   @ApiResponses(value = { @ApiResponse(code = 400, message = "Invalid ID supplied"),
       @ApiResponse(code = 404, message = "Order not found") })
-  public Response deleteOrder(
-      @ApiParam(value = "ID of the order that needs to be deleted", allowableValues = "range[1,infinity]", required = true) @PathParam("orderId") String orderId) {
+  public ResponseEntity deleteOrder(
+      @ApiParam(value = "ID of the order that needs to be deleted", allowableValues = "range[1,infinity]", required = true) @PathVariable("orderId") String orderId) {
     storeData.deleteOrder(ru.getLong(0, 10000, 0, orderId));
-    return Response.ok().entity("").build();
+    return new ResponseEntity(HttpStatus.OK);
   }
 }

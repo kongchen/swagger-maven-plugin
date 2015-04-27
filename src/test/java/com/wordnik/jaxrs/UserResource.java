@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package com.wordnik.sample.resource;
+package com.wordnik.jaxrs;
 
 import com.wordnik.sample.model.User;
 import com.wordnik.swagger.annotations.*;

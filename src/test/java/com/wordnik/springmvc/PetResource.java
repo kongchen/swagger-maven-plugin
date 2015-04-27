@@ -14,11 +14,12 @@
  *  limitations under the License.
  */
 
-package com.wordnik.springmvc.resource;
+package com.wordnik.springmvc;
 
-import com.wordnik.springmvc.data.PetData;
-import com.wordnik.springmvc.exception.NotFoundException;
-import com.wordnik.springmvc.model.Pet;
+import com.wordnik.sample.JavaRestResourceUtil;
+import com.wordnik.sample.data.PetData;
+import com.wordnik.sample.exception.NotFoundException;
+import com.wordnik.sample.model.Pet;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -130,13 +131,13 @@ public class PetResource {
           consumes ="application/x-www-form-urlencoded")
   @ApiResponses(value = {
           @ApiResponse(code = 405, message = "Invalid input")})
-  public ResponseEntity<com.wordnik.springmvc.model.ApiResponse> updatePetWithForm(
+  public ResponseEntity<com.wordnik.sample.model.ApiResponse> updatePetWithForm(
           @ApiParam(value = "ID of pet that needs to be updated", required = true) @PathVariable("petId") String petId,
           @ApiParam(value = "Updated name of the pet", required = false) @RequestParam("name") String name,
           @ApiParam(value = "Updated status of the pet", required = false) @RequestParam("status") String status) {
     System.out.println(name);
     System.out.println(status);
-    return new ResponseEntity<com.wordnik.springmvc.model.ApiResponse>(new com.wordnik.springmvc.model.ApiResponse(200, "SUCCESS"), HttpStatus.OK);
+    return new ResponseEntity<com.wordnik.sample.model.ApiResponse>(new com.wordnik.sample.model.ApiResponse(200, "SUCCESS"), HttpStatus.OK);
   }
 
   @ApiOperation(value = "Returns pet", response = Pet.class)

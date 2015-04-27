@@ -14,11 +14,18 @@
  *  limitations under the License.
  */
 
-package com.wordnik.sample.resource;
+package com.wordnik.jaxrs;
 
-import com.wordnik.swagger.annotations.*;
+import com.wordnik.sample.JavaRestResourceUtil;
 import com.wordnik.sample.data.PetData;
 import com.wordnik.sample.model.Pet;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
+import com.wordnik.swagger.annotations.ApiResponse;
+import com.wordnik.swagger.annotations.ApiResponses;
+import com.wordnik.swagger.annotations.Authorization;
+import com.wordnik.swagger.annotations.AuthorizationScope;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;

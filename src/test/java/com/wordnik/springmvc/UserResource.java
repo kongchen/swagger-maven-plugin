@@ -14,11 +14,11 @@
  *  limitations under the License.
  */
 
-package com.wordnik.springmvc.resource;
+package com.wordnik.springmvc;
 
-import com.wordnik.springmvc.data.UserData;
-import com.wordnik.springmvc.exception.ApiException;
-import com.wordnik.springmvc.model.User;
+import com.wordnik.sample.data.UserData;
+import com.wordnik.sample.exception.ApiException;
+import com.wordnik.sample.model.User;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -113,7 +113,7 @@ public class UserResource {
     if (null != user) {
       return new ResponseEntity<User>(user, HttpStatus.OK);
     } else {
-      throw new com.wordnik.springmvc.exception.NotFoundException(404, "User not found");
+      throw new com.wordnik.sample.exception.NotFoundException(404, "User not found");
     }
   }
 

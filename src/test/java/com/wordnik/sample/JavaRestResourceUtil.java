@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package com.wordnik.springmvc.resource;
+package com.wordnik.sample;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

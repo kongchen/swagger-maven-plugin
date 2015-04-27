@@ -9,7 +9,7 @@
                     <apiSources>
                         <apiSource>
                             <supportSpringMvc>false</supportSpringMvc>
-                            <locations>com.wordnik.sample</locations>
+                            <locations>com.wordnik.jaxrs</locations>
                             <schemes>http,https</schemes>
                             <host>www.example.com:8080</host>
                             <basePath>/api</basePath>
