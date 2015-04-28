@@ -31,15 +31,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -143,8 +140,8 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
                 String[] apiProduces = requestMapping.produces();
                 String[] apiConsumes = requestMapping.consumes();
 
-                apiProduces = (apiProduces == null || apiProduces.length == 0 ) ? controllerProduces : apiProduces;
-                apiConsumes = (apiConsumes == null || apiProduces.length == 0 ) ? controllerConsumes : apiConsumes;
+                apiProduces = (apiProduces == null || apiProduces.length == 0) ? controllerProduces : apiProduces;
+                apiConsumes = (apiConsumes == null || apiProduces.length == 0) ? controllerConsumes : apiConsumes;
 
                 apiConsumes = updateOperationConsumes(new String[0], apiConsumes, operation);
                 apiProduces = updateOperationProduces(new String[0], apiProduces, operation);
@@ -153,23 +150,11 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
                 updateTagsForOperation(operation, op);
                 updateOperation(apiConsumes, apiProduces, tags, resourceSecurities, operation);
                 updatePath(operationPath, httpMethod, operation);
-
-
             }
 
         }
         return swagger;
     }
-
-
-//    private void handleSubResource(String[] apiConsumes, String httpMethod, String[] apiProduces, Map<String, Tag> tags, Method method, String operationPath, Operation operation) {
-//        if (isSubResource(method)) {
-//            Type t = method.getGenericReturnType();
-//            Class<?> responseClass = method.getReturnType();
-//            Swagger subSwagger = read(responseClass, operationPath,httpMethod, true, apiConsumes, apiProduces, tags, operation.getParameters());
-//        }
-//    }
-
 
     private Operation parseMethod(Method method) {
         Operation operation = new Operation();
@@ -370,47 +355,6 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         return apiMethodMap;
     }
 
-    private SecurityDefinition getSecurityDefinition(Authorization[] annotations) {
-        SecurityDefinition securityDefinition = new SecurityDefinition();
-        for (Authorization authorization : annotations) {
-            List<AuthorizationScope> scopes = new ArrayList<AuthorizationScope>();
-            for (AuthorizationScope scope : authorization.scopes()) {
-
-                securityDefinition.addScope(scope.scope(), scope.description());
-            }
-
-        }
-        return securityDefinition;
-    }
-
-    //--------Swagger Resource Generators--------//
-
-
-    private String generateBasePath(String bPath, String rPath) {
-        String domain = "";
-
-        //check for two character domain at beginning of resourcePath
-        if (rPath.charAt(2) == '/') {
-            domain = rPath.substring(0, 2);
-            this.resourcePath = rPath.substring(2);
-        } else if (rPath.charAt(3) == '/') {
-            domain = rPath.substring(1, 3);
-            this.resourcePath = rPath.substring(3);
-        }
-
-        //check for first & trailing backslash
-        if (bPath.lastIndexOf('/') != (bPath.length() - 1) && StringUtils.isNotEmpty(domain)) {
-            bPath = bPath + '/';
-        }
-
-        //TODO this should be done elsewhere
-        if (this.resourcePath.charAt(0) != '/') {
-            this.resourcePath = '/' + this.resourcePath;
-        }
-
-        return bPath + domain;
-    }
-
     private String generateFullPath(String path) {
         if (StringUtils.isNotEmpty(path)) {
             return this.resourcePath + (path.startsWith("/") ? path : '/' + path);
@@ -418,95 +362,6 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
             return this.resourcePath;
         }
     }
-
-    String getPath(RequestMapping classLevelPath, RequestMapping methodLevelPath, String parentPath) {
-        if (classLevelPath == null && methodLevelPath == null)
-            return null;
-        StringBuilder b = new StringBuilder();
-        if (parentPath != null && !"".equals(parentPath) && !"/".equals(parentPath)) {
-            if (!parentPath.startsWith("/"))
-                parentPath = "/" + parentPath;
-            if (parentPath.endsWith("/"))
-                parentPath = parentPath.substring(0, parentPath.length() - 1);
-
-            b.append(parentPath);
-        }
-        if (classLevelPath != null) {
-            b.append(classLevelPath.value());
-        }
-        if (methodLevelPath != null && !"/".equals(methodLevelPath.value())) {
-            String methodPath = methodLevelPath.value()[0];
-            if (!methodPath.startsWith("/") && !b.toString().endsWith("/")) {
-                b.append("/");
-            }
-            if (methodPath.endsWith("/")) {
-                methodPath = methodPath.substring(0, methodPath.length() - 1);
-            }
-            b.append(methodPath);
-        }
-        String output = b.toString();
-        if (!output.startsWith("/"))
-            output = "/" + output;
-        if (output.endsWith("/") && output.length() > 1)
-            return output.substring(0, output.length() - 1);
-        else
-            return output;
-    }
-
-    private Field[] sortFields(Class<?> clazz) {
-        Field[] sortedFields = clazz.getDeclaredFields();
-        Arrays.sort(sortedFields, new Comparator<Field>() {
-            @Override
-            public int compare(Field o1, Field o2) {
-                return o1.getName().compareTo(o2.getName());
-            }
-        });
-        return sortedFields;
-    }
-
-    private Method[] sortMethods(Class<?> clazz) {
-        Method[] ms = clazz.getMethods();
-        Arrays.sort(ms, new Comparator<Method>() {
-            @Override
-            public int compare(Method o1, Method o2) {
-                String m1 = getModelNameFromGetterMethodName(o1);
-                String m2 = getModelNameFromGetterMethodName(o2);
-                if (m1 != null) {
-                    if (m2 != null) {
-                        return m1.compareTo(m2);
-                    } else {
-                        return 1;
-                    }
-                } else {
-                    if (m2 == null) {
-                        return o1.getName().compareTo(o2.getName());
-                    } else {
-                        return -1;
-                    }
-                }
-            }
-        });
-        return ms;
-    }
-
-    private String getModelNameFromGetterMethodName(Method method) {
-        String name = null;
-        if ((method.getName().startsWith("get") || method.getName().startsWith("is"))
-                && !(method.getName().equals("getClass"))) {
-            try {
-                if (method.getName().startsWith("get")) {
-                    name = method.getName().substring(3);
-                } else {
-                    name = method.getName().substring(2);
-                }
-                String firstLetter = name.substring(0, 1).toLowerCase(); //convert to camel case
-                name = firstLetter + name.substring(1);
-            } catch (Exception e) {
-            }
-        }
-        return name;
-    }
-
 
     private Class<?> getGenericSubtype(Class<?> clazz, Type t) {
         if (!(clazz.getName().equals("void") || t.toString().equals("void"))) {
@@ -522,33 +377,6 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
             }
         }
         return clazz;
-    }
-
-    private void addToModels(Class<?> clazz) {
-
-        Map<String, Model> models = ModelConverters.getInstance().read(clazz);
-        for (String key : models.keySet()) {
-            swagger.model(key, models.get(key));
-        }
-        models = ModelConverters.getInstance().readAll(clazz);
-        for (String key : models.keySet()) {
-            swagger.model(key, models.get(key));
-        }
-
-    }
-
-
-    private String generateTypeString(String clazzName) {
-        String typeString = clazzName;
-
-        try {
-            if (isPrimitive(Class.forName(clazzName))) {
-                typeString = clazzName.toLowerCase();
-            }
-        } catch (ClassNotFoundException e) {
-
-        }
-        return typeString;
     }
 
     //Helper method for loadDocuments()
