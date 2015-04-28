@@ -113,8 +113,16 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
 
                 String[] apiConsumes = new String[0];
                 String[] apiProduces = new String[0];
-                apiConsumes = updateOperationConsumes(cls, parentConsumes, apiConsumes, operation);
-                apiProduces = updateOperationProduces(cls, parentProduces, apiProduces, operation);
+
+                Annotation annotation = cls.getAnnotation(Consumes.class);
+                if (annotation != null)
+                    apiConsumes = ((Consumes) annotation).value();
+                annotation = cls.getAnnotation(Produces.class);
+                if (annotation != null)
+                    apiProduces = ((Produces) annotation).value();
+
+                apiConsumes = updateOperationConsumes(parentConsumes, apiConsumes, operation);
+                apiProduces = updateOperationProduces(parentProduces, apiProduces, operation);
 
                 handleSubResource(apiConsumes, httpMethod, apiProduces, tags, method, operationPath, operation);
 
@@ -136,46 +144,9 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         if (isSubResource(method)) {
             Type t = method.getGenericReturnType();
             Class<?> responseClass = method.getReturnType();
-            Swagger subSwagger = read(responseClass, operationPath,httpMethod, true, apiConsumes, apiProduces, tags, operation.getParameters());
+            Swagger subSwagger = read(responseClass, operationPath, httpMethod, true, apiConsumes, apiProduces, tags, operation.getParameters());
         }
     }
-
-
-    private String[] updateOperationProduces(Class<?> cls, String[] parentProduces, String[] apiProduces, Operation operation) {
-        Annotation annotation;
-
-        annotation = cls.getAnnotation(Produces.class);
-        if (annotation != null)
-            apiProduces = ((Produces) annotation).value();
-
-        if (parentProduces != null) {
-            Set<String> both = new HashSet<String>(Arrays.asList(apiProduces));
-            both.addAll(new HashSet<String>(Arrays.asList(parentProduces)));
-            if (operation.getProduces() != null)
-                both.addAll(new HashSet<String>(operation.getProduces()));
-            apiProduces = both.toArray(new String[both.size()]);
-        }
-        return apiProduces;
-    }
-
-    private String[] updateOperationConsumes(Class<?> cls, String[] parentConsumes, String[] apiConsumes, Operation operation) {
-        Annotation annotation;
-        annotation = cls.getAnnotation(Consumes.class);
-        if (annotation != null)
-            apiConsumes = ((Consumes) annotation).value();
-        if (parentConsumes != null) {
-            Set<String> both = new HashSet<String>(Arrays.asList(apiConsumes));
-            both.addAll(new HashSet<String>(Arrays.asList(parentConsumes)));
-            if (operation.getConsumes() != null)
-                both.addAll(new HashSet<String>(operation.getConsumes()));
-            apiConsumes = both.toArray(new String[both.size()]);
-        }
-        return apiConsumes;
-    }
-
-
-
-
 
     protected boolean isSubResource(Method method) {
         Type t = method.getGenericReturnType();
@@ -185,7 +156,6 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         }
         return false;
     }
-
 
     String getPath(javax.ws.rs.Path classLevelPath, javax.ws.rs.Path methodLevelPath, String parentPath) {
         if (classLevelPath == null && methodLevelPath == null)
@@ -220,7 +190,6 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         else
             return output;
     }
-
 
 
     public Operation parseMethod(Method method) {
@@ -386,7 +355,6 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         }
         return operation;
     }
-
 
 
     public String extractOperationMethod(ApiOperation apiOperation, Method method, Iterator<SwaggerExtension> chain) {

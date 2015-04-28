@@ -30,6 +30,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -337,6 +338,30 @@ public class AbstractReader {
                 }
             }
         }
+    }
+
+    protected String[] updateOperationProduces(String[] parentProduces, String[] apiProduces, Operation operation) {
+
+        if (parentProduces != null) {
+            Set<String> both = new HashSet<String>(Arrays.asList(apiProduces));
+            both.addAll(new HashSet<String>(Arrays.asList(parentProduces)));
+            if (operation.getProduces() != null)
+                both.addAll(new HashSet<String>(operation.getProduces()));
+            apiProduces = both.toArray(new String[both.size()]);
+        }
+        return apiProduces;
+    }
+
+    protected String[] updateOperationConsumes(String[] parentConsumes, String[] apiConsumes, Operation operation) {
+
+        if (parentConsumes != null) {
+            Set<String> both = new HashSet<String>(Arrays.asList(apiConsumes));
+            both.addAll(new HashSet<String>(Arrays.asList(parentConsumes)));
+            if (operation.getConsumes() != null)
+                both.addAll(new HashSet<String>(operation.getConsumes()));
+            apiConsumes = both.toArray(new String[both.size()]);
+        }
+        return apiConsumes;
     }
 }
 

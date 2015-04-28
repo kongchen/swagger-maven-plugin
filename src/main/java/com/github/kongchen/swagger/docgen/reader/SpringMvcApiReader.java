@@ -15,7 +15,6 @@ import com.wordnik.swagger.jaxrs.ext.SwaggerExtension;
 import com.wordnik.swagger.jaxrs.ext.SwaggerExtensions;
 import com.wordnik.swagger.models.Model;
 import com.wordnik.swagger.models.Operation;
-import com.wordnik.swagger.models.Path;
 import com.wordnik.swagger.models.Response;
 import com.wordnik.swagger.models.SecurityDefinition;
 import com.wordnik.swagger.models.SecurityRequirement;
@@ -63,10 +62,10 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         //relate all methods to one base request mapping if multiple controllers exist for that mapping
         //get all methods from each controller & find their request mapping
         //create map - resource string (after first slash) as key, new SpringResource as value
-        Map<String, SpringResource> resourceMap =  generateResourceMap(classes);
+        Map<String, SpringResource> resourceMap = generateResourceMap(classes);
         for (String str : resourceMap.keySet()) {
             SpringResource resource = resourceMap.get(str);
-            swagger = read(resource);
+            read(resource);
         }
 
         return swagger;
@@ -77,6 +76,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         if (swagger == null) {
             swagger = new Swagger();
         }
+        String description;
         List<Method> methods = resource.getMethods();
         Map<String, Tag> tags = new HashMap<String, Tag>();
 
@@ -84,80 +84,75 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
 
         // Add the description from the controller api
         Class<?> controller = resource.getControllerClass();
-        RequestMapping apiPath = controller.getAnnotation(RequestMapping.class);
+        RequestMapping controllerRM = controller.getAnnotation(RequestMapping.class);
 
+
+        String[] controllerProduces = new String[0];
+        String[] controllerConsumes = new String[0];
+        if (controllerRM != null) {
+            controllerConsumes = controllerRM.consumes();
+            controllerProduces = controllerRM.produces();
+        }
 
         if (controller != null && controller.isAnnotationPresent(Api.class)) {
             Api api = controller.getAnnotation(Api.class);
             if (!canReadApi(false, api)) {
-                return null;
+                return swagger;
             }
             tags = updateTagsForApi(null, api);
-
             resourceSecurities = getSecurityRequirements(api);
-
-//            description = api.description();
-//            position = api.position();
+            description = api.description();
         }
 
         resourcePath = resource.getControllerMapping();
 
-        Map<String, List<Method>> apiMethodMap = new HashMap<String, List<Method>>();
-
         //collect api from method with @RequestMapping
-        collectApisByRequestMapping(methods, apiMethodMap);
+        Map<String, List<Method>> apiMethodMap = collectApisByRequestMapping(methods);
 
-        for (String p : apiMethodMap.keySet()) {
-            List<Operation> operations = new ArrayList<Operation>();
-
-            for (Method method : apiMethodMap.get(p)) {
+        for (String path : apiMethodMap.keySet()) {
+            for (Method method : apiMethodMap.get(path)) {
 
                 RequestMapping requestMapping = method.getAnnotation(RequestMapping.class);
+                if (requestMapping == null) {
+                    continue;
+                }
                 ApiOperation apiOperation = method.getAnnotation(ApiOperation.class);
-
-                String operationPath = p;
-                //getPath(apiPath, requestMapping, "");
-                String operationId;
+                if (apiOperation == null) {
+                    continue;
+                }
                 String httpMethod = null;
 
-                if (operationPath != null && apiOperation != null) {
 
+                Map<String, String> regexMap = new HashMap<String, String>();
+                String operationPath = parseOperationPath(path, regexMap);
 
-                    Map<String, String> regexMap = new HashMap<String, String>();
-                    operationPath = parseOperationPath(operationPath, regexMap);
-
-                    //http method
-                    if (requestMapping.method() != null && requestMapping.method().length != 0) {
-                        httpMethod = requestMapping.method()[0].toString().toLowerCase();
+                //http method
+                if (requestMapping.method() != null && requestMapping.method().length != 0) {
+                    httpMethod = requestMapping.method()[0].toString().toLowerCase();
+                    if (httpMethod == null) {
+                        continue;
                     }
-
-                    Operation operation = parseMethod(method);
-
-                    updateOperationParameters(new ArrayList<Parameter>(), regexMap, operation);
-
-                    updateOperationProtocols(apiOperation, operation);
-
-                    String[] apiConsumes = new String[0];
-                    String[] apiProduces = new String[0];
-                    RequestMapping rm = controller.getAnnotation(RequestMapping.class);
-
-                    String[] pps = new String[0];
-                    String[] pcs = new String[0];
-                    if (rm != null) {
-                        pcs = rm.consumes();
-                        pps = rm.produces();
-                    }
-
-                    apiConsumes = updateOperationConsumes(method, pcs, apiConsumes, operation);
-                    apiProduces = updateOperationProduces(method, pps, apiProduces, operation);
-
-                    // can't continue without a valid http method
-//                    httpMethod = httpMethod == null ? parentMethod : httpMethod;
-                    ApiOperation op = method.getAnnotation(ApiOperation.class);
-                    updateTagsForOperation(operation, op);
-                    updateOperation(apiConsumes, apiProduces, tags, resourceSecurities, operation);
-                    updatePath(operationPath, httpMethod, operation);
                 }
+
+                Operation operation = parseMethod(method);
+
+                updateOperationParameters(new ArrayList<Parameter>(), regexMap, operation);
+
+                updateOperationProtocols(apiOperation, operation);
+
+                String[] apiProduces = requestMapping.produces();
+                String[] apiConsumes = requestMapping.consumes();
+
+                apiProduces = (apiProduces == null || apiProduces.length == 0 ) ? controllerProduces : apiProduces;
+                apiConsumes = (apiConsumes == null || apiProduces.length == 0 ) ? controllerConsumes : apiConsumes;
+
+                apiConsumes = updateOperationConsumes(new String[0], apiConsumes, operation);
+                apiProduces = updateOperationProduces(new String[0], apiProduces, operation);
+
+                ApiOperation op = method.getAnnotation(ApiOperation.class);
+                updateTagsForOperation(operation, op);
+                updateOperation(apiConsumes, apiProduces, tags, resourceSecurities, operation);
+                updatePath(operationPath, httpMethod, operation);
 
 
             }
@@ -175,40 +170,10 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
 //        }
 //    }
 
-    private String[] updateOperationProduces(Method cls, String[] parentProduces, String[] apiProduces, Operation operation) {
-        RequestMapping requestMapping = cls.getAnnotation(RequestMapping.class);
-        if (requestMapping != null)
-            apiProduces = requestMapping.produces();
-
-        if (parentProduces != null) {
-            Set<String> both = new HashSet<String>(Arrays.asList(apiProduces));
-            both.addAll(new HashSet<String>(Arrays.asList(parentProduces)));
-            if (operation.getProduces() != null)
-                both.addAll(new HashSet<String>(operation.getProduces()));
-            apiProduces = both.toArray(new String[both.size()]);
-        }
-        return apiProduces;
-    }
-
-    private String[] updateOperationConsumes(Method cls, String[] parentConsumes, String[] apiConsumes, Operation operation) {
-
-        RequestMapping requestMapping = cls.getAnnotation(RequestMapping.class);
-        if (requestMapping != null)
-            apiConsumes = requestMapping.consumes();
-
-        if (parentConsumes != null) {
-            Set<String> both = new HashSet<String>(Arrays.asList(apiConsumes));
-            both.addAll(new HashSet<String>(Arrays.asList(parentConsumes)));
-            if (operation.getConsumes() != null)
-                both.addAll(new HashSet<String>(operation.getConsumes()));
-            apiConsumes = both.toArray(new String[both.size()]);
-        }
-        return apiConsumes;
-    }
-
 
     private Operation parseMethod(Method method) {
         Operation operation = new Operation();
+
         RequestMapping requestMapping = method.getAnnotation(RequestMapping.class);
         Class<?> responseClass = null;
         List<String> produces = new ArrayList<String>();
@@ -258,6 +223,8 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         }
 
         if (responseClass == null) {
+            // pick out response from method declaration
+            LOG.info("picking up response class from method " + method);
             Type t = method.getGenericReturnType();
             responseClass = method.getReturnType();
             if (responseClass.equals(ResponseEntity.class)) {
@@ -379,7 +346,8 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
     }
 
 
-    private void collectApisByRequestMapping(List<Method> methods, Map<String, List<Method>> apiMethodMap) {
+    private Map<String, List<Method>> collectApisByRequestMapping(List<Method> methods) {
+        Map<String, List<Method>> apiMethodMap = new HashMap<String, List<Method>>();
         for (Method method : methods) {
             if (method.isAnnotationPresent(RequestMapping.class)) {
                 RequestMapping requestMapping = method.getAnnotation(RequestMapping.class);
@@ -398,6 +366,8 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
                 }
             }
         }
+
+        return apiMethodMap;
     }
 
     private SecurityDefinition getSecurityDefinition(Authorization[] annotations) {
