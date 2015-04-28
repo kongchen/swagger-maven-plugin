@@ -7,20 +7,16 @@ import com.github.kongchen.swagger.docgen.spring.SpringSwaggerExtension;
 import com.github.kongchen.swagger.docgen.util.SprintUtils;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiResponse;
 import com.wordnik.swagger.annotations.ApiResponses;
 import com.wordnik.swagger.annotations.Authorization;
 import com.wordnik.swagger.annotations.AuthorizationScope;
 import com.wordnik.swagger.converter.ModelConverters;
-import com.wordnik.swagger.jaxrs.ParameterProcessor;
 import com.wordnik.swagger.jaxrs.ext.SwaggerExtension;
 import com.wordnik.swagger.jaxrs.ext.SwaggerExtensions;
-import com.wordnik.swagger.jaxrs.utils.ParameterUtils;
 import com.wordnik.swagger.models.Model;
 import com.wordnik.swagger.models.Operation;
 import com.wordnik.swagger.models.Path;
 import com.wordnik.swagger.models.Response;
-import com.wordnik.swagger.models.Scheme;
 import com.wordnik.swagger.models.SecurityDefinition;
 import com.wordnik.swagger.models.SecurityRequirement;
 import com.wordnik.swagger.models.Swagger;
@@ -40,7 +36,14 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerReader {
     private String resourcePath;
@@ -56,119 +59,18 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
     }
 
     @Override
-    public Swagger read(Set<Class<?>> validClasses) throws GenerateException {
-        Map<String, SpringResource> resourceMap = new HashMap<String, SpringResource>();
-
+    public Swagger read(Set<Class<?>> classes) throws GenerateException {
         //relate all methods to one base request mapping if multiple controllers exist for that mapping
         //get all methods from each controller & find their request mapping
         //create map - resource string (after first slash) as key, new SpringResource as value
-        resourceMap = generateResourceMap(resourceMap, validClasses);
+        Map<String, SpringResource> resourceMap =  generateResourceMap(classes);
         for (String str : resourceMap.keySet()) {
-            Path doc = null;
             SpringResource resource = resourceMap.get(str);
-
-            try {
-                swagger = read(resource);
-
-            } catch (Exception e) {
-                LOG.error("DOC NOT GENERATED FOR: " + resource.getResourceName());
-                e.printStackTrace();
-            }
-            if (doc == null) continue;
-
+            swagger = read(resource);
         }
 
         return swagger;
     }
-
-    //Helper method for loadDocuments()
-    private Map<String, SpringResource> analyzeController(Class<?> clazz, Map<String, SpringResource> resourceMap,
-                                                          String description) throws ClassNotFoundException {
-
-        for (int i = 0; i < clazz.getAnnotation(RequestMapping.class).value().length; i++) {
-            String controllerMapping = clazz.getAnnotation(RequestMapping.class).value()[i];
-            String resourceName = SprintUtils.parseResourceName(clazz);
-            for (Method method : clazz.getMethods()) {
-                if (method.isAnnotationPresent(RequestMapping.class)) {
-                    RequestMapping methodReq = method.getAnnotation(RequestMapping.class);
-                    if (methodReq.value() == null || methodReq.value().length == 0 || SprintUtils.parseResourceName(methodReq.value()[0]).equals("")) {
-                        if (resourceName.length() != 0) {
-                            String resourceKey = SprintUtils.createResourceKey(resourceName, SprintUtils.parseVersion(controllerMapping));
-                            if ((!(resourceMap.containsKey(resourceKey)))) {
-                                resourceMap.put(resourceKey, new SpringResource(clazz, resourceName, resourceKey, description));
-                            }
-                            resourceMap.get(resourceKey).addMethod(method);
-                        }
-                    }
-                }
-            }
-        }
-        clazz.getFields();
-        clazz.getDeclaredFields(); //<--In case developer declares a field without an associated getter/setter.
-        //this will allow NoClassDefFoundError to be caught before it triggers bamboo failure.
-
-        return resourceMap;
-    }
-
-    private Map<String, SpringResource> generateResourceMap(Map<String, SpringResource> resourceMap, Set<Class<?>> validClasses) throws GenerateException {
-        for (Class<?> c : validClasses) {
-            RequestMapping requestMapping = c.getAnnotation(RequestMapping.class);
-            String description = "";
-            if (requestMapping != null && requestMapping.value().length != 0) {
-                //This try/catch block is to stop a bamboo build from failing due to NoClassDefFoundError
-                //This occurs when a class or method loaded by reflections contains a type that has no dependency
-                try {
-                    resourceMap = analyzeController(c, resourceMap, description);
-                    List<Method> mList = new ArrayList<Method>(Arrays.asList(c.getMethods()));
-                    if (c.getSuperclass() != null) {
-                        mList.addAll(Arrays.asList(c.getSuperclass().getMethods()));
-                    }
-                    for (Method method : mList) {
-                        if (method.isAnnotationPresent(RequestMapping.class)) {
-                            RequestMapping methodReq = method.getAnnotation(RequestMapping.class);
-                            //isolate resource name - attempt first by the first part of the mapping
-                            if (methodReq != null && methodReq.value().length != 0) {
-                                for (int i = 0; i < methodReq.value().length; i++) {
-                                    String resourceKey = "";
-                                    String resourceName = SprintUtils.parseResourceName(methodReq.value()[i]);
-                                    if (!(resourceName.equals(""))) {
-                                        String version = SprintUtils.parseVersion(requestMapping.value()[0]);
-                                        //get version - first try by class mapping, then method
-                                        if (version.equals("")) {
-                                            //class mapping failed - use method
-                                            version = SprintUtils.parseVersion(methodReq.value()[i]);
-                                        }
-                                        resourceKey = SprintUtils.createResourceKey(resourceName, version);
-                                        if ((!(resourceMap.containsKey(resourceKey)))) {
-                                            resourceMap.put(resourceKey, new SpringResource(c, resourceName, resourceKey, description));
-                                        }
-                                        resourceMap.get(resourceKey).addMethod(method);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                } catch (NoClassDefFoundError e) {
-                    LOG.error(e.getMessage());
-                    LOG.info(c.getName());
-                    //exception occurs when a method type or annotation is not recognized by the plugin
-                } catch (ClassNotFoundException e) {
-                    LOG.error(e.getMessage());
-                    LOG.info(c.getName());
-                }
-
-            }
-        }
-        return resourceMap;
-    }
-
-
-
-
-
-
-
-
 
 
     public Swagger read(SpringResource resource) {
@@ -263,9 +165,6 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         }
         return swagger;
     }
-
-
-
 
 
 //    private void handleSubResource(String[] apiConsumes, String httpMethod, String[] apiProduces, Map<String, Tag> tags, Method method, String operationPath, Operation operation) {
@@ -480,8 +379,6 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
     }
 
 
-
-
     private void collectApisByRequestMapping(List<Method> methods, Map<String, List<Method>> apiMethodMap) {
         for (Method method : methods) {
             if (method.isAnnotationPresent(RequestMapping.class)) {
@@ -684,5 +581,85 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         return typeString;
     }
 
+    //Helper method for loadDocuments()
+    private Map<String, SpringResource> analyzeController(Class<?> clazz, Map<String, SpringResource> resourceMap, String description) throws ClassNotFoundException {
+
+        for (int i = 0; i < clazz.getAnnotation(RequestMapping.class).value().length; i++) {
+            String controllerMapping = clazz.getAnnotation(RequestMapping.class).value()[i];
+            String resourceName = SprintUtils.parseResourceName(clazz);
+            for (Method method : clazz.getMethods()) {
+                if (method.isAnnotationPresent(RequestMapping.class)) {
+                    RequestMapping methodReq = method.getAnnotation(RequestMapping.class);
+                    if (methodReq.value() == null || methodReq.value().length == 0 || SprintUtils.parseResourceName(methodReq.value()[0]).equals("")) {
+                        if (resourceName.length() != 0) {
+                            String resourceKey = SprintUtils.createResourceKey(resourceName, SprintUtils.parseVersion(controllerMapping));
+                            if ((!(resourceMap.containsKey(resourceKey)))) {
+                                resourceMap.put(resourceKey, new SpringResource(clazz, resourceName, resourceKey, description));
+                            }
+                            resourceMap.get(resourceKey).addMethod(method);
+                        }
+                    }
+                }
+            }
+        }
+        clazz.getFields();
+        clazz.getDeclaredFields(); //<--In case developer declares a field without an associated getter/setter.
+        //this will allow NoClassDefFoundError to be caught before it triggers bamboo failure.
+
+        return resourceMap;
+    }
+
+    private Map<String, SpringResource> generateResourceMap(Set<Class<?>> validClasses) throws GenerateException {
+        Map<String, SpringResource> resourceMap = new HashMap<String, SpringResource>();
+        for (Class<?> c : validClasses) {
+            RequestMapping requestMapping = c.getAnnotation(RequestMapping.class);
+            String description = "";
+            if (requestMapping != null && requestMapping.value().length != 0) {
+                //This try/catch block is to stop a bamboo build from failing due to NoClassDefFoundError
+                //This occurs when a class or method loaded by reflections contains a type that has no dependency
+                try {
+                    resourceMap = analyzeController(c, resourceMap, description);
+                    List<Method> mList = new ArrayList<Method>(Arrays.asList(c.getMethods()));
+                    if (c.getSuperclass() != null) {
+                        mList.addAll(Arrays.asList(c.getSuperclass().getMethods()));
+                    }
+                    for (Method method : mList) {
+                        if (method.isAnnotationPresent(RequestMapping.class)) {
+                            RequestMapping methodReq = method.getAnnotation(RequestMapping.class);
+                            //isolate resource name - attempt first by the first part of the mapping
+                            if (methodReq != null && methodReq.value().length != 0) {
+                                for (int i = 0; i < methodReq.value().length; i++) {
+                                    String resourceKey = "";
+                                    String resourceName = SprintUtils.parseResourceName(methodReq.value()[i]);
+                                    if (!(resourceName.equals(""))) {
+                                        String version = SprintUtils.parseVersion(requestMapping.value()[0]);
+                                        //get version - first try by class mapping, then method
+                                        if (version.equals("")) {
+                                            //class mapping failed - use method
+                                            version = SprintUtils.parseVersion(methodReq.value()[i]);
+                                        }
+                                        resourceKey = SprintUtils.createResourceKey(resourceName, version);
+                                        if ((!(resourceMap.containsKey(resourceKey)))) {
+                                            resourceMap.put(resourceKey, new SpringResource(c, resourceName, resourceKey, description));
+                                        }
+                                        resourceMap.get(resourceKey).addMethod(method);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } catch (NoClassDefFoundError e) {
+                    LOG.error(e.getMessage());
+                    LOG.info(c.getName());
+                    //exception occurs when a method type or annotation is not recognized by the plugin
+                } catch (ClassNotFoundException e) {
+                    LOG.error(e.getMessage());
+                    LOG.info(c.getName());
+                }
+
+            }
+        }
+        return resourceMap;
+    }
 
 }
