@@ -22,7 +22,7 @@ There's a [sample here](https://github.com/kongchen/swagger-maven-example), just
 <plugin>
     <groupId>com.github.kongchen</groupId>
     <artifactId>swagger-maven-plugin</artifactId>
-    <version>3.0-M2-SNAPSHOT</version>
+    <version>3.0.0</version>
     <configuration>
         <apiSources>
             <apiSource>
