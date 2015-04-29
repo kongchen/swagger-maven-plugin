@@ -67,6 +67,9 @@ public class Utils {
             }
         };
         TreeMap<String, Path> sortedMap = new TreeMap<String, Path>(strcomp);
+        if(swagger.getPaths() == null) {
+            return;
+        }
         sortedMap.putAll(swagger.getPaths());
         swagger.paths(sortedMap);
 
