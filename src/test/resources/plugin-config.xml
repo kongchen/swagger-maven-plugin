@@ -8,7 +8,7 @@
                 <configuration>
                     <apiSources>
                         <apiSource>
-                            <supportSpringMvc>false</supportSpringMvc>
+                            <springmvc>false</springmvc>
                             <locations>com.wordnik.jaxrs</locations>
                             <schemes>http,https</schemes>
                             <host>www.example.com:8080</host>

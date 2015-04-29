@@ -1,7 +1,6 @@
 package com.github.kongchen.swagger.docgen.mavenplugin;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import com.github.kongchen.swagger.docgen.GenerateException;
@@ -80,7 +79,7 @@ public class ApiSource {
     private String swaggerApiReader;
 
     @Parameter
-    private boolean supportSpringMvc;
+    private boolean springmvc;
 
     @Parameter
     private String swaggerSchemaConverter;
@@ -215,12 +214,12 @@ public class ApiSource {
         return overridingModels;
     }
 
-    public boolean isSupportSpringMvc() {
-        return supportSpringMvc;
+    public boolean isSpringmvc() {
+        return springmvc;
     }
 
-    public void setSupportSpringMvc(boolean supportSpringMvc) {
-        this.supportSpringMvc = supportSpringMvc;
+    public void setSpringmvc(boolean springmvc) {
+        this.springmvc = springmvc;
     }
 
     public String getSwaggerSchemaConverter() {

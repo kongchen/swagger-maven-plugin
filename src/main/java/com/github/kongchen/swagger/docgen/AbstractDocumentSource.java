@@ -1,5 +1,6 @@
 package com.github.kongchen.swagger.docgen;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -13,10 +14,14 @@ import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.helper.StringHelpers;
 import com.github.jknack.handlebars.io.TemplateLoader;
 import com.github.kongchen.swagger.docgen.mavenplugin.ApiSource;
-import com.wordnik.swagger.models.*;
+import com.wordnik.swagger.models.Swagger;
 import org.apache.commons.io.FileUtils;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -38,7 +43,6 @@ public abstract class AbstractDocumentSource {
     private final String swaggerPath;
 
     private final String overridingModels;
-    ;
 
     protected Swagger swagger;
 
@@ -78,6 +82,7 @@ public abstract class AbstractDocumentSource {
     public void toSwaggerDocuments(String swaggerUIDocBasePath)
             throws GenerateException {
         mapper.configure(SerializationFeature.WRITE_EMPTY_JSON_ARRAYS, false);
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         if (swaggerPath == null) {
             return;
         }

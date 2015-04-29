@@ -59,7 +59,7 @@ public class ApiDocumentMojo extends AbstractMojo {
 
                 AbstractDocumentSource documentSource;
 
-                if(apiSource.isSupportSpringMvc()){
+                if(apiSource.isSpringmvc()){
                 	documentSource = new SpringMavenDocumentSource(apiSource, getLog());
                 }else{
                 	documentSource = new MavenDocumentSource(apiSource, getLog());

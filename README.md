@@ -26,6 +26,7 @@ There's a [sample here](https://github.com/kongchen/swagger-maven-example), just
     <configuration>
         <apiSources>
             <apiSource>
+	            <springmvc>true</springmvc>
                 <locations>com.wordnik.swagger.sample</locations>
                 <schemes>http,https</schemes>
                 <host>www.example.com:8080</host>
@@ -87,6 +88,7 @@ One ```apiSource``` can be considered as a set of APIs. Here's the required para
 
 | **name** | **description** |
 |------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `springmvc` | Tell the plugin your project is a jaxrs or a SpringMvc project | 
 | `locations` | Java classes containing Swagger's annotation ```@Api```, or Java packages containing those classes can be configured here, using ```;``` as the delimiter. |
 | `info` | The basic information of the api, the field `version` and `title` are required. |
 | `schemes` | The supported schemes of the api source. |
