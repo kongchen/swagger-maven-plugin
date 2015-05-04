@@ -35,42 +35,32 @@
 <a id="swagger-maven-plugin-" class="anchor" href="#swagger-maven-plugin-" aria-hidden="true"><span class="octicon octicon-link"></span></a>Swagger Maven Plugin <a href="https://travis-ci.org/kongchen/swagger-maven-plugin"><img src="https://travis-ci.org/kongchen/swagger-maven-plugin.png" alt="Build Status"></a>
 </h1>
 
+<p>This plugin can let your Swagger annotated project generate <strong>Swagger JSON</strong> and your <strong>Customized Static Documents</strong> in maven build phase.</p>
+
+<h1>
+<a id="features" class="anchor" href="#features" aria-hidden="true"><span class="octicon octicon-link"></span></a>Features</h1>
+
+<ul>
+<li>Support <a href="https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md">Swagger Spec 2.0</a>
+</li>
+<li>Support <a href="http://docs.spring.io/spring/docs/current/spring-framework-reference/html/mvc.html">SpringMvc</a> &amp; <a href="https://jax-rs-spec.java.net/">JAX-RS</a>
+</li>
+<li>Quickly generates <em><a href="https://github.com/kongchen/swagger-maven-example/blob/master/generated/swagger-ui/swagger.json">swagger.json</a></em> and <a href="http://htmlpreview.github.io/?https://raw.github.com/kongchen/swagger-maven-example/master/generated/document.html">static document</a> by <code>mvn compile</code>
+</li>
+<li>Use <a href="http://handlebarsjs.com/">Handlebars</a> as template to customize the static document.</li>
+</ul>
+
 <h1>
 <a id="versions" class="anchor" href="#versions" aria-hidden="true"><span class="octicon octicon-link"></span></a>Versions</h1>
 
 <ul>
 <li>
-<a href="https://github.com/kongchen/swagger-maven-plugin/">3.0.0</a> supports Swagger Spec <a href="https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md">2.0</a> (<strong>ACTIVE!</strong>)</li>
+<a href="https://github.com/kongchen/swagger-maven-plugin/">3.0.0</a> supports Swagger Spec <a href="https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md">2.0</a>, support JAX-RS &amp; SpingMVC. (<strong>ACTIVE!</strong>)</li>
 <li>
-<a href="https://github.com/kongchen/swagger-maven-plugin/tree/spec1.2">2.3.4</a> supports Swagger Spec <a href="https://github.com/swagger-api/swagger-spec/blob/master/versions/1.2.md">1.2</a>, support JAX-RS &amp; SpringMVC.(<strong>Lazy maintained</strong>).</li>
+<a href="https://github.com/kongchen/swagger-maven-plugin/tree/spec1.2">2.3.4</a> supports Swagger Spec <a href="https://github.com/swagger-api/swagger-spec/blob/master/versions/1.2.md">1.2</a>, support JAX-RS &amp; SpringMVC. (<strong>Lazy maintained</strong>)</li>
 <li>
 <a href="https://github.com/kongchen/swagger-maven-plugin/tree/1.1.1">1.1.1</a> supports Swagger Spec 1.1. (<strong>No longer maintained</strong>)</li>
 </ul>
-
-<p>This plugin can let your Swagger annotated project generate <strong>Swagger JSON</strong> and your <strong>customized API documents</strong> in build phase.</p>
-
-<p>You must already known what is Swagger JSON, check the results of this plugin generates <a href="https://github.com/kongchen/swagger-maven-example/tree/master/generated/swagger-ui">here</a> to see if it is what you want.</p>
-
-<p>What is <em>customized API document</em>? Here're a screenshot:
-<img src="https://cloud.githubusercontent.com/assets/1485800/4130438/28359ea4-3337-11e4-8c1a-5d9b06854e3f.png" width="50%" align="center"></p>
-
-<h1>
-<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Usage</h1>
-
-<p>Import the plugin in your project by adding following configuration in your <code>plugins</code> block:</p>
-
-<div class="highlight highlight-xml"><pre>&lt;<span class="pl-ent">build</span>&gt;
-    &lt;<span class="pl-ent">plugins</span>&gt;
-        &lt;<span class="pl-ent">plugin</span>&gt;
-            &lt;<span class="pl-ent">groupId</span>&gt;com.github.kongchen&lt;/<span class="pl-ent">groupId</span>&gt;
-            &lt;<span class="pl-ent">artifactId</span>&gt;swagger-maven-plugin&lt;/<span class="pl-ent">artifactId</span>&gt;
-            &lt;<span class="pl-ent">version</span>&gt;${swagger-maven-plugin-version}&lt;/<span class="pl-ent">version</span>&gt;
-            &lt;<span class="pl-ent">configuration</span>&gt;
-                ...
-            &lt;/<span class="pl-ent">configuration</span>&gt;
-        &lt;/<span class="pl-ent">plugin</span>&gt;
-    &lt;/<span class="pl-ent">plugins</span>&gt;
-&lt;/<span class="pl-ent">build</span>&gt;</pre></div>
 
 <p>Developed with <img src="https://www.jetbrains.com/idea/docs/logo_intellij_idea.png" alt="IntelliJ IDEA"></p>
       </section>
