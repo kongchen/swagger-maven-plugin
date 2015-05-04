@@ -1,18 +1,65 @@
 # Swagger Maven Plugin [![Build Status](https://travis-ci.org/kongchen/swagger-maven-plugin.png)](https://travis-ci.org/kongchen/swagger-maven-plugin)
-This plugin can let your Swagger annotated project generate **Swagger JSON** and your **customized API documents** in build phase.
 
-[**Swagger JSON**](http://petstore.swagger.wordnik.com/v2/swagger.json) is a json file which represents your APIs fully follows [Swagger Spec 2.0](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md).
+This plugin can let your Swagger annotated project generate **Swagger JSON** and your **Customized Static Documents** in maven build phase.
 
-**Customized API document** looks like this:
+# Features
 
-<img src="https://cloud.githubusercontent.com/assets/1485800/4130419/c121d19c-3336-11e4-921f-ca8207ed9053.png" width="35%"/>
-<img src="https://cloud.githubusercontent.com/assets/1485800/4130438/28359ea4-3337-11e4-8c1a-5d9b06854e3f.png" width="35%"/>
+* Support [Swagger Spec 2.0](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md)
+* Support [SpringMvc](http://docs.spring.io/spring/docs/current/spring-framework-reference/html/mvc.html) & [JAX-RS](https://jax-rs-spec.java.net/)
+* Quickly generates *[swagger.json](https://github.com/kongchen/swagger-maven-example/blob/master/generated/swagger-ui/swagger.json)* and [static document](http://htmlpreview.github.io/?https://raw.github.com/kongchen/swagger-maven-example/master/generated/document.html) by `mvn compile`
+* Use [Handlebars](http://handlebarsjs.com/) as template to customize the static document.
+
+# Versions
+- [3.0.0](https://github.com/kongchen/swagger-maven-plugin/) supports Swagger Spec [2.0](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md), support JAX-RS & SpingMVC. (**ACTIVE!**)
+- [2.3.4](https://github.com/kongchen/swagger-maven-plugin/tree/spec1.2) supports Swagger Spec [1.2](https://github.com/swagger-api/swagger-spec/blob/master/versions/1.2.md), support JAX-RS & SpringMVC. (**Lazy maintained**)
+- [1.1.1](https://github.com/kongchen/swagger-maven-plugin/tree/1.1.1) supports Swagger Spec 1.1. (**No longer maintained**)
+
+
+# Usage
+Import the plugin in your project by adding following configuration in your `plugins` block:
+
+```xml
+<build>
+	<plugins>
+		<plugin>
+			<groupId>com.github.kongchen</groupId>
+			<artifactId>swagger-maven-plugin</artifactId>
+			<version>${swagger-maven-plugin-version}</version>
+			<configuration>
+				<apiSources>
+					<apiSource>
+						...
+					</apiSource>
+				</apiSources>
+			</configuration>
+		</plugin>
+	</plugins>
+</build>
+```
+One `apiSource` can be considered as a version of APIs of your service.
+
+You can specify several `apiSource`s. Generally, one is enough.
+
+
+# Configuration for `apiSource`
+
+| **name** | **description** |
+|------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `springmvc` | Tell the plugin your project is a JAX-RS(`false`) or a SpringMvc(`true`) project | 
+| `locations` | Classes containing Swagger's annotation ```@Api```, or packages containing those classes can be configured here, using ```;``` as the delimiter. |
+| `schemes` | The transfer protocol of the API. Values MUST be from the list: `"http"`, `"https"`, `"ws"`, `"wss"`, using ```,``` as the delimiter.|
+| `host` | The host (name or ip) serving the API. This MUST be the host only and does not include the scheme nor sub-paths. It MAY include a port.  The host does not support [path templating](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#pathTemplating).|
+| `basePath` | The base path on which the API is served, which is relative to the host. The value MUST start with a leading slash (/). The basePath does not support [path templating](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#pathTemplating). |
+| `info` | The basic information of the api, using same definition as Swagger Spec 2.0's [info Object](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#infoObject) |
+| `templatePath` | The path of a [handlebars](http://handlebarsjs.com/) template file, see more details [below](#templatefile).|
+| `outputPath` | The path of the generated static document, not existed parent directories will be created. If you don't want to generate a static document, just don't set it. |
+| `swaggerDirectory` | The directory of generated `swagger.json` file. If null, no `swagger.json` will be generated. |
 
 
 # Example
 There's a [sample here](https://github.com/kongchen/swagger-maven-example), just fork it and have a try.
 
-## Configurations for Swagger JSON
+## A Sample Configuration
 
 ```xml
 <project>
@@ -77,63 +124,31 @@ There's a [sample here](https://github.com/kongchen/swagger-maven-example), just
 </build>
 </project>
 ```
-
-If you cannot wait to try out the plugin, here's a [sample project](https://github.com/kongchen/swagger-maven-example), go to see how it happens.
-
-You can specify several ```apiSources```. Generally, one is enough.
-
-One ```apiSource``` can be considered as a set of APIs. Here's the required parameters for an ```apiSource```:
-
-## Required parameters
-
-| **name** | **description** |
-|------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `springmvc` | Tell the plugin your project is a jaxrs or a SpringMvc project | 
-| `locations` | Java classes containing Swagger's annotation ```@Api```, or Java packages containing those classes can be configured here, using ```;``` as the delimiter. |
-| `info` | The basic information of the api, the field `version` and `title` are required. |
-| `schemes` | The supported schemes of the api source. |
-| `host` | The hostname and port of the api service. |
-| `basePath` | The base path of this api source. |
-
-## Optional parameters
-
-| **name** | **description** |
-|------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `templatePath` | The path of a handlebars template file, see more details below.|
-| `outputPath` | The path of the output document, not existed parent directories will be created. If you don't want to generate html api just don't set it. |
-| `swaggerDirectory` | The directory of generated Swagger JSON files. If null, no Swagger JSON will be generated. The final output swagger json would be `${swaggerDirectory}/swagger.json` |
-
-# About the template file
+# <a id="templatefile">Template File</a>
 
 You need to specify a [handlebars](https://github.com/jknack/handlebars.java) template file in ```templatePath```.
 The value for ```templatePath``` supports 2 kinds of path:
+
 1. Resource in classpath. You should specify a resource path with a **classpath:** prefix.
-    e.g: "classpath:/markdown.hbs", "classpath:/templates/hello.html"
-1. Local file path.
-    e.g: "${basedir}/src/main/resources/markdown.hbs", "${basedir}/src/main/resources/template/hello.html"
+    e.g:
+    
+    1. **`classpath:/markdown.hbs`**
+    1. **`classpath:/templates/hello.html`**
+    
+1. Local file's absolute path.
+    e.g: 
+    
+    1. **`${basedir}/src/main/resources/markdown.hbs`**
+    1. **`${basedir}/src/main/resources/template/hello.html`**
 
-To display swagger.json correctly, there're 2 new helpers added in. For more details see the template files.
+
+There's a [standalone project](https://github.com/kongchen/api-doc-template) for the template files, fetch them and customize it for your own project.
 
 
-There's a [standalone project](https://github.com/kongchen/api-doc-template) for the template files, see more details there and welcome to send pull request.
+# FAQ
 
-
-[Versions](https://github.com/kongchen/swagger-maven-plugin/blob/master/CHANGES.md)
-==
-
-This plugin has 3 serials of versions:
-
-- 3.x.x : For [Swagger spec 2.0](https://github.com/wordnik/swagger-spec/blob/master/versions/2.0.md)
-> **Latest version `3.0.0-SNAPSHOT`**
-
-- 2.x.x : For [swagger-spec 1.2](https://github.com/wordnik/swagger-spec/blob/master/versions/1.2.md)
-> **Latest version `2.3.1` is available in central repository.**
-`2.3.1-SNAPSHOT` is the latest SNAPSHOT version.
-
-- 1.x.x : For [Swagger core version 1.2.x](https://github.com/wordnik/swagger-core/wiki/Changelog#v125-jun-19-2013) swagger-spec 1.1
-> **Latest version `1.1.3-SNAPSHOT` is available in sonatype repository.**
-
-> To use SNAPSHOT version, you need to add plugin repository in your pom.xml first:
+## 1. SNAPSHOT Version
+SNAPSHOT versions are available for verify issues, new features. If you would like to try to verify the fixed issues or the new added features, you may need to add `pluginRepository` in your `pom.xml`:
 
 ```
 <pluginRepositories>
@@ -150,20 +165,33 @@ This plugin has 3 serials of versions:
 </pluginRepositories>
 ```
 
-# FAQ
-## Dependency conflict
-If you have package depedency conflict issues, such as jackson, joda-time, or [jsr311-api](https://github.com/kongchen/swagger-maven-plugin/issues/81). Run `mvn dependency:tree` to check which package introduces the one conflicts with yours and exclude it using `<exclusion/>` in pom.xml.
-> e.g. exclude `javax.ws.rs:jsr311-api:jar:1.1.1:compile` from `swagger-jaxrs_2.10`:
-```xml
-    <dependency>
-        <groupId>com.wordnik</groupId>
-        <artifactId>swagger-jaxrs_2.10</artifactId>
-        <version>1.3.2</version>
-        <exclusions>
-            <exclusion>
-                <groupId>javax.ws.rs</groupId>
-                <artifactId>jsr311-api</artifactId>
-            </exclusion>
-        </exclusions>
-    </dependency>   
+
+## 2. Dependency conflict
+If you have package depedency conflict issues, such as jackson, joda-time, or [jsr311-api](https://github.com/kongchen/swagger-maven-plugin/issues/81). 
+Run
+
 ```
+mvn dependency:tree
+```
+
+to check which package introduces the one conflicts with yours, and then you can use `<exclusion>` conficuration in pom.xml to exlcude it.
+
+**Here's an example:**
+
+To exclude `javax.ws.rs:jsr311-api:jar:1.1.1:compile` from `swagger-jaxrs_2.10`:
+
+```xml
+<dependency>
+    <groupId>com.wordnik</groupId>
+    <artifactId>swagger-jaxrs_2.10</artifactId>
+    <version>1.3.2</version>
+    <exclusions>
+        <exclusion>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>jsr311-api</artifactId>
+        </exclusion>
+    </exclusions>
+</dependency>   
+```
+
+Developed with ![IntelliJ IDEA](https://www.jetbrains.com/idea/docs/logo_intellij_idea.png)
