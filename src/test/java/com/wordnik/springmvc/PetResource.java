@@ -74,7 +74,7 @@ public class PetResource {
 
 
   @RequestMapping(value = "/{petId}", method = RequestMethod.DELETE)
-  @ApiOperation(value = "Deletes a pet")
+  @ApiOperation(value = "Deletes a pet", nickname = "removePet")
   @ApiResponses(value = {@ApiResponse(code = 400, message = "Invalid pet value")})
   public ResponseEntity deletePet(
           @ApiParam() @RequestHeader("api_key") String apiKey,

@@ -126,8 +126,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
 
                 // can't continue without a valid http method
                 httpMethod = httpMethod == null ? parentMethod : httpMethod;
-                ApiOperation op = method.getAnnotation(ApiOperation.class);
-                updateTagsForOperation(operation, op);
+                updateTagsForOperation(operation, apiOperation);
                 updateOperation(apiConsumes, apiProduces, tags, securities, operation);
                 updatePath(operationPath, httpMethod, operation);
 
@@ -206,7 +205,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
             if (apiOperation.hidden())
                 return null;
             if (!"".equals(apiOperation.nickname()))
-                operationId = method.getName();
+                operationId = apiOperation.nickname();
 
             defaultResponseHeaders = parseResponseHeaders(apiOperation.responseHeaders());
 

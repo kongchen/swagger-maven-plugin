@@ -66,7 +66,7 @@ public class PetResource {
 
   @DELETE
   @Path("/{petId}")
-  @ApiOperation(value = "Deletes a pet")
+  @ApiOperation(value = "Deletes a pet", nickname = "removePet")
   @ApiResponses(value = {@ApiResponse(code = 400, message = "Invalid pet value")})
   public Response deletePet(
           @ApiParam() @HeaderParam("api_key") String apiKey,

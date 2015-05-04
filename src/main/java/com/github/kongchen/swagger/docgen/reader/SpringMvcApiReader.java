@@ -146,8 +146,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
                 apiConsumes = updateOperationConsumes(new String[0], apiConsumes, operation);
                 apiProduces = updateOperationProduces(new String[0], apiProduces, operation);
 
-                ApiOperation op = method.getAnnotation(ApiOperation.class);
-                updateTagsForOperation(operation, op);
+                updateTagsForOperation(operation, apiOperation);
                 updateOperation(apiConsumes, apiProduces, tags, resourceSecurities, operation);
                 updatePath(operationPath, httpMethod, operation);
             }
@@ -172,7 +171,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         if (apiOperation.hidden())
             return null;
         if (!"".equals(apiOperation.nickname()))
-            operationId = method.getName();
+            operationId = apiOperation.nickname();
 
         defaultResponseHeaders = parseResponseHeaders(apiOperation.responseHeaders());
 
