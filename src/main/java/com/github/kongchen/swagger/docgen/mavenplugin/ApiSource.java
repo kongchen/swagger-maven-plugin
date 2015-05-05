@@ -1,6 +1,7 @@
 package com.github.kongchen.swagger.docgen.mavenplugin;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.github.kongchen.swagger.docgen.GenerateException;
@@ -84,6 +85,9 @@ public class ApiSource {
     @Parameter
     private String swaggerSchemaConverter;
 
+    @Parameter
+    private List<SecurityDefinition> securityDefinitions;
+
 
     public Set<Class<?>> getValidClasses() throws GenerateException {
         Set<Class<?>> classes = new HashSet<Class<?>>();
@@ -108,6 +112,14 @@ public class ApiSource {
 //            }
 //        }
         return classes;
+    }
+
+    public List<SecurityDefinition> getSecurityDefinitions() {
+        return securityDefinitions;
+    }
+
+    public void setSecurityDefinitions(List<SecurityDefinition> securityDefinitions) {
+        this.securityDefinitions = securityDefinitions;
     }
 
     public Info getInfo() {

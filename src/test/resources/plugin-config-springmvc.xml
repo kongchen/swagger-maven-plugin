@@ -35,6 +35,15 @@
                                     <name>Apache 2.0</name>
                                 </license>
                             </info>
+                            <securityDefinitions>
+                                <securityDefinition>
+                                    <name>basicAuth</name>
+                                    <type>basic</type>
+                                </securityDefinition>
+                                <securityDefinition>
+                                    <json>/securityDefinition.json</json>
+                                </securityDefinition>
+                            </securityDefinitions>
                             <!-- Support classpath or file absolute path here.
                             1) classpath e.g: "classpath:/markdown.hbs", "classpath:/templates/hello.html"
                             2) file e.g: "${basedir}/src/main/resources/markdown.hbs",
@@ -43,8 +52,6 @@
                             <outputPath>${basedir}/generated/document-spring.html</outputPath>
                             <swaggerDirectory>${basedir}/generated/swagger-ui-spring</swaggerDirectory>
                             <swaggerUIDocBasePath>http://www.example.com/restapi/doc</swaggerUIDocBasePath>
-                            <!--<overridingModels>/swagger-overriding-models.json</overridingModels>-->
-                            <!--<swaggerInternalFilter>com.wordnik.swagger.config.DefaultSpecFilter</swaggerInternalFilter>-->
                         </apiSource>
                     </apiSources>
                 </configuration>

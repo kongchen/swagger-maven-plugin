@@ -7,11 +7,13 @@ import com.github.kongchen.swagger.docgen.reader.JaxrsReader;
 import com.wordnik.swagger.config.FilterFactory;
 import com.wordnik.swagger.core.filter.SpecFilter;
 import com.wordnik.swagger.core.filter.SwaggerSpecFilter;
+import com.wordnik.swagger.models.auth.SecuritySchemeDefinition;
 import org.apache.maven.plugin.logging.Log;
 
-
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -39,6 +41,18 @@ public class MavenDocumentSource extends AbstractDocumentSource {
         }
         swagger = new JaxrsReader(swagger, LOG).read(apiSource.getValidClasses());
 
+        if(apiSource.getSecurityDefinitions() != null) {
+            for (SecurityDefinition sd : apiSource.getSecurityDefinitions()) {
+                if(sd.getDefinitions().isEmpty()) {
+                    continue;
+                }
+                Iterator<Map.Entry<String, SecuritySchemeDefinition>> it = sd.getDefinitions().entrySet().iterator();
+                while (it.hasNext()) {
+                    Map.Entry<String, SecuritySchemeDefinition> entry = it.next();
+                    swagger.addSecurityDefinition(entry.getKey(), entry.getValue());
+                }
+            }
+        }
 
         if (FilterFactory.getFilter() != null) {
             swagger = new SpecFilter().filter(swagger, FilterFactory.getFilter(),

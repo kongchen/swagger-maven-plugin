@@ -51,10 +51,75 @@ You can specify several `apiSource`s. Generally, one is enough.
 | `host` | The host (name or ip) serving the API. This MUST be the host only and does not include the scheme nor sub-paths. It MAY include a port.  The host does not support [path templating](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#pathTemplating).|
 | `basePath` | The base path on which the API is served, which is relative to the host. The value MUST start with a leading slash (/). The basePath does not support [path templating](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#pathTemplating). |
 | `info` | The basic information of the api, using same definition as Swagger Spec 2.0's [info Object](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#infoObject) |
+| `securityDefinitions` | You can put your [security definitions](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#security-definitions-object) here, see more details [below](#securityDefinitions)|
 | `templatePath` | The path of a [handlebars](http://handlebarsjs.com/) template file, see more details [below](#templatefile).|
 | `outputPath` | The path of the generated static document, not existed parent directories will be created. If you don't want to generate a static document, just don't set it. |
 | `swaggerDirectory` | The directory of generated `swagger.json` file. If null, no `swagger.json` will be generated. |
 
+# <a id="templatefile">Template File</a>
+
+You need to specify a [handlebars](https://github.com/jknack/handlebars.java) template file in ```templatePath```.
+The value for ```templatePath``` supports 2 kinds of path:
+
+1. Resource in classpath. You should specify a resource path with a **classpath:** prefix.
+    e.g:
+    
+    1. **`classpath:/markdown.hbs`**
+    1. **`classpath:/templates/hello.html`**
+    
+1. Local file's absolute path.
+    e.g: 
+    
+    1. **`${basedir}/src/main/resources/markdown.hbs`**
+    1. **`${basedir}/src/main/resources/template/hello.html`**
+
+
+There's a [standalone project](https://github.com/kongchen/api-doc-template) for the template files, fetch them and customize it for your own project.
+
+# <a id="securityDefinitions">Security Definitions</a>
+
+There're 3 types of security definitions according to Swagger Spec: `basic`, `apiKey` and `oauth2`.
+
+You can define multi definitions here, but you should fully follow [the spec](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#securitySchemeObject).
+
+You can define a `basic` definition like this:
+
+```xml
+<securityDefinition>
+    <name>MybasicAuth</name>
+    <type>basic</type>
+</securityDefinition>
+```
+
+or define several definitions in a json file and specify the json path like this:
+
+```xml
+<securityDefinition>
+    <json>/securityDefinition.json</json>
+</securityDefinition>
+```
+The file will be read by `getClass.getResourceAsStream`, so please note the path you configured.
+
+The `securityDefinition.json` file should also follow the spec, one sample file like this:
+
+```js
+{
+  "api_key": {
+    "type": "apiKey",
+    "name": "api_key",
+    "in": "header"
+  },
+  "petstore_auth": {
+    "type": "oauth2",
+    "authorizationUrl": "http://swagger.io/api/oauth/dialog",
+    "flow": "implicit",
+    "scopes": {
+      "write:pets": "modify pets in your account",
+      "read:pets": "read your pets"
+    }
+  }
+}
+```
 
 # Example
 There's a [sample here](https://github.com/kongchen/swagger-maven-example), just fork it and have a try.
@@ -100,6 +165,15 @@ There's a [sample here](https://github.com/kongchen/swagger-maven-example), just
                         <name>Apache 2.0</name>
                     </license>
                 </info>
+                <securityDefinitions>
+                    <securityDefinition>
+                        <name>basicAuth</name>
+                        <type>basic</type>
+                    </securityDefinition>
+                    <securityDefinition>
+                        <json>/securityDefinition.json</json>
+                    </securityDefinition>
+                </securityDefinitions>
                 <!-- Support classpath or file absolute path here.
                 1) classpath e.g: "classpath:/markdown.hbs", "classpath:/templates/hello.html"
                 2) file e.g: "${basedir}/src/main/resources/markdown.hbs",
@@ -124,26 +198,6 @@ There's a [sample here](https://github.com/kongchen/swagger-maven-example), just
 </build>
 </project>
 ```
-# <a id="templatefile">Template File</a>
-
-You need to specify a [handlebars](https://github.com/jknack/handlebars.java) template file in ```templatePath```.
-The value for ```templatePath``` supports 2 kinds of path:
-
-1. Resource in classpath. You should specify a resource path with a **classpath:** prefix.
-    e.g:
-    
-    1. **`classpath:/markdown.hbs`**
-    1. **`classpath:/templates/hello.html`**
-    
-1. Local file's absolute path.
-    e.g: 
-    
-    1. **`${basedir}/src/main/resources/markdown.hbs`**
-    1. **`${basedir}/src/main/resources/template/hello.html`**
-
-
-There's a [standalone project](https://github.com/kongchen/api-doc-template) for the template files, fetch them and customize it for your own project.
-
 
 # FAQ
 
