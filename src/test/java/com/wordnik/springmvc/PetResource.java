@@ -145,4 +145,10 @@ public class PetResource {
   public Pet get() {
     return new Pet();
   }
+
+  @ApiOperation(value = "ping the service")
+  @RequestMapping(value = "/ping", method = RequestMethod.GET)
+  public ResponseEntity<String> ping() {
+      return new ResponseEntity<String>("pong", HttpStatus.OK);
+  }
 }

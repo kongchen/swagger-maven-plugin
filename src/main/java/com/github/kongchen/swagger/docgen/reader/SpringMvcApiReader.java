@@ -383,7 +383,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
 
         for (int i = 0; i < clazz.getAnnotation(RequestMapping.class).value().length; i++) {
             String controllerMapping = clazz.getAnnotation(RequestMapping.class).value()[i];
-            String resourceName = SprintUtils.parseResourceName(clazz);
+            String resourceName = SprintUtils.parseResourceName(controllerMapping);
             for (Method method : clazz.getMethods()) {
                 if (method.isAnnotationPresent(RequestMapping.class)) {
                     RequestMapping methodReq = method.getAnnotation(RequestMapping.class);
@@ -395,9 +395,27 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
                             }
                             resourceMap.get(resourceKey).addMethod(method);
                         }
+                    } else {
+                        for (int j = 0; j < methodReq.value().length; j++) {
+                            String resourceKey = "";
+                            if (!(resourceName.equals(""))) {
+                                String version = SprintUtils.parseVersion(controllerMapping);
+                                //get version - first try by class mapping, then method
+                                if (version.equals("")) {
+                                    //class mapping failed - use method
+                                    version = SprintUtils.parseVersion(methodReq.value()[j]);
+                                }
+                                resourceKey = SprintUtils.createResourceKey(resourceName, version);
+                                if ((!(resourceMap.containsKey(resourceKey)))) {
+                                    resourceMap.put(resourceKey, new SpringResource(clazz, resourceName, resourceKey, description));
+                                }
+                                resourceMap.get(resourceKey).addMethod(method);
+                            }
+                        }
                     }
                 }
             }
+
         }
         clazz.getFields();
         clazz.getDeclaredFields(); //<--In case developer declares a field without an associated getter/setter.
@@ -420,31 +438,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
                     if (c.getSuperclass() != null) {
                         mList.addAll(Arrays.asList(c.getSuperclass().getMethods()));
                     }
-                    for (Method method : mList) {
-                        if (method.isAnnotationPresent(RequestMapping.class)) {
-                            RequestMapping methodReq = method.getAnnotation(RequestMapping.class);
-                            //isolate resource name - attempt first by the first part of the mapping
-                            if (methodReq != null && methodReq.value().length != 0) {
-                                for (int i = 0; i < methodReq.value().length; i++) {
-                                    String resourceKey = "";
-                                    String resourceName = SprintUtils.parseResourceName(methodReq.value()[i]);
-                                    if (!(resourceName.equals(""))) {
-                                        String version = SprintUtils.parseVersion(requestMapping.value()[0]);
-                                        //get version - first try by class mapping, then method
-                                        if (version.equals("")) {
-                                            //class mapping failed - use method
-                                            version = SprintUtils.parseVersion(methodReq.value()[i]);
-                                        }
-                                        resourceKey = SprintUtils.createResourceKey(resourceName, version);
-                                        if ((!(resourceMap.containsKey(resourceKey)))) {
-                                            resourceMap.put(resourceKey, new SpringResource(c, resourceName, resourceKey, description));
-                                        }
-                                        resourceMap.get(resourceKey).addMethod(method);
-                                    }
-                                }
-                            }
-                        }
-                    }
+
                 } catch (NoClassDefFoundError e) {
                     LOG.error(e.getMessage());
                     LOG.info(c.getName());

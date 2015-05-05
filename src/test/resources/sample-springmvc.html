@@ -412,6 +412,67 @@ Muliple tags can be provided with comma seperated strings. Use tag1, tag2, tag3 
 
 
 
+## /pet/ping
+
+
+### GET
+
+<a id="ping">ping the service</a>
+
+
+
+
+
+
+#### Security
+
+
+
+
+* petstore_auth
+   * write:pets
+   * read:pets
+
+
+
+
+#### Request
+
+
+
+##### Parameters
+
+
+
+
+
+
+#### Response
+
+**Content-Type: ** application/xml, application/json
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 200    | successful operation | |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## /pet/{petId}
 
 
@@ -892,6 +953,58 @@ For valid response try integer IDs with value &lt; 1000. Anything above 1000 or 
 |-------------|-------------|----------------|
 | 400    | Invalid ID supplied |  - |
 | 404    | Order not found |  - |
+
+
+
+
+
+
+
+
+
+
+
+
+## /store/ping
+
+
+### GET
+
+<a id="ping">ping</a>
+
+
+
+
+
+
+
+
+
+#### Request
+
+
+
+##### Parameters
+
+
+
+
+
+
+#### Response
+
+**Content-Type: ** application/xml, application/json
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 200    | successful operation | |
+
+
+
+
+
+
 
 
 

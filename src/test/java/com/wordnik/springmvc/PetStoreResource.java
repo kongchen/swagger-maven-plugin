@@ -75,4 +75,10 @@ public class PetStoreResource {
     storeData.deleteOrder(ru.getLong(0, 10000, 0, orderId));
     return new ResponseEntity(HttpStatus.OK);
   }
+
+  @ApiOperation(value = "ping")
+  @RequestMapping(value = "/ping", method = RequestMethod.GET)
+  public ResponseEntity<String> ping() {
+    return new ResponseEntity<String>("pong", HttpStatus.OK);
+  }
 }
