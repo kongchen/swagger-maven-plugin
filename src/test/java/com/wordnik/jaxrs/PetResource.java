@@ -45,7 +45,7 @@ public class PetResource {
   static JavaRestResourceUtil ru = new JavaRestResourceUtil();
 
   @GET
-  @Path("/{petId}")
+  @Path("/{petId : [0-9]}")
   @ApiOperation(value = "Find pet by ID",
           notes = "Returns a pet when ID < 10.  ID > 10 or nonintegers will simulate API error conditions",
           response = Pet.class,
@@ -144,4 +144,5 @@ public class PetResource {
   public Pet get() {
     return new Pet();
   }
+
 }

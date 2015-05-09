@@ -41,7 +41,7 @@
     <th>{{name}}</th>
     <td>{{in}}</td>
     <td>{{#if required}}yes{{else}}no{{/if}}</td>
-    <td>{{description}}</td>
+    <td>{{description}}{{#if pattern}} (**Pattern**: `{{pattern}}`){{/if}}</td>
     <td> - </td>
 {{#ifeq in "body"}}
     <td>

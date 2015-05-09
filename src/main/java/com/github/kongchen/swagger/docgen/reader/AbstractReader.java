@@ -87,8 +87,8 @@ public class AbstractReader {
                 if (pos > 0) {
                     String left = p.substring(1, pos);
                     String right = p.substring(pos + 1, p.length() - 1);
-                    pathParts[i] = "{" + left + "}";
-                    regexMap.put(left, right);
+                    pathParts[i] = "{" + left.trim() + "}";
+                    regexMap.put(left.trim(), right);
                 } else
                     pathParts[i] = p;
             } else pathParts[i] = p;
