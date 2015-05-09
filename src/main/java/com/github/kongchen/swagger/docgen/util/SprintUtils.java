@@ -47,12 +47,7 @@ public class SprintUtils {
      */
     public static String parseResourceName(String mapping) {
         String resourceName = mapping;
-        if (!(parseVersion(mapping).equals("")) && resourceName.contains(parseVersion(mapping))) { //get the version out if it is included
-            try {
-                resourceName = mapping.replaceFirst(parseVersion(mapping), "");
-            } catch (PatternSyntaxException e) {
-            }
-        }
+
         while (resourceName.startsWith("/")) {
             resourceName = resourceName.substring(1);
         }
