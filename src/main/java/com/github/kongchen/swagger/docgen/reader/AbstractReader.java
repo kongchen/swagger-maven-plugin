@@ -299,10 +299,8 @@ public class AbstractReader {
                     t.setAccessible(false);
                 } catch (NoSuchFieldException e) {
                     //ignore
-                    e.printStackTrace();
                 } catch (IllegalAccessException e) {
                     //ignore
-                    e.printStackTrace();
                 }
 
                 ParameterProcessor.applyAnnotations(swagger, parameter, cls, annotations, isArray);
