@@ -18,6 +18,7 @@ package com.wordnik.jaxrs;
 
 import com.wordnik.sample.JavaRestResourceUtil;
 import com.wordnik.sample.data.PetData;
+import com.wordnik.sample.model.MyBean;
 import com.wordnik.sample.model.Pet;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -130,11 +131,9 @@ public class PetResource {
   @ApiResponses(value = {
           @ApiResponse(code = 405, message = "Invalid input")})
   public Response updatePetWithForm(
-          @ApiParam(value = "ID of pet that needs to be updated", required = true) @PathParam("petId") String petId,
-          @ApiParam(value = "Updated name of the pet", required = false) @FormParam("name") String name,
-          @ApiParam(value = "Updated status of the pet", required = false) @FormParam("status") String status) {
-    System.out.println(name);
-    System.out.println(status);
+          @BeanParam MyBean myBean) {
+    System.out.println(myBean.getName());
+    System.out.println(myBean.getStatus());
     return Response.ok().entity(new com.wordnik.sample.model.ApiResponse(200, "SUCCESS")).build();
   }
 

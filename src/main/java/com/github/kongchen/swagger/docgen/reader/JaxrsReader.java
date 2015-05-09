@@ -2,6 +2,7 @@ package com.github.kongchen.swagger.docgen.reader;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.kongchen.swagger.docgen.LogAdapter;
+import com.github.kongchen.swagger.docgen.jaxrs.BeanParamExtention;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiResponse;
@@ -49,6 +50,9 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
 
     public JaxrsReader(Swagger swagger, LogAdapter LOG) {
         super(swagger, LOG);
+        List<SwaggerExtension> ext = SwaggerExtensions.getExtensions();
+        ext.add(0, new BeanParamExtention());
+        SwaggerExtensions.setExtensions(ext);
     }
 
     @Override
