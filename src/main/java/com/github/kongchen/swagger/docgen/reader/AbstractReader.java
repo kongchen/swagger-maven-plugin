@@ -3,6 +3,7 @@ package com.github.kongchen.swagger.docgen.reader;
 import com.github.kongchen.swagger.docgen.LogAdapter;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
 import com.wordnik.swagger.annotations.ApiResponse;
 import com.wordnik.swagger.annotations.ApiResponses;
 import com.wordnik.swagger.annotations.Authorization;
@@ -308,21 +309,28 @@ public class AbstractReader {
         } else {
             LOG.info("no parameter found, looking at body params");
             if (classesToSkip.contains(cls) == false) {
+                Parameter param = null;
                 if (type instanceof ParameterizedType) {
                     ParameterizedType ti = (ParameterizedType) type;
                     Type innerType = ti.getActualTypeArguments()[0];
                     if (innerType instanceof Class) {
-                        Parameter param = ParameterProcessor.applyAnnotations(swagger, null, (Class) innerType, annotations, isArray);
-                        if (param != null) {
-                            parameters.add(param);
-                        }
+                        param = ParameterProcessor.applyAnnotations(swagger, null, (Class) innerType, annotations, isArray);
                     }
                 } else {
-                    Parameter param = ParameterProcessor.applyAnnotations(swagger, null, cls, annotations, isArray);
-                    if (param != null) {
-                        parameters.add(param);
+                    param = ParameterProcessor.applyAnnotations(swagger, null, cls, annotations, isArray);
+                }
+                if (param != null) {
+                for (Annotation annotation : annotations) {
+                    if (annotation instanceof ApiParam) {
+                        ApiParam apiParam = (ApiParam) annotation;
+                        param.setRequired(apiParam.required());
+                        break;
                     }
                 }
+                    parameters.add(param);
+                }
+
+
             }
         }
         return parameters;
