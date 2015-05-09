@@ -50,9 +50,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
 
     public JaxrsReader(Swagger swagger, LogAdapter LOG) {
         super(swagger, LOG);
-        List<SwaggerExtension> ext = SwaggerExtensions.getExtensions();
-        ext.add(0, new BeanParamExtention());
-        SwaggerExtensions.setExtensions(ext);
+
     }
 
     @Override

@@ -1,6 +1,8 @@
 package com.github.kongchen.swagger.docgen.reader;
 
 import com.github.kongchen.swagger.docgen.LogAdapter;
+import com.github.kongchen.swagger.docgen.jaxrs.BeanParamExtention;
+import com.github.kongchen.swagger.docgen.spring.SpringSwaggerExtension;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -9,10 +11,12 @@ import com.wordnik.swagger.annotations.ApiResponses;
 import com.wordnik.swagger.annotations.Authorization;
 import com.wordnik.swagger.annotations.AuthorizationScope;
 import com.wordnik.swagger.converter.ModelConverters;
+import com.wordnik.swagger.jaxrs.DefaultParameterExtension;
 import com.wordnik.swagger.jaxrs.ParameterProcessor;
 import com.wordnik.swagger.jaxrs.ext.SwaggerExtension;
 import com.wordnik.swagger.jaxrs.ext.SwaggerExtensions;
 import com.wordnik.swagger.jaxrs.utils.ParameterUtils;
+import com.wordnik.swagger.jersey.SwaggerJerseyJaxrs;
 import com.wordnik.swagger.models.Model;
 import com.wordnik.swagger.models.Operation;
 import com.wordnik.swagger.models.Path;
@@ -44,13 +48,26 @@ import java.util.Set;
 /**
  * Created by chekong on 15/4/28.
  */
-public class AbstractReader {
+public abstract class AbstractReader {
     protected final LogAdapter LOG;
     protected Swagger swagger;
 
     public AbstractReader(Swagger swagger, LogAdapter LOG) {
         this.swagger = swagger;
         this.LOG = LOG;
+        updateExtensionChain();
+    }
+
+    private void updateExtensionChain() {
+        List<SwaggerExtension> extensions = new ArrayList<SwaggerExtension>();
+        if (this.getClass() == SpringMvcApiReader.class) {
+            extensions.add(new SpringSwaggerExtension());
+        } else {
+            extensions.add(new BeanParamExtention());
+            extensions.add(new SwaggerJerseyJaxrs());
+            extensions.add(new DefaultParameterExtension());
+        }
+        SwaggerExtensions.setExtensions(extensions);
     }
 
     protected List<SecurityRequirement> getSecurityRequirements(Api api) {
@@ -320,13 +337,13 @@ public class AbstractReader {
                     param = ParameterProcessor.applyAnnotations(swagger, null, cls, annotations, isArray);
                 }
                 if (param != null) {
-                for (Annotation annotation : annotations) {
-                    if (annotation instanceof ApiParam) {
-                        ApiParam apiParam = (ApiParam) annotation;
-                        param.setRequired(apiParam.required());
-                        break;
+                    for (Annotation annotation : annotations) {
+                        if (annotation instanceof ApiParam) {
+                            ApiParam apiParam = (ApiParam) annotation;
+                            param.setRequired(apiParam.required());
+                            break;
+                        }
                     }
-                }
                     parameters.add(param);
                 }
 

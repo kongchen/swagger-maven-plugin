@@ -48,10 +48,6 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
     public SpringMvcApiReader(Swagger swagger, LogAdapter log) {
         super(swagger, log);
 
-
-        List<SwaggerExtension> swaggerExtensions = new ArrayList<SwaggerExtension>();
-        swaggerExtensions.add(new SpringSwaggerExtension());
-        SwaggerExtensions.setExtensions(swaggerExtensions);
     }
 
     @Override
