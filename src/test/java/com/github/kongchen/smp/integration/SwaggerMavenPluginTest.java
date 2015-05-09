@@ -12,7 +12,6 @@ import org.testng.annotations.Test;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -46,21 +45,24 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
     public void testGeneratedDoc() throws Exception {
 
         mojo.execute();
-        FileInputStream testOutputIs = new FileInputStream(docOutput);
-        InputStream expectIs = this.getClass().getResourceAsStream("/sample.html");
+
+        BufferedReader actualReader = new BufferedReader(new InputStreamReader(new FileInputStream(docOutput)));
+        BufferedReader expectReader = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream("/sample.html")));
+
         int count = 0;
         while (true) {
             count++;
-            int expect = expectIs.read();
-            int actual = testOutputIs.read();
 
-            Assert.assertEquals(expect, actual, "" + count);
-            if (expect == -1) {
+            String expect = expectReader.readLine();
+            String actual = actualReader.readLine();
+
+            if (expect == null && actual == null) {
                 break;
             }
-        }
 
-        expectIs.close();
+            Assert.assertEquals(expect.trim(), actual.trim(), "" + count);
+
+        }
 
         FileInputStream swaggerJson = new FileInputStream(new File(swaggerOutputDir, "swagger.json"));
         BufferedReader reader = new BufferedReader(new InputStreamReader(swaggerJson));

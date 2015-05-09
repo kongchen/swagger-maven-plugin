@@ -145,4 +145,15 @@ public class PetResource {
     return new Pet();
   }
 
+
+    @ApiOperation(value = "Test pet as josn string in query", response = Pet.class)
+    @GET
+    @Path("/test")
+    @Produces("application/json")
+    public Pet test(
+            @ApiParam(value = "describe Pet in json here")
+            @QueryParam("pet") Pet pet) {
+        return new Pet();
+    }
+
 }

@@ -500,6 +500,92 @@ Muliple tags can be provided with comma seperated strings. Use tag1, tag2, tag3 
 
 
 
+## /pet/test
+
+
+### GET
+
+<a id="test">Test pet as josn string in query</a>
+
+
+
+
+
+
+#### Security
+
+
+
+
+* petstore_auth
+   * write:pets
+   * read:pets
+
+
+
+
+#### Request
+
+
+
+##### Parameters
+
+<table border="1">
+    <tr>
+        <th>Name</th>
+        <th>Located in</th>
+        <th>Required</th>
+        <th>Description</th>
+        <th>Default</th>
+        <th>Schema</th>
+    </tr>
+
+
+
+<tr>
+    <th>pet</th>
+    <td>query</td>
+    <td>no</td>
+    <td>describe Pet in json here</td>
+    <td> - </td>
+
+
+            <td>string </td>
+
+
+</tr>
+
+
+</table>
+
+
+
+#### Response
+
+**Content-Type: ** application/json
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 200    | successful operation | <a href="#/definitions/Pet">Pet</a>|
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## /pet/{petId}
 
 

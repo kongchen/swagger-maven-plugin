@@ -27,6 +27,7 @@ import com.wordnik.swagger.models.properties.Property;
 import com.wordnik.swagger.models.properties.RefProperty;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -286,6 +287,24 @@ public class AbstractReader {
 
         if (parameters.size() > 0) {
             for (Parameter parameter : parameters) {
+                //fix parameter type issue, try to access parameter's type
+                try {
+                    Field t = parameter.getClass().getDeclaredField("type");
+                    t.setAccessible(true);
+                    Object tval = t.get(parameter);
+                    if (tval.equals("ref")) {
+                        //fix to string
+                        t.set(parameter, "string");
+                    }
+                    t.setAccessible(false);
+                } catch (NoSuchFieldException e) {
+                    //ignore
+                    e.printStackTrace();
+                } catch (IllegalAccessException e) {
+                    //ignore
+                    e.printStackTrace();
+                }
+
                 ParameterProcessor.applyAnnotations(swagger, parameter, cls, annotations, isArray);
             }
         } else {
