@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * @author tedleman
@@ -54,6 +55,11 @@ public class SpringMavenDocumentSource extends AbstractDocumentSource {
                 }
             }
         }
+        // sort security defs to make output consistent
+        Map<String, SecuritySchemeDefinition> defs = swagger.getSecurityDefinitions();
+        Map<String, SecuritySchemeDefinition> sortedDefs = new TreeMap<String, SecuritySchemeDefinition>();
+        sortedDefs.putAll(defs);
+        swagger.setSecurityDefinitions(sortedDefs);
 
         if (FilterFactory.getFilter() != null) {
             swagger = new SpecFilter().filter(swagger, FilterFactory.getFilter(),
