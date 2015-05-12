@@ -2,6 +2,7 @@ package com.github.kongchen.swagger.docgen.reader;
 
 import com.github.kongchen.swagger.docgen.LogAdapter;
 import com.github.kongchen.swagger.docgen.jaxrs.BeanParamExtention;
+import com.github.kongchen.swagger.docgen.jaxrs.JaxrsParameterExtension;
 import com.github.kongchen.swagger.docgen.spring.SpringSwaggerExtension;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -11,7 +12,6 @@ import com.wordnik.swagger.annotations.ApiResponses;
 import com.wordnik.swagger.annotations.Authorization;
 import com.wordnik.swagger.annotations.AuthorizationScope;
 import com.wordnik.swagger.converter.ModelConverters;
-import com.wordnik.swagger.jaxrs.DefaultParameterExtension;
 import com.wordnik.swagger.jaxrs.ParameterProcessor;
 import com.wordnik.swagger.jaxrs.ext.SwaggerExtension;
 import com.wordnik.swagger.jaxrs.ext.SwaggerExtensions;
@@ -32,7 +32,6 @@ import com.wordnik.swagger.models.properties.Property;
 import com.wordnik.swagger.models.properties.RefProperty;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -65,7 +64,7 @@ public abstract class AbstractReader {
         } else {
             extensions.add(new BeanParamExtention());
             extensions.add(new SwaggerJerseyJaxrs());
-            extensions.add(new DefaultParameterExtension());
+            extensions.add(new JaxrsParameterExtension());
         }
         SwaggerExtensions.setExtensions(extensions);
     }
@@ -305,21 +304,6 @@ public abstract class AbstractReader {
 
         if (parameters.size() > 0) {
             for (Parameter parameter : parameters) {
-                //fix parameter type issue, try to access parameter's type
-                try {
-                    Field t = parameter.getClass().getDeclaredField("type");
-                    t.setAccessible(true);
-                    Object tval = t.get(parameter);
-                    if (tval.equals("ref")) {
-                        //fix to string
-                        t.set(parameter, "string");
-                    }
-                    t.setAccessible(false);
-                } catch (NoSuchFieldException e) {
-                    //ignore
-                } catch (IllegalAccessException e) {
-                    //ignore
-                }
 
                 ParameterProcessor.applyAnnotations(swagger, parameter, cls, annotations, isArray);
             }

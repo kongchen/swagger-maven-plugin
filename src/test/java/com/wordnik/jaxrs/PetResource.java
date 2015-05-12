@@ -20,6 +20,7 @@ import com.wordnik.sample.JavaRestResourceUtil;
 import com.wordnik.sample.data.PetData;
 import com.wordnik.sample.model.MyBean;
 import com.wordnik.sample.model.Pet;
+import com.wordnik.sample.model.PetStatus;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -31,6 +32,7 @@ import com.wordnik.swagger.annotations.AuthorizationScope;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.Set;
 
 @Path("/pet")
 @Api(value = "/pet", description = "Operations about pets", authorizations = {
@@ -106,8 +108,10 @@ public class PetResource {
           responseContainer = "List")
   @ApiResponses(value = {@ApiResponse(code = 400, message = "Invalid status value")})
   public Response findPetsByStatus(
-          @ApiParam(value = "Status values that need to be considered for filter", required = true, defaultValue = "available", allowableValues = "available,pending,sold", allowMultiple = true) @QueryParam("status") String status) {
-    return Response.ok(petData.findPetByStatus(status)).build();
+          @ApiParam(value = "Status values that need to be considered for filter", required = true, defaultValue = "available",
+                  allowableValues = "available,pending,sold",
+                  allowMultiple = true) @QueryParam("status") Set<PetStatus> status) {
+    return Response.ok(petData.findPetByStatus(status.toString())).build();
   }
 
   @GET

@@ -1,25 +1,12 @@
 package com.github.kongchen.swagger.docgen.jaxrs;
 
 import com.wordnik.swagger.annotations.ApiParam;
-import com.wordnik.swagger.converter.ModelConverters;
 import com.wordnik.swagger.jaxrs.ext.AbstractSwaggerExtension;
 import com.wordnik.swagger.jaxrs.ext.SwaggerExtension;
-import com.wordnik.swagger.models.parameters.CookieParameter;
-import com.wordnik.swagger.models.parameters.FormParameter;
-import com.wordnik.swagger.models.parameters.HeaderParameter;
 import com.wordnik.swagger.models.parameters.Parameter;
-import com.wordnik.swagger.models.parameters.PathParameter;
-import com.wordnik.swagger.models.parameters.QueryParameter;
-import com.wordnik.swagger.models.properties.Property;
 import org.reflections.util.Utils;
 
 import javax.ws.rs.BeanParam;
-import javax.ws.rs.CookieParam;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -53,7 +40,7 @@ public class BeanParamExtention extends AbstractSwaggerExtension implements Swag
         List<Parameter> parameters = new ArrayList<Parameter>();
         for (Field f : cls.getDeclaredFields()) {
             Parameter parameter = null;
-            String defaultValue = "";
+
             int i = 0, apiParaIdx = -1;
 
             for(Annotation annotation : f.getAnnotations()) {
@@ -61,67 +48,7 @@ public class BeanParamExtention extends AbstractSwaggerExtension implements Swag
                     apiParaIdx = i;
                 }
                 i++;
-                if(annotation instanceof DefaultValue) {
-                    DefaultValue defaultValueAnnotation = (DefaultValue) annotation;
-                    defaultValue = defaultValueAnnotation.value();
-                }
-
-                if(annotation instanceof QueryParam) {
-                    QueryParam param = (QueryParam) annotation;
-                    QueryParameter qp = new QueryParameter()
-                            .name(param.value());
-
-                    if(!defaultValue.isEmpty()) {
-                        qp.setDefaultValue(defaultValue);
-                    }
-                    Property schema = ModelConverters.getInstance().readAsProperty(cls);
-                    if(schema != null)
-                        qp.setProperty(schema);
-                    parameter = qp;
-                }
-                else if(annotation instanceof PathParam) {
-                    PathParam param = (PathParam) annotation;
-                    PathParameter pp = new PathParameter()
-                            .name(param.value());
-                    if(!defaultValue.isEmpty())
-                        pp.setDefaultValue(defaultValue);
-                    Property schema = ModelConverters.getInstance().readAsProperty(cls);
-                    if(schema != null)
-                        pp.setProperty(schema);
-                    parameter = pp;
-                }
-                else if(annotation instanceof HeaderParam) {
-                    HeaderParam param = (HeaderParam) annotation;
-                    HeaderParameter hp = new HeaderParameter()
-                            .name(param.value());
-                    hp.setDefaultValue(defaultValue);
-                    Property schema = ModelConverters.getInstance().readAsProperty(cls);
-                    if(schema != null)
-                        hp.setProperty(schema);
-                    parameter = hp;
-                }
-                else if(annotation instanceof CookieParam) {
-                    CookieParam param = (CookieParam) annotation;
-                    CookieParameter cp = new CookieParameter()
-                            .name(param.value());
-                    if(!defaultValue.isEmpty())
-                        cp.setDefaultValue(defaultValue);
-                    Property schema = ModelConverters.getInstance().readAsProperty(cls);
-                    if(schema != null)
-                        cp.setProperty(schema);
-                    parameter = cp;
-                }
-                else if(annotation instanceof FormParam) {
-                    FormParam param = (FormParam) annotation;
-                    FormParameter fp = new FormParameter()
-                            .name(param.value());
-                    if(!defaultValue.isEmpty())
-                        fp.setDefaultValue(defaultValue);
-                    Property schema = ModelConverters.getInstance().readAsProperty(cls);
-                    if(schema != null)
-                        fp.setProperty(schema);
-                    parameter = fp;
-                }
+                parameter = JaxrsParameterExtension.getParameter(cls, parameter, annotation);
 
             }
             if (parameter != null) {
@@ -140,6 +67,8 @@ public class BeanParamExtention extends AbstractSwaggerExtension implements Swag
 
         return parameters;
     }
+
+
 
     public boolean shouldIgnoreClass(Class<?> cls) {
         boolean output = false;
