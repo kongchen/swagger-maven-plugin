@@ -18,7 +18,6 @@ package com.wordnik.jaxrs;
 
 import com.wordnik.sample.JavaRestResourceUtil;
 import com.wordnik.sample.data.PetData;
-import com.wordnik.sample.model.MyBean;
 import com.wordnik.sample.model.Pet;
 import com.wordnik.sample.model.PetStatus;
 import com.wordnik.swagger.annotations.Api;
