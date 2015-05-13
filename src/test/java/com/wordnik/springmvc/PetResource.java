@@ -37,6 +37,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 
 
 
@@ -112,6 +113,23 @@ public class PetResource {
   public List<Pet> findPetsByStatus(
           @ApiParam(value = "Status values that need to be considered for filter", required = true, defaultValue = "available", allowableValues = "available,pending,sold", allowMultiple = true) @RequestParam("status") String status) {
     return petData.findPetByStatus(status);
+  }
+  
+  @RequestMapping(value = "/findByStatuses", method = RequestMethod.GET)
+  @ApiOperation(value = "Finds Pets by status",
+          notes = "Multiple status values can be provided with multiple query parameters. Example: ?status=sold&status=pending",
+          response = Pet.class,
+          responseContainer = "List")
+  @ApiResponses(value = {@ApiResponse(code = 400, message = "Invalid status value")})
+  public List<Pet> findPetsByStatuses(
+          @ApiParam(
+              value = "Status values that need to be considered for filter", 
+              required = true, 
+              defaultValue = "available", 
+              allowableValues = "available,pending,sold", 
+              allowMultiple = true) 
+          @RequestParam("status") List<String> statuses) {
+    return petData.findPetByStatus(StringUtils.join(statuses, ","));
   }
 
   @RequestMapping(value = "/findByTags", method = RequestMethod.GET)

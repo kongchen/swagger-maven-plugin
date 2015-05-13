@@ -1,4 +1,4 @@
-package com.wordnik.sample.model;
+package com.wordnik.jaxrs;
 
 import com.wordnik.swagger.annotations.ApiParam;
 
