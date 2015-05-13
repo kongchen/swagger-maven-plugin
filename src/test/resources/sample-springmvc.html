@@ -415,6 +415,93 @@ Multiple status values can be provided with comma seperated strings
 
 
 
+## /pet/findByStatuses
+
+
+### GET
+
+<a id="findPetsByStatuses">Finds Pets by status</a>
+
+Multiple status values can be provided with multiple query parameters. Example: ?status=sold&amp;status=pending
+
+
+
+
+#### Security
+
+
+
+
+* petstore_auth
+   * write:pets
+   * read:pets
+
+
+
+
+#### Request
+
+
+
+##### Parameters
+
+<table border="1">
+    <tr>
+        <th>Name</th>
+        <th>Located in</th>
+        <th>Required</th>
+        <th>Description</th>
+        <th>Default</th>
+        <th>Schema</th>
+    </tr>
+
+
+
+<tr>
+    <th>status</th>
+    <td>query</td>
+    <td>yes</td>
+    <td>Status values that need to be considered for filter</td>
+    <td> - </td>
+
+    
+            <td>Array[string] (multi)</td>
+    
+
+</tr>
+
+
+</table>
+
+
+
+#### Response
+
+**Content-Type: ** application/xml, application/json
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 200    | successful operation | Array[<a href="#/definitions/Pet">Pet</a>]|
+| 400    | Invalid status value |  - |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## /pet/findByTags
 
 

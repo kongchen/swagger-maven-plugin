@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -45,13 +46,18 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension implements 
                 RequestParam param = (RequestParam) annotation;
                 QueryParameter qp = new QueryParameter()
                         .name(param.value());
-
+               
                 if(!defaultValue.isEmpty()) {
                     qp.setDefaultValue(defaultValue);
                 }
                 Property schema = ModelConverters.getInstance().readAsProperty(cls);
                 if(schema != null)
                     qp.setProperty(schema);
+                
+                if(isArray || Collection.class.isAssignableFrom(cls)) {
+                    qp.setType("string");
+                }
+                
                 parameter = qp;
             }
             else if(annotation instanceof PathVariable) {
@@ -101,7 +107,7 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension implements 
         if(parameter != null) {
             parameters.add(parameter);
         }
-
+        
         return parameters;
     }
 
