@@ -6,6 +6,8 @@ import com.github.kongchen.swagger.docgen.spring.SpringResource;
 import com.github.kongchen.swagger.docgen.spring.SpringSwaggerExtension;
 import com.github.kongchen.swagger.docgen.util.SprintUtils;
 import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiImplicitParam;
+import com.wordnik.swagger.annotations.ApiImplicitParams;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiResponses;
 import com.wordnik.swagger.annotations.Authorization;
@@ -13,6 +15,7 @@ import com.wordnik.swagger.annotations.AuthorizationScope;
 import com.wordnik.swagger.converter.ModelConverters;
 import com.wordnik.swagger.jaxrs.ext.SwaggerExtension;
 import com.wordnik.swagger.jaxrs.ext.SwaggerExtensions;
+import com.wordnik.swagger.jaxrs.utils.ParameterUtils;
 import com.wordnik.swagger.models.Model;
 import com.wordnik.swagger.models.Operation;
 import com.wordnik.swagger.models.Response;
@@ -20,11 +23,18 @@ import com.wordnik.swagger.models.SecurityDefinition;
 import com.wordnik.swagger.models.SecurityRequirement;
 import com.wordnik.swagger.models.Swagger;
 import com.wordnik.swagger.models.Tag;
+import com.wordnik.swagger.models.parameters.BodyParameter;
+import com.wordnik.swagger.models.parameters.FormParameter;
+import com.wordnik.swagger.models.parameters.HeaderParameter;
 import com.wordnik.swagger.models.parameters.Parameter;
+import com.wordnik.swagger.models.parameters.PathParameter;
+import com.wordnik.swagger.models.parameters.QueryParameter;
+import com.wordnik.swagger.models.parameters.SerializableParameter;
 import com.wordnik.swagger.models.properties.ArrayProperty;
 import com.wordnik.swagger.models.properties.MapProperty;
 import com.wordnik.swagger.models.properties.Property;
 import com.wordnik.swagger.models.properties.RefProperty;
+import com.wordnik.swagger.models.properties.StringProperty;
 import org.codehaus.plexus.util.StringUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,10 +46,12 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.springframework.core.annotation.AnnotationUtils;
 
 public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerReader {
     private String resourcePath;
@@ -320,11 +332,95 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         if (operation.getResponses() == null) {
             operation.defaultResponse(new Response().description("successful operation"));
         }
+        
+        // Process @ApiImplicitParams
+        Annotation paramsAnnotation = AnnotationUtils.getAnnotation(method, ApiImplicitParams.class);
+        if (paramsAnnotation != null && (paramsAnnotation instanceof ApiImplicitParams)) {
+            ApiImplicitParams apiImplicitParamsAnnotation = (ApiImplicitParams) paramsAnnotation;
+            for (ApiImplicitParam apiImplicitParam : apiImplicitParamsAnnotation.value()) {
+                String paramType = apiImplicitParam.paramType();
+                                
+                Class<?> cls = null;
+                Property schema = null;
+                try {
+                    cls = Class.forName(apiImplicitParam.dataType()); 
+                    if (cls != null) {
+                        schema = ModelConverters.getInstance().readAsProperty(cls);                        
+                    }
+                } catch (ClassNotFoundException e) {
+                    // Do nothing
+                }
+                
+                // TODO: Refine and refactor the following into a cleaner factory pattern
+                
+                if ("header".equals(paramType)) {
+                    HeaderParameter parameter = new HeaderParameter();
+                    parameter.setDefaultValue(apiImplicitParam.defaultValue());
+                    parameter.setName(apiImplicitParam.name());
+                    parameter.setRequired(apiImplicitParam.required());
+                    if(schema != null) {
+                        parameter.setProperty(schema);
+                    }
+                    if(apiImplicitParam.allowMultiple()) {
+                        parameter.setArray(true);
+                        parameter.setItems(new StringProperty()); // TODO: determine correct Property
+                    }
+                    operation.parameter(parameter);
+                    
+                } else if ("path".equals(paramType)) {
+                    PathParameter parameter = new PathParameter();
+                    parameter.setDefaultValue(apiImplicitParam.defaultValue());
+                    parameter.setName(apiImplicitParam.name());
+                    parameter.setType(apiImplicitParam.dataType());
+                    parameter.setRequired(apiImplicitParam.required());
+                    operation.parameter(parameter);
+                    
+                } else if ("query".equals(paramType)) {
+                    QueryParameter parameter = new QueryParameter();
+                    parameter.setDefaultValue(apiImplicitParam.defaultValue());
+                    parameter.setName(apiImplicitParam.name());
+                    parameter.setType(apiImplicitParam.dataType());
+                    parameter.setRequired(apiImplicitParam.required());
+                    if (schema != null) {
+                        parameter.setProperty(schema);
+                    }
+                    if(apiImplicitParam.allowMultiple()) {
+                        parameter.setArray(true);
+                        parameter.setItems(new StringProperty()); // TODO: determine correct Property
+                    }
+                    operation.parameter(parameter);
+                    
+                } else if ("body".equals(paramType)) {
+                    BodyParameter parameter = new BodyParameter();
+                    parameter.setName(apiImplicitParam.name());
+                    parameter.setRequired(apiImplicitParam.required());
+                    // TODO: Determine body param schema
+                    operation.parameter(parameter);
+                    
+                } else if ("form".equals(paramType)) {
+                    FormParameter parameter = new FormParameter();
+                    parameter.setDefaultValue(apiImplicitParam.defaultValue());
+                    parameter.setName(apiImplicitParam.name());
+                    parameter.setType(apiImplicitParam.dataType());
+                    parameter.setRequired(apiImplicitParam.required());  
+                    if (schema != null) {
+                        parameter.setProperty(schema);
+                    }
+                    if(apiImplicitParam.allowMultiple()) {
+                        parameter.setArray(true);
+                        parameter.setItems(new StringProperty()); // TODO: determine correct Property
+                    }
+                    operation.parameter(parameter);
+                    
+                }
+                
+                
+            }
+        }
 
         return operation;
 
     }
-
 
     private Map<String, List<Method>> collectApisByRequestMapping(List<Method> methods) {
         Map<String, List<Method>> apiMethodMap = new HashMap<String, List<Method>>();
