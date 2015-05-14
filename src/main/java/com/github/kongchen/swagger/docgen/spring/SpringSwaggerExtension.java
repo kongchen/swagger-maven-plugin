@@ -25,6 +25,13 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import org.reflections.util.Utils;
+import org.springframework.beans.BeanUtils;
+import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import java.beans.PropertyDescriptor;
+import com.wordnik.swagger.annotations.ApiParam;
+
 
 /**
  * Created by chekong on 15/4/27.
@@ -92,6 +99,41 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension implements 
                     cp.setProperty(schema);
                 parameter = cp;
             }
+            else if(annotation instanceof ModelAttribute) {                
+                // If ModelAttribute annotation is present, check for possible APIparam annotation in beans
+                for (PropertyDescriptor propertyDescriptor : BeanUtils.getPropertyDescriptors(cls)) {
+                    
+                    // Get all the valid setter methods inside the bean
+                    Method propertyDescriptorSetter = propertyDescriptor.getWriteMethod();
+                    if (propertyDescriptorSetter != null) {
+                        
+                        Annotation propertySetterApiParam = AnnotationUtils.findAnnotation(propertyDescriptorSetter, ApiParam.class);
+                        if (false == (propertySetterApiParam instanceof ApiParam)) {
+                            // If we find a setter that doesn't have @ApiParam annotation, then skip it
+                            continue;
+                        }
+                                                
+                        // Create QueryParameter instances for each of the valid @ApiParam setters
+                        QueryParameter qp = new QueryParameter().name(propertyDescriptor.getDisplayName());
+                        Property schema = ModelConverters.getInstance().readAsProperty(propertyDescriptor.getPropertyType());
+                        if (schema != null) {
+                            qp.setProperty(schema);
+                        }
+                        
+                        // Copy the attributes from the @ApiParam annotation into the new QueryParam
+                        ApiParam methodApiParamAnnotation = (ApiParam) propertySetterApiParam;
+                        qp.setDescription(methodApiParamAnnotation.value());
+                        qp.setRequired(methodApiParamAnnotation.required());
+                        qp.setAccess(methodApiParamAnnotation.access());
+                        if (!Utils.isEmpty(methodApiParamAnnotation.name())) {
+                            qp.setName(methodApiParamAnnotation.name());
+                        }
+                        
+                        parameters.add(qp);
+                    }
+                }
+            }
+            
 //            else if(annotation instanceof RequestParam) {
 //                FormParam param = (FormParam) annotation;
 //                FormParameter fp = new FormParameter()

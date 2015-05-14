@@ -19,6 +19,7 @@ package com.wordnik.springmvc;
 import com.wordnik.sample.JavaRestResourceUtil;
 import com.wordnik.sample.data.PetData;
 import com.wordnik.sample.exception.NotFoundException;
+import com.wordnik.sample.model.PaginationHelper;
 import com.wordnik.sample.model.Pet;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -27,6 +28,7 @@ import com.wordnik.swagger.annotations.ApiResponse;
 import com.wordnik.swagger.annotations.ApiResponses;
 import com.wordnik.swagger.annotations.Authorization;
 import com.wordnik.swagger.annotations.AuthorizationScope;
+import java.util.HashMap;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,7 +39,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
 
 
@@ -144,6 +148,19 @@ public class PetResource {
     return petData.findPetByTags(tags);
   }
 
+  @RequestMapping(value = "/pets", method = RequestMethod.GET)
+  @ApiOperation(value = "Retrieve all pets. Pagination supported",
+          notes = "If you wish to paginate the results of this API, supply offset and limit query parameters.",
+          response = Pet.class,
+          responseContainer = "List")
+  public Map<String, Object> getAllPetsPaginated(@ModelAttribute PaginationHelper paginationHelper) {
+    Map<String, Object> map = new HashMap<String, Object>();
+    map.put("limit", paginationHelper.getLimit());
+    map.put("offset", paginationHelper.getOffset());
+    map.put("results", petData.findPetByStatus("available,sold,pending")); // TODO: implement paginated getter for petData
+    return map;
+  }
+  
   @RequestMapping(value = "/{petId}", consumes = {"application/x-www-form-urlencoded"}, method = RequestMethod.POST)
   @ApiOperation(value = "Updates a pet in the store with form data",
           consumes ="application/x-www-form-urlencoded")
