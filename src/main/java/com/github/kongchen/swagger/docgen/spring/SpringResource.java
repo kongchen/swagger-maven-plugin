@@ -23,18 +23,18 @@ public class SpringResource {
 	 * @param res (String) Resource Name
 	 */
 	public SpringResource(Class<?> clazz, String resourceName, String resourceKey, String description){
-		this.controllerClass = clazz;
-		this.resourceName = resourceName;
-		this.resourceKey = resourceKey;
-		this.description = description;
-		methods = new ArrayList<Method>();
-		
-		RequestMapping req = controllerClass.getAnnotation(RequestMapping.class);
-		String fullPath = req.value()[0];
-		if(fullPath.endsWith("/")){
-			fullPath = fullPath.substring(0,fullPath.length()-1);
-		}
-		this.controllerMapping = req.value()[0];
+            this.controllerClass = clazz;
+            this.resourceName = resourceName;
+            this.resourceKey = resourceKey;
+            this.description = description;
+            methods = new ArrayList<Method>();
+
+            RequestMapping req = controllerClass.getAnnotation(RequestMapping.class);
+            String fullPath = req.value()[0];
+            if(fullPath.endsWith("/")){
+                fullPath = fullPath.substring(0,fullPath.length()-1);
+            }
+            this.controllerMapping = req.value()[0];
 
 		String tempMapping= this.controllerMapping;
 		if(tempMapping.startsWith("/")){
