@@ -3,16 +3,12 @@ package com.github.kongchen.swagger.docgen.reader;
 import com.github.kongchen.swagger.docgen.GenerateException;
 import com.github.kongchen.swagger.docgen.LogAdapter;
 import com.github.kongchen.swagger.docgen.spring.SpringResource;
-import com.github.kongchen.swagger.docgen.spring.SpringSwaggerExtension;
-import com.github.kongchen.swagger.docgen.util.SprintUtils;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiResponses;
 import com.wordnik.swagger.annotations.Authorization;
 import com.wordnik.swagger.annotations.AuthorizationScope;
 import com.wordnik.swagger.converter.ModelConverters;
-import com.wordnik.swagger.jaxrs.ext.SwaggerExtension;
-import com.wordnik.swagger.jaxrs.ext.SwaggerExtensions;
 import com.wordnik.swagger.models.Model;
 import com.wordnik.swagger.models.Operation;
 import com.wordnik.swagger.models.Response;
@@ -40,6 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerReader {
     private String resourcePath;
@@ -376,42 +373,61 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
 
     //Helper method for loadDocuments()
     private Map<String, SpringResource> analyzeController(Class<?> clazz, Map<String, SpringResource> resourceMap, String description) throws ClassNotFoundException {
+        String controllerCanonicalName = clazz.getCanonicalName();
 
+        // Iterate over all value attributes of the class-level RequestMapping annotation
         for (int i = 0; i < clazz.getAnnotation(RequestMapping.class).value().length; i++) {
-            String controllerMapping = clazz.getAnnotation(RequestMapping.class).value()[i];
-            String resourceName = SprintUtils.parseResourceName(controllerMapping);
-            for (Method method : clazz.getMethods()) {
-                if (method.isAnnotationPresent(RequestMapping.class)) {
-                    RequestMapping methodReq = method.getAnnotation(RequestMapping.class);
-                    if (methodReq.value() == null || methodReq.value().length == 0 || SprintUtils.parseResourceName(methodReq.value()[0]).equals("")) {
-                        if (resourceName.length() != 0) {
-                            String resourceKey = SprintUtils.createResourceKey(resourceName, SprintUtils.parseVersion(controllerMapping));
+            String controllerRequestMappingValue = clazz.getAnnotation(RequestMapping.class).value()[i];
+            
+            // Iterate over all methods inside the controller
+            Method[] methods = clazz.getMethods();
+            for (Method method : methods) {
+                RequestMapping methodRequestMapping = method.getAnnotation(RequestMapping.class);
+                
+                // Look for method-level @RequestMapping annotation
+                if (methodRequestMapping instanceof RequestMapping){
+                    RequestMethod[] requestMappingRequestMethods = methodRequestMapping.method();
+                    
+                    // For each method-level @RequestMapping annotation, iterate over HTTP Verb
+                    for (RequestMethod requestMappingRequestMethod : requestMappingRequestMethods) {
+                        String[] methodRequestMappingValues = methodRequestMapping.value();
+                        
+                        // Check for cases where method-level @RequestMapping#value is not set, and use the controllers @RequestMapping
+                        if (methodRequestMappingValues == null || methodRequestMappingValues.length == 0) {
+                            // The map key is a concat of the following: 
+                            //   1. The controller package
+                            //   2. The controller class name
+                            //   3. The controller-level @RequestMapping#value
+                            String resourceKey = controllerCanonicalName + controllerRequestMappingValue + requestMappingRequestMethod;
                             if ((!(resourceMap.containsKey(resourceKey)))) {
-                                resourceMap.put(resourceKey, new SpringResource(clazz, resourceName, resourceKey, description));
+                                resourceMap.put(
+                                    resourceKey,
+                                    new SpringResource(clazz, controllerRequestMappingValue, resourceKey, description));
                             }
                             resourceMap.get(resourceKey).addMethod(method);
-                        }
-                    } else {
-                        for (int j = 0; j < methodReq.value().length; j++) {
-                            String resourceKey = "";
-                            if (!(resourceName.equals(""))) {
-                                String version = SprintUtils.parseVersion(controllerMapping);
-                                //get version - first try by class mapping, then method
-                                if (version.equals("")) {
-                                    //class mapping failed - use method
-                                    version = SprintUtils.parseVersion(methodReq.value()[j]);
+                        } else {
+                            // Here we know that method-level @RequestMapping#value is populated, so
+                            // iterate over all the @RequestMapping#value attributes, and add them to the resource map.
+                            for (String methodRequestMappingValue : methodRequestMappingValues) {
+                                String resourceName = methodRequestMappingValue;
+                                // The map key is a concat of the following: 
+                                //   1. The controller package
+                                //   2. The controller class name
+                                //   3. The controller-level @RequestMapping#value
+                                //   4. The method-level @RequestMapping#value
+                                //   5. The method-level @RequestMapping#method
+                                String resourceKey = controllerCanonicalName + controllerRequestMappingValue + resourceName + requestMappingRequestMethod;
+                                if (!(resourceName.equals(""))) {
+                                    if ((!(resourceMap.containsKey(resourceKey)))) {
+                                        resourceMap.put(resourceKey, new SpringResource(clazz, resourceName, resourceKey, description));
+                                    }
+                                    resourceMap.get(resourceKey).addMethod(method);
                                 }
-                                resourceKey = SprintUtils.createResourceKey(resourceName, version);
-                                if ((!(resourceMap.containsKey(resourceKey)))) {
-                                    resourceMap.put(resourceKey, new SpringResource(clazz, resourceName, resourceKey, description));
-                                }
-                                resourceMap.get(resourceKey).addMethod(method);
                             }
                         }
                     }
                 }
             }
-
         }
         clazz.getFields();
         clazz.getDeclaredFields(); //<--In case developer declares a field without an associated getter/setter.

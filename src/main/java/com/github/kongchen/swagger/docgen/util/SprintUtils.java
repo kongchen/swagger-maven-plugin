@@ -37,59 +37,7 @@ public class SprintUtils {
         resourceKey = CharMatcher.anyOf("%^#?:;").removeFrom(resourceKey);
         return resourceKey;
     }
-
-    /**
-     * Get resource name from request mapping string
-     *
-     * @param mapping
-     * @return name of resource
-     * @author tedleman
-     */
-    public static String parseResourceName(String mapping) {
-        String resourceName = mapping;
-
-        while (resourceName.startsWith("/")) {
-            resourceName = resourceName.substring(1);
-        }
-        if (resourceName.contains("/")) {
-            resourceName = resourceName.substring(0, resourceName.indexOf("/"));
-        }
-        if (resourceName.contains("{")) {
-            resourceName = "";
-        }
-        return resourceName;
-    }
-
-
-    /**
-     * Get resource name from controller class
-     *
-     * @param clazz
-     * @return
-     * @author tedleman
-     */
-    public static String parseResourceName(Class<?> clazz) {
-        String fullPath = clazz.getAnnotation(RequestMapping.class).value()[0];
-        String resource = "";
-        try {
-
-            if (fullPath.endsWith("/")) {
-                resource = fullPath.substring(0, fullPath.length() - 1);
-            } else {
-                resource = fullPath;
-            }
-            resource = resource.substring(resource.lastIndexOf("/"), resource.length());
-            resource = resource.replaceAll("/", "");
-
-            if (resource.equals(parseVersion(fullPath))) {
-                return "";
-            }
-        } catch (StringIndexOutOfBoundsException e) {
-            //failure in class-level mapping, method-level will be called next
-        }
-        return resource;
-    }
-
+    
     /**
      * @param mapping
      * @return version of resource

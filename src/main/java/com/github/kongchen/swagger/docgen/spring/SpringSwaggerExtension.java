@@ -65,6 +65,8 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension implements 
                     qp.setType("string");
                 }
                 
+                qp.setRequired(param.required());
+                
                 parameter = qp;
             }
             else if(annotation instanceof PathVariable) {
@@ -75,7 +77,7 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension implements 
                     pp.setDefaultValue(defaultValue);
                 Property schema = ModelConverters.getInstance().readAsProperty(cls);
                 if(schema != null)
-                    pp.setProperty(schema);
+                    pp.setProperty(schema);                
                 parameter = pp;
             }
             else if(annotation instanceof RequestHeader) {
@@ -86,6 +88,9 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension implements 
                 Property schema = ModelConverters.getInstance().readAsProperty(cls);
                 if(schema != null)
                     hp.setProperty(schema);
+                
+                hp.setRequired(param.required());
+                
                 parameter = hp;
             }
             else if(annotation instanceof CookieValue) {
@@ -97,6 +102,9 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension implements 
                 Property schema = ModelConverters.getInstance().readAsProperty(cls);
                 if(schema != null)
                     cp.setProperty(schema);
+                
+                cp.setRequired(param.required());
+                
                 parameter = cp;
             }
             else if(annotation instanceof ModelAttribute) {                

@@ -170,7 +170,6 @@
             <version>0.12.0.RELEASE</version>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
     <build>
         <plugins>
