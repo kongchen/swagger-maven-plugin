@@ -166,15 +166,12 @@ public class PetResource {
           consumes ="application/x-www-form-urlencoded")
   @ApiResponses(value = {
           @ApiResponse(code = 405, message = "Invalid input")})
-  public ResponseEntity<com.wordnik.sample.model.ApiResponse> updatePetWithForm(
-          @ApiParam(value = "ID of pet that needs to be updated", required = true) @PathVariable("petId") String petId,
-          @ApiParam(value = "Updated name of the pet", required = false) @RequestParam("name") String name,
-          @ApiParam(value = "Updated status of the pet", required = false) @RequestParam("status") String status) {
-    System.out.println(name);
-    System.out.println(status);
+  public ResponseEntity<com.wordnik.sample.model.ApiResponse> updatePetWithForm(@ModelAttribute UpdatePetRequest updatePetRequest) {
+    System.out.println(updatePetRequest.getName());
+    System.out.println(updatePetRequest.getStatus());
     return new ResponseEntity<com.wordnik.sample.model.ApiResponse>(new com.wordnik.sample.model.ApiResponse(200, "SUCCESS"), HttpStatus.OK);
   }
-
+  
   @ApiOperation(value = "Returns pet", response = Pet.class)
   @RequestMapping(produces = "application/json", method = RequestMethod.GET)
   public Pet get() {
