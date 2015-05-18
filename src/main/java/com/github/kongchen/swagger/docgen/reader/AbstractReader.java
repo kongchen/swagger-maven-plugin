@@ -341,17 +341,25 @@ public abstract class AbstractReader {
         Class<?> responseClass;
         for (ApiResponse apiResponse : responseAnnotation.value()) {
             Map<String, Property> responseHeaders = parseResponseHeaders(apiResponse.responseHeaders());
-
+            responseClass = apiResponse.response();  
             Response response = new Response()
                     .description(apiResponse.message())
                     .headers(responseHeaders);
-
+            
+            if (responseClass == null || responseClass.equals(Void.class)) {
+                if (operation.getResponses() != null && !operation.getResponses().isEmpty()) {
+                    Response apiOperationResponse = operation.getResponses().get(String.valueOf(apiResponse.code()));
+                    if (apiOperationResponse != null) {
+                        response.setSchema(apiOperationResponse.getSchema());
+                    }
+                }
+            }
+            
             if (apiResponse.code() == 0)
                 operation.defaultResponse(response);
             else
                 operation.response(apiResponse.code(), response);
-
-            responseClass = apiResponse.response();
+            
             if (responseClass != null && !responseClass.equals(Void.class)) {
                 Map<String, Model> models = ModelConverters.getInstance().read(responseClass);
                 for (String key : models.keySet()) {
@@ -362,7 +370,7 @@ public abstract class AbstractReader {
                 for (String key : models.keySet()) {
                     swagger.model(key, models.get(key));
                 }
-            }
+            } 
         }
     }
 
