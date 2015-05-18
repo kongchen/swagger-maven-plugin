@@ -61,10 +61,11 @@ public class PetResource {
   @RequestMapping(value = "/{petId}", method = RequestMethod.GET)
   @ApiOperation(value = "Find pet by ID",
           notes = "Returns a pet when ID < 10.  ID > 10 or nonintegers will simulate API error conditions",
-          response = Pet.class,
           authorizations = @Authorization(value = "api_key", type = "api_key")
   )
-  @ApiResponses(value = {@ApiResponse(code = 400, message = "Invalid ID supplied"),
+  @ApiResponses(value = {
+      @ApiResponse(code = 200, message = "Pet data found", response = Pet.class),
+      @ApiResponse(code = 400, message = "Invalid ID supplied"),
           @ApiResponse(code = 404, message = "Pet not found")})
   public ResponseEntity<Pet> getPetById(
           @ApiParam(value = "ID of pet that needs to be fetched", allowableValues = "range[1,5]", required = true) @PathVariable("petId") Long petId)
@@ -124,7 +125,10 @@ public class PetResource {
           notes = "Multiple status values can be provided with multiple query parameters. Example: ?status=sold&status=pending",
           response = Pet.class,
           responseContainer = "List")
-  @ApiResponses(value = {@ApiResponse(code = 400, message = "Invalid status value")})
+  @ApiResponses(value = {
+      @ApiResponse(code = 200, message = "Operation successful, and items were found matching the query. Data in response body."),
+      @ApiResponse(code = 400, message = "Invalid status value")
+  })
   public List<Pet> findPetsByStatuses(
           @ApiParam(
               value = "Status values that need to be considered for filter", 

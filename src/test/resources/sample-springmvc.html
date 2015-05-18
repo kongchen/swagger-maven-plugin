@@ -482,7 +482,7 @@ Multiple status values can be provided with multiple query parameters. Example: 
 
 | Status Code | Reason      | Response Model |
 |-------------|-------------|----------------|
-| 200    | successful operation | Array[<a href="#/definitions/Pet">Pet</a>]|
+| 200    | Operation successful, and items were found matching the query. Data in response body. | Array[<a href="#/definitions/Pet">Pet</a>]|
 | 400    | Invalid status value |  - |
 
 
@@ -821,7 +821,7 @@ Returns a pet when ID &lt; 10.  ID &gt; 10 or nonintegers will simulate API erro
 
 | Status Code | Reason      | Response Model |
 |-------------|-------------|----------------|
-| 200    | successful operation | <a href="#/definitions/Pet">Pet</a>|
+| 200    | Pet data found | <a href="#/definitions/Pet">Pet</a>|
 | 400    | Invalid ID supplied |  - |
 | 404    | Pet not found |  - |
 
