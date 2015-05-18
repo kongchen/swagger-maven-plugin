@@ -117,31 +117,27 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
                 String operationPath = parseOperationPath(path, regexMap);
 
                 //http method
-                if (requestMapping.method() != null && requestMapping.method().length != 0) {
-                    httpMethod = requestMapping.method()[0].toString().toLowerCase();
-                    if (httpMethod == null) {
-                        continue;
-                    }
+                for(RequestMethod requestMethod : requestMapping.method()) {
+                    httpMethod = requestMethod.toString().toLowerCase();
+                    Operation operation = parseMethod(method);
+
+                    updateOperationParameters(new ArrayList<Parameter>(), regexMap, operation);
+
+                    updateOperationProtocols(apiOperation, operation);
+
+                    String[] apiProduces = requestMapping.produces();
+                    String[] apiConsumes = requestMapping.consumes();
+
+                    apiProduces = (apiProduces == null || apiProduces.length == 0) ? controllerProduces : apiProduces;
+                    apiConsumes = (apiConsumes == null || apiProduces.length == 0) ? controllerConsumes : apiConsumes;
+
+                    apiConsumes = updateOperationConsumes(new String[0], apiConsumes, operation);
+                    apiProduces = updateOperationProduces(new String[0], apiProduces, operation);
+
+                    updateTagsForOperation(operation, apiOperation);
+                    updateOperation(apiConsumes, apiProduces, tags, resourceSecurities, operation);
+                    updatePath(operationPath, httpMethod, operation);
                 }
-
-                Operation operation = parseMethod(method);
-
-                updateOperationParameters(new ArrayList<Parameter>(), regexMap, operation);
-
-                updateOperationProtocols(apiOperation, operation);
-
-                String[] apiProduces = requestMapping.produces();
-                String[] apiConsumes = requestMapping.consumes();
-
-                apiProduces = (apiProduces == null || apiProduces.length == 0) ? controllerProduces : apiProduces;
-                apiConsumes = (apiConsumes == null || apiProduces.length == 0) ? controllerConsumes : apiConsumes;
-
-                apiConsumes = updateOperationConsumes(new String[0], apiConsumes, operation);
-                apiProduces = updateOperationProduces(new String[0], apiProduces, operation);
-
-                updateTagsForOperation(operation, apiOperation);
-                updateOperation(apiConsumes, apiProduces, tags, resourceSecurities, operation);
-                updatePath(operationPath, httpMethod, operation);
             }
 
         }

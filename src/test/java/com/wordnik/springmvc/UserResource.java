@@ -72,7 +72,7 @@ public class UserResource {
   }
 
 
-  @RequestMapping(value = "/{username}", method = RequestMethod.PUT)
+  @RequestMapping(value = "/{username}", method = {RequestMethod.PUT, RequestMethod.PATCH})
   @ApiOperation(value = "Updated user",
     notes = "This can only be done by the logged in user.",
     position = 4)

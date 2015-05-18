@@ -1884,6 +1884,80 @@ This can only be done by the logged in user.
 
 
 
+### PATCH
+
+<a id="updateUser">Updated user</a>
+
+This can only be done by the logged in user.
+
+
+
+
+
+
+
+#### Request
+
+
+
+##### Parameters
+
+<table border="1">
+    <tr>
+        <th>Name</th>
+        <th>Located in</th>
+        <th>Required</th>
+        <th>Description</th>
+        <th>Default</th>
+        <th>Schema</th>
+    </tr>
+
+
+
+<tr>
+    <th>username</th>
+    <td>path</td>
+    <td>yes</td>
+    <td>name that need to be deleted</td>
+    <td> - </td>
+
+
+            <td>string </td>
+
+
+</tr>
+
+<tr>
+    <th>body</th>
+    <td>body</td>
+    <td>yes</td>
+    <td>Updated user object</td>
+    <td> - </td>
+
+    <td>
+
+    <a href="#/definitions/User">User</a>
+    </td>
+
+</tr>
+
+
+</table>
+
+
+
+#### Response
+
+**Content-Type: ** application/xml, application/json
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 400    | Invalid user supplied |  - |
+| 404    | User not found |  - |
+
+
+
 
 
 
