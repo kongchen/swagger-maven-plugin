@@ -18,8 +18,8 @@ package com.wordnik.sample.data;
 
 import com.wordnik.sample.model.User;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 public class UserData {
   static List<User> users = new ArrayList<User>();

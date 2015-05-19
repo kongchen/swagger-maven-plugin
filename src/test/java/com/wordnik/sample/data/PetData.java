@@ -18,6 +18,8 @@ package com.wordnik.sample.data;
 
 import com.wordnik.sample.model.Category;
 import com.wordnik.sample.model.Pet;
+import com.wordnik.sample.model.PetId;
+import com.wordnik.sample.model.PetName;
 import com.wordnik.sample.model.Tag;
 
 import java.util.List;
@@ -60,7 +62,7 @@ public class PetData {
 
   public Pet getPetbyId(long petId) {
     for (Pet pet : pets) {
-      if (pet.getId() == petId) {
+      if (pet.getId().value() == petId) {
         return pet;
       }
     }
@@ -71,7 +73,7 @@ public class PetData {
     if(pets.size() > 0) {
       for (int i = pets.size(); i >= 0; i++) {
         Pet pet = pets.get(i);
-        if(pet.getId() == petId) {
+        if(pet.getId().value()== petId) {
           pets.remove(i);
         }
       }
@@ -108,18 +110,18 @@ public class PetData {
   }
 
   public Pet addPet(Pet pet) {
-    if(pet.getId() == 0) {
+    if(pet.getId().value() == 0) {
       long maxId = 0;
       for (int i = pets.size() - 1; i >= 0; i--) {
-        if(pets.get(i).getId() > maxId) {
-          maxId = pets.get(i).getId();
+        if(pets.get(i).getId().value() > maxId) {
+          maxId = pets.get(i).getId().value();
         }
       }
-      pet.setId(maxId + 1);
+      pet.setId(new PetId(maxId + 1));
     }
     if (pets.size() > 0) {
       for (int i = pets.size() - 1; i >= 0; i--) {
-        if (pets.get(i).getId() == pet.getId()) {
+        if (pets.get(i).getId().value() == pet.getId().value()) {
           pets.remove(i);
         }
       }
@@ -131,9 +133,9 @@ public class PetData {
   static Pet createPet(long id, Category cat, String name, String[] urls,
       String[] tags, String status) {
     Pet pet = new Pet();
-    pet.setId(id);
+    pet.setId(new PetId(id));
     pet.setCategory(cat);
-    pet.setName(name);
+    pet.setName(new PetName(name));
     if (null != urls) {
       List<String> urlObjs = new ArrayList<String>();
       for (String urlString : urls) {
