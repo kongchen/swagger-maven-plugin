@@ -1,9 +1,7 @@
 package com.github.kongchen.swagger.docgen;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -14,13 +12,17 @@ import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.helper.StringHelpers;
 import com.github.jknack.handlebars.io.TemplateLoader;
 import com.github.kongchen.swagger.docgen.mavenplugin.ApiSource;
+import com.github.kongchen.swagger.docgen.reader.ModelSubstitute;
+import com.wordnik.swagger.converter.ModelConverters;
 import com.wordnik.swagger.models.Swagger;
 import org.apache.commons.io.FileUtils;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -42,7 +44,7 @@ public abstract class AbstractDocumentSource {
 
     private final String swaggerPath;
 
-    private final String overridingModels;
+    private final String modelSubstitute;
 
     protected Swagger swagger;
 
@@ -56,12 +58,12 @@ public abstract class AbstractDocumentSource {
         this.outputPath = apiSource.getOutputPath();
         this.templatePath = apiSource.getTemplatePath();
         this.swaggerPath = apiSource.getSwaggerDirectory();
-        this.overridingModels = apiSource.getOverridingModels();
+        this.modelSubstitute = apiSource.getModelSubstitute();
 
         swagger = new com.wordnik.swagger.models.Swagger();
         if (apiSource.getSchemes() != null) {
             if (apiSource.getSchemes().contains(",")) {
-                for(String scheme: apiSource.getSchemes().split(",")) {
+                for (String scheme : apiSource.getSchemes().split(",")) {
                     swagger.scheme(com.wordnik.swagger.models.Scheme.forValue(scheme));
                 }
             } else {
@@ -118,40 +120,25 @@ public abstract class AbstractDocumentSource {
     }
 
     public void loadOverridingModels() throws GenerateException {
-        if (overridingModels != null) {
+        if (modelSubstitute != null) {
+            ModelSubstitute modelSubstitute = new ModelSubstitute(new ObjectMapper());
+            BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream(this.modelSubstitute)));
+            String line = null;
             try {
-                JsonNode readTree = mapper.readTree(this.getClass()
-                        .getResourceAsStream(overridingModels));
-                for (JsonNode jsonNode : readTree) {
-                    JsonNode classNameNode = jsonNode.get("className");
-                    String className = classNameNode.asText();
-                    JsonNode jsonStringNode = jsonNode.get("jsonString");
-                    String jsonString = jsonStringNode.asText();
-
+                line = reader.readLine();
+                while (line != null) {
+                    String[] classes = line.split(":");
+                    if (classes == null || classes.length != 2) {
+                        throw new GenerateException("Bad format of override model file, it should be ${actualClassName}:${expectClassName}");
+                    }
+                    modelSubstitute.substitute(classes[0].trim(), classes[1].trim());
+                    line = reader.readLine();
                 }
-            } catch (JsonProcessingException e) {
-                throw new GenerateException(
-                        String.format(
-                                "Swagger-overridingModels[%s] must be a valid JSON file!",
-                                overridingModels), e);
             } catch (IOException e) {
-                throw new GenerateException(String.format(
-                        "Swagger-overridingModels[%s] not found!",
-                        overridingModels), e);
+                throw new GenerateException(e);
             }
+            ModelConverters.getInstance().addConverter(modelSubstitute);
         }
-
-        if (swaggerSchemaConverter != null) {
-            try {
-                LOG.info("Setting converter configuration: " + swaggerSchemaConverter);
-//                com.wordnik.swagger.converter.ModelConverters.getInstance().addConverter(
-//                        (SwaggerSchemaConverter) Class.forName(swaggerSchemaConverter).newInstance(), true);
-
-            } catch (Exception e) {
-                throw new GenerateException("Cannot load: " + swaggerSchemaConverter, e);
-            }
-        }
-
     }
 
     private void cleanupOlds(File dir) {

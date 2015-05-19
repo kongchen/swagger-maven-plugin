@@ -1,0 +1,2 @@
+com.wordnik.sample.model.PetName:java.lang.String
+com.wordnik.sample.model.PetId: java.math.BigInteger

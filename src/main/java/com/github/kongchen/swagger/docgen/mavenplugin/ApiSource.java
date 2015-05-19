@@ -65,7 +65,7 @@ public class ApiSource {
     private String swaggerUIDocBasePath;
 
     @Parameter
-    private String overridingModels;
+    private String modelSubstitute;
 
     @Parameter
     private String apiSortComparator;
@@ -182,8 +182,8 @@ public class ApiSource {
         return host;
     }
 
-    public void setOverridingModels(String overridingModels) {
-        this.overridingModels = overridingModels;
+    public void setModelSubstitute(String modelSubstitute) {
+        this.modelSubstitute = modelSubstitute;
     }
 
     public String getSwaggerInternalFilter() {
@@ -222,8 +222,8 @@ public class ApiSource {
         this.schemes = schemes;
     }
 
-    public String getOverridingModels() {
-        return overridingModels;
+    public String getModelSubstitute() {
+        return modelSubstitute;
     }
 
     public boolean isSpringmvc() {

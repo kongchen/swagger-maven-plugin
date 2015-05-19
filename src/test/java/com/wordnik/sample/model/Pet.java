@@ -26,19 +26,19 @@ import java.util.List;
 
 @XmlRootElement(name = "Pet")
 public class Pet {
-  private long id;
+  private PetId id;
   private Category category;
-  private String name;
+  private PetName name;
   private List<String> photoUrls = new ArrayList<String>();
   private List<Tag> tags = new ArrayList<Tag>();
   private String status;
 
   @XmlElement(name = "id")
-  public long getId() {
+  public PetId getId() {
     return id;
   }
 
-  public void setId(long id) {
+  public void setId(PetId id) {
     this.id = id;
   }
 
@@ -53,11 +53,11 @@ public class Pet {
 
   @XmlElement(name = "name")
   @ApiModelProperty(example = "doggie", required = true)
-  public String getName() {
+  public PetName getName() {
     return name;
   }
 
-  public void setName(String name) {
+  public void setName(PetName name) {
     this.name = name;
   }
 

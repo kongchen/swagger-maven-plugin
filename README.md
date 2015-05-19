@@ -55,7 +55,7 @@ You can specify several `apiSource`s. Generally, one is enough.
 | `templatePath` | The path of a [handlebars](http://handlebarsjs.com/) template file, see more details [below](#templatefile).|
 | `outputPath` | The path of the generated static document, not existed parent directories will be created. If you don't want to generate a static document, just don't set it. |
 | `swaggerDirectory` | The directory of generated `swagger.json` file. If null, no `swagger.json` will be generated. |
-
+| `modelSubstitute` | The model substitute file's path, see more details [below](#modelsubstitute)|
 # <a id="templatefile">Template File</a>
 
 You need to specify a [handlebars](https://github.com/jknack/handlebars.java) template file in ```templatePath```.
@@ -98,7 +98,7 @@ or define several definitions in a json file and specify the json path like this
     <json>/securityDefinition.json</json>
 </securityDefinition>
 ```
-The file will be read by `getClass.getResourceAsStream`, so please note the path you configured.
+The file will be read by `getClass().getResourceAsStream`, so please note the path you configured.
 
 The `securityDefinition.json` file should also follow the spec, one sample file like this:
 
@@ -120,6 +120,46 @@ The `securityDefinition.json` file should also follow the spec, one sample file 
   }
 }
 ```
+# <a id="modelSubstitute">Model Substitute</a>
+Model substitute file is a simple text file with multiple lines, each line tells the plugin to substitutes a model class with the supplied substitute, and the 2 classes should be seperated by a `:`. 
+
+e.g The line:
+
+```
+com.foo.bar.PetName : java.lang.String
+```
+
+would tell the plugin substitute `com.foo.bar.PetName` with `java.lang.String`, 
+and the generated `swagger.json` will become:
+
+```
+ "definitions" : {
+    "Pet" : {
+      "properties" : {
+        ...
+        "petName" : {
+          "type" : "string"
+        }
+        ...
+      }
+    }
+```
+instead of :
+
+```
+ "definitions" : {
+    "Pet" : {
+      "properties" : {
+        ...
+        "petName" : {
+          "$ref" : "#/definitions/PetName"
+        }
+        ...
+      }
+    }
+```
+
+Model substitute file will be read by `getClass().getResourceAsStream`, so please note the path you configured. 
 
 # Example
 There's a [sample here](https://github.com/kongchen/swagger-maven-example), just fork it and have a try.
