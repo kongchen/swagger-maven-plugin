@@ -54,9 +54,10 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension implements 
             } else {
                 parameter = this.extractParameterFromAnnotation(annotation, defaultValue, cls, isArray);
             }
-        }
-        if (parameter != null) {
-            parameters.add(parameter);
+
+            if (parameter != null) {
+                parameters.add(parameter);
+            }
         }
 
         return parameters;
