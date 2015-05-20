@@ -43,6 +43,7 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
+import javax.validation.constraints.Size;
 
 
 @Api(value = "/pet", description = "Operations about pets", authorizations = {
@@ -84,7 +85,7 @@ public class PetResource {
   @ApiResponses(value = {@ApiResponse(code = 400, message = "Invalid pet value")})
   public ResponseEntity deletePet(
           @ApiParam() @RequestHeader("api_key") String apiKey,
-          @ApiParam(value = "Pet id to delete", required = true) @PathVariable("petId") Long petId) {
+          @ApiParam(value = "Pet id to delete", required = true) @PathVariable("petId") @Size(min = 0, max = Integer.MAX_VALUE) Long petId) {
     petData.deletePet(petId);
     return new ResponseEntity(HttpStatus.OK);
   }
