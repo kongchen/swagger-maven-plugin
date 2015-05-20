@@ -79,7 +79,7 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension implements 
                 qp.setProperty(schema);
             }
 
-            if (isArray || Collection.class.isAssignableFrom(cls)) {
+            if (isArray || Collection.class.isAssignableFrom(cls) || cls.isArray()) {
                 qp.setType("string");
             }
 
