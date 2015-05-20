@@ -749,6 +749,92 @@ If you wish to paginate the results of this API, supply offset and limit query p
 
 
 
+## /pet/testing
+
+
+### GET
+
+<a id="testing">testing</a>
+
+
+
+
+
+
+#### Security
+
+
+
+
+* petstore_auth
+   * write:pets
+   * read:pets
+
+
+
+
+#### Request
+
+
+
+##### Parameters
+
+<table border="1">
+    <tr>
+        <th>Name</th>
+        <th>Located in</th>
+        <th>Required</th>
+        <th>Description</th>
+        <th>Default</th>
+        <th>Schema</th>
+    </tr>
+
+
+
+<tr>
+    <th>items</th>
+    <td>query</td>
+    <td>yes</td>
+    <td></td>
+    <td> - </td>
+
+
+            <td>Array[string] (multi)</td>
+
+
+</tr>
+
+
+</table>
+
+
+
+#### Response
+
+**Content-Type: ** application/xml, application/json
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 200    | successful operation | |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## /pet/{petId}
 
 

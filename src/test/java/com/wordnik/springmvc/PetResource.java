@@ -188,4 +188,10 @@ public class PetResource {
   public ResponseEntity<String> ping() {
       return new ResponseEntity<String>("pong", HttpStatus.OK);
   }
+
+    @ApiOperation(value = "testing")
+    @RequestMapping(value = "/testing", method = RequestMethod.GET)
+    public Object testing(@ApiParam(name = "items", allowMultiple = true) @RequestParam(value = "items") String[] items) {
+        return new Object();
+    }
 }
