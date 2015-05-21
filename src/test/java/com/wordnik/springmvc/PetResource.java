@@ -30,6 +30,7 @@ import com.wordnik.swagger.annotations.ApiResponse;
 import com.wordnik.swagger.annotations.ApiResponses;
 import com.wordnik.swagger.annotations.Authorization;
 import com.wordnik.swagger.annotations.AuthorizationScope;
+import java.util.ArrayList;
 import java.util.HashMap;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,6 +43,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
@@ -99,6 +101,18 @@ public class PetResource {
           @ApiParam(value = "Pet object that needs to be added to the store", required = true) @RequestBody Pet pet) {
     Pet updatedPet = petData.addPet(pet);
     return new ResponseEntity<Pet>(updatedPet, HttpStatus.OK);
+  }
+  
+  @RequestMapping(value = "/pets", consumes = {"application/json", "application/xml"}, method = RequestMethod.POST)
+  @ApiOperation(value = "Add multiple pets to the store")
+  @ApiResponses(value = {@ApiResponse(code = 405, message = "Invalid input")})
+  public ResponseEntity<List<Pet>> addMultiplePets(
+          @ApiParam(value = "A list of pet objects that need to be added to the store", required = true) @RequestBody Set<Pet> pets) {
+      List<Pet> createdPets = new ArrayList<Pet>();
+      for (Pet pet : pets) {
+          createdPets.add(petData.addPet(pet));
+      }
+    return new ResponseEntity<List<Pet>>(createdPets, HttpStatus.OK);
   }
 
   @RequestMapping(consumes = {"application/json", "application/xml"}, method = RequestMethod.PUT)

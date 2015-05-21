@@ -302,7 +302,7 @@ public abstract class AbstractReader {
 
     protected List<Parameter> getParameters(Class<?> cls, Type type, Annotation[] annotations) {
         // look for path, query
-        boolean isArray = ParameterUtils.isMethodArgumentAnArray(cls, type);
+        boolean outputAsArray = ParameterUtils.isMethodArgumentAnArray(cls, type) || cls.isAssignableFrom(Set.class);
         Iterator<SwaggerExtension> chain = SwaggerExtensions.chain();
         List<Parameter> parameters = null;
 
@@ -311,13 +311,13 @@ public abstract class AbstractReader {
         if (chain.hasNext()) {
             SwaggerExtension extension = chain.next();
             LOG.info("trying extension " + extension);
-            parameters = extension.extractParameters(annotations, cls, isArray, classesToSkip, chain);
+            parameters = extension.extractParameters(annotations, cls, outputAsArray, classesToSkip, chain);
         }
 
         if (parameters.size() > 0) {
             for (Parameter parameter : parameters) {
 
-                ParameterProcessor.applyAnnotations(swagger, parameter, cls, annotations, isArray);
+                ParameterProcessor.applyAnnotations(swagger, parameter, cls, annotations, outputAsArray);
             }
         } else {
             LOG.info("no parameter found, looking at body params");
@@ -327,10 +327,10 @@ public abstract class AbstractReader {
                     ParameterizedType ti = (ParameterizedType) type;
                     Type innerType = ti.getActualTypeArguments()[0];
                     if (innerType instanceof Class) {
-                        param = ParameterProcessor.applyAnnotations(swagger, null, (Class) innerType, annotations, isArray);
+                        param = ParameterProcessor.applyAnnotations(swagger, null, (Class) innerType, annotations, outputAsArray);
                     }
                 } else {
-                    param = ParameterProcessor.applyAnnotations(swagger, null, cls, annotations, isArray);
+                    param = ParameterProcessor.applyAnnotations(swagger, null, cls, annotations, outputAsArray);
                 }
                 if (param != null) {
                     for (Annotation annotation : annotations) {
