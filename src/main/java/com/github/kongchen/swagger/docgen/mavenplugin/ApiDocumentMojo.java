@@ -57,6 +57,8 @@ public class ApiDocumentMojo extends AbstractMojo {
             getLog().debug(apiSources.toString());
             for (ApiSource apiSource : apiSources) {
 
+                validateConfiguration(apiSource);
+
                 AbstractDocumentSource documentSource;
 
                 if(apiSource.isSpringmvc()){
@@ -89,6 +91,39 @@ public class ApiDocumentMojo extends AbstractMojo {
             throw new MojoFailureException(e.getMessage(), e);
         } catch (Exception e) {
             throw new MojoExecutionException(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * validate configuration according to swagger spec and plugin requirement
+     *
+     * @param apiSource
+     * @throws GenerateException
+     */
+    private void validateConfiguration(ApiSource apiSource)  throws GenerateException {
+        if (apiSource == null) {
+            throw new GenerateException("You do not configure any apiSource!");
+        } else if (apiSource.getInfo() == null) {
+            throw new GenerateException("`<info>` is required by Swagger Spec.");
+        }
+        if (apiSource.getInfo().getTitle() == null) {
+            throw new GenerateException("`<info><title>` is required by Swagger Spec.");
+        }
+
+        if (apiSource.getInfo().getVersion() == null) {
+            throw new GenerateException("`<info><version>` is required by Swagger Spec.");
+        }
+
+        if (apiSource.getInfo().getLicense() != null && apiSource.getInfo().getLicense().getName() == null) {
+            throw new GenerateException("`<info><license><name>` is required by Swagger Spec.");
+        }
+
+        if (apiSource.getLocations() == null) {
+            throw new GenerateException("<locations> is required by this plugin.");
+        }
+
+        if (apiSource.getOutputPath() != null && apiSource.getTemplatePath() == null) {
+            throw new GenerateException("You cannot generate static document without a template file, please configure the <templatePath>");
         }
     }
 
