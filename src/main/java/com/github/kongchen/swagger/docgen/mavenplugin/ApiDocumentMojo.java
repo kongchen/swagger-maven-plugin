@@ -122,9 +122,6 @@ public class ApiDocumentMojo extends AbstractMojo {
             throw new GenerateException("<locations> is required by this plugin.");
         }
 
-        if (apiSource.getOutputPath() != null && apiSource.getTemplatePath() == null) {
-            throw new GenerateException("You cannot generate static document without a template file, please configure the <templatePath>");
-        }
     }
 
     private boolean useSwaggerSpec11() {
