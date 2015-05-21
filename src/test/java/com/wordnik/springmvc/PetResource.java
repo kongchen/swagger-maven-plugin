@@ -22,6 +22,8 @@ import com.wordnik.sample.exception.NotFoundException;
 import com.wordnik.sample.model.PaginationHelper;
 import com.wordnik.sample.model.Pet;
 import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiImplicitParam;
+import com.wordnik.swagger.annotations.ApiImplicitParams;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 import com.wordnik.swagger.annotations.ApiResponse;
@@ -193,5 +195,50 @@ public class PetResource {
     @RequestMapping(value = "/testing", method = RequestMethod.GET)
     public Object testing(@ApiParam(name = "items", allowMultiple = true) @RequestParam(value = "items") String[] items) {
         return new Object();
+    }
+    
+    
+    @ApiOperation(value = "testingApiImplicitParams")
+    @RequestMapping(
+        value = "/testingApiImplicitParams/{path-test-name}",
+        method = RequestMethod.GET,
+        produces = "application/json")
+    @ApiImplicitParams(value = {
+        @ApiImplicitParam(
+            name = "header-test-name",
+            value = "header-test-value",
+            required = true,
+            dataType = "string",
+            paramType = "header",
+            defaultValue = "z"),
+
+        @ApiImplicitParam(
+            name = "path-test-name",
+            value = "path-test-value",
+            allowMultiple = true,
+            required = true,
+            dataType = "string",
+            paramType = "path",
+            defaultValue = "path-test-defaultValue"),
+
+        @ApiImplicitParam(
+            name = "body-test-name",
+            value = "body-test-value",
+            required = true,
+            dataType = "com.wordnik.sample.model.Pet",
+            paramType = "body"),
+
+        @ApiImplicitParam(
+            name = "form-test-name",
+            value = "form-test-value",
+            allowMultiple = true,
+            required = true,
+            dataType = "string",
+            paramType = "form",
+            defaultValue = "form-test-defaultValue")
+
+    })
+    public String testingApiImplicitParams() {
+        return "testing";
     }
 }

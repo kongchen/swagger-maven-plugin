@@ -798,9 +798,9 @@ If you wish to paginate the results of this API, supply offset and limit query p
     <td></td>
     <td> - </td>
 
-
+    
             <td>Array[string] (multi)</td>
-
+    
 
 </tr>
 
@@ -812,6 +812,132 @@ If you wish to paginate the results of this API, supply offset and limit query p
 #### Response
 
 **Content-Type: ** application/xml, application/json
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 200    | successful operation | |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## /pet/testingApiImplicitParams/{path-test-name}
+
+
+### GET
+
+<a id="testingApiImplicitParams">testingApiImplicitParams</a>
+
+
+
+
+
+
+#### Security
+
+
+
+
+* petstore_auth
+   * write:pets
+   * read:pets
+
+
+
+
+#### Request
+
+
+
+##### Parameters
+
+<table border="1">
+    <tr>
+        <th>Name</th>
+        <th>Located in</th>
+        <th>Required</th>
+        <th>Description</th>
+        <th>Default</th>
+        <th>Schema</th>
+    </tr>
+
+
+
+<tr>
+    <th>header-test-name</th>
+    <td>header</td>
+    <td>yes</td>
+    <td>header-test-value</td>
+    <td> - </td>
+
+    
+            <td>string </td>
+    
+
+</tr>
+
+<tr>
+    <th>path-test-name</th>
+    <td>path</td>
+    <td>yes</td>
+    <td>path-test-value</td>
+    <td> - </td>
+
+    
+            <td>string </td>
+    
+
+</tr>
+
+<tr>
+    <th>body-test-name</th>
+    <td>body</td>
+    <td>yes</td>
+    <td>body-test-value</td>
+    <td> - </td>
+
+    <td>
+    
+    <a href="#/definitions/Pet">Pet</a> 
+    </td>
+
+</tr>
+
+<tr>
+    <th>form-test-name</th>
+    <td>formData</td>
+    <td>yes</td>
+    <td></td>
+    <td> - </td>
+
+    
+            <td>Array[string] ()</td>
+    
+
+</tr>
+
+
+</table>
+
+
+
+#### Response
+
+**Content-Type: ** application/json
 
 
 | Status Code | Reason      | Response Model |

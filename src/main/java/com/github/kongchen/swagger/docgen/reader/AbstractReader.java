@@ -1,10 +1,13 @@
 package com.github.kongchen.swagger.docgen.reader;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.kongchen.swagger.docgen.LogAdapter;
 import com.github.kongchen.swagger.docgen.jaxrs.BeanParamExtention;
 import com.github.kongchen.swagger.docgen.jaxrs.JaxrsParameterExtension;
 import com.github.kongchen.swagger.docgen.spring.SpringSwaggerExtension;
 import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiImplicitParam;
+import com.wordnik.swagger.annotations.ApiImplicitParams;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 import com.wordnik.swagger.annotations.ApiResponse;
@@ -25,13 +28,21 @@ import com.wordnik.swagger.models.Scheme;
 import com.wordnik.swagger.models.SecurityRequirement;
 import com.wordnik.swagger.models.Swagger;
 import com.wordnik.swagger.models.Tag;
+import com.wordnik.swagger.models.parameters.BodyParameter;
+import com.wordnik.swagger.models.parameters.FormParameter;
+import com.wordnik.swagger.models.parameters.HeaderParameter;
 import com.wordnik.swagger.models.parameters.Parameter;
+import com.wordnik.swagger.models.parameters.PathParameter;
+import com.wordnik.swagger.models.parameters.QueryParameter;
 import com.wordnik.swagger.models.properties.ArrayProperty;
 import com.wordnik.swagger.models.properties.MapProperty;
 import com.wordnik.swagger.models.properties.Property;
 import com.wordnik.swagger.models.properties.RefProperty;
+import com.wordnik.swagger.models.properties.StringProperty;
+import com.wordnik.swagger.models.RefModel;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -43,6 +54,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.springframework.core.annotation.AnnotationUtils;
 
 /**
  * Created by chekong on 15/4/28.
@@ -396,6 +408,146 @@ public abstract class AbstractReader {
             apiConsumes = both.toArray(new String[both.size()]);
         }
         return apiConsumes;
+    }
+
+    public Parameter convertApiImplicitParamToSwaggerParameter(ApiImplicitParam apiImplicitParam) {
+
+        ModelConverterHelper modelConverterHelper = new ModelConverterHelper(new ObjectMapper());
+
+        String paramType = apiImplicitParam.paramType();
+        Property property = modelConverterHelper.getPropertyFromTypeName(apiImplicitParam.dataType());
+        
+        if (property == null) {
+            // If the property cannot be determined from the ApiImplicitParam datatype, default to string.
+            property = new StringProperty();
+        }
+        
+        // Check to see if the parameter is an enum type
+        String[] enumValuesArray = apiImplicitParam.allowableValues().split(",");
+        boolean isEnum = !apiImplicitParam.allowableValues().isEmpty() && enumValuesArray.length > 0;
+        List<String> enumValues = new ArrayList<String>();
+        if (isEnum) {
+            enumValues = new ArrayList<String>(Arrays.asList(enumValuesArray));
+        }
+        
+        if ("header".equalsIgnoreCase(paramType)) {
+            HeaderParameter parameter = new HeaderParameter();
+            parameter.setDefaultValue(apiImplicitParam.defaultValue());
+            parameter.setDescription(apiImplicitParam.value());
+            parameter.setName(apiImplicitParam.name());
+            parameter.setRequired(apiImplicitParam.required());
+            parameter.setType(property.getType());
+            if (apiImplicitParam.allowMultiple()) {
+                parameter.setArray(true);
+                parameter.setItems(property);
+            } else {
+                parameter.setProperty(property);
+            }
+            if (isEnum) {
+                parameter.setEnum(enumValues);
+            }
+            
+            return parameter;
+
+        } else if ("path".equalsIgnoreCase(paramType)) {
+            PathParameter parameter = new PathParameter();
+            parameter.setDefaultValue(apiImplicitParam.defaultValue());
+            parameter.setDescription(apiImplicitParam.value());
+            parameter.setName(apiImplicitParam.name());
+            parameter.setType(apiImplicitParam.dataType());
+            parameter.setRequired(apiImplicitParam.required());
+            parameter.setProperty(property);
+            if (isEnum) {
+                parameter.setEnum(enumValues);
+            }
+            
+            return parameter;
+
+        } else if ("query".equalsIgnoreCase(paramType)) {
+            QueryParameter parameter = new QueryParameter();
+            parameter.setDefaultValue(apiImplicitParam.defaultValue());
+            parameter.setDescription(apiImplicitParam.value());
+            parameter.setName(apiImplicitParam.name());
+            parameter.setRequired(apiImplicitParam.required());
+            parameter.setType(property.getType());
+            if (apiImplicitParam.allowMultiple()) {
+                parameter.setArray(true);
+                parameter.setItems(property);
+            } else {
+                parameter.setProperty(property);
+            }
+            if (isEnum) {
+                parameter.setEnum(enumValues);
+            }
+            
+            return parameter;
+
+        } else if ("body".equalsIgnoreCase(paramType)) {
+            BodyParameter parameter = new BodyParameter();
+            parameter.setName(apiImplicitParam.name());
+            parameter.setRequired(apiImplicitParam.required());
+            parameter.setDescription(apiImplicitParam.value());
+            
+            Class<?> cls = null;
+            try {
+                cls = Class.forName(apiImplicitParam.dataType());
+            } catch (ClassNotFoundException e) {
+            }
+            
+            if (cls != null) {
+                Map<String, Model> models = ModelConverters.getInstance().read(cls);
+                for (String key : models.keySet()) {
+                    swagger.model(key, models.get(key));
+                }
+                models = ModelConverters.getInstance().readAll(cls);
+                for (String key : models.keySet()) {
+                    swagger.model(key, models.get(key));
+                }
+                parameter.setSchema(new RefModel(cls.getSimpleName()));
+            }
+
+            return parameter;
+
+        } else if ("form".equalsIgnoreCase(paramType)) {
+            FormParameter parameter = new FormParameter();
+            parameter.setDefaultValue(apiImplicitParam.defaultValue());
+            parameter.setName(apiImplicitParam.name());
+            parameter.setRequired(apiImplicitParam.required());
+            parameter.setType(property.getType());
+            if (apiImplicitParam.allowMultiple()) {
+                parameter.setArray(true);
+                parameter.setItems(property);
+            } else {
+                parameter.setProperty(property);
+            }
+            if (isEnum) {
+                parameter.setEnum(enumValues);
+            }
+            
+            return parameter;
+            
+        }
+        
+        return null;
+    }
+
+    protected List<Parameter> getParametersFromApiImplicitParams(Method method) {
+
+        List<Parameter> parameters = new ArrayList<Parameter>();
+        
+        // Process @ApiImplicitParams
+        Annotation paramsAnnotation = AnnotationUtils.getAnnotation(method, ApiImplicitParams.class);
+        if (paramsAnnotation != null && (paramsAnnotation instanceof ApiImplicitParams)) {
+            ApiImplicitParams apiImplicitParamsAnnotation = (ApiImplicitParams) paramsAnnotation;
+            for (ApiImplicitParam apiImplicitParam : apiImplicitParamsAnnotation.value()) {
+                Parameter convertedParameter = convertApiImplicitParamToSwaggerParameter(apiImplicitParam);
+                if (convertedParameter != null) {
+                    parameters.add(convertedParameter);
+                }
+            }
+        }
+
+        return parameters;
     }
 }
 
