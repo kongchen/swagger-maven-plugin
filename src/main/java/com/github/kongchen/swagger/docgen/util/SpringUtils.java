@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * User: kongchen
  * Date: 1/21/14
  */
-public class SprintUtils {
+public class SpringUtils {
 
     /**
      * Create a resource key from name and version
