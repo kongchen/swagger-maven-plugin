@@ -16,6 +16,7 @@
 
 package com.wordnik.jaxrs;
 
+import com.sun.jersey.api.core.InjectParam;
 import com.wordnik.sample.JavaRestResourceUtil;
 import com.wordnik.sample.data.PetData;
 import com.wordnik.sample.model.Pet;
@@ -139,6 +140,20 @@ public class PetResource {
     System.out.println(myBean.getStatus());
     return Response.ok().entity(new com.wordnik.sample.model.ApiResponse(200, "SUCCESS")).build();
   }
+  
+    @POST
+    @Path("/{petId}/testInjectParam")
+    @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
+    @ApiOperation(value = "Updates a pet in the store with form data",
+        consumes = MediaType.APPLICATION_FORM_URLENCODED)
+    @ApiResponses(value = {
+        @ApiResponse(code = 405, message = "Invalid input")})
+    public Response updatePetWithFormViaInjectParam(
+        @InjectParam MyBean myBean) {
+        System.out.println(myBean.getName());
+        System.out.println(myBean.getStatus());
+        return Response.ok().entity(new com.wordnik.sample.model.ApiResponse(200, "SUCCESS")).build();
+    }
 
   @ApiOperation(value = "Returns pet", response = Pet.class)
   @GET
@@ -148,7 +163,7 @@ public class PetResource {
   }
 
 
-    @ApiOperation(value = "Test pet as josn string in query", response = Pet.class)
+    @ApiOperation(value = "Test pet as json string in query", response = Pet.class)
     @GET
     @Path("/test")
     @Produces("application/json")

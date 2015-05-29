@@ -2,7 +2,7 @@ package com.github.kongchen.swagger.docgen.reader;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.kongchen.swagger.docgen.LogAdapter;
-import com.github.kongchen.swagger.docgen.jaxrs.BeanParamExtention;
+import com.github.kongchen.swagger.docgen.jaxrs.BeanParamInjectParamExtention;
 import com.github.kongchen.swagger.docgen.jaxrs.JaxrsParameterExtension;
 import com.github.kongchen.swagger.docgen.spring.SpringSwaggerExtension;
 import com.wordnik.swagger.annotations.Api;
@@ -74,7 +74,7 @@ public abstract class AbstractReader {
         if (this.getClass() == SpringMvcApiReader.class) {
             extensions.add(new SpringSwaggerExtension());
         } else {
-            extensions.add(new BeanParamExtention());
+            extensions.add(new BeanParamInjectParamExtention());
             extensions.add(new SwaggerJerseyJaxrs());
             extensions.add(new JaxrsParameterExtension());
         }

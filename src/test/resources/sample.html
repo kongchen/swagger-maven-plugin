@@ -505,7 +505,7 @@ Muliple tags can be provided with comma seperated strings. Use tag1, tag2, tag3 
 
 ### GET
 
-<a id="test">Test pet as josn string in query</a>
+<a id="test">Test pet as json string in query</a>
 
 
 
@@ -858,6 +858,134 @@ Returns a pet when ID &lt; 10.  ID &gt; 10 or nonintegers will simulate API erro
 | Status Code | Reason      | Response Model |
 |-------------|-------------|----------------|
 | 400    | Invalid pet value |  - |
+
+
+
+
+
+
+
+
+
+
+
+
+## /pet/{petId}/testInjectParam
+
+
+
+
+
+
+### POST
+
+
+<a id="updatePetWithFormViaInjectParam">Updates a pet in the store with form data</a>
+
+
+
+
+
+
+#### Security
+
+
+
+
+* petstore_auth
+   * write:pets
+   * read:pets
+
+
+
+
+#### Request
+
+
+**Content-Type: ** application/x-www-form-urlencoded
+
+##### Parameters
+
+<table border="1">
+    <tr>
+        <th>Name</th>
+        <th>Located in</th>
+        <th>Required</th>
+        <th>Description</th>
+        <th>Default</th>
+        <th>Schema</th>
+    </tr>
+
+
+
+<tr>
+    <th>petId</th>
+    <td>path</td>
+    <td>yes</td>
+    <td>ID of pet that needs to be updated</td>
+    <td> - </td>
+
+    
+            <td>string </td>
+    
+
+</tr>
+
+<tr>
+    <th>name</th>
+    <td>formData</td>
+    <td>no</td>
+    <td>Updated name of the pet</td>
+    <td> - </td>
+
+    
+            <td>string </td>
+    
+
+</tr>
+
+<tr>
+    <th>status</th>
+    <td>formData</td>
+    <td>no</td>
+    <td>Updated status of the pet</td>
+    <td> - </td>
+
+    
+            <td>string </td>
+    
+
+</tr>
+
+<tr>
+    <th>myHeader</th>
+    <td>header</td>
+    <td>no</td>
+    <td></td>
+    <td> - </td>
+
+    
+            <td>string </td>
+    
+
+</tr>
+
+
+</table>
+
+
+
+#### Response
+
+**Content-Type: ** application/xml, application/json
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 405    | Invalid input |  - |
+
+
+
 
 
 

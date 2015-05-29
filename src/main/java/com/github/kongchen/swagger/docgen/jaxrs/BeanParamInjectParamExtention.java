@@ -1,5 +1,6 @@
 package com.github.kongchen.swagger.docgen.jaxrs;
 
+import com.sun.jersey.api.core.InjectParam;
 import com.wordnik.swagger.annotations.ApiParam;
 import com.wordnik.swagger.jaxrs.ext.AbstractSwaggerExtension;
 import com.wordnik.swagger.jaxrs.ext.SwaggerExtension;
@@ -17,7 +18,7 @@ import java.util.Set;
 /**
  * Created by chekong on 15/5/9.
  */
-public class BeanParamExtention extends AbstractSwaggerExtension implements SwaggerExtension {
+public class BeanParamInjectParamExtention extends AbstractSwaggerExtension implements SwaggerExtension {
     public List<Parameter> extractParameters(Annotation[] annotations, Class<?> cls, boolean isArray, Set<Class<?>> classesToSkip, Iterator<SwaggerExtension> chain) {
         List<Parameter> output = new ArrayList<Parameter>();
         if(shouldIgnoreClass(cls) || classesToSkip.contains(cls)) {
@@ -26,8 +27,8 @@ public class BeanParamExtention extends AbstractSwaggerExtension implements Swag
             return output;
         }
         for(Annotation annotation : annotations) {
-            if(annotation instanceof BeanParam) {
-                return extractParameterFromBeanParam(cls);
+            if(annotation instanceof BeanParam || annotation instanceof InjectParam) {
+                return extractParameterFromClass(cls);
 
             }
         }
@@ -36,7 +37,7 @@ public class BeanParamExtention extends AbstractSwaggerExtension implements Swag
         return null;
     }
 
-    private List<Parameter> extractParameterFromBeanParam(Class<?> cls) {
+    private List<Parameter> extractParameterFromClass(Class<?> cls) {
         List<Parameter> parameters = new ArrayList<Parameter>();
         for (Field f : cls.getDeclaredFields()) {
             Parameter parameter = null;
