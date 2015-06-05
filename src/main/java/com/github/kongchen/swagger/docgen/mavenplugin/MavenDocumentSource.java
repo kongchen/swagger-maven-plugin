@@ -53,13 +53,13 @@ public class MavenDocumentSource extends AbstractDocumentSource {
                     swagger.addSecurityDefinition(entry.getKey(), entry.getValue());
                 }
             }
-        }
 
-        // sort security defs to make output consistent
-        Map<String, SecuritySchemeDefinition> defs = swagger.getSecurityDefinitions();
-        Map<String, SecuritySchemeDefinition> sortedDefs = new TreeMap<String, SecuritySchemeDefinition>();
-        sortedDefs.putAll(defs);
-        swagger.setSecurityDefinitions(sortedDefs);
+            // sort security defs to make output consistent
+            Map<String, SecuritySchemeDefinition> defs = swagger.getSecurityDefinitions();
+            Map<String, SecuritySchemeDefinition> sortedDefs = new TreeMap<String, SecuritySchemeDefinition>();
+            sortedDefs.putAll(defs);
+            swagger.setSecurityDefinitions(sortedDefs);
+        }
 
         if (FilterFactory.getFilter() != null) {
             swagger = new SpecFilter().filter(swagger, FilterFactory.getFilter(),
