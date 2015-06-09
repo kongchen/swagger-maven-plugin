@@ -1,4 +1,4 @@
-# Swagger Maven Plugin [![Build Status](https://travis-ci.org/kongchen/swagger-maven-plugin.png)](https://travis-ci.org/kongchen/swagger-maven-plugin)
+# Swagger Maven Plugin [![Build Status](https://travis-ci.org/sudohippie/swagger-maven-plugin.png)](https://travis-ci.org/sudohippie/swagger-maven-plugin)
 
 This plugin can let your Swagger annotated project generate **Swagger JSON** and your **Customized Static Documents** in maven build phase.
 
