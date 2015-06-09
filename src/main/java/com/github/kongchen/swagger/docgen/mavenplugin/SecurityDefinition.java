@@ -3,10 +3,10 @@ package com.github.kongchen.swagger.docgen.mavenplugin;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.kongchen.swagger.docgen.GenerateException;
-import com.wordnik.swagger.models.auth.ApiKeyAuthDefinition;
-import com.wordnik.swagger.models.auth.BasicAuthDefinition;
-import com.wordnik.swagger.models.auth.OAuth2Definition;
-import com.wordnik.swagger.models.auth.SecuritySchemeDefinition;
+import io.swagger.models.auth.ApiKeyAuthDefinition;
+import io.swagger.models.auth.BasicAuthDefinition;
+import io.swagger.models.auth.OAuth2Definition;
+import io.swagger.models.auth.SecuritySchemeDefinition;
 
 import java.io.IOException;
 import java.util.HashMap;

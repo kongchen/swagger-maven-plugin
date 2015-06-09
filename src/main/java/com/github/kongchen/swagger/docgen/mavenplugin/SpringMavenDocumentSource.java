@@ -4,10 +4,10 @@ import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
 import com.github.kongchen.swagger.docgen.GenerateException;
 import com.github.kongchen.swagger.docgen.LogAdapter;
 import com.github.kongchen.swagger.docgen.reader.SpringMvcApiReader;
-import com.wordnik.swagger.config.FilterFactory;
-import com.wordnik.swagger.core.filter.SpecFilter;
-import com.wordnik.swagger.core.filter.SwaggerSpecFilter;
-import com.wordnik.swagger.models.auth.SecuritySchemeDefinition;
+import io.swagger.config.FilterFactory;
+import io.swagger.core.filter.SpecFilter;
+import io.swagger.core.filter.SwaggerSpecFilter;
+import io.swagger.models.auth.SecuritySchemeDefinition;
 import org.apache.maven.plugin.logging.Log;
 
 import java.util.HashMap;
