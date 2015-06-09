@@ -2,7 +2,7 @@ package com.github.kongchen.swagger.docgen;
 
 import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
 import com.github.jknack.handlebars.io.FileTemplateLoader;
-import com.wordnik.swagger.models.*;
+import io.swagger.models.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
