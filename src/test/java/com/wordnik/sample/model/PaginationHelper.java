@@ -1,6 +1,6 @@
 package com.wordnik.sample.model;
 
-import com.wordnik.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiParam;
 
 public class PaginationHelper {
     private Integer limit;

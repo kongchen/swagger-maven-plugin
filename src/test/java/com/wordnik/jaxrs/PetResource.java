@@ -21,13 +21,13 @@ import com.wordnik.sample.JavaRestResourceUtil;
 import com.wordnik.sample.data.PetData;
 import com.wordnik.sample.model.Pet;
 import com.wordnik.sample.model.PetStatus;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
-import com.wordnik.swagger.annotations.ApiResponse;
-import com.wordnik.swagger.annotations.ApiResponses;
-import com.wordnik.swagger.annotations.Authorization;
-import com.wordnik.swagger.annotations.AuthorizationScope;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.Authorization;
+import io.swagger.annotations.AuthorizationScope;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -36,7 +36,7 @@ import java.util.Set;
 
 @Path("/pet")
 @Api(value = "/pet", description = "Operations about pets", authorizations = {
-  @Authorization(value = "petstore_auth", type = "oauth2",
+  @Authorization(value = "petstore_auth",
   scopes = {
     @AuthorizationScope(scope = "write:pets", description = "modify pets in your account"),
     @AuthorizationScope(scope = "read:pets", description = "read your pets")
@@ -52,7 +52,7 @@ public class PetResource {
   @ApiOperation(value = "Find pet by ID",
           notes = "Returns a pet when ID < 10.  ID > 10 or nonintegers will simulate API error conditions",
           response = Pet.class,
-          authorizations = @Authorization(value = "api_key", type = "api_key")
+          authorizations = @Authorization(value = "api_key")
   )
   @ApiResponses(value = {@ApiResponse(code = 400, message = "Invalid ID supplied"),
           @ApiResponse(code = 404, message = "Pet not found")})
