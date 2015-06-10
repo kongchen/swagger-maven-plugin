@@ -24,23 +24,23 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by chekong on 15/5/12.
  */
 public class JaxrsParameterExtension extends AbstractSwaggerExtension implements SwaggerExtension {
 
-    public List<Parameter> extractParameters(List<Annotation> annotations, Type type, Set<Type> classesToSkip, Iterator<SwaggerExtension> chain) {
+    public List<Parameter> extractParameters(List<Annotation> annotations, Type type, Set<Type> typesToSkip, Iterator<SwaggerExtension> chain) {
 
-        Class<?> cls = type.getClass();
-
-        if(this.shouldIgnoreClass(cls))
+        if(this.shouldIgnoreType(type, typesToSkip))
             return new ArrayList<Parameter>();
 
         List<Parameter> parameters = new ArrayList<Parameter>();
         Parameter parameter = null;
         for(Annotation annotation : annotations) {
-            parameter = getParameter(cls, parameter, annotation);
+            parameter = getParameter(type, parameter, annotation);
         }
         if(parameter != null) {
             parameters.add(parameter);
@@ -49,7 +49,7 @@ public class JaxrsParameterExtension extends AbstractSwaggerExtension implements
         return parameters;
     }
 
-    public static Parameter getParameter(Class<?> cls, Parameter parameter, Annotation annotation) {
+    public static Parameter getParameter(Type type, Parameter parameter, Annotation annotation) {
         String defaultValue = "";
         if(annotation instanceof DefaultValue) {
             DefaultValue defaultValueAnnotation = (DefaultValue) annotation;
@@ -64,7 +64,7 @@ public class JaxrsParameterExtension extends AbstractSwaggerExtension implements
             if(!defaultValue.isEmpty()) {
                 qp.setDefaultValue(defaultValue);
             }
-            Property schema = ModelConverters.getInstance().readAsProperty(cls);
+            Property schema = ModelConverters.getInstance().readAsProperty(type);
             if(schema != null)
                 qp.setProperty(schema);
 
@@ -79,7 +79,7 @@ public class JaxrsParameterExtension extends AbstractSwaggerExtension implements
                     .name(param.value());
             if(!defaultValue.isEmpty())
                 pp.setDefaultValue(defaultValue);
-            Property schema = ModelConverters.getInstance().readAsProperty(cls);
+            Property schema = ModelConverters.getInstance().readAsProperty(type);
             if(schema != null)
                 pp.setProperty(schema);
 
@@ -93,7 +93,7 @@ public class JaxrsParameterExtension extends AbstractSwaggerExtension implements
             HeaderParameter hp = new HeaderParameter()
                     .name(param.value());
             hp.setDefaultValue(defaultValue);
-            Property schema = ModelConverters.getInstance().readAsProperty(cls);
+            Property schema = ModelConverters.getInstance().readAsProperty(type);
             if(schema != null)
                 hp.setProperty(schema);
 
@@ -108,7 +108,7 @@ public class JaxrsParameterExtension extends AbstractSwaggerExtension implements
                     .name(param.value());
             if(!defaultValue.isEmpty())
                 cp.setDefaultValue(defaultValue);
-            Property schema = ModelConverters.getInstance().readAsProperty(cls);
+            Property schema = ModelConverters.getInstance().readAsProperty(type);
             if(schema != null)
                 cp.setProperty(schema);
 
@@ -123,7 +123,7 @@ public class JaxrsParameterExtension extends AbstractSwaggerExtension implements
                     .name(param.value());
             if(!defaultValue.isEmpty())
                 fp.setDefaultValue(defaultValue);
-            Property schema = ModelConverters.getInstance().readAsProperty(cls);
+            Property schema = ModelConverters.getInstance().readAsProperty(type);
             if(schema != null)
                 fp.setProperty(schema);
 
@@ -150,14 +150,5 @@ public class JaxrsParameterExtension extends AbstractSwaggerExtension implements
 //                }
 //
         return parameter;
-    }
-
-    public boolean shouldIgnoreClass(Class<?> cls) {
-        boolean output = false;
-        if(cls.getName().startsWith("javax.ws.rs"))
-            output = true;
-        else
-            output = false;
-        return output;
     }
 }

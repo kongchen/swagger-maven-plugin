@@ -63,7 +63,6 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension implements 
     private Parameter extractParameterFromAnnotation(Annotation annotation, String defaultValue, Type type) {
         Parameter parameter = null;
 
-        Class cls = type.getClass();
         if (annotation instanceof RequestParam) {
             RequestParam param = (RequestParam) annotation;
             QueryParameter qp = new QueryParameter()
@@ -72,7 +71,7 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension implements 
             if (!defaultValue.isEmpty()) {
                 qp.setDefaultValue(defaultValue);
             }
-            Property schema = ModelConverters.getInstance().readAsProperty(cls);
+            Property schema = ModelConverters.getInstance().readAsProperty(type);
             if (schema != null) {
                 qp.setProperty(schema);
             }
@@ -87,7 +86,7 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension implements 
             if (!defaultValue.isEmpty()) {
                 pp.setDefaultValue(defaultValue);
             }
-            Property schema = ModelConverters.getInstance().readAsProperty(cls);
+            Property schema = ModelConverters.getInstance().readAsProperty(type);
             if (schema != null) {
                 pp.setProperty(schema);
             }
@@ -97,7 +96,7 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension implements 
             HeaderParameter hp = new HeaderParameter()
                 .name(param.value());
             hp.setDefaultValue(defaultValue);
-            Property schema = ModelConverters.getInstance().readAsProperty(cls);
+            Property schema = ModelConverters.getInstance().readAsProperty(type);
             if (schema != null) {
                 hp.setProperty(schema);
             }
@@ -112,7 +111,7 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension implements 
             if (!defaultValue.isEmpty()) {
                 cp.setDefaultValue(defaultValue);
             }
-            Property schema = ModelConverters.getInstance().readAsProperty(cls);
+            Property schema = ModelConverters.getInstance().readAsProperty(type);
             if (schema != null) {
                 cp.setProperty(schema);
             }

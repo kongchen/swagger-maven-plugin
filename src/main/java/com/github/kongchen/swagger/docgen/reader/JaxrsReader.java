@@ -16,7 +16,6 @@ import io.swagger.jaxrs.ext.SwaggerExtensions;
 import io.swagger.models.Model;
 import io.swagger.models.Operation;
 import io.swagger.models.Response;
-import io.swagger.models.SecurityDefinition;
 import io.swagger.models.SecurityRequirement;
 import io.swagger.models.SecurityScope;
 import io.swagger.models.Swagger;
@@ -37,6 +36,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -227,10 +227,8 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
                         security.setName(auth.value());
                         AuthorizationScope[] scopes = auth.scopes();
                         for (AuthorizationScope scope : scopes) {
-                            SecurityDefinition definition = new SecurityDefinition(auth.type());
                             if (scope.scope() != null && !"".equals(scope.scope())) {
                                 security.addScope(scope.scope());
-                                definition.scope(scope.scope(), scope.description());
                             }
                         }
                         securities.add(security);
@@ -338,12 +336,13 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         Class[] parameterTypes = method.getParameterTypes();
         Type[] genericParameterTypes = method.getGenericParameterTypes();
         Annotation[][] paramAnnotations = method.getParameterAnnotations();
+        
         // paramTypes = method.getParameterTypes
         // genericParamTypes = method.getGenericParameterTypes
         for (int i = 0; i < parameterTypes.length; i++) {
-            Class<?> cls = parameterTypes[i];
             Type type = genericParameterTypes[i];
-            List<Parameter> parameters = getParameters(cls, type, paramAnnotations[i]);
+            List<Annotation> annotations = Arrays.asList(paramAnnotations[i]);
+            List<Parameter> parameters = getParameters(type, annotations);
 
             for (Parameter parameter : parameters) {
                 operation.parameter(parameter);

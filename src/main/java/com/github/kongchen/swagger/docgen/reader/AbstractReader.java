@@ -10,7 +10,6 @@ import io.swagger.converter.ModelConverters;
 import io.swagger.jaxrs.ParameterProcessor;
 import io.swagger.jaxrs.ext.SwaggerExtension;
 import io.swagger.jaxrs.ext.SwaggerExtensions;
-import io.swagger.jaxrs.utils.ParameterUtils;
 import io.swagger.jersey.SwaggerJerseyJaxrs;
 import io.swagger.models.Model;
 import io.swagger.models.Operation;
@@ -292,37 +291,36 @@ public abstract class AbstractReader {
         }
     }
 
-    protected List<Parameter> getParameters(Class<?> cls, Type type, Annotation[] annotations) {
+    protected List<Parameter> getParameters(Type type, List<Annotation> annotations) {
         // look for path, query
-        boolean outputAsArray = ParameterUtils.isMethodArgumentAnArray(cls, type) || cls.isAssignableFrom(Set.class);
         Iterator<SwaggerExtension> chain = SwaggerExtensions.chain();
         List<Parameter> parameters = null;
 
-        LOG.info("getParameters for " + cls);
-        Set<Class<?>> classesToSkip = new HashSet<Class<?>>();
+        LOG.info("getParameters for " + type.getClass().getName());
+        Set<Type> typesToSkip = new HashSet<Type>();
         if (chain.hasNext()) {
             SwaggerExtension extension = chain.next();
             LOG.info("trying extension " + extension);
-            parameters = extension.extractParameters(annotations, cls, outputAsArray, classesToSkip, chain);
+            parameters = extension.extractParameters(annotations, type, typesToSkip, chain);
         }
 
         if (parameters.size() > 0) {
             for (Parameter parameter : parameters) {
 
-                ParameterProcessor.applyAnnotations(swagger, parameter, cls, annotations, outputAsArray);
+                ParameterProcessor.applyAnnotations(swagger, parameter, type, annotations);
             }
         } else {
             LOG.info("no parameter found, looking at body params");
-            if (classesToSkip.contains(cls) == false) {
+            if (typesToSkip.contains(type) == false) {
                 Parameter param = null;
                 if (type instanceof ParameterizedType) {
                     ParameterizedType ti = (ParameterizedType) type;
                     Type innerType = ti.getActualTypeArguments()[0];
                     if (innerType instanceof Class) {
-                        param = ParameterProcessor.applyAnnotations(swagger, null, (Class) innerType, annotations, outputAsArray);
+                        param = ParameterProcessor.applyAnnotations(swagger, null, (Class) innerType, annotations);
                     }
                 } else {
-                    param = ParameterProcessor.applyAnnotations(swagger, null, cls, annotations, outputAsArray);
+                    param = ParameterProcessor.applyAnnotations(swagger, null, type, annotations);
                 }
                 if (param != null) {
                     for (Annotation annotation : annotations) {
@@ -430,7 +428,7 @@ public abstract class AbstractReader {
             parameter.setRequired(apiImplicitParam.required());
             parameter.setType(property.getType());
             if (apiImplicitParam.allowMultiple()) {
-                parameter.setArray(true);
+                parameter.setCollectionFormat("multi");
                 parameter.setItems(property);
             } else {
                 parameter.setProperty(property);
@@ -463,7 +461,7 @@ public abstract class AbstractReader {
             parameter.setRequired(apiImplicitParam.required());
             parameter.setType(property.getType());
             if (apiImplicitParam.allowMultiple()) {
-                parameter.setArray(true);
+                parameter.setCollectionFormat("multi");
                 parameter.setItems(property);
             } else {
                 parameter.setProperty(property);
@@ -507,7 +505,7 @@ public abstract class AbstractReader {
             parameter.setRequired(apiImplicitParam.required());
             parameter.setType(property.getType());
             if (apiImplicitParam.allowMultiple()) {
-                parameter.setArray(true);
+                parameter.setCollectionFormat("multi");
                 parameter.setItems(property);
             } else {
                 parameter.setProperty(property);
