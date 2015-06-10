@@ -19,6 +19,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -28,7 +29,10 @@ import java.util.Set;
  * Created by chekong on 15/5/12.
  */
 public class JaxrsParameterExtension extends AbstractSwaggerExtension implements SwaggerExtension {
-    public List<Parameter> extractParameters(Annotation[] annotations, Class<?> cls, boolean isArray, Set<Class<?>> classesToSkip, Iterator<SwaggerExtension> chain) {
+
+    public List<Parameter> extractParameters(List<Annotation> annotations, Type type, Set<Type> classesToSkip, Iterator<SwaggerExtension> chain) {
+
+        Class<?> cls = type.getClass();
 
         if(this.shouldIgnoreClass(cls))
             return new ArrayList<Parameter>();
