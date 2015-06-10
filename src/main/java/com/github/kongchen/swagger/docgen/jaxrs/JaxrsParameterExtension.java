@@ -1,17 +1,15 @@
 package com.github.kongchen.swagger.docgen.jaxrs;
 
-import com.wordnik.swagger.converter.ModelConverters;
-import com.wordnik.swagger.jaxrs.ext.AbstractSwaggerExtension;
-import com.wordnik.swagger.jaxrs.ext.SwaggerExtension;
-import com.wordnik.swagger.models.parameters.CookieParameter;
-import com.wordnik.swagger.models.parameters.FormParameter;
-import com.wordnik.swagger.models.parameters.HeaderParameter;
-import com.wordnik.swagger.models.parameters.Parameter;
-import com.wordnik.swagger.models.parameters.PathParameter;
-import com.wordnik.swagger.models.parameters.QueryParameter;
-import com.wordnik.swagger.models.properties.Property;
-import com.wordnik.swagger.models.properties.StringProperty;
-
+import io.swagger.converter.ModelConverters;
+import io.swagger.jaxrs.ext.AbstractSwaggerExtension;
+import io.swagger.jaxrs.ext.SwaggerExtension;
+import io.swagger.models.parameters.CookieParameter;
+import io.swagger.models.parameters.FormParameter;
+import io.swagger.models.parameters.HeaderParameter;
+import io.swagger.models.parameters.Parameter;
+import io.swagger.models.parameters.PathParameter;
+import io.swagger.models.parameters.QueryParameter;
+import io.swagger.models.properties.Property;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
@@ -126,7 +124,7 @@ public class JaxrsParameterExtension extends AbstractSwaggerExtension implements
             if (fp.getType().equals("ref")|| fp.getType().equals("array")) {
                 fp.setType("string");
             }
-            parameter = fp;
+            parameter = (Parameter) fp;
         }
 
         //                //fix parameter type issue, try to access parameter's type

@@ -36,7 +36,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class SpringSwaggerExtension extends AbstractSwaggerExtension implements SwaggerExtension {
 
     @Override
-    //public List<Parameter> extractParameters(Annotation[] annotations, Class<?> cls, boolean isArray, Set<Class<?>> classesToSkip, Iterator<SwaggerExtension> chain) {
     public List<Parameter> extractParameters(List<Annotation> annotations, Type type, Set<Type> typesToSkip, Iterator<SwaggerExtension> chain) {
         String defaultValue = "";
 
