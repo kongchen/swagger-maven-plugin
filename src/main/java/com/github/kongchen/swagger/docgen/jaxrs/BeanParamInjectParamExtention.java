@@ -1,7 +1,7 @@
 package com.github.kongchen.swagger.docgen.jaxrs;
 
 import com.sun.jersey.api.core.InjectParam;
-import com.wordnik.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiParam;
 import com.wordnik.swagger.jaxrs.ext.AbstractSwaggerExtension;
 import com.wordnik.swagger.jaxrs.ext.SwaggerExtension;
 import com.wordnik.swagger.models.parameters.Parameter;

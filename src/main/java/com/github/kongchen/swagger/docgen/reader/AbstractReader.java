@@ -5,15 +5,15 @@ import com.github.kongchen.swagger.docgen.LogAdapter;
 import com.github.kongchen.swagger.docgen.jaxrs.BeanParamInjectParamExtention;
 import com.github.kongchen.swagger.docgen.jaxrs.JaxrsParameterExtension;
 import com.github.kongchen.swagger.docgen.spring.SpringSwaggerExtension;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiImplicitParam;
-import com.wordnik.swagger.annotations.ApiImplicitParams;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
-import com.wordnik.swagger.annotations.ApiResponse;
-import com.wordnik.swagger.annotations.ApiResponses;
-import com.wordnik.swagger.annotations.Authorization;
-import com.wordnik.swagger.annotations.AuthorizationScope;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.Authorization;
+import io.swagger.annotations.AuthorizationScope;
 import com.wordnik.swagger.converter.ModelConverters;
 import com.wordnik.swagger.jaxrs.ParameterProcessor;
 import com.wordnik.swagger.jaxrs.ext.SwaggerExtension;
@@ -146,10 +146,10 @@ public abstract class AbstractReader {
         }
     }
 
-    protected Map<String, Property> parseResponseHeaders(com.wordnik.swagger.annotations.ResponseHeader[] headers) {
+    protected Map<String, Property> parseResponseHeaders(io.swagger.annotations.ResponseHeader[] headers) {
         Map<String, Property> responseHeaders = null;
         if (headers != null && headers.length > 0) {
-            for (com.wordnik.swagger.annotations.ResponseHeader header : headers) {
+            for (io.swagger.annotations.ResponseHeader header : headers) {
                 String name = header.name();
                 if (!"".equals(name)) {
                     if (responseHeaders == null)
