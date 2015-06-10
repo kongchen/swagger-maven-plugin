@@ -313,15 +313,7 @@ public abstract class AbstractReader {
             LOG.info("no parameter found, looking at body params");
             if (typesToSkip.contains(type) == false) {
                 Parameter param = null;
-                if (type instanceof ParameterizedType) {
-                    ParameterizedType ti = (ParameterizedType) type;
-                    Type innerType = ti.getActualTypeArguments()[0];
-                    if (innerType instanceof Class) {
-                        param = ParameterProcessor.applyAnnotations(swagger, null, (Class) innerType, annotations);
-                    }
-                } else {
-                    param = ParameterProcessor.applyAnnotations(swagger, null, type, annotations);
-                }
+                param = ParameterProcessor.applyAnnotations(swagger, null, type, annotations);
                 if (param != null) {
                     for (Annotation annotation : annotations) {
                         if (annotation instanceof ApiParam) {
