@@ -19,22 +19,25 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.reflect.TypeUtils;
+
 /**
  * Created by chekong on 15/5/9.
  */
 public class BeanParamInjectParamExtention extends AbstractSwaggerExtension implements SwaggerExtension {
 
     public List<Parameter> extractParameters(List<Annotation> annotations, Type type, Set<Type> typesToSkip, Iterator<SwaggerExtension> chain) {
-
+        Class<?> cls = TypeUtils.getRawType(type, type);
+        
         List<Parameter> output = new ArrayList<Parameter>();
-        if(shouldIgnoreClass(type.getClass()) || typesToSkip.contains(type)) {
+        if(shouldIgnoreClass(cls) || typesToSkip.contains(type)) {
             // stop the processing chain
             typesToSkip.add(type);
             return output;
         }
         for(Annotation annotation : annotations) {
             if(annotation instanceof BeanParam || annotation instanceof InjectParam) {
-                return extractParameterFromClass(type.getClass());
+                return extractParameters(cls);
 
             }
         }
@@ -43,8 +46,9 @@ public class BeanParamInjectParamExtention extends AbstractSwaggerExtension impl
         return null;
     }
 
-    private List<Parameter> extractParameterFromClass(Class<?> cls) {
+    private List<Parameter> extractParameters(Class<?> cls) {
         List<Parameter> parameters = new ArrayList<Parameter>();
+        
         for (Field f : cls.getDeclaredFields()) {
             Parameter parameter = null;
 
@@ -74,8 +78,6 @@ public class BeanParamInjectParamExtention extends AbstractSwaggerExtension impl
 
         return parameters;
     }
-
-
 
     public boolean shouldIgnoreClass(Class<?> cls) {
         boolean output = false;

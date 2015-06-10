@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import org.apache.commons.lang3.reflect.TypeUtils;
 
 import org.reflections.util.Utils;
 
@@ -128,10 +129,12 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension implements 
         if (false == (annotation instanceof ModelAttribute)) {
             return null;
         }
-
+        
+        Class<?> cls = TypeUtils.getRawType(type, type);
+        
         List<Parameter> parameters = new ArrayList<Parameter>();
         // If ModelAttribute annotation is present, check for possible APIparam annotation in beans
-        for (PropertyDescriptor propertyDescriptor : BeanUtils.getPropertyDescriptors(type.getClass())) {
+        for (PropertyDescriptor propertyDescriptor : BeanUtils.getPropertyDescriptors(cls)) {
 
             // Get all the valid setter methods inside the bean
             Method propertyDescriptorSetter = propertyDescriptor.getWriteMethod();
