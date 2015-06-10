@@ -1,13 +1,16 @@
 package com.github.kongchen.swagger.docgen.jaxrs;
 
 import com.sun.jersey.api.core.InjectParam;
+
 import io.swagger.annotations.ApiParam;
 import io.swagger.jaxrs.ext.AbstractSwaggerExtension;
 import io.swagger.jaxrs.ext.SwaggerExtension;
 import io.swagger.models.parameters.Parameter;
+
 import org.reflections.util.Utils;
 
 import javax.ws.rs.BeanParam;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;

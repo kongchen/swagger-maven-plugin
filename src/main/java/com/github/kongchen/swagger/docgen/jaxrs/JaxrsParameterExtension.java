@@ -10,12 +10,14 @@ import io.swagger.models.parameters.Parameter;
 import io.swagger.models.parameters.PathParameter;
 import io.swagger.models.parameters.QueryParameter;
 import io.swagger.models.properties.Property;
+
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
+
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -124,7 +126,7 @@ public class JaxrsParameterExtension extends AbstractSwaggerExtension implements
             if (fp.getType().equals("ref")|| fp.getType().equals("array")) {
                 fp.setType("string");
             }
-            parameter = (Parameter) fp;
+            parameter = fp;
         }
 
         //                //fix parameter type issue, try to access parameter's type
