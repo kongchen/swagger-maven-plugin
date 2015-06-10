@@ -2,11 +2,11 @@ package com.github.kongchen.swagger.docgen.reader;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.kongchen.swagger.docgen.GenerateException;
-import com.wordnik.swagger.converter.ModelConverter;
-import com.wordnik.swagger.converter.ModelConverterContext;
-import com.wordnik.swagger.jackson.ModelResolver;
-import com.wordnik.swagger.models.Model;
-import com.wordnik.swagger.models.properties.Property;
+import io.swagger.converter.ModelConverter;
+import io.swagger.converter.ModelConverterContext;
+import io.swagger.jackson.ModelResolver;
+import io.swagger.models.Model;
+import io.swagger.models.properties.Property;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
