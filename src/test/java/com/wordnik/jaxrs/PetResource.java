@@ -100,18 +100,23 @@ public class PetResource {
     return Response.ok().entity(updatedPet).build();
   }
 
-  @GET
-  @Path("/findByStatus")
-  @ApiOperation(value = "Finds Pets by status",
-          notes = "Multiple status values can be provided with comma seperated strings",
-          response = Pet.class,
-          responseContainer = "List")
-  @ApiResponses(value = {@ApiResponse(code = 400, message = "Invalid status value")})
-  public Response findPetsByStatus(
-          @ApiParam(value = "Status values that need to be considered for filter", required = true, defaultValue = "available",
-                  allowableValues = "available,pending,sold",
-                  allowMultiple = true) @QueryParam("status") Set<PetStatus> status) {
-    return Response.ok(petData.findPetByStatus(status.toString())).build();
+    @GET
+    @Path("/findByStatus")
+    @ApiOperation(value = "Finds Pets by status",
+        notes = "Multiple status values can be provided with comma seperated strings",
+        response = Pet.class,
+        responseContainer = "List")
+    @ApiResponses(value = {
+        @ApiResponse(code = 400, message = "Invalid status value")})
+    public Response findPetsByStatus(
+        @ApiParam(
+            value = "Status values that need to be considered for filter", 
+            required = true, 
+            defaultValue = "available", 
+            allowableValues = "available,pending,sold", 
+            allowMultiple = true) 
+        @QueryParam("status") String status) {
+      return Response.ok(petData.findPetByStatus(status)).build();
   }
 
   @GET

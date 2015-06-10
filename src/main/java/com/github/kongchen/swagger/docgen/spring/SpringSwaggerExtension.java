@@ -193,7 +193,8 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension implements 
     @Override
     public boolean shouldIgnoreType(Type type, Set<Type> typesToSkip) {
         boolean output = false;
-        if (type.getClass().getName().startsWith("org.springframework")) {
+        Class<?> cls = TypeUtils.getRawType(type, type);
+        if (cls.getName().startsWith("org.springframework")) {
             output = true;
         } else {
             output = false;

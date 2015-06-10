@@ -151,15 +151,14 @@ public class PetResource {
               value = "Status values that need to be considered for filter", 
               required = true, 
               defaultValue = "available", 
-              allowableValues = "available,pending,sold", 
-              allowMultiple = true) 
+              allowableValues = "available,pending,sold") 
           @RequestParam("status") List<String> statuses) {
     return petData.findPetByStatus(StringUtils.join(statuses, ","));
   }
 
   @RequestMapping(value = "/findByTags", method = RequestMethod.GET)
   @ApiOperation(value = "Finds Pets by tags",
-          notes = "Muliple tags can be provided with comma seperated strings. Use tag1, tag2, tag3 for testing.",
+          notes = "Muliple tags can be provided with comma seperated strings. Use tags=tag1,tag2,tag3 for testing.",
           response = Pet.class,
           responseContainer = "List")
   @ApiResponses(value = {@ApiResponse(code = 400, message = "Invalid tag value")})
@@ -207,7 +206,7 @@ public class PetResource {
 
     @ApiOperation(value = "testing")
     @RequestMapping(value = "/testing", method = RequestMethod.GET)
-    public Object testing(@ApiParam(name = "items", allowMultiple = true) @RequestParam(value = "items") String[] items) {
+    public Object testing(@ApiParam(name = "items") @RequestParam(value = "items") String[] items) {
         return new Object();
     }
     

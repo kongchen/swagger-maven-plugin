@@ -292,11 +292,10 @@ public abstract class AbstractReader {
     }
 
     protected List<Parameter> getParameters(Type type, List<Annotation> annotations) {
-        // look for path, query
         Iterator<SwaggerExtension> chain = SwaggerExtensions.chain();
-        List<Parameter> parameters = null;
+        List<Parameter> parameters = new ArrayList<Parameter>();
 
-        LOG.info("getParameters for " + type.getClass().getName());
+        LOG.info("Looking for path/query/header/form/cookie params in" + type.getClass().getName());
         Set<Type> typesToSkip = new HashSet<Type>();
         if (chain.hasNext()) {
             SwaggerExtension extension = chain.next();
@@ -306,26 +305,16 @@ public abstract class AbstractReader {
 
         if (parameters.size() > 0) {
             for (Parameter parameter : parameters) {
-
                 ParameterProcessor.applyAnnotations(swagger, parameter, type, annotations);
             }
         } else {
-            LOG.info("no parameter found, looking at body params");
+            // look for body parameters
+            LOG.info("Looking for body params in" + type.getClass().getName());
             if (typesToSkip.contains(type) == false) {
-                Parameter param = null;
-                param = ParameterProcessor.applyAnnotations(swagger, null, type, annotations);
+                Parameter param = ParameterProcessor.applyAnnotations(swagger, null, type, annotations);
                 if (param != null) {
-                    for (Annotation annotation : annotations) {
-                        if (annotation instanceof ApiParam) {
-                            ApiParam apiParam = (ApiParam) annotation;
-                            param.setRequired(apiParam.required());
-                            break;
-                        }
-                    }
                     parameters.add(param);
                 }
-
-
             }
         }
         return parameters;
@@ -420,7 +409,6 @@ public abstract class AbstractReader {
             parameter.setRequired(apiImplicitParam.required());
             parameter.setType(property.getType());
             if (apiImplicitParam.allowMultiple()) {
-                parameter.setCollectionFormat("multi");
                 parameter.setItems(property);
             } else {
                 parameter.setProperty(property);
@@ -453,7 +441,6 @@ public abstract class AbstractReader {
             parameter.setRequired(apiImplicitParam.required());
             parameter.setType(property.getType());
             if (apiImplicitParam.allowMultiple()) {
-                parameter.setCollectionFormat("multi");
                 parameter.setItems(property);
             } else {
                 parameter.setProperty(property);
@@ -497,7 +484,6 @@ public abstract class AbstractReader {
             parameter.setRequired(apiImplicitParam.required());
             parameter.setType(property.getType());
             if (apiImplicitParam.allowMultiple()) {
-                parameter.setCollectionFormat("multi");
                 parameter.setItems(property);
             } else {
                 parameter.setProperty(property);

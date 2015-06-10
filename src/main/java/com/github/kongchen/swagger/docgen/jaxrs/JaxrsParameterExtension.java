@@ -67,8 +67,8 @@ public class JaxrsParameterExtension extends AbstractSwaggerExtension implements
             Property schema = ModelConverters.getInstance().readAsProperty(type);
             if(schema != null)
                 qp.setProperty(schema);
-
-            if (qp.getType().equals("ref") || qp.getType().equals("array")) {
+            
+            if (qp.getType().equals("ref")) {
                 qp.setType("string");
             }
             parameter = qp;
@@ -83,7 +83,7 @@ public class JaxrsParameterExtension extends AbstractSwaggerExtension implements
             if(schema != null)
                 pp.setProperty(schema);
 
-            if (pp.getType().equals("ref")|| pp.getType().equals("array")) {
+            if (pp.getType().equals("ref")) {
                 pp.setType("string");
             }
             parameter = pp;
