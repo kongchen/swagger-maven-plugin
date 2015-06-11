@@ -3,30 +3,29 @@ package com.github.kongchen.swagger.docgen.reader;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.kongchen.swagger.docgen.LogAdapter;
 import com.github.kongchen.swagger.docgen.jaxrs.BeanParamInjectParamExtention;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiResponse;
-import com.wordnik.swagger.annotations.ApiResponses;
-import com.wordnik.swagger.annotations.Authorization;
-import com.wordnik.swagger.annotations.AuthorizationScope;
-import com.wordnik.swagger.converter.ModelConverters;
-import com.wordnik.swagger.jaxrs.PATCH;
-import com.wordnik.swagger.jaxrs.ext.SwaggerExtension;
-import com.wordnik.swagger.jaxrs.ext.SwaggerExtensions;
-import com.wordnik.swagger.models.Model;
-import com.wordnik.swagger.models.Operation;
-import com.wordnik.swagger.models.Response;
-import com.wordnik.swagger.models.SecurityDefinition;
-import com.wordnik.swagger.models.SecurityRequirement;
-import com.wordnik.swagger.models.SecurityScope;
-import com.wordnik.swagger.models.Swagger;
-import com.wordnik.swagger.models.Tag;
-import com.wordnik.swagger.models.parameters.Parameter;
-import com.wordnik.swagger.models.properties.ArrayProperty;
-import com.wordnik.swagger.models.properties.MapProperty;
-import com.wordnik.swagger.models.properties.Property;
-import com.wordnik.swagger.models.properties.RefProperty;
-import com.wordnik.swagger.util.Json;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.Authorization;
+import io.swagger.annotations.AuthorizationScope;
+import io.swagger.converter.ModelConverters;
+import io.swagger.jaxrs.PATCH;
+import io.swagger.jaxrs.ext.SwaggerExtension;
+import io.swagger.jaxrs.ext.SwaggerExtensions;
+import io.swagger.models.Model;
+import io.swagger.models.Operation;
+import io.swagger.models.Response;
+import io.swagger.models.SecurityRequirement;
+import io.swagger.models.SecurityScope;
+import io.swagger.models.Swagger;
+import io.swagger.models.Tag;
+import io.swagger.models.parameters.Parameter;
+import io.swagger.models.properties.ArrayProperty;
+import io.swagger.models.properties.MapProperty;
+import io.swagger.models.properties.Property;
+import io.swagger.models.properties.RefProperty;
+import io.swagger.util.Json;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +36,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -227,10 +227,8 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
                         security.setName(auth.value());
                         AuthorizationScope[] scopes = auth.scopes();
                         for (AuthorizationScope scope : scopes) {
-                            SecurityDefinition definition = new SecurityDefinition(auth.type());
                             if (scope.scope() != null && !"".equals(scope.scope())) {
                                 security.addScope(scope.scope());
-                                definition.scope(scope.scope(), scope.description());
                             }
                         }
                         securities.add(security);
@@ -338,12 +336,13 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         Class[] parameterTypes = method.getParameterTypes();
         Type[] genericParameterTypes = method.getGenericParameterTypes();
         Annotation[][] paramAnnotations = method.getParameterAnnotations();
+        
         // paramTypes = method.getParameterTypes
         // genericParamTypes = method.getGenericParameterTypes
         for (int i = 0; i < parameterTypes.length; i++) {
-            Class<?> cls = parameterTypes[i];
             Type type = genericParameterTypes[i];
-            List<Parameter> parameters = getParameters(cls, type, paramAnnotations[i]);
+            List<Annotation> annotations = Arrays.asList(paramAnnotations[i]);
+            List<Parameter> parameters = getParameters(type, annotations);
 
             for (Parameter parameter : parameters) {
                 operation.parameter(parameter);
@@ -354,10 +353,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         }
         
         // Process @ApiImplicitParams
-        List<Parameter> extractedApiImplicitParams = getParametersFromApiImplicitParams(method);
-        for (Parameter extractedApiImplicitParam : extractedApiImplicitParams) {
-            operation.parameter(extractedApiImplicitParam);
-        }
+        this.readImplicitParameters(method, operation);
         
         return operation;
     }

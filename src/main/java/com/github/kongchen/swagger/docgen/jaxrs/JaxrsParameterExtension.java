@@ -1,16 +1,15 @@
 package com.github.kongchen.swagger.docgen.jaxrs;
 
-import com.wordnik.swagger.converter.ModelConverters;
-import com.wordnik.swagger.jaxrs.ext.AbstractSwaggerExtension;
-import com.wordnik.swagger.jaxrs.ext.SwaggerExtension;
-import com.wordnik.swagger.models.parameters.CookieParameter;
-import com.wordnik.swagger.models.parameters.FormParameter;
-import com.wordnik.swagger.models.parameters.HeaderParameter;
-import com.wordnik.swagger.models.parameters.Parameter;
-import com.wordnik.swagger.models.parameters.PathParameter;
-import com.wordnik.swagger.models.parameters.QueryParameter;
-import com.wordnik.swagger.models.properties.Property;
-import com.wordnik.swagger.models.properties.StringProperty;
+import io.swagger.converter.ModelConverters;
+import io.swagger.jaxrs.ext.AbstractSwaggerExtension;
+import io.swagger.jaxrs.ext.SwaggerExtension;
+import io.swagger.models.parameters.CookieParameter;
+import io.swagger.models.parameters.FormParameter;
+import io.swagger.models.parameters.HeaderParameter;
+import io.swagger.models.parameters.Parameter;
+import io.swagger.models.parameters.PathParameter;
+import io.swagger.models.parameters.QueryParameter;
+import io.swagger.models.properties.Property;
 
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.DefaultValue;
@@ -18,25 +17,30 @@ import javax.ws.rs.FormParam;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
+
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by chekong on 15/5/12.
  */
 public class JaxrsParameterExtension extends AbstractSwaggerExtension implements SwaggerExtension {
-    public List<Parameter> extractParameters(Annotation[] annotations, Class<?> cls, boolean isArray, Set<Class<?>> classesToSkip, Iterator<SwaggerExtension> chain) {
 
-        if(this.shouldIgnoreClass(cls))
+    public List<Parameter> extractParameters(List<Annotation> annotations, Type type, Set<Type> typesToSkip, Iterator<SwaggerExtension> chain) {
+
+        if(this.shouldIgnoreType(type, typesToSkip))
             return new ArrayList<Parameter>();
 
         List<Parameter> parameters = new ArrayList<Parameter>();
         Parameter parameter = null;
         for(Annotation annotation : annotations) {
-            parameter = getParameter(cls, parameter, annotation);
+            parameter = getParameter(type, parameter, annotation);
         }
         if(parameter != null) {
             parameters.add(parameter);
@@ -45,7 +49,7 @@ public class JaxrsParameterExtension extends AbstractSwaggerExtension implements
         return parameters;
     }
 
-    public static Parameter getParameter(Class<?> cls, Parameter parameter, Annotation annotation) {
+    public static Parameter getParameter(Type type, Parameter parameter, Annotation annotation) {
         String defaultValue = "";
         if(annotation instanceof DefaultValue) {
             DefaultValue defaultValueAnnotation = (DefaultValue) annotation;
@@ -60,11 +64,11 @@ public class JaxrsParameterExtension extends AbstractSwaggerExtension implements
             if(!defaultValue.isEmpty()) {
                 qp.setDefaultValue(defaultValue);
             }
-            Property schema = ModelConverters.getInstance().readAsProperty(cls);
+            Property schema = ModelConverters.getInstance().readAsProperty(type);
             if(schema != null)
                 qp.setProperty(schema);
-
-            if (qp.getType().equals("ref") || qp.getType().equals("array")) {
+            
+            if (qp.getType().equals("ref")) {
                 qp.setType("string");
             }
             parameter = qp;
@@ -75,11 +79,11 @@ public class JaxrsParameterExtension extends AbstractSwaggerExtension implements
                     .name(param.value());
             if(!defaultValue.isEmpty())
                 pp.setDefaultValue(defaultValue);
-            Property schema = ModelConverters.getInstance().readAsProperty(cls);
+            Property schema = ModelConverters.getInstance().readAsProperty(type);
             if(schema != null)
                 pp.setProperty(schema);
 
-            if (pp.getType().equals("ref")|| pp.getType().equals("array")) {
+            if (pp.getType().equals("ref")) {
                 pp.setType("string");
             }
             parameter = pp;
@@ -89,7 +93,7 @@ public class JaxrsParameterExtension extends AbstractSwaggerExtension implements
             HeaderParameter hp = new HeaderParameter()
                     .name(param.value());
             hp.setDefaultValue(defaultValue);
-            Property schema = ModelConverters.getInstance().readAsProperty(cls);
+            Property schema = ModelConverters.getInstance().readAsProperty(type);
             if(schema != null)
                 hp.setProperty(schema);
 
@@ -104,7 +108,7 @@ public class JaxrsParameterExtension extends AbstractSwaggerExtension implements
                     .name(param.value());
             if(!defaultValue.isEmpty())
                 cp.setDefaultValue(defaultValue);
-            Property schema = ModelConverters.getInstance().readAsProperty(cls);
+            Property schema = ModelConverters.getInstance().readAsProperty(type);
             if(schema != null)
                 cp.setProperty(schema);
 
@@ -119,7 +123,7 @@ public class JaxrsParameterExtension extends AbstractSwaggerExtension implements
                     .name(param.value());
             if(!defaultValue.isEmpty())
                 fp.setDefaultValue(defaultValue);
-            Property schema = ModelConverters.getInstance().readAsProperty(cls);
+            Property schema = ModelConverters.getInstance().readAsProperty(type);
             if(schema != null)
                 fp.setProperty(schema);
 
@@ -146,14 +150,5 @@ public class JaxrsParameterExtension extends AbstractSwaggerExtension implements
 //                }
 //
         return parameter;
-    }
-
-    public boolean shouldIgnoreClass(Class<?> cls) {
-        boolean output = false;
-        if(cls.getName().startsWith("javax.ws.rs"))
-            output = true;
-        else
-            output = false;
-        return output;
     }
 }

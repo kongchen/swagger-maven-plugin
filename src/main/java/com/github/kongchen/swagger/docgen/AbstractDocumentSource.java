@@ -13,8 +13,9 @@ import com.github.jknack.handlebars.helper.StringHelpers;
 import com.github.jknack.handlebars.io.TemplateLoader;
 import com.github.kongchen.swagger.docgen.mavenplugin.ApiSource;
 import com.github.kongchen.swagger.docgen.reader.ModelSubstitute;
-import com.wordnik.swagger.converter.ModelConverters;
-import com.wordnik.swagger.models.Swagger;
+import io.swagger.converter.ModelConverters;
+import io.swagger.models.Scheme;
+import io.swagger.models.Swagger;
 import org.apache.commons.io.FileUtils;
 
 import java.io.BufferedReader;
@@ -60,14 +61,14 @@ public abstract class AbstractDocumentSource {
         this.swaggerPath = apiSource.getSwaggerDirectory();
         this.modelSubstitute = apiSource.getModelSubstitute();
 
-        swagger = new com.wordnik.swagger.models.Swagger();
+        swagger = new Swagger();
         if (apiSource.getSchemes() != null) {
             if (apiSource.getSchemes().contains(",")) {
                 for (String scheme : apiSource.getSchemes().split(",")) {
-                    swagger.scheme(com.wordnik.swagger.models.Scheme.forValue(scheme));
+                    swagger.scheme(Scheme.forValue(scheme));
                 }
             } else {
-                swagger.scheme(com.wordnik.swagger.models.Scheme.forValue(apiSource.getSchemes()));
+                swagger.scheme(Scheme.forValue(apiSource.getSchemes()));
             }
         }
 

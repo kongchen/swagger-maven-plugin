@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Set;
 
 import com.github.kongchen.swagger.docgen.GenerateException;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.models.Info;
+import io.swagger.annotations.Api;
+import io.swagger.models.Info;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.reflections.Reflections;
 

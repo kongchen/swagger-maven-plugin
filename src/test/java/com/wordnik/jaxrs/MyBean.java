@@ -1,6 +1,6 @@
 package com.wordnik.jaxrs;
 
-import com.wordnik.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiParam;
 
 import javax.ws.rs.FormParam;
 import javax.ws.rs.HeaderParam;

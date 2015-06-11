@@ -5,41 +5,32 @@ import com.github.kongchen.swagger.docgen.LogAdapter;
 import com.github.kongchen.swagger.docgen.jaxrs.BeanParamInjectParamExtention;
 import com.github.kongchen.swagger.docgen.jaxrs.JaxrsParameterExtension;
 import com.github.kongchen.swagger.docgen.spring.SpringSwaggerExtension;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiImplicitParam;
-import com.wordnik.swagger.annotations.ApiImplicitParams;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
-import com.wordnik.swagger.annotations.ApiResponse;
-import com.wordnik.swagger.annotations.ApiResponses;
-import com.wordnik.swagger.annotations.Authorization;
-import com.wordnik.swagger.annotations.AuthorizationScope;
-import com.wordnik.swagger.converter.ModelConverters;
-import com.wordnik.swagger.jaxrs.ParameterProcessor;
-import com.wordnik.swagger.jaxrs.ext.SwaggerExtension;
-import com.wordnik.swagger.jaxrs.ext.SwaggerExtensions;
-import com.wordnik.swagger.jaxrs.utils.ParameterUtils;
-import com.wordnik.swagger.jersey.SwaggerJerseyJaxrs;
-import com.wordnik.swagger.models.Model;
-import com.wordnik.swagger.models.Operation;
-import com.wordnik.swagger.models.Path;
-import com.wordnik.swagger.models.Response;
-import com.wordnik.swagger.models.Scheme;
-import com.wordnik.swagger.models.SecurityRequirement;
-import com.wordnik.swagger.models.Swagger;
-import com.wordnik.swagger.models.Tag;
-import com.wordnik.swagger.models.parameters.BodyParameter;
-import com.wordnik.swagger.models.parameters.FormParameter;
-import com.wordnik.swagger.models.parameters.HeaderParameter;
-import com.wordnik.swagger.models.parameters.Parameter;
-import com.wordnik.swagger.models.parameters.PathParameter;
-import com.wordnik.swagger.models.parameters.QueryParameter;
-import com.wordnik.swagger.models.properties.ArrayProperty;
-import com.wordnik.swagger.models.properties.MapProperty;
-import com.wordnik.swagger.models.properties.Property;
-import com.wordnik.swagger.models.properties.RefProperty;
-import com.wordnik.swagger.models.properties.StringProperty;
-import com.wordnik.swagger.models.RefModel;
+import io.swagger.annotations.*;
+import io.swagger.converter.ModelConverters;
+import io.swagger.jaxrs.ParameterProcessor;
+import io.swagger.jaxrs.ext.SwaggerExtension;
+import io.swagger.jaxrs.ext.SwaggerExtensions;
+import io.swagger.jersey.SwaggerJerseyJaxrs;
+import io.swagger.models.Model;
+import io.swagger.models.Operation;
+import io.swagger.models.Path;
+import io.swagger.models.Response;
+import io.swagger.models.Scheme;
+import io.swagger.models.SecurityRequirement;
+import io.swagger.models.Swagger;
+import io.swagger.models.Tag;
+import io.swagger.models.parameters.BodyParameter;
+import io.swagger.models.parameters.FormParameter;
+import io.swagger.models.parameters.HeaderParameter;
+import io.swagger.models.parameters.Parameter;
+import io.swagger.models.parameters.PathParameter;
+import io.swagger.models.parameters.QueryParameter;
+import io.swagger.models.properties.ArrayProperty;
+import io.swagger.models.properties.MapProperty;
+import io.swagger.models.properties.Property;
+import io.swagger.models.properties.RefProperty;
+import io.swagger.models.properties.StringProperty;
+import io.swagger.models.RefModel;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -146,10 +137,10 @@ public abstract class AbstractReader {
         }
     }
 
-    protected Map<String, Property> parseResponseHeaders(com.wordnik.swagger.annotations.ResponseHeader[] headers) {
+    protected Map<String, Property> parseResponseHeaders(ResponseHeader[] headers) {
         Map<String, Property> responseHeaders = null;
         if (headers != null && headers.length > 0) {
-            for (com.wordnik.swagger.annotations.ResponseHeader header : headers) {
+            for (ResponseHeader header : headers) {
                 String name = header.name();
                 if (!"".equals(name)) {
                     if (responseHeaders == null)
@@ -300,50 +291,30 @@ public abstract class AbstractReader {
         }
     }
 
-    protected List<Parameter> getParameters(Class<?> cls, Type type, Annotation[] annotations) {
-        // look for path, query
-        boolean outputAsArray = ParameterUtils.isMethodArgumentAnArray(cls, type) || cls.isAssignableFrom(Set.class);
+    protected List<Parameter> getParameters(Type type, List<Annotation> annotations) {
         Iterator<SwaggerExtension> chain = SwaggerExtensions.chain();
-        List<Parameter> parameters = null;
+        List<Parameter> parameters = new ArrayList<Parameter>();
 
-        LOG.info("getParameters for " + cls);
-        Set<Class<?>> classesToSkip = new HashSet<Class<?>>();
+        LOG.info("Looking for path/query/header/form/cookie params in" + type.getClass().getName());
+        Set<Type> typesToSkip = new HashSet<Type>();
         if (chain.hasNext()) {
             SwaggerExtension extension = chain.next();
             LOG.info("trying extension " + extension);
-            parameters = extension.extractParameters(annotations, cls, outputAsArray, classesToSkip, chain);
+            parameters = extension.extractParameters(annotations, type, typesToSkip, chain);
         }
 
         if (parameters.size() > 0) {
             for (Parameter parameter : parameters) {
-
-                ParameterProcessor.applyAnnotations(swagger, parameter, cls, annotations, outputAsArray);
+                ParameterProcessor.applyAnnotations(swagger, parameter, type, annotations);
             }
         } else {
-            LOG.info("no parameter found, looking at body params");
-            if (classesToSkip.contains(cls) == false) {
-                Parameter param = null;
-                if (type instanceof ParameterizedType) {
-                    ParameterizedType ti = (ParameterizedType) type;
-                    Type innerType = ti.getActualTypeArguments()[0];
-                    if (innerType instanceof Class) {
-                        param = ParameterProcessor.applyAnnotations(swagger, null, (Class) innerType, annotations, outputAsArray);
-                    }
-                } else {
-                    param = ParameterProcessor.applyAnnotations(swagger, null, cls, annotations, outputAsArray);
-                }
+            // look for body parameters
+            LOG.info("Looking for body params in" + type.getClass().getName());
+            if (typesToSkip.contains(type) == false) {
+                Parameter param = ParameterProcessor.applyAnnotations(swagger, null, type, annotations);
                 if (param != null) {
-                    for (Annotation annotation : annotations) {
-                        if (annotation instanceof ApiParam) {
-                            ApiParam apiParam = (ApiParam) annotation;
-                            param.setRequired(apiParam.required());
-                            break;
-                        }
-                    }
                     parameters.add(param);
                 }
-
-
             }
         }
         return parameters;
@@ -438,7 +409,6 @@ public abstract class AbstractReader {
             parameter.setRequired(apiImplicitParam.required());
             parameter.setType(property.getType());
             if (apiImplicitParam.allowMultiple()) {
-                parameter.setArray(true);
                 parameter.setItems(property);
             } else {
                 parameter.setProperty(property);
@@ -471,7 +441,6 @@ public abstract class AbstractReader {
             parameter.setRequired(apiImplicitParam.required());
             parameter.setType(property.getType());
             if (apiImplicitParam.allowMultiple()) {
-                parameter.setArray(true);
                 parameter.setItems(property);
             } else {
                 parameter.setProperty(property);
@@ -515,7 +484,6 @@ public abstract class AbstractReader {
             parameter.setRequired(apiImplicitParam.required());
             parameter.setType(property.getType());
             if (apiImplicitParam.allowMultiple()) {
-                parameter.setArray(true);
                 parameter.setItems(property);
             } else {
                 parameter.setProperty(property);
@@ -531,23 +499,44 @@ public abstract class AbstractReader {
         return null;
     }
 
-    protected List<Parameter> getParametersFromApiImplicitParams(Method method) {
-
-        List<Parameter> parameters = new ArrayList<Parameter>();
-        
-        // Process @ApiImplicitParams
-        Annotation paramsAnnotation = AnnotationUtils.getAnnotation(method, ApiImplicitParams.class);
-        if (paramsAnnotation != null && (paramsAnnotation instanceof ApiImplicitParams)) {
-            ApiImplicitParams apiImplicitParamsAnnotation = (ApiImplicitParams) paramsAnnotation;
-            for (ApiImplicitParam apiImplicitParam : apiImplicitParamsAnnotation.value()) {
-                Parameter convertedParameter = convertApiImplicitParamToSwaggerParameter(apiImplicitParam);
-                if (convertedParameter != null) {
-                    parameters.add(convertedParameter);
+        protected void readImplicitParameters(Method method, Operation operation) {
+        ApiImplicitParams implicitParams = method.getAnnotation(ApiImplicitParams.class);
+        if (implicitParams != null && implicitParams.value().length > 0) {
+            for (ApiImplicitParam param : implicitParams.value()) {
+                
+                Class<?> cls = null;
+                try {
+                    cls = Class.forName(param.dataType());
+                } catch (ClassNotFoundException e) {
+                    cls = method.getDeclaringClass();
+                }               
+                
+                Parameter p = readImplicitParam(param, cls);
+                if (p != null) {
+                    operation.addParameter(p);
                 }
             }
         }
-
-        return parameters;
     }
+
+    protected Parameter readImplicitParam(ApiImplicitParam param, Class<?> apiClass) {
+        Parameter p;
+        if (param.paramType().equalsIgnoreCase("path")) {
+            p = new PathParameter();
+        } else if (param.paramType().equalsIgnoreCase("query")) {
+            p = new QueryParameter();
+        } else if (param.paramType().equalsIgnoreCase("form") || param.paramType().equalsIgnoreCase("formData")) {
+            p = new FormParameter();
+        } else if (param.paramType().equalsIgnoreCase("body")) {
+            p = new BodyParameter();
+        } else if (param.paramType().equalsIgnoreCase("header")) {
+            p = new HeaderParameter();
+        } else {
+            return null;
+        }
+
+        return ParameterProcessor.applyAnnotations(swagger, p, apiClass, Arrays.asList(new Annotation[]{param}));
+    }
+    
 }
 

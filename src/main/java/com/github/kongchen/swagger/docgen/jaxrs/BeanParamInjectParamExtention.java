@@ -1,44 +1,54 @@
 package com.github.kongchen.swagger.docgen.jaxrs;
 
 import com.sun.jersey.api.core.InjectParam;
-import com.wordnik.swagger.annotations.ApiParam;
-import com.wordnik.swagger.jaxrs.ext.AbstractSwaggerExtension;
-import com.wordnik.swagger.jaxrs.ext.SwaggerExtension;
-import com.wordnik.swagger.models.parameters.Parameter;
+
+import io.swagger.annotations.ApiParam;
+import io.swagger.jaxrs.ext.AbstractSwaggerExtension;
+import io.swagger.jaxrs.ext.SwaggerExtension;
+import io.swagger.models.parameters.Parameter;
+
 import org.reflections.util.Utils;
 
 import javax.ws.rs.BeanParam;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.reflect.TypeUtils;
+
 /**
  * Created by chekong on 15/5/9.
  */
 public class BeanParamInjectParamExtention extends AbstractSwaggerExtension implements SwaggerExtension {
-    public List<Parameter> extractParameters(Annotation[] annotations, Class<?> cls, boolean isArray, Set<Class<?>> classesToSkip, Iterator<SwaggerExtension> chain) {
+
+    public List<Parameter> extractParameters(List<Annotation> annotations, Type type, Set<Type> typesToSkip, Iterator<SwaggerExtension> chain) {
+        Class<?> cls = TypeUtils.getRawType(type, type);
+        
         List<Parameter> output = new ArrayList<Parameter>();
-        if(shouldIgnoreClass(cls) || classesToSkip.contains(cls)) {
+        if(shouldIgnoreClass(cls) || typesToSkip.contains(type)) {
             // stop the processing chain
-            classesToSkip.add(cls);
+            typesToSkip.add(type);
             return output;
         }
         for(Annotation annotation : annotations) {
             if(annotation instanceof BeanParam || annotation instanceof InjectParam) {
-                return extractParameterFromClass(cls);
+                return extractParameters(cls);
 
             }
         }
         if(chain.hasNext())
-            return chain.next().extractParameters(annotations, cls, isArray, classesToSkip, chain);
+            return chain.next().extractParameters(annotations, type, typesToSkip , chain);
         return null;
     }
 
-    private List<Parameter> extractParameterFromClass(Class<?> cls) {
+    private List<Parameter> extractParameters(Class<?> cls) {
         List<Parameter> parameters = new ArrayList<Parameter>();
+        
         for (Field f : cls.getDeclaredFields()) {
             Parameter parameter = null;
 
@@ -68,8 +78,6 @@ public class BeanParamInjectParamExtention extends AbstractSwaggerExtension impl
 
         return parameters;
     }
-
-
 
     public boolean shouldIgnoreClass(Class<?> cls) {
         boolean output = false;

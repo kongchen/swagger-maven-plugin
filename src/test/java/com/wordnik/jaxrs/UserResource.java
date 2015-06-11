@@ -17,7 +17,7 @@
 package com.wordnik.jaxrs;
 
 import com.wordnik.sample.model.User;
-import com.wordnik.swagger.annotations.*;
+import io.swagger.annotations.*;
 import com.wordnik.sample.data.UserData;
 import com.wordnik.sample.exception.ApiException;
 import com.wordnik.sample.exception.NotFoundException;
