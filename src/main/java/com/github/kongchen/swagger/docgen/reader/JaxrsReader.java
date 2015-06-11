@@ -353,10 +353,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         }
         
         // Process @ApiImplicitParams
-        List<Parameter> extractedApiImplicitParams = getParametersFromApiImplicitParams(method);
-        for (Parameter extractedApiImplicitParam : extractedApiImplicitParams) {
-            operation.parameter(extractedApiImplicitParam);
-        }
+        this.readImplicitParameters(method, operation);
         
         return operation;
     }

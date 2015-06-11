@@ -586,6 +586,132 @@ Muliple tags can be provided with comma seperated strings. Use tag1, tag2, tag3 
 
 
 
+## /pet/test/apiimplicitparams
+
+
+### GET
+
+<a id="testapiimplicitparams">Test apiimplicitparams</a>
+
+
+
+
+
+
+#### Security
+
+
+
+
+* petstore_auth
+   * write:pets
+   * read:pets
+
+
+
+
+#### Request
+
+
+
+##### Parameters
+
+<table border="1">
+    <tr>
+        <th>Name</th>
+        <th>Located in</th>
+        <th>Required</th>
+        <th>Description</th>
+        <th>Default</th>
+        <th>Schema</th>
+    </tr>
+
+
+
+<tr>
+    <th>header-test-name</th>
+    <td>header</td>
+    <td>yes</td>
+    <td>header-test-value</td>
+    <td> - </td>
+
+    
+            <td>string </td>
+    
+
+</tr>
+
+<tr>
+    <th>path-test-name</th>
+    <td>path</td>
+    <td>yes</td>
+    <td>path-test-value</td>
+    <td> - </td>
+
+    
+            <td>string </td>
+    
+
+</tr>
+
+<tr>
+    <th>body-test-name</th>
+    <td>body</td>
+    <td>yes</td>
+    <td>body-test-value</td>
+    <td> - </td>
+
+    <td>
+    
+    <a href="#/definitions/Pet">Pet</a> 
+    </td>
+
+</tr>
+
+<tr>
+    <th>form-test-name</th>
+    <td>formData</td>
+    <td>yes</td>
+    <td>form-test-value</td>
+    <td> - </td>
+
+    
+            <td>Array[string] (csv)</td>
+    
+
+</tr>
+
+
+</table>
+
+
+
+#### Response
+
+**Content-Type: ** application/json
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 200    | successful operation | <a href="#/definitions/Pet">Pet</a>|
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## /pet/{petId}
 
 

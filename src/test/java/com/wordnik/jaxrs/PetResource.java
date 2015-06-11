@@ -22,6 +22,8 @@ import com.wordnik.sample.data.PetData;
 import com.wordnik.sample.model.Pet;
 import com.wordnik.sample.model.PetStatus;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
@@ -160,12 +162,12 @@ public class PetResource {
         return Response.ok().entity(new com.wordnik.sample.model.ApiResponse(200, "SUCCESS")).build();
     }
 
-  @ApiOperation(value = "Returns pet", response = Pet.class)
-  @GET
-  @Produces("application/json")
-  public Pet get() {
-    return new Pet();
-  }
+    @ApiOperation(value = "Returns pet", response = Pet.class)
+    @GET
+    @Produces("application/json")
+    public Pet get() {
+      return new Pet();
+    }
 
 
     @ApiOperation(value = "Test pet as json string in query", response = Pet.class)
@@ -177,5 +179,50 @@ public class PetResource {
             @QueryParam("pet") Pet pet) {
         return new Pet();
     }
+    
+    
+    @ApiOperation(value = "Test apiimplicitparams", response = Pet.class)
+    @GET
+    @Path("/test/apiimplicitparams")
+    @Produces("application/json")
+    @ApiImplicitParams(value = {
+        @ApiImplicitParam(
+            name = "header-test-name",
+            value = "header-test-value",
+            required = true,
+            dataType = "string",
+            paramType = "header",
+            defaultValue = "z"),
+
+        @ApiImplicitParam(
+            name = "path-test-name",
+            value = "path-test-value",
+            required = true,
+            dataType = "string",
+            paramType = "path",
+            defaultValue = "path-test-defaultValue"),
+
+        @ApiImplicitParam(
+            name = "body-test-name",
+            value = "body-test-value",
+            required = true,
+            dataType = "com.wordnik.sample.model.Pet",
+            paramType = "body"),
+
+        @ApiImplicitParam(
+            name = "form-test-name",
+            value = "form-test-value",
+            allowMultiple = true,
+            required = true,
+            dataType = "string",
+            paramType = "form",
+            defaultValue = "form-test-defaultValue")
+
+    })
+    public Pet testapiimplicitparams() {
+        return new Pet();
+    }
+    
+
 
 }

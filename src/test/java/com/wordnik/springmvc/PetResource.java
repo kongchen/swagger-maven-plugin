@@ -228,7 +228,6 @@ public class PetResource {
         @ApiImplicitParam(
             name = "path-test-name",
             value = "path-test-value",
-            allowMultiple = true,
             required = true,
             dataType = "string",
             paramType = "path",

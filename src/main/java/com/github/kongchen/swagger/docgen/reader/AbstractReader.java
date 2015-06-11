@@ -499,23 +499,44 @@ public abstract class AbstractReader {
         return null;
     }
 
-    protected List<Parameter> getParametersFromApiImplicitParams(Method method) {
-
-        List<Parameter> parameters = new ArrayList<Parameter>();
-        
-        // Process @ApiImplicitParams
-        Annotation paramsAnnotation = AnnotationUtils.getAnnotation(method, ApiImplicitParams.class);
-        if (paramsAnnotation != null && (paramsAnnotation instanceof ApiImplicitParams)) {
-            ApiImplicitParams apiImplicitParamsAnnotation = (ApiImplicitParams) paramsAnnotation;
-            for (ApiImplicitParam apiImplicitParam : apiImplicitParamsAnnotation.value()) {
-                Parameter convertedParameter = convertApiImplicitParamToSwaggerParameter(apiImplicitParam);
-                if (convertedParameter != null) {
-                    parameters.add(convertedParameter);
+        protected void readImplicitParameters(Method method, Operation operation) {
+        ApiImplicitParams implicitParams = method.getAnnotation(ApiImplicitParams.class);
+        if (implicitParams != null && implicitParams.value().length > 0) {
+            for (ApiImplicitParam param : implicitParams.value()) {
+                
+                Class<?> cls = null;
+                try {
+                    cls = Class.forName(param.dataType());
+                } catch (ClassNotFoundException e) {
+                    cls = method.getDeclaringClass();
+                }               
+                
+                Parameter p = readImplicitParam(param, cls);
+                if (p != null) {
+                    operation.addParameter(p);
                 }
             }
         }
-
-        return parameters;
     }
+
+    protected Parameter readImplicitParam(ApiImplicitParam param, Class<?> apiClass) {
+        Parameter p;
+        if (param.paramType().equalsIgnoreCase("path")) {
+            p = new PathParameter();
+        } else if (param.paramType().equalsIgnoreCase("query")) {
+            p = new QueryParameter();
+        } else if (param.paramType().equalsIgnoreCase("form") || param.paramType().equalsIgnoreCase("formData")) {
+            p = new FormParameter();
+        } else if (param.paramType().equalsIgnoreCase("body")) {
+            p = new BodyParameter();
+        } else if (param.paramType().equalsIgnoreCase("header")) {
+            p = new HeaderParameter();
+        } else {
+            return null;
+        }
+
+        return ParameterProcessor.applyAnnotations(swagger, p, apiClass, Arrays.asList(new Annotation[]{param}));
+    }
+    
 }
 
