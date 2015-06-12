@@ -45,6 +45,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.apache.commons.lang3.reflect.TypeUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 
 /**
@@ -294,8 +295,8 @@ public abstract class AbstractReader {
     protected List<Parameter> getParameters(Type type, List<Annotation> annotations) {
         Iterator<SwaggerExtension> chain = SwaggerExtensions.chain();
         List<Parameter> parameters = new ArrayList<Parameter>();
-
-        LOG.info("Looking for path/query/header/form/cookie params in" + type.getClass().getName());
+        Class<?> cls = TypeUtils.getRawType(type, type);
+        LOG.info("Looking for path/query/header/form/cookie params in" + cls);
         Set<Type> typesToSkip = new HashSet<Type>();
         if (chain.hasNext()) {
             SwaggerExtension extension = chain.next();
@@ -309,7 +310,7 @@ public abstract class AbstractReader {
             }
         } else {
             // look for body parameters
-            LOG.info("Looking for body params in" + type.getClass().getName());
+            LOG.info("Looking for body params in" + cls);
             if (typesToSkip.contains(type) == false) {
                 Parameter param = ParameterProcessor.applyAnnotations(swagger, null, type, annotations);
                 if (param != null) {
@@ -379,124 +380,6 @@ public abstract class AbstractReader {
             apiConsumes = both.toArray(new String[both.size()]);
         }
         return apiConsumes;
-    }
-
-    public Parameter convertApiImplicitParamToSwaggerParameter(ApiImplicitParam apiImplicitParam) {
-
-        ModelConverterHelper modelConverterHelper = new ModelConverterHelper(new ObjectMapper());
-
-        String paramType = apiImplicitParam.paramType();
-        Property property = modelConverterHelper.getPropertyFromTypeName(apiImplicitParam.dataType());
-        
-        if (property == null) {
-            // If the property cannot be determined from the ApiImplicitParam datatype, default to string.
-            property = new StringProperty();
-        }
-        
-        // Check to see if the parameter is an enum type
-        String[] enumValuesArray = apiImplicitParam.allowableValues().split(",");
-        boolean isEnum = !apiImplicitParam.allowableValues().isEmpty() && enumValuesArray.length > 0;
-        List<String> enumValues = new ArrayList<String>();
-        if (isEnum) {
-            enumValues = new ArrayList<String>(Arrays.asList(enumValuesArray));
-        }
-        
-        if ("header".equalsIgnoreCase(paramType)) {
-            HeaderParameter parameter = new HeaderParameter();
-            parameter.setDefaultValue(apiImplicitParam.defaultValue());
-            parameter.setDescription(apiImplicitParam.value());
-            parameter.setName(apiImplicitParam.name());
-            parameter.setRequired(apiImplicitParam.required());
-            parameter.setType(property.getType());
-            if (apiImplicitParam.allowMultiple()) {
-                parameter.setItems(property);
-            } else {
-                parameter.setProperty(property);
-            }
-            if (isEnum) {
-                parameter.setEnum(enumValues);
-            }
-            
-            return parameter;
-
-        } else if ("path".equalsIgnoreCase(paramType)) {
-            PathParameter parameter = new PathParameter();
-            parameter.setDefaultValue(apiImplicitParam.defaultValue());
-            parameter.setDescription(apiImplicitParam.value());
-            parameter.setName(apiImplicitParam.name());
-            parameter.setType(apiImplicitParam.dataType());
-            parameter.setRequired(apiImplicitParam.required());
-            parameter.setProperty(property);
-            if (isEnum) {
-                parameter.setEnum(enumValues);
-            }
-            
-            return parameter;
-
-        } else if ("query".equalsIgnoreCase(paramType)) {
-            QueryParameter parameter = new QueryParameter();
-            parameter.setDefaultValue(apiImplicitParam.defaultValue());
-            parameter.setDescription(apiImplicitParam.value());
-            parameter.setName(apiImplicitParam.name());
-            parameter.setRequired(apiImplicitParam.required());
-            parameter.setType(property.getType());
-            if (apiImplicitParam.allowMultiple()) {
-                parameter.setItems(property);
-            } else {
-                parameter.setProperty(property);
-            }
-            if (isEnum) {
-                parameter.setEnum(enumValues);
-            }
-            
-            return parameter;
-
-        } else if ("body".equalsIgnoreCase(paramType)) {
-            BodyParameter parameter = new BodyParameter();
-            parameter.setName(apiImplicitParam.name());
-            parameter.setRequired(apiImplicitParam.required());
-            parameter.setDescription(apiImplicitParam.value());
-            
-            Class<?> cls = null;
-            try {
-                cls = Class.forName(apiImplicitParam.dataType());
-            } catch (ClassNotFoundException e) {
-            }
-            
-            if (cls != null) {
-                Map<String, Model> models = ModelConverters.getInstance().read(cls);
-                for (String key : models.keySet()) {
-                    swagger.model(key, models.get(key));
-                }
-                models = ModelConverters.getInstance().readAll(cls);
-                for (String key : models.keySet()) {
-                    swagger.model(key, models.get(key));
-                }
-                parameter.setSchema(new RefModel(cls.getSimpleName()));
-            }
-
-            return parameter;
-
-        } else if ("form".equalsIgnoreCase(paramType)) {
-            FormParameter parameter = new FormParameter();
-            parameter.setDefaultValue(apiImplicitParam.defaultValue());
-            parameter.setName(apiImplicitParam.name());
-            parameter.setRequired(apiImplicitParam.required());
-            parameter.setType(property.getType());
-            if (apiImplicitParam.allowMultiple()) {
-                parameter.setItems(property);
-            } else {
-                parameter.setProperty(property);
-            }
-            if (isEnum) {
-                parameter.setEnum(enumValues);
-            }
-            
-            return parameter;
-            
-        }
-        
-        return null;
     }
 
         protected void readImplicitParameters(Method method, Operation operation) {
