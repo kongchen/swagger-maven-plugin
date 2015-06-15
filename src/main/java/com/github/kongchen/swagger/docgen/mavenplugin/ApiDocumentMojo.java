@@ -67,6 +67,7 @@ public class ApiDocumentMojo extends AbstractMojo {
                 	documentSource = new MavenDocumentSource(apiSource, getLog());
                 }
                 
+                documentSource.loadTypesToSkip();
                 documentSource.loadOverridingModels();
                 documentSource.loadDocuments();
 				if (apiSource.getOutputPath() != null){

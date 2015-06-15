@@ -25,9 +25,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -46,6 +49,8 @@ public abstract class AbstractDocumentSource {
     private final String swaggerPath;
 
     private final String modelSubstitute;
+    
+    protected final List<Type> typesToSkip = new ArrayList<Type>();
 
     protected Swagger swagger;
 
@@ -141,6 +146,23 @@ public abstract class AbstractDocumentSource {
             ModelConverters.getInstance().addConverter(modelSubstitute);
         }
     }
+    
+    public void loadTypesToSkip() throws GenerateException {
+        List<String> typesToSkip = apiSource.getTypesToSkip();
+        if (typesToSkip != null && !typesToSkip.isEmpty()) {
+            ObjectMapper mapper = new ObjectMapper();
+            for (String typeToSkip : typesToSkip) {
+                try {
+                    Type type = Class.forName(typeToSkip);
+                    this.typesToSkip.add(type);
+                } catch (ClassNotFoundException e) {
+                    throw new GenerateException(e);
+                }
+            }
+        }
+    }
+    
+    
 
     private void cleanupOlds(File dir) {
         if (dir.listFiles() != null) {

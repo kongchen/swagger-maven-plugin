@@ -54,7 +54,24 @@ import org.springframework.core.annotation.AnnotationUtils;
 public abstract class AbstractReader {
     protected final LogAdapter LOG;
     protected Swagger swagger;
+    protected Set<Type> typesToSkip = new HashSet<Type>();
 
+    public Set<Type> getTypesToSkip() {
+        return typesToSkip;
+    }
+    
+    public void setTypesToSkip(List<Type> typesToSkip) {
+        this.typesToSkip = new HashSet<Type>(typesToSkip);
+    }
+    
+    public void setTypesToSkip(Set<Type> typesToSkip) {
+        this.typesToSkip = typesToSkip;
+    }
+    
+    public void addTypeToSkippedTypes(Type type) {
+        this.typesToSkip.add(type);
+    }
+       
     public AbstractReader(Swagger swagger, LogAdapter LOG) {
         this.swagger = swagger;
         this.LOG = LOG;
@@ -293,11 +310,12 @@ public abstract class AbstractReader {
     }
 
     protected List<Parameter> getParameters(Type type, List<Annotation> annotations) {
+                
         Iterator<SwaggerExtension> chain = SwaggerExtensions.chain();
         List<Parameter> parameters = new ArrayList<Parameter>();
         Class<?> cls = TypeUtils.getRawType(type, type);
-        LOG.info("Looking for path/query/header/form/cookie params in" + cls);
-        Set<Type> typesToSkip = new HashSet<Type>();
+        LOG.info("Looking for path/query/header/form/cookie params in " + cls);
+        
         if (chain.hasNext()) {
             SwaggerExtension extension = chain.next();
             LOG.info("trying extension " + extension);
@@ -310,7 +328,7 @@ public abstract class AbstractReader {
             }
         } else {
             // look for body parameters
-            LOG.info("Looking for body params in" + cls);
+            LOG.info("Looking for body params in " + cls);
             if (typesToSkip.contains(type) == false) {
                 Parameter param = ParameterProcessor.applyAnnotations(swagger, null, type, annotations);
                 if (param != null) {

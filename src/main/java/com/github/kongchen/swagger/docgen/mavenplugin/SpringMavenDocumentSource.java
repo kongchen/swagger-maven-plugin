@@ -41,8 +41,11 @@ public class SpringMavenDocumentSource extends AbstractDocumentSource {
                 throw new GenerateException("Cannot load: " + apiSource.getSwaggerInternalFilter(), e);
             }
         }
-        swagger = new SpringMvcApiReader(swagger, LOG).read(apiSource.getValidClasses());
-
+        
+        SpringMvcApiReader reader = new SpringMvcApiReader(swagger, LOG);
+        reader.setTypesToSkip(this.typesToSkip);
+        swagger = reader.read(apiSource.getValidClasses());
+        
         if(apiSource.getSecurityDefinitions() != null) {
             for (SecurityDefinition sd : apiSource.getSecurityDefinitions()) {
                 if(sd.getDefinitions().isEmpty()) {

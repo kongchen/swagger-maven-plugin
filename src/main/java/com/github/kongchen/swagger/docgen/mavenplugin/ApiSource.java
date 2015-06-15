@@ -7,6 +7,8 @@ import java.util.Set;
 import com.github.kongchen.swagger.docgen.GenerateException;
 import io.swagger.annotations.Api;
 import io.swagger.models.Info;
+import java.util.ArrayList;
+import java.util.Iterator;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.reflections.Reflections;
 
@@ -88,7 +90,9 @@ public class ApiSource {
     @Parameter
     private List<SecurityDefinition> securityDefinitions;
 
-
+    @Parameter
+    private List<String> typesToSkip = new ArrayList<String>();
+    
     public Set<Class<?>> getValidClasses() throws GenerateException {
         Set<Class<?>> classes = new HashSet<Class<?>>();
         if (getLocations() == null) {
@@ -105,17 +109,20 @@ public class ApiSource {
                 classes.addAll(new Reflections(locations).getTypesAnnotatedWith(Api.class));
             }
         }
-//        Iterator<Class> it = classes.iterator();
-//        while (it.hasNext()) {
-//            if (it.next().getName().startsWith("com.wordnik.swagger")) {
-//                it.remove();
-//            }
-//        }
+        
         return classes;
     }
 
     public List<SecurityDefinition> getSecurityDefinitions() {
         return securityDefinitions;
+    }
+
+    public List<String> getTypesToSkip() {
+        return typesToSkip;
+    }
+
+    public void setTypesToSkip(List<String> typesToSkip) {
+        this.typesToSkip = typesToSkip;
     }
 
     public void setSecurityDefinitions(List<SecurityDefinition> securityDefinitions) {

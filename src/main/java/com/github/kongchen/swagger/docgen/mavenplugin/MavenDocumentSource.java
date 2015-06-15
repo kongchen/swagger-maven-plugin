@@ -40,7 +40,10 @@ public class MavenDocumentSource extends AbstractDocumentSource {
                 throw new GenerateException("Cannot load: " + apiSource.getSwaggerInternalFilter(), e);
             }
         }
-        swagger = new JaxrsReader(swagger, LOG).read(apiSource.getValidClasses());
+        
+        JaxrsReader reader = new JaxrsReader(swagger, LOG);
+        reader.setTypesToSkip(this.typesToSkip);
+        swagger = reader.read(apiSource.getValidClasses());
 
         if(apiSource.getSecurityDefinitions() != null) {
             for (SecurityDefinition sd : apiSource.getSecurityDefinitions()) {
@@ -62,6 +65,7 @@ public class MavenDocumentSource extends AbstractDocumentSource {
             sortedDefs.putAll(defs);
             swagger.setSecurityDefinitions(sortedDefs);
         }
+        
         if (FilterFactory.getFilter() != null) {
             swagger = new SpecFilter().filter(swagger, FilterFactory.getFilter(),
                 new HashMap<String, List<String>>(), new HashMap<String, String>(),
