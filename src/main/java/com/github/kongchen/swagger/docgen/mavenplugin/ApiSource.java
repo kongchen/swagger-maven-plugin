@@ -8,6 +8,7 @@ import com.github.kongchen.swagger.docgen.GenerateException;
 import io.swagger.annotations.Api;
 import io.swagger.models.Info;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.reflections.Reflections;
@@ -24,7 +25,7 @@ public class ApiSource {
      * can be configured here, use ; as the delimiter if you have more than one location.
      */
     @Parameter(required = true)
-    private String locations;
+    private List<String> locations;
 
     @Parameter(name = "info", required = true)
     private Info info;
@@ -99,14 +100,10 @@ public class ApiSource {
             Set<Class<?>> c = new Reflections("").getTypesAnnotatedWith(Api.class);
             classes.addAll(c);
         } else {
-            if (locations.contains(";")) {
-                String[] sources = locations.split(";");
-                for (String source : sources) {
-                    Set<Class<?>> c = new Reflections(source).getTypesAnnotatedWith(Api.class);
-                    classes.addAll(c);
-                }
-            } else {
-                classes.addAll(new Reflections(locations).getTypesAnnotatedWith(Api.class));
+            for (String location : this.getLocations()) {
+                Reflections reflections = new Reflections(location);
+                Set<Class<?>> c = reflections.getTypesAnnotatedWith(io.swagger.annotations.Api.class);
+                classes.addAll(c);
             }
         }
         
@@ -137,12 +134,26 @@ public class ApiSource {
         this.info = info;
     }
 
-    public String getLocations() {
+    public List<String> getLocations() {
         return locations;
     }
 
-    public void setLocations(String locations) {
+    public void setLocations(List<String> locations) {
         this.locations = locations;
+    }
+    
+    public void setLocations(String locationString) {
+        // This setter is for backwards compatibility
+
+        List<String> locationList = new ArrayList<String>();
+        
+        if (locationString.contains(";")) {
+            locationList.addAll(Arrays.asList(locationString.split(";")));
+        } else {
+            locationList.add(locationString);
+        }
+        
+        this.setLocations(locationList);
     }
 
     public String getTemplatePath() {
