@@ -59,6 +59,8 @@ You can specify several `apiSource`s. Generally, one is enough.
 | `outputPath` | The path of the generated static document, not existed parent directories will be created. If you don't want to generate a static document, just don't set it. |
 | `swaggerDirectory` | The directory of generated `swagger.json` file. If null, no `swagger.json` will be generated. |
 | `modelSubstitute` | The model substitute file's path, see more details [below](#modelsubstitute)|
+| `typesToSkip` | Nodes of class names to explicitly skip during parameter processing. More details [below](#typesToSkip)|
+
 # <a id="templatefile">Template File</a>
 
 You need to specify a [handlebars](https://github.com/jknack/handlebars.java) template file in ```templatePath```.
@@ -163,6 +165,18 @@ instead of :
 ```
 
 Model substitute file will be read by `getClass().getResourceAsStream`, so please note the path you configured. 
+
+# <a id="typesToSkip">Skipping Types During Processing</a>
+
+You can instruct `swagger-maven-plugin` to skip processing the parameters of certain types by adding the following to your pom.xml:
+
+```
+<typesToSkip>
+  <typeToSkip>com.foobar.skipper.SkipThisClassPlease</typeToSkip>
+  <typeToSkip>com.foobar.skipper.AlsoSkipThisClassPlease</typeToSkip>
+</typesToSkip>
+```
+
 
 # Example
 There's a [sample here](https://github.com/kongchen/swagger-maven-example), just fork it and have a try.
