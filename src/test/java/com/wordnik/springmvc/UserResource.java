@@ -46,7 +46,7 @@ public class UserResource {
     notes = "This can only be done by the logged in user.",
     position = 1)
   public ResponseEntity createUser(
-      @ApiParam(value = "Created user object", required = true) User user) {
+      @ApiParam(value = "Created user object", required = true) User user, String arbitraryString) {
     userData.addUser(user);
     return new ResponseEntity(HttpStatus.OK);
   }
