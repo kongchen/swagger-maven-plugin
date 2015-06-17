@@ -2,7 +2,6 @@ package com.github.kongchen.swagger.docgen.reader;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.kongchen.swagger.docgen.LogAdapter;
-import com.github.kongchen.swagger.docgen.jaxrs.BeanParamInjectParamExtention;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -10,9 +9,9 @@ import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.Authorization;
 import io.swagger.annotations.AuthorizationScope;
 import io.swagger.converter.ModelConverters;
-import io.swagger.jaxrs.PATCH;
 import io.swagger.jaxrs.ext.SwaggerExtension;
 import io.swagger.jaxrs.ext.SwaggerExtensions;
+import io.swagger.jaxrs.utils.ReflectionUtils;
 import io.swagger.models.Model;
 import io.swagger.models.Operation;
 import io.swagger.models.Response;
@@ -374,15 +373,27 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
             return "options";
         else if (method.getAnnotation(javax.ws.rs.HEAD.class) != null)
             return "head";
-        else if (method.getAnnotation(PATCH.class) != null)
+        else if (method.getAnnotation(io.swagger.jaxrs.PATCH.class) != null)
             return "patch";
-        else if (method.getAnnotation(HttpMethod.class) != null) {
-            HttpMethod httpMethod = (HttpMethod) method.getAnnotation(HttpMethod.class);
-            return httpMethod.value().toLowerCase();
-        } else if (chain.hasNext())
-            return chain.next().extractOperationMethod(apiOperation, method, chain);
-        else
-            return null;
+        else {
+            // check for custom HTTP Method annotations
+            Annotation[] declaredAnnotations = method.getDeclaredAnnotations();
+            for (Annotation declaredAnnotation : declaredAnnotations) {
+                Annotation[] innerAnnotations = declaredAnnotation.annotationType().getAnnotations();
+                for (Annotation innerAnnotation : innerAnnotations) {
+                    if (innerAnnotation instanceof HttpMethod){
+                        HttpMethod httpMethod = (HttpMethod) innerAnnotation;
+                        return httpMethod.value().toLowerCase();
+                    }
+                }
+            }
+
+            if (chain.hasNext()) {
+                return chain.next().extractOperationMethod(apiOperation, method, chain);
+            }
+        }
+
+        return null;
     }
 
 
