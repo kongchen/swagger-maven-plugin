@@ -167,7 +167,7 @@ public abstract class AbstractDocumentSource {
     private void cleanupOlds(File dir) {
         if (dir.listFiles() != null) {
             for (File f : dir.listFiles()) {
-                if (f.getName().endsWith("json")) {
+                if (f.getName().endsWith("json") || f.getName().endsWith("html")) {
                     f.delete();
                 }
             }
