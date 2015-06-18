@@ -301,12 +301,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         // genericParamTypes = method.getGenericParameterTypes
         for (int i = 0; i < parameterTypes.length; i++) {
             Type type = genericParameterTypes[i];
-            List<Annotation> annotations = Arrays.asList(paramAnnotations[i]);
-            
-            if (hasValidAnnotations(annotations) == false) {
-                continue;
-            }
-            
+            List<Annotation> annotations = Arrays.asList(paramAnnotations[i]);            
             List<Parameter> parameters = getParameters(type, annotations);
 
             for (Parameter parameter : parameters) {
@@ -323,33 +318,6 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         
         return operation;
 
-    }
-
-    private boolean hasValidAnnotations(List<Annotation> parameterAnnotations) {
-        // Because SpringMVC RequestMapping method parameters can contain
-        // parameters that are valid, but not part of the API,
-        // first check to make sure the parameter has at lease one annotation before
-        // processing it.  Also, check a whitelist to make sure that the annotation
-        // of the parameter is compatible with spring-maven-plugin when 
-        // being used in SpringMVC mode
-
-        if (parameterAnnotations.isEmpty()) {
-            return false;
-        }
-        
-        List<Type> validParameterAnnotations = new ArrayList<Type>();
-        validParameterAnnotations.add(ModelAttribute.class);
-        validParameterAnnotations.add(ApiParam.class);
-        
-        boolean hasValidAnnotation = false;
-        for (Annotation potentialAnnotation : parameterAnnotations) {
-            if (validParameterAnnotations.contains(potentialAnnotation.annotationType())) {
-                hasValidAnnotation = true;
-                break;
-            }
-        }
-
-        return hasValidAnnotation;
     }
 
     private Map<String, List<Method>> collectApisByRequestMapping(List<Method> methods) {

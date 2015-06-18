@@ -5,6 +5,7 @@ import com.github.kongchen.swagger.docgen.LogAdapter;
 import com.github.kongchen.swagger.docgen.jaxrs.BeanParamInjectParamExtention;
 import com.github.kongchen.swagger.docgen.jaxrs.JaxrsParameterExtension;
 import com.github.kongchen.swagger.docgen.spring.SpringSwaggerExtension;
+import com.sun.jersey.api.core.InjectParam;
 import io.swagger.annotations.*;
 import io.swagger.converter.ModelConverters;
 import io.swagger.jaxrs.ParameterProcessor;
@@ -45,8 +46,10 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.ws.rs.BeanParam;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
 /**
  * Created by chekong on 15/4/28.
@@ -308,9 +311,41 @@ public abstract class AbstractReader {
             operation.security(security);
         }
     }
+    
+    private boolean hasValidAnnotations(List<Annotation> parameterAnnotations) {
+        // Because method parameters can contain parameters that are valid, but 
+        // not part of the API contract, first check to make sure the parameter 
+        // has at lease one annotation before processing it.  Also, check a 
+        // whitelist to make sure that the annotation of the parameter is 
+        // compatible with spring-maven-plugin 
+        
+        if (parameterAnnotations.isEmpty()) {
+            return false;
+        }
 
+        List<Type> validParameterAnnotations = new ArrayList<Type>();
+        validParameterAnnotations.add(ModelAttribute.class);
+        validParameterAnnotations.add(BeanParam.class);
+        validParameterAnnotations.add(InjectParam.class);
+        validParameterAnnotations.add(ApiParam.class);
+
+        boolean hasValidAnnotation = false;
+        for (Annotation potentialAnnotation : parameterAnnotations) {
+            if (validParameterAnnotations.contains(potentialAnnotation.annotationType())) {
+                hasValidAnnotation = true;
+                break;
+            }
+        }
+
+        return hasValidAnnotation;
+    }
+    
     protected List<Parameter> getParameters(Type type, List<Annotation> annotations) {
                 
+        if (hasValidAnnotations(annotations) == false) {
+            return new ArrayList<Parameter>();
+        }
+        
         Iterator<SwaggerExtension> chain = SwaggerExtensions.chain();
         List<Parameter> parameters = new ArrayList<Parameter>();
         Class<?> cls = TypeUtils.getRawType(type, type);
