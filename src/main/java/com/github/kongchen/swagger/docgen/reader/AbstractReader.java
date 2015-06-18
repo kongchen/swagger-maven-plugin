@@ -47,6 +47,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.ws.rs.BeanParam;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -328,6 +332,10 @@ public abstract class AbstractReader {
         validParameterAnnotations.add(BeanParam.class);
         validParameterAnnotations.add(InjectParam.class);
         validParameterAnnotations.add(ApiParam.class);
+        validParameterAnnotations.add(PathParam.class);
+        validParameterAnnotations.add(QueryParam.class);
+        validParameterAnnotations.add(HeaderParam.class);
+        validParameterAnnotations.add(FormParam.class);
 
         boolean hasValidAnnotation = false;
         for (Annotation potentialAnnotation : parameterAnnotations) {
