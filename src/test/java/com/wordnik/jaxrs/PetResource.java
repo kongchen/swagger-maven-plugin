@@ -20,6 +20,7 @@ import com.sun.jersey.api.core.InjectParam;
 import com.wordnik.sample.JavaRestResourceUtil;
 import com.wordnik.sample.data.PetData;
 import com.wordnik.sample.model.Pet;
+import com.wordnik.sample.model.PetName;
 import com.wordnik.sample.model.PetStatus;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -102,6 +103,21 @@ public class PetResource {
     return Response.ok().entity(updatedPet).build();
   }
 
+    @GET
+    @Path("/pets/{petName}")
+    @ApiOperation(value = "Finds Pets by name",
+        response = Pet.class,
+        responseContainer = "List")
+    @ApiResponses(value = {
+        @ApiResponse(code = 400, message = "Invalid status value")})
+    public Response findPetByPetName(
+        @ApiParam(
+            value = "petName", 
+            required = true) 
+        @PathParam("petName") PetName petName) {
+      return Response.ok(petData.getPetbyId(1)).build();
+  }
+    
     @GET
     @Path("/findByStatus")
     @ApiOperation(value = "Finds Pets by status",
@@ -222,6 +238,8 @@ public class PetResource {
     public Pet testapiimplicitparams() {
         return new Pet();
     }
+    
+    
     
 
 

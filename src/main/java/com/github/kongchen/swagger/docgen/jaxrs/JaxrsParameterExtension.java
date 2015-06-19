@@ -68,22 +68,23 @@ public class JaxrsParameterExtension extends AbstractSwaggerExtension implements
             if(schema != null)
                 qp.setProperty(schema);
             
-            if (qp.getType().equals("ref")) {
+            String parameterType = qp.getType();
+            if (parameterType == null || parameterType.equals("ref")) {
                 qp.setType("string");
             }
             parameter = qp;
         }
         else if(annotation instanceof PathParam) {
             PathParam param = (PathParam) annotation;
-            PathParameter pp = new PathParameter()
-                    .name(param.value());
+            PathParameter pp = new PathParameter().name(param.value());
             if(!defaultValue.isEmpty())
                 pp.setDefaultValue(defaultValue);
             Property schema = ModelConverters.getInstance().readAsProperty(type);
             if(schema != null)
                 pp.setProperty(schema);
 
-            if (pp.getType().equals("ref")) {
+            String parameterType = pp.getType();
+            if (parameterType == null || parameterType.equals("ref")) {
                 pp.setType("string");
             }
             parameter = pp;
@@ -97,7 +98,8 @@ public class JaxrsParameterExtension extends AbstractSwaggerExtension implements
             if(schema != null)
                 hp.setProperty(schema);
 
-            if (hp.getType().equals("ref")|| hp.getType().equals("array")) {
+            String parameterType = hp.getType();
+            if (parameterType == null || parameterType.equals("ref") || parameterType.equals("array")) {
                 hp.setType("string");
             }
             parameter = hp;
@@ -112,7 +114,8 @@ public class JaxrsParameterExtension extends AbstractSwaggerExtension implements
             if(schema != null)
                 cp.setProperty(schema);
 
-            if (cp.getType().equals("ref")|| cp.getType().equals("array")) {
+            String parameterType = cp.getType(); 
+            if (parameterType == null || parameterType.equals("ref") || parameterType.equals("array")) {
                 cp.setType("string");
             }
             parameter = cp;
@@ -127,7 +130,8 @@ public class JaxrsParameterExtension extends AbstractSwaggerExtension implements
             if(schema != null)
                 fp.setProperty(schema);
 
-            if (fp.getType().equals("ref")|| fp.getType().equals("array")) {
+            String parameterType = fp.getType(); 
+            if (parameterType == null || parameterType.equals("ref") || parameterType.equals("array")) {
                 fp.setType("string");
             }
             parameter = fp;
