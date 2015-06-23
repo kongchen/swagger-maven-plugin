@@ -32,6 +32,7 @@ import io.swagger.models.properties.Property;
 import io.swagger.models.properties.RefProperty;
 import io.swagger.models.properties.StringProperty;
 import io.swagger.models.RefModel;
+import io.swagger.models.parameters.AbstractSerializableParameter;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -39,6 +40,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -368,6 +370,7 @@ public abstract class AbstractReader {
         if (parameters.size() > 0) {
             for (Parameter parameter : parameters) {
                 ParameterProcessor.applyAnnotations(swagger, parameter, type, annotations);
+                parameter = this.fixCollectionFormatForArrayTypes(cls, parameter);
             }
         } else {
             // look for body parameters
@@ -382,6 +385,28 @@ public abstract class AbstractReader {
         return parameters;
     }
 
+    private Parameter fixCollectionFormatForArrayTypes(Class<?> cls, Parameter parameter) {
+
+        // This is a workaround until the following swagger-core bug is fixed:
+        // https://github.com/swagger-api/swagger-core/issues/1160
+        // The collectionFormat for array-typed items is returning as "csv", even
+        // in cases where a csv string does not apply. In these cases, we need to
+        // re-set the type back to "multi".
+        
+        if (parameter instanceof AbstractSerializableParameter) {
+            final AbstractSerializableParameter<?> p = (AbstractSerializableParameter<?>) parameter;
+            
+            // Check to see if the if the parameter has items. If it does, it's an array type.
+            // If the collectionFormat is "csv", and the java type is Collection or Array, we need to change it to "multi" and re-define the parameter.
+            if (p.getItems() != null && p.getCollectionFormat() == "csv" && (Collection.class.isAssignableFrom(cls) || cls.isArray())) {
+                p.collectionFormat("multi");
+                parameter = p;
+            }
+        }
+        
+        return parameter;
+    }
+    
     protected void updateApiResponse(Operation operation, ApiResponses responseAnnotation) {
         Class<?> responseClass;
         for (ApiResponse apiResponse : responseAnnotation.value()) {
