@@ -56,6 +56,9 @@ import javax.ws.rs.QueryParam;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PathVariable;
 
 /**
  * Created by chekong on 15/4/28.
@@ -338,6 +341,9 @@ public abstract class AbstractReader {
         validParameterAnnotations.add(QueryParam.class);
         validParameterAnnotations.add(HeaderParam.class);
         validParameterAnnotations.add(FormParam.class);
+        validParameterAnnotations.add(RequestParam.class);
+        validParameterAnnotations.add(PathVariable.class);
+
 
         boolean hasValidAnnotation = false;
         for (Annotation potentialAnnotation : parameterAnnotations) {
