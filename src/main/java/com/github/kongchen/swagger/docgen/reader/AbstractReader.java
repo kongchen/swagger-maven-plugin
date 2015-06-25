@@ -340,6 +340,7 @@ public abstract class AbstractReader {
         validParameterAnnotations.add(HeaderParam.class);
         validParameterAnnotations.add(FormParam.class);
         validParameterAnnotations.add(RequestParam.class);
+        validParameterAnnotations.add(RequestBody.class);
         validParameterAnnotations.add(PathVariable.class);
 
 
