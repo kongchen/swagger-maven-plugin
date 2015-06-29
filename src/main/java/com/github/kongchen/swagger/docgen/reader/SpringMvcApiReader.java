@@ -371,10 +371,18 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
     //Helper method for loadDocuments()
     private Map<String, SpringResource> analyzeController(Class<?> clazz, Map<String, SpringResource> resourceMap, String description) throws ClassNotFoundException {
         String controllerCanonicalName = clazz.getCanonicalName();
-
+        String[] controllerRequestMappingValues = null;
+        
+        //Determine if we will use class-level requestmapping or dummy string
+        if(clazz.getAnnotation(RequestMapping.class) != null && clazz.getAnnotation(RequestMapping.class).value()!=null){
+            controllerRequestMappingValues = clazz.getAnnotation(RequestMapping.class).value();
+        }else{
+            controllerRequestMappingValues = new String[1];
+            controllerRequestMappingValues[0] = "";
+        }
+        
         // Iterate over all value attributes of the class-level RequestMapping annotation
-        for (int i = 0; i < clazz.getAnnotation(RequestMapping.class).value().length; i++) {
-            String controllerRequestMappingValue = clazz.getAnnotation(RequestMapping.class).value()[i];
+        for (int i = 0; i < controllerRequestMappingValues.length; i++) {
             
             // Iterate over all methods inside the controller
             Method[] methods = clazz.getMethods();
@@ -395,11 +403,11 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
                             //   1. The controller package
                             //   2. The controller class name
                             //   3. The controller-level @RequestMapping#value
-                            String resourceKey = controllerCanonicalName + controllerRequestMappingValue + requestMappingRequestMethod;
+                            String resourceKey = controllerCanonicalName + controllerRequestMappingValues[i] + requestMappingRequestMethod;
                             if ((!(resourceMap.containsKey(resourceKey)))) {
                                 resourceMap.put(
                                     resourceKey,
-                                    new SpringResource(clazz, controllerRequestMappingValue, resourceKey, description));
+                                    new SpringResource(clazz, controllerRequestMappingValues[i], resourceKey, description));
                             }
                             resourceMap.get(resourceKey).addMethod(method);
                         } else {
@@ -413,7 +421,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
                                 //   3. The controller-level @RequestMapping#value
                                 //   4. The method-level @RequestMapping#value
                                 //   5. The method-level @RequestMapping#method
-                                String resourceKey = controllerCanonicalName + controllerRequestMappingValue + resourceName + requestMappingRequestMethod;
+                                String resourceKey = controllerCanonicalName + controllerRequestMappingValues[i] + resourceName + requestMappingRequestMethod;
                                 if (!(resourceName.equals(""))) {
                                     if ((!(resourceMap.containsKey(resourceKey)))) {
                                         resourceMap.put(resourceKey, new SpringResource(clazz, resourceName, resourceKey, description));
@@ -438,27 +446,26 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         for (Class<?> c : validClasses) {
             RequestMapping requestMapping = c.getAnnotation(RequestMapping.class);
             String description = "";
-            if (requestMapping != null && requestMapping.value().length != 0) {
-                //This try/catch block is to stop a bamboo build from failing due to NoClassDefFoundError
-                //This occurs when a class or method loaded by reflections contains a type that has no dependency
-                try {
-                    resourceMap = analyzeController(c, resourceMap, description);
-                    List<Method> mList = new ArrayList<Method>(Arrays.asList(c.getMethods()));
-                    if (c.getSuperclass() != null) {
-                        mList.addAll(Arrays.asList(c.getSuperclass().getMethods()));
-                    }
-
-                } catch (NoClassDefFoundError e) {
-                    LOG.error(e.getMessage());
-                    LOG.info(c.getName());
-                    //exception occurs when a method type or annotation is not recognized by the plugin
-                } catch (ClassNotFoundException e) {
-                    LOG.error(e.getMessage());
-                    LOG.info(c.getName());
+            //This try/catch block is to stop a bamboo build from failing due to NoClassDefFoundError
+            //This occurs when a class or method loaded by reflections contains a type that has no dependency
+            try {
+                resourceMap = analyzeController(c, resourceMap, description);
+                List<Method> mList = new ArrayList<Method>(Arrays.asList(c.getMethods()));
+                if (c.getSuperclass() != null) {
+                    mList.addAll(Arrays.asList(c.getSuperclass().getMethods()));
                 }
 
+            } catch (NoClassDefFoundError e) {
+                LOG.error(e.getMessage());
+                LOG.info(c.getName());
+                //exception occurs when a method type or annotation is not recognized by the plugin
+            } catch (ClassNotFoundException e) {
+                LOG.error(e.getMessage());
+                LOG.info(c.getName());
             }
+
         }
+        
         return resourceMap;
     }
 
