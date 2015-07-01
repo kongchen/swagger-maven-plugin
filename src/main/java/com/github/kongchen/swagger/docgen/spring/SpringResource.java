@@ -28,13 +28,17 @@ public class SpringResource {
             this.resourceKey = resourceKey;
             this.description = description;
             methods = new ArrayList<Method>();
-
-            RequestMapping req = controllerClass.getAnnotation(RequestMapping.class);
-            String fullPath = req.value()[0];
-            if(fullPath.endsWith("/")){
-                fullPath = fullPath.substring(0,fullPath.length()-1);
+            
+            if(controllerClass.getAnnotation(RequestMapping.class)!=null && controllerClass.getAnnotation(RequestMapping.class).value()!=null){
+            	RequestMapping req = controllerClass.getAnnotation(RequestMapping.class);
+            	String fullPath = req.value()[0];
+            	if(fullPath.endsWith("/")){
+            		fullPath = fullPath.substring(0,fullPath.length()-1);
+            	}
+            	this.controllerMapping = req.value()[0];
+            }else{
+            	this.controllerMapping = "";
             }
-            this.controllerMapping = req.value()[0];
 
 		String tempMapping= this.controllerMapping;
 		if(tempMapping.startsWith("/")){
