@@ -177,6 +177,7 @@ You can instruct `swagger-maven-plugin` to skip processing the parameters of cer
 </typesToSkip>
 ```
 
+This requires at least `swagger-maven-plugin` version 3.1.1-SNAPSHOT.
 
 # Example
 There's a [sample here](https://github.com/kongchen/swagger-maven-example), just fork it and have a try.
