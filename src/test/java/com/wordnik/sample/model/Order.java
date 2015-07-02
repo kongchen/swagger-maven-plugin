@@ -30,6 +30,9 @@ public class Order {
   private Date shipDate;
   private String status;
   private boolean complete;
+  
+  private String internalThing;
+  private String anotherInternalThing;
 
   @XmlElement(name = "id")
   public long getId() {
@@ -84,4 +87,15 @@ public class Order {
   public void setShipDate(Date shipDate) {
     this.shipDate = shipDate;
   }
+
+    @ApiModelProperty(name = "internalThing", access = "secret-property")
+    public String getInternalThing() {
+        return internalThing;
+    }
+
+    @ApiModelProperty(name = "anotherInternalThing", access = "another-secret-property")
+    public String getAnotherInternalThing() {
+        return anotherInternalThing;
+    }
+  
 }

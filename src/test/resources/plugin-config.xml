@@ -53,6 +53,10 @@
                             <swaggerDirectory>${basedir}/generated/swagger-ui</swaggerDirectory>
                             <swaggerUIDocBasePath>http://www.example.com/restapi/doc</swaggerUIDocBasePath>
                             <modelSubstitute>/override.map</modelSubstitute>
+                            <apiModelPropertyAccessExclusions>
+                                <apiModelPropertyAccessExclusion>secret-property</apiModelPropertyAccessExclusion>
+                                <apiModelPropertyAccessExclusion>another-secret-property</apiModelPropertyAccessExclusion>
+                            </apiModelPropertyAccessExclusions>
                         </apiSource>
                     </apiSources>
                 </configuration>

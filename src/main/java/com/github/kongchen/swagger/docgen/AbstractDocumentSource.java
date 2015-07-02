@@ -12,7 +12,7 @@ import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.helper.StringHelpers;
 import com.github.jknack.handlebars.io.TemplateLoader;
 import com.github.kongchen.swagger.docgen.mavenplugin.ApiSource;
-import com.github.kongchen.swagger.docgen.reader.ModelSubstitute;
+import com.github.kongchen.swagger.docgen.reader.ModelModifier;
 import io.swagger.converter.ModelConverters;
 import io.swagger.models.Scheme;
 import io.swagger.models.Swagger;
@@ -125,9 +125,16 @@ public abstract class AbstractDocumentSource {
         }
     }
 
-    public void loadOverridingModels() throws GenerateException {
+    public void loadModelModifier() throws GenerateException {
+        
+        ModelModifier modelModifier = new ModelModifier(new ObjectMapper());
+            
+        List<String> apiModelPropertyAccessExclusions = apiSource.getApiModelPropertyAccessExclusions();
+        if (apiModelPropertyAccessExclusions != null && !apiModelPropertyAccessExclusions.isEmpty()) {
+            modelModifier.setApiModelPropertyAccessExclusions(apiModelPropertyAccessExclusions);
+        }
+
         if (modelSubstitute != null) {
-            ModelSubstitute modelSubstitute = new ModelSubstitute(new ObjectMapper());
             BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream(this.modelSubstitute)));
             String line = null;
             try {
@@ -137,20 +144,20 @@ public abstract class AbstractDocumentSource {
                     if (classes == null || classes.length != 2) {
                         throw new GenerateException("Bad format of override model file, it should be ${actualClassName}:${expectClassName}");
                     }
-                    modelSubstitute.substitute(classes[0].trim(), classes[1].trim());
+                    modelModifier.addModelSubstitute(classes[0].trim(), classes[1].trim());
                     line = reader.readLine();
                 }
             } catch (IOException e) {
                 throw new GenerateException(e);
             }
-            ModelConverters.getInstance().addConverter(modelSubstitute);
         }
+        
+        ModelConverters.getInstance().addConverter(modelModifier);
     }
-    
+
     public void loadTypesToSkip() throws GenerateException {
         List<String> typesToSkip = apiSource.getTypesToSkip();
         if (typesToSkip != null && !typesToSkip.isEmpty()) {
-            ObjectMapper mapper = new ObjectMapper();
             for (String typeToSkip : typesToSkip) {
                 try {
                     Type type = Class.forName(typeToSkip);

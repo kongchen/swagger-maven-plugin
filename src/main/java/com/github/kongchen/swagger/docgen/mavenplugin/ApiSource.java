@@ -93,6 +93,9 @@ public class ApiSource {
     @Parameter
     private List<String> typesToSkip = new ArrayList<String>();
     
+    @Parameter
+    private List<String> apiModelPropertyAccessExclusions = new ArrayList<String>();
+    
     public Set<Class<?>> getValidClasses() throws GenerateException {
         Set<Class<?>> classes = new HashSet<Class<?>>();
         if (getLocations() == null) {
@@ -111,6 +114,14 @@ public class ApiSource {
         }
         
         return classes;
+    }
+
+    public List<String> getApiModelPropertyAccessExclusions() {
+        return apiModelPropertyAccessExclusions;
+    }
+
+    public void setApiModelPropertyExclusions(List<String> apiModelPropertyAccessExclusions) {
+        this.apiModelPropertyAccessExclusions = apiModelPropertyAccessExclusions;
     }
 
     public List<SecurityDefinition> getSecurityDefinitions() {

@@ -60,6 +60,7 @@ You can specify several `apiSource`s. Generally, one is enough.
 | `swaggerDirectory` | The directory of generated `swagger.json` file. If null, no `swagger.json` will be generated. |
 | `modelSubstitute` | The model substitute file's path, see more details [below](#modelsubstitute)|
 | `typesToSkip` | Nodes of class names to explicitly skip during parameter processing. More details [below](#typesToSkip)|
+| `apiModelPropertyAccessExclusions` | Allows the exclusion of specified `@ApiModelProperty` fields. This can be used to hide certain model properties from the swagger spec. More details [below](#apiModelPropertyAccessExclusions)|
 
 # <a id="templatefile">Template File</a>
 
@@ -178,6 +179,29 @@ You can instruct `swagger-maven-plugin` to skip processing the parameters of cer
 ```
 
 This requires at least `swagger-maven-plugin` version 3.1.1-SNAPSHOT.
+
+# <a id="apiModelPropertyAccessExclusions">Excluding certain `@ApiModelProperty` items</a>
+
+If you'd like to exclude certain `@ApiModelProperty`s based on their `access` values, you may do so by adding the following as a child node of `apiSource` in your pom.xml:
+
+```
+<apiModelPropertyAccessExclusions>
+    <apiModelPropertyAccessExclusion>secret-property</apiModelPropertyAccessExclusion>
+</apiModelPropertyAccessExclusions>
+```
+
+The above setting would prevent `internalThing` from appearing in the swagger spec output, given this annotated model:
+
+```
+...
+    @ApiModelProperty(name = "internalThing", access = "secret-property")
+    public String getInternalThing() {
+        return internalThing;
+    }
+...
+```
+
+Note: In order to use `apiModelPropertyAccessExclusions`, you must specify both the `name` and `access` fields of the property you wish to exclude. Additionally, `apiModelPropertyAccessExclusions` requires at least `swagger-maven-plugin` version 3.1.1-SNAPSHOT.
 
 # Example
 There's a [sample here](https://github.com/kongchen/swagger-maven-example), just fork it and have a try.
