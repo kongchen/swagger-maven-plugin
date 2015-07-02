@@ -239,7 +239,12 @@ public class PetResource {
         return new Pet();
     }
     
-    
+    @ApiOperation(value = "testingHiddenApiOperation", hidden = true)
+    @GET
+    @Produces("application/json")
+    public String testingHiddenApiOperation() {
+        return "testingHiddenApiOperation";
+    }
     
 
 

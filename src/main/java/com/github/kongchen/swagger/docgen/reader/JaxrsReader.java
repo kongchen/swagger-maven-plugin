@@ -95,6 +95,9 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         for (Method method : methods) {
 
             ApiOperation apiOperation = method.getAnnotation(ApiOperation.class);
+            if (apiOperation == null || apiOperation.hidden()) {
+                continue;
+            }
             javax.ws.rs.Path methodPath = method.getAnnotation(javax.ws.rs.Path.class);
 
             String operationPath = getPath(apiPath, methodPath, parentPath);

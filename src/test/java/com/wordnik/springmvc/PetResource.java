@@ -203,6 +203,12 @@ public class PetResource {
   public ResponseEntity<String> ping() {
       return new ResponseEntity<String>("pong", HttpStatus.OK);
   }
+  
+    @ApiOperation(value = "testingHiddenApiOperation", hidden = true)
+    @RequestMapping(value = "/testingHiddenApiOperation", method = RequestMethod.GET)
+    public ResponseEntity<String> testingHiddenApiOperation() {
+        return new ResponseEntity<String>("testingHiddenApiOperation", HttpStatus.OK);
+    }
 
     @ApiOperation(value = "testing")
     @RequestMapping(value = "/testing", method = RequestMethod.GET)

@@ -108,7 +108,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
                     continue;
                 }
                 ApiOperation apiOperation = method.getAnnotation(ApiOperation.class);
-                if (apiOperation == null) {
+                if (apiOperation == null || apiOperation.hidden()) {
                     continue;
                 }
                 String httpMethod = null;
