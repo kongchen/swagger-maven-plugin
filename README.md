@@ -1,21 +1,24 @@
 # Swagger Maven Plugin [![Build Status](https://travis-ci.org/kongchen/swagger-maven-plugin.png)](https://travis-ci.org/kongchen/swagger-maven-plugin)
 
-This plugin can let your Swagger annotated project generate **Swagger JSON** and your **Customized Static Documents** in maven build phase.
+This plugin enables your Swagger-annotated project to generate **Swagger specs** and **customizable, templated static documents** during the maven build phase.
 
 # Features
 
-* Support [Swagger Spec 2.0](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md)
-* Support [SpringMvc](http://docs.spring.io/spring/docs/current/spring-framework-reference/html/mvc.html) & [JAX-RS](https://jax-rs-spec.java.net/)
+* Supports [Swagger Spec 2.0](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md)
+* Supports [SpringMvc](http://docs.spring.io/spring/docs/current/spring-framework-reference/html/mvc.html) & [JAX-RS](https://jax-rs-spec.java.net/)
 * Quickly generates *[swagger.json](https://github.com/kongchen/swagger-maven-example/blob/master/generated/swagger-ui/swagger.json)* and [static document](http://htmlpreview.github.io/?https://raw.github.com/kongchen/swagger-maven-example/master/generated/document.html) by `mvn compile`
 * Use [Handlebars](http://handlebarsjs.com/) as template to customize the static document.
 
 # Versions
 - [3.1.0](https://github.com/kongchen/swagger-maven-plugin/) supports Swagger Spec [2.0](https://github
-.com/swagger-api/swagger-spec/blob/master/versions/2.0.md), support JAX-RS & SpingMVC. (**ACTIVE!**) *with new `swagger.io` namespace jars depedency*
+.com/swagger-api/swagger-spec/blob/master/versions/2.0.md), support JAX-RS & SpingMVC. (**ACTIVE!**) 
 - [3.0.1](https://github.com/kongchen/swagger-maven-plugin/tree/swagger-core_com.wordnik_namespaces/) supports Swagger Spec [2.0](https://github
-.com/swagger-api/swagger-spec/blob/master/versions/2.0.md), support JAX-RS & SpingMVC. (**ACTIVE!**) *with old `com.wordnik` namespace jars depedency*
-- [2.3.4](https://github.com/kongchen/swagger-maven-plugin/tree/spec1.2) supports Swagger Spec [1.2](https://github.com/swagger-api/swagger-spec/blob/master/versions/1.2.md), support JAX-RS & SpringMVC. (**Lazy maintained**)
+.com/swagger-api/swagger-spec/blob/master/versions/2.0.md), support JAX-RS & SpingMVC. (**ACTIVE!**) 
+- [2.3.4](https://github.com/kongchen/swagger-maven-plugin/tree/spec1.2) supports Swagger Spec [1.2](https://github.com/swagger-api/swagger-spec/blob/master/versions/1.2.md), support JAX-RS & SpringMVC. (**Lazily maintained**)
 - [1.1.1](https://github.com/kongchen/swagger-maven-plugin/tree/1.1.1) supports Swagger Spec 1.1. (**No longer maintained**)
+
+## Upgrading from 3.0.1 to 3.1.0+
+Version 3.1.0+ of this plugin depends on the repackaged/rebranded io.swagger.swagger-core dependency, which is formerly known as com.wordnik.swagger-core. If you use 3.1.0+, you must use the swagger-core dependency in the io.swagger namespace instead of the com.wordnik namespace, which is deprecated. You may see an example of migrating a project from 3.0.1 to 3.1.0 in the [swagger-maven-plugin example project](https://github.com/swagger-maven-plugin/swagger-maven-example/commit/3d6bfa06d638d0855edc04816d4e35bff4a5e771#diff-600376dffeb79835ede4a0b285078036). 
 
 
 # Usage
@@ -126,17 +129,16 @@ The `securityDefinition.json` file should also follow the spec, one sample file 
   }
 }
 ```
-# <a id="modelSubstitute">Model Substitute</a>
-Model substitute file is a simple text file with multiple lines, each line tells the plugin to substitutes a model class with the supplied substitute, and the 2 classes should be seperated by a `:`. 
+# <a id="modelSubstitute">Model Substitution</a>
+Throughout the course of working with Swagger, you may find that you need to substitute non-primitive objects for primitive objects. This is called model substituion, and it is supported by swagger-maven-plugin. In order to configure model substitution, you'll need to create a model substitute file. This file is a simple text file containing `n` lines, where each line tells swagger-maven-plugin to substitutes a model class with the supplied substitute. These two classes should be seperated by a colone (`:`). 
 
-e.g The line:
+## Sample model substitution
 
 ```
 com.foo.bar.PetName : java.lang.String
 ```
 
-would tell the plugin substitute `com.foo.bar.PetName` with `java.lang.String`, 
-and the generated `swagger.json` will become:
+The above model substitution configuration would tell the plugin to substitute `com.foo.bar.PetName` with `java.lang.String`.  As a result, the generated `swagger.json` would look like this ...
 
 ```
  "definitions" : {
@@ -150,7 +152,7 @@ and the generated `swagger.json` will become:
       }
     }
 ```
-instead of :
+... instead of like this:
 
 ```
  "definitions" : {
@@ -165,9 +167,9 @@ instead of :
     }
 ```
 
-Model substitute file will be read by `getClass().getResourceAsStream`, so please note the path you configured. 
+The model substitution file will be read by `getClass().getResourceAsStream`, so please note the path you configured. 
 
-# <a id="typesToSkip">Skipping Types During Processing</a>
+# <a id="typesToSkip">Skipping Types During Processing with `typesToSkip`</a>
 
 You can instruct `swagger-maven-plugin` to skip processing the parameters of certain types by adding the following to your pom.xml:
 
@@ -284,7 +286,7 @@ There's a [sample here](https://github.com/swagger-maven-plugin/swagger-maven-ex
 # FAQ
 
 ## 1. SNAPSHOT Version
-SNAPSHOT versions are available for verify issues, new features. If you would like to try to verify the fixed issues or the new added features, you may need to add `pluginRepository` in your `pom.xml`:
+SNAPSHOT versions are available for verifing issues and new features. If you would like to try to verify the fixed issues or the new added features, you may need to add a `pluginRepository` node in your `pom.xml`:
 
 ```
 <pluginRepositories>
@@ -302,7 +304,7 @@ SNAPSHOT versions are available for verify issues, new features. If you would li
 ```
 
 
-## 2. Dependency conflict
+## 2. Dependency conflicts
 If you have package depedency conflict issues, such as jackson, joda-time, or [jsr311-api](https://github.com/kongchen/swagger-maven-plugin/issues/81). 
 Run
 
@@ -310,7 +312,7 @@ Run
 mvn dependency:tree
 ```
 
-to check which package introduces the one conflicts with yours, and then you can use `<exclusion>` conficuration in pom.xml to exlcude it.
+to check which package introduces the one conflicts with yours, and then you can use `<exclusion>` configuration in pom.xml to exclude it.
 
 **Here's an example:**
 
@@ -330,4 +332,3 @@ To exclude `javax.ws.rs:jsr311-api:jar:1.1.1:compile` from `swagger-jaxrs_2.10`:
 </dependency>   
 ```
 
-Developed with ![IntelliJ IDEA](https://www.jetbrains.com/idea/docs/logo_intellij_idea.png)
