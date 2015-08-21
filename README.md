@@ -204,7 +204,7 @@ The above setting would prevent `internalThing` from appearing in the swagger sp
 Note: In order to use `apiModelPropertyAccessExclusions`, you must specify both the `name` and `access` fields of the property you wish to exclude. Additionally, `apiModelPropertyAccessExclusions` requires at least `swagger-maven-plugin` version 3.1.1-SNAPSHOT.
 
 # Example
-There's a [sample here](https://github.com/kongchen/swagger-maven-example), just fork it and have a try.
+There's a [sample here](https://github.com/swagger-maven-plugin/swagger-maven-example), just fork it and have a try.
 
 ## A Sample Configuration
 
