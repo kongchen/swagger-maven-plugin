@@ -9,7 +9,7 @@ import javax.ws.rs.PathParam;
 /**
  * Created by chekong on 15/5/9.
  */
-public class MyBean {
+public class MyBean extends MyParentBean {
     @ApiParam(value = "ID of pet that needs to be updated", required = true)
     @PathParam("petId")
     private String petId;
