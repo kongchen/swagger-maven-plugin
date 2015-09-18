@@ -228,21 +228,25 @@ public abstract class AbstractReader {
         return (api != null && readHidden) || (api != null && !api.hidden());
     }
 
-    protected Set<String> extractTags(Api api) {
-        Set<String> output = new LinkedHashSet<String>();
+    protected Set<Tag> extractTags(Api api) {
+        Set<Tag> output = new LinkedHashSet<Tag>();
 
         boolean hasExplicitTags = false;
         for (String tag : api.tags()) {
             if (!"".equals(tag)) {
                 hasExplicitTags = true;
-                output.add(tag);
+                output.add(new Tag().name(tag));
             }
         }
         if (!hasExplicitTags) {
             // derive tag from api path + description
             String tagString = api.value().replace("/", "");
-            if (!"".equals(tagString))
-                output.add(tagString);
+            if (!"".equals(tagString)) {
+                Tag tag = new Tag().name(tagString);
+                if (!"".equals(api.description()))
+                    tag.description(api.description());
+                output.add(tag);
+            }
         }
         return output;
     }
@@ -261,18 +265,15 @@ public abstract class AbstractReader {
 
     protected Map<String, Tag> updateTagsForApi(Map<String, Tag> parentTags, Api api) {
         // the value will be used as a tag for 2.0 UNLESS a Tags annotation is present
-        Set<String> tagStrings = extractTags(api);
-        Map<String, Tag> tags = new HashMap<String, Tag>();
-        for (String tagString : tagStrings) {
-            Tag tag = new Tag().name(tagString);
-            tags.put(tagString, tag);
+        Set<Tag> tags = extractTags(api);
+        Map<String, Tag> tagsMap = new HashMap<String, Tag>();
+        for (Tag tag : tags) {
+            tagsMap.put(tag.getName(), tag);
         }
         if (parentTags != null)
-            tags.putAll(parentTags);
-        for (String tagName : tags.keySet()) {
-            swagger.tag(tags.get(tagName));
-        }
-        return tags;
+            tagsMap.putAll(parentTags);
+        swagger.tags(new ArrayList<Tag>(tagsMap.values()));
+        return tagsMap;
     }
 
     boolean isPrimitive(Class<?> cls) {
