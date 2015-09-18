@@ -15,6 +15,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -49,7 +50,7 @@ public class BeanParamInjectParamExtention extends AbstractSwaggerExtension impl
     private List<Parameter> extractParameters(Class<?> cls) {
         List<Parameter> parameters = new ArrayList<Parameter>();
         
-        for (Field f : cls.getDeclaredFields()) {
+        for (Field f : getDeclaredAndInheritedFields(cls)) {
             Parameter parameter = null;
 
             int i = 0, apiParaIdx = -1;
@@ -88,4 +89,18 @@ public class BeanParamInjectParamExtention extends AbstractSwaggerExtension impl
 
         return output;
     }
+
+    private  List<Field> getDeclaredAndInheritedFields(Class<?> c) {
+        List<Field> fields = new ArrayList<Field>();
+          recurseGetDeclaredAndInheritedFields(c, fields);
+          return fields;
+    }
+    
+    private void recurseGetDeclaredAndInheritedFields(Class<?> c, List<Field> fields) {
+        fields.addAll(Arrays.asList(c.getDeclaredFields())); 
+        Class<?> superClass = c.getSuperclass(); 
+        if (superClass != null) { 
+            recurseGetDeclaredAndInheritedFields(superClass, fields); 
+        }  
+    }	
 }
