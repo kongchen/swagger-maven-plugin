@@ -272,7 +272,9 @@ public abstract class AbstractReader {
         }
         if (parentTags != null)
             tagsMap.putAll(parentTags);
-        swagger.tags(new ArrayList<Tag>(tagsMap.values()));
+        for (Tag tag : tagsMap.values()) {
+            swagger.tag(tag);
+        }
         return tagsMap;
     }
 
