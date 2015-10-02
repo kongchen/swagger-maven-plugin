@@ -56,7 +56,7 @@ public class BeanParamInjectParamExtention extends AbstractSwaggerExtension impl
             int i = 0, apiParaIdx = -1;
 
             for(Annotation annotation : f.getAnnotations()) {
-                if(annotation instanceof ApiParam) {
+                if(annotation instanceof ApiParam && ((ApiParam)annotation).hidden() == false) {
                     apiParaIdx = i;
                 }
                 i++;

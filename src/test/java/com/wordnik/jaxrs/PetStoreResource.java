@@ -32,6 +32,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 @Path("/store")
@@ -49,6 +50,7 @@ public class PetStoreResource {
   @ApiResponses(value = { @ApiResponse(code = 400, message = "Invalid ID supplied"),
       @ApiResponse(code = 404, message = "Order not found") })
   public Response getOrderById(
+      @ApiParam(hidden=true, value = "this is a hidden parameter", required = false) @QueryParam("hiddenParam") String hiddenParam,
       @ApiParam(value = "ID of pet that needs to be fetched", allowableValues = "range[1,5]", required = true) @PathParam("orderId") String orderId)
       throws NotFoundException {
     Order order = storeData.findOrderById(ru.getLong(0, 10000, 0, orderId));

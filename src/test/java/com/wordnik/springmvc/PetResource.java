@@ -200,7 +200,7 @@ public class PetResource {
 
   @ApiOperation(value = "ping the service")
   @RequestMapping(value = "/ping", method = RequestMethod.GET)
-  public ResponseEntity<String> ping() {
+  public ResponseEntity<String> ping(@ApiParam(hidden = true, name="thisShouldBeHidden") @RequestParam(required = false) Map<String, String> hiddenParameter) {
       return new ResponseEntity<String>("pong", HttpStatus.OK);
   }
   

@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.converter.ModelConverter;
 import io.swagger.jackson.AbstractModelConverter;
 import io.swagger.models.properties.Property;
+import io.swagger.util.PrimitiveType;
 
 /**
  *
@@ -19,9 +20,4 @@ public class ModelConverterHelper extends AbstractModelConverter implements Mode
     public ModelConverterHelper(ObjectMapper mapper) {
         super(mapper);
     }
-    
-    public Property getPropertyFromTypeName(String typeName){
-        return this.getPrimitiveProperty(typeName);
-    }
-        
 }

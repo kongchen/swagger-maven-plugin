@@ -90,6 +90,7 @@ public class SecurityDefinition {
         SecuritySchemeDefinition def = new SecuritySchemeDefinition() {
 
             private String type = _type;
+            private Map<String, Object> vendorExtensions;
 
             @Override
             public String getType() {
@@ -99,6 +100,16 @@ public class SecurityDefinition {
             @Override
             public void setType(String type) {
 
+            }
+
+            @Override
+            public Map<String, Object> getVendorExtensions() {
+                return vendorExtensions;
+            }
+
+            @Override
+            public void setVendorExtension(String key, Object value) {
+                vendorExtensions.put(key, value);
             }
         };
 

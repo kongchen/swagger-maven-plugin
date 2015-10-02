@@ -324,6 +324,19 @@ public abstract class AbstractReader {
         }
     }
     
+    private boolean isApiParamHidden(List<Annotation> parameterAnnotations) {
+        boolean isHidden = false;
+        
+        for (Annotation parameterAnnotation : parameterAnnotations) {
+            if (parameterAnnotation instanceof ApiParam) {
+                isHidden = ((ApiParam)parameterAnnotation).hidden();
+                break;
+            }
+        }
+        
+        return isHidden;
+    }
+    
     private boolean hasValidAnnotations(List<Annotation> parameterAnnotations) {
         // Because method parameters can contain parameters that are valid, but 
         // not part of the API contract, first check to make sure the parameter 
@@ -363,6 +376,10 @@ public abstract class AbstractReader {
     protected List<Parameter> getParameters(Type type, List<Annotation> annotations) {
                 
         if (hasValidAnnotations(annotations) == false) {
+            return new ArrayList<Parameter>();
+        }
+        
+        if (isApiParamHidden(annotations)) {
             return new ArrayList<Parameter>();
         }
         

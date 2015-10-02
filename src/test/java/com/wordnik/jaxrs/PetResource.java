@@ -181,7 +181,7 @@ public class PetResource {
     @ApiOperation(value = "Returns pet", response = Pet.class)
     @GET
     @Produces("application/json")
-    public Pet get() {
+    public Pet get(@ApiParam(hidden=true, name="hiddenParameter") @QueryParam("hiddenParameter") String hiddenParameter) {
       return new Pet();
     }
 
