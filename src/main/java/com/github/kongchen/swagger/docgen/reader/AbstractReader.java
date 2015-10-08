@@ -59,6 +59,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 /**
  * Created by chekong on 15/4/28.
@@ -360,6 +361,7 @@ public abstract class AbstractReader {
         validParameterAnnotations.add(RequestParam.class);
         validParameterAnnotations.add(RequestBody.class);
         validParameterAnnotations.add(PathVariable.class);
+        validParameterAnnotations.add(RequestHeader.class);
 
 
         boolean hasValidAnnotation = false;
