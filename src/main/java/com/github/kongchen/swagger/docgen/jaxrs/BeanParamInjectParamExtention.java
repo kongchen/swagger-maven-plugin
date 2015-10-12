@@ -12,7 +12,7 @@ import org.reflections.util.Utils;
 import javax.ws.rs.BeanParam;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,13 +50,13 @@ public class BeanParamInjectParamExtention extends AbstractSwaggerExtension impl
     private List<Parameter> extractParameters(Class<?> cls) {
         List<Parameter> parameters = new ArrayList<Parameter>();
         
-        for (Field f : getDeclaredAndInheritedFields(cls)) {
+        for (AccessibleObject f : getDeclaredAndInheritedFieldsAndMethods(cls)) {
             Parameter parameter = null;
 
             int i = 0, apiParaIdx = -1;
 
             for(Annotation annotation : f.getAnnotations()) {
-                if(annotation instanceof ApiParam && ((ApiParam)annotation).hidden() == false) {
+                if(annotation instanceof ApiParam && !((ApiParam) annotation).hidden()) {
                     apiParaIdx = i;
                 }
                 i++;
@@ -90,17 +90,26 @@ public class BeanParamInjectParamExtention extends AbstractSwaggerExtension impl
         return output;
     }
 
-    private  List<Field> getDeclaredAndInheritedFields(Class<?> c) {
-        List<Field> fields = new ArrayList<Field>();
-          recurseGetDeclaredAndInheritedFields(c, fields);
-          return fields;
+    private  List<AccessibleObject> getDeclaredAndInheritedFieldsAndMethods(Class<?> c) {
+        List<AccessibleObject> accessibleObjects = new ArrayList<AccessibleObject>();
+        recurseGetDeclaredAndInheritedFields(c, accessibleObjects);
+        recurseGetDeclaredAndInheritedMethods(c, accessibleObjects);
+        return accessibleObjects;
     }
     
-    private void recurseGetDeclaredAndInheritedFields(Class<?> c, List<Field> fields) {
+    private void recurseGetDeclaredAndInheritedFields(Class<?> c, List<AccessibleObject> fields) {
         fields.addAll(Arrays.asList(c.getDeclaredFields())); 
         Class<?> superClass = c.getSuperclass(); 
         if (superClass != null) { 
             recurseGetDeclaredAndInheritedFields(superClass, fields); 
         }  
-    }	
+    }
+
+    private void recurseGetDeclaredAndInheritedMethods(Class<?> c, List<AccessibleObject> methods) {
+        methods.addAll(Arrays.asList(c.getDeclaredMethods()));
+        Class<?> superClass = c.getSuperclass();
+        if (superClass != null) {
+            recurseGetDeclaredAndInheritedMethods(superClass, methods);
+        }
+    }
 }
