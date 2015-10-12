@@ -56,4 +56,9 @@ public class MyBean extends MyParentBean {
     public void setStatus(String status) {
         this.status = status;
     }
+
+    @HeaderParam("myHeaderOnMethod")
+    @ApiParam(value = "Header annotated on method", required = false)
+    public void setMyheadronmethod(String myheadronmethod){
+    }
 }
