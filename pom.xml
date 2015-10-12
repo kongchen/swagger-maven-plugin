@@ -49,6 +49,7 @@
     <properties>
         <maven.version>2.2.1</maven.version>
         <java.version>1.6</java.version>
+        <swagger.version>1.5.3</swagger.version>
         <github.global.server>github</github.global.server>
     </properties>
 
@@ -94,7 +95,7 @@
         <dependency>
             <groupId>io.swagger</groupId>
             <artifactId>swagger-jaxrs</artifactId>
-            <version>1.5.3</version>
+            <version>${swagger.version}</version>
         </dependency>
         <dependency>
             <groupId>org.reflections</groupId>
@@ -125,7 +126,7 @@
         <dependency>
             <groupId>io.swagger</groupId>
             <artifactId>swagger-jersey-jaxrs</artifactId>
-            <version>1.5.0</version>
+            <version>${swagger.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven.plugin-tools</groupId>
