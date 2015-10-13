@@ -95,6 +95,9 @@ public class ApiSource {
     
     @Parameter
     private List<String> apiModelPropertyAccessExclusions = new ArrayList<String>();
+
+    @Parameter(required = false)
+    private boolean jsonExampleValues = false;
     
     public Set<Class<?>> getValidClasses() throws GenerateException {
         Set<Class<?>> classes = new HashSet<Class<?>>();
@@ -258,6 +261,14 @@ public class ApiSource {
 
     public void setSwaggerSchemaConverter(String swaggerSchemaConverter) {
         this.swaggerSchemaConverter = swaggerSchemaConverter;
+    }
+    
+    public boolean isJsonExampleValues() {
+        return jsonExampleValues;
+    }
+
+    public void setJsonExampleValues(boolean jsonExampleValues) {
+        this.jsonExampleValues = jsonExampleValues;
     }
 }
 

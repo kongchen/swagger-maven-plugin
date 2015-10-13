@@ -31,6 +31,7 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import io.swagger.models.properties.Property;
 
 /**
  * Created with IntelliJ IDEA.
@@ -51,6 +52,8 @@ public abstract class AbstractDocumentSource {
     private final String modelSubstitute;
     
     protected final List<Type> typesToSkip = new ArrayList<Type>();
+    
+    private final boolean jsonExampleValues;
 
     protected Swagger swagger;
 
@@ -65,6 +68,7 @@ public abstract class AbstractDocumentSource {
         this.templatePath = apiSource.getTemplatePath();
         this.swaggerPath = apiSource.getSwaggerDirectory();
         this.modelSubstitute = apiSource.getModelSubstitute();
+        this.jsonExampleValues = apiSource.isJsonExampleValues();
 
         swagger = new Swagger();
         if (apiSource.getSchemes() != null) {
@@ -91,6 +95,11 @@ public abstract class AbstractDocumentSource {
             throws GenerateException {
         mapper.configure(SerializationFeature.WRITE_EMPTY_JSON_ARRAYS, false);
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        
+        if (jsonExampleValues) {
+            mapper.addMixInAnnotations(Property.class, PropertyExampleMixIn.class);
+        }
+        
         if (swaggerPath == null) {
             return;
         }

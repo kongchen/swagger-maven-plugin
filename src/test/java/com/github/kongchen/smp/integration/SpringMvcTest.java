@@ -1,5 +1,7 @@
 package com.github.kongchen.smp.integration;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.kongchen.swagger.docgen.mavenplugin.ApiDocumentMojo;
 import com.github.kongchen.swagger.docgen.mavenplugin.ApiSource;
 import org.apache.commons.io.FileUtils;
@@ -14,6 +16,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -74,6 +77,30 @@ public class SpringMvcTest extends AbstractMojoTestCase {
             s = reader.readLine();
         }
 
+    }
+
+    @Test
+    public void testGeneratedDocWithJsonExampleValues() throws Exception {
+
+        List<ApiSource> apisources = (List<ApiSource>) getVariableValueFromObject(mojo, "apiSources");
+        ApiSource apiSource = apisources.get(0);
+        // Force serialization of example values as json raw values
+        apiSource.setJsonExampleValues(true);
+        // exclude part of the model when not compliant with jev option (e.g. example expressed as plain string) 
+        apiSource.setApiModelPropertyExclusions(Collections.singletonList("exclude-when-jev-option-set"));
+
+        mojo.execute();
+
+        // check generated swagger json file
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode actualJson = mapper.readTree(new File(swaggerOutputDir, "swagger.json"));
+        JsonNode expectJson = mapper.readTree(this.getClass().getResourceAsStream("/options/jsonExampleValues/expected/swagger-spring.json"));
+
+        JsonNode actualUserNode = actualJson.path("definitions").path("User");
+        JsonNode expectUserNode = expectJson.path("definitions").path("User");
+
+        // Cannot test full node equality since tags order is not guaranteed in generated json
+        Assert.assertEquals(actualUserNode, expectUserNode);
     }
 
     @Test

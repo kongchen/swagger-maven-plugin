@@ -52,7 +52,7 @@ public class Pet {
   }
 
   @XmlElement(name = "name")
-  @ApiModelProperty(example = "doggie", required = true)
+  @ApiModelProperty(name = "name", example = "doggie", required = true, access="exclude-when-jev-option-set")
   public PetName getName() {
     return name;
   }
