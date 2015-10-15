@@ -56,6 +56,7 @@
                             <apiModelPropertyAccessExclusions>
                                 <apiModelPropertyAccessExclusion>secret-property</apiModelPropertyAccessExclusion>
                                 <apiModelPropertyAccessExclusion>another-secret-property</apiModelPropertyAccessExclusion>
+                                <apiModelPropertyAccessExclusion>exclude-when-jev-option-not-set</apiModelPropertyAccessExclusion>
                             </apiModelPropertyAccessExclusions>
                         </apiSource>
                     </apiSources>

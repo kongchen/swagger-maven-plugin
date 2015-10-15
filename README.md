@@ -64,6 +64,7 @@ You can specify several `apiSource`s. Generally, one is enough.
 | `modelSubstitute` | The model substitute file's path, see more details [below](#model-substitution)|
 | `typesToSkip` | Nodes of class names to explicitly skip during parameter processing. More details [below](#typesToSkip)|
 | `apiModelPropertyAccessExclusions` | Allows the exclusion of specified `@ApiModelProperty` fields. This can be used to hide certain model properties from the swagger spec. More details [below](#apiModelPropertyAccessExclusions)|
+| `jsonExampleValues` | If `true`, all example values in `@ApiModelProperty` will be handled as json raw values. This is useful for creating valid examples in the generated json for all property types, including non-string ones. |
 
 # <a id="templatefile">Template File</a>
 

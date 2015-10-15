@@ -27,6 +27,7 @@ public class User {
   private String username;
   private String firstName;
   private String lastName;
+  private String nickName;
   private String email;
   private String password;
   private String phone;
@@ -68,6 +69,16 @@ public class User {
     this.lastName = lastName;
   }
 
+  @XmlElement(name = "nickName")
+  @ApiModelProperty(name = "nickName", example = "\"Bob\"", access="exclude-when-jev-option-not-set")
+  public String getNickName() {
+    return nickName;
+  }
+
+  public void setNickName(String nickName) {
+    this.nickName = nickName;
+  }
+
   @XmlElement(name = "email")
   public String getEmail() {
     return email;
@@ -96,7 +107,7 @@ public class User {
   }
 
   @XmlElement(name = "userStatus")
-  @ApiModelProperty(value = "User Status", allowableValues = "1-registered,2-active,3-closed")
+  @ApiModelProperty(value = "User Status", allowableValues = "1-registered,2-active,3-closed", example = "2")
   public int getUserStatus() {
     return userStatus;
   }

@@ -14,8 +14,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Created by chekong on 8/15/14.
@@ -60,8 +63,7 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
                 break;
             }
 
-            Assert.assertEquals(expect.trim(), actual.trim(), "" + count);
-
+            Assert.assertEquals(actual.trim(), expect.trim(), "" + count);
         }
 
         FileInputStream swaggerJson = new FileInputStream(new File(swaggerOutputDir, "swagger.json"));
@@ -75,7 +77,31 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
         }
 
     }
+    
+    @Test
+    public void testGeneratedDocWithJsonExampleValues() throws Exception {
 
+        List<ApiSource> apisources = (List<ApiSource>) getVariableValueFromObject(mojo, "apiSources");
+        ApiSource apiSource = apisources.get(0);
+        // Force serialization of example values as json raw values
+        apiSource.setJsonExampleValues(true);
+        // exclude part of the model when not compliant with jev option (e.g. example expressed as plain string) 
+        apiSource.setApiModelPropertyExclusions(Collections.singletonList("exclude-when-jev-option-set"));
+
+        mojo.execute();
+        
+        // check generated swagger json file
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode actualJson = mapper.readTree(new File(swaggerOutputDir, "swagger.json"));
+        JsonNode expectJson = mapper.readTree(this.getClass().getResourceAsStream("/options/jsonExampleValues/expected/swagger.json"));
+        
+        JsonNode actualUserNode = actualJson.path("definitions").path("User");
+        JsonNode expectUserNode = expectJson.path("definitions").path("User");    
+        
+        // Cannot test full node equality since tags order is not guaranteed in generated json
+        Assert.assertEquals(actualUserNode, expectUserNode);
+    }
+    
     @Test
     public void testNullSwaggerOutput() throws Exception {
         List<ApiSource> apisources = (List<ApiSource>) getVariableValueFromObject(mojo, "apiSources");
