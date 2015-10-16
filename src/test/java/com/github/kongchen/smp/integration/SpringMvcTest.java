@@ -54,7 +54,7 @@ public class SpringMvcTest extends AbstractMojoTestCase {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode actualJson = mapper.readTree(new File(swaggerOutputDir, "swagger.json"));
         JsonNode expectJson = mapper.readTree(this.getClass().getResourceAsStream("/expectedOutput/swagger-spring.json"));
-        assertJsonEquals(actualJson, expectJson, Configuration.empty().when(IGNORING_ARRAY_ORDER));
+        assertJsonEquals(expectJson, actualJson, Configuration.empty().when(IGNORING_ARRAY_ORDER));
     }
     
     @Test
