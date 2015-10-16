@@ -20,6 +20,10 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import static net.javacrumbs.jsonunit.JsonAssert.assertJsonEquals;
+import static net.javacrumbs.jsonunit.core.Option.IGNORING_ARRAY_ORDER;
+import net.javacrumbs.jsonunit.core.Configuration;
+
 /**
  * Created by chekong on 8/15/14.
  */
@@ -43,7 +47,16 @@ public class SpringMvcTest extends AbstractMojoTestCase {
         File testPom = new File(getBasedir(), "target/test-classes/plugin-config-springmvc.xml");
         mojo = (ApiDocumentMojo) lookupMojo("generate", testPom);
     }
-
+    
+    @Test
+    public void testGeneratedSwaggerSpec() throws Exception {
+        mojo.execute();
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode actualJson = mapper.readTree(new File(swaggerOutputDir, "swagger.json"));
+        JsonNode expectJson = mapper.readTree(this.getClass().getResourceAsStream("/expectedOutput/swagger-spring.json"));
+        assertJsonEquals(actualJson, expectJson, Configuration.empty().when(IGNORING_ARRAY_ORDER));
+    }
+    
     @Test
     public void testGeneratedDoc() throws Exception {
 

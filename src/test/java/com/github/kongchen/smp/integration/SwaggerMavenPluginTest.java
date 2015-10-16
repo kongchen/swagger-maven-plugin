@@ -19,6 +19,9 @@ import java.util.Iterator;
 import java.util.List;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import static net.javacrumbs.jsonunit.JsonAssert.assertJsonEquals;
+import static net.javacrumbs.jsonunit.core.Option.IGNORING_ARRAY_ORDER;
+import net.javacrumbs.jsonunit.core.Configuration;
 
 /**
  * Created by chekong on 8/15/14.
@@ -43,15 +46,23 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
         File testPom = new File(getBasedir(), "target/test-classes/plugin-config.xml");
         mojo = (ApiDocumentMojo) lookupMojo("generate", testPom);
     }
-
+    
+    @Test
+    public void testGeneratedSwaggerSpec() throws Exception {
+        mojo.execute();
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode actualJson = mapper.readTree(new File(swaggerOutputDir, "swagger.json"));
+        JsonNode expectJson = mapper.readTree(this.getClass().getResourceAsStream("/expectedOutput/swagger.json"));
+        assertJsonEquals(actualJson, expectJson, Configuration.empty().when(IGNORING_ARRAY_ORDER));
+    }
+    
     @Test
     public void testGeneratedDoc() throws Exception {
-
         mojo.execute();
-
+        
         BufferedReader actualReader = new BufferedReader(new InputStreamReader(new FileInputStream(docOutput)));
         BufferedReader expectReader = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream("/sample.html")));
-
+        
         int count = 0;
         while (true) {
             count++;
