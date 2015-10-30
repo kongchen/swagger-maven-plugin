@@ -2,22 +2,11 @@ package com.github.kongchen.swagger.docgen.reader;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.kongchen.swagger.docgen.LogAdapter;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.Authorization;
-import io.swagger.annotations.AuthorizationScope;
+import io.swagger.annotations.*;
 import io.swagger.converter.ModelConverters;
 import io.swagger.jaxrs.ext.SwaggerExtension;
 import io.swagger.jaxrs.ext.SwaggerExtensions;
-import io.swagger.jaxrs.utils.ReflectionUtils;
-import io.swagger.models.Model;
-import io.swagger.models.Operation;
-import io.swagger.models.Response;
-import io.swagger.models.SecurityRequirement;
-import io.swagger.models.SecurityScope;
-import io.swagger.models.Swagger;
+import io.swagger.models.*;
 import io.swagger.models.Tag;
 import io.swagger.models.parameters.Parameter;
 import io.swagger.models.properties.ArrayProperty;
@@ -34,13 +23,7 @@ import javax.ws.rs.Produces;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
     Logger LOGGER = LoggerFactory.getLogger(JaxrsReader.class);
@@ -203,7 +186,8 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         String responseContainer = null;
 
         Class<?> responseClass = null;
-        Map<String, Property> defaultResponseHeaders = new HashMap<String, Property>();
+        Map<String, Property> defaultResponseHeaders = null;
+        Set<Map<String, Object>> customExtensions = null;
 
         if (apiOperation != null) {
             if (apiOperation.hidden())
@@ -213,9 +197,18 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
 
             defaultResponseHeaders = parseResponseHeaders(apiOperation.responseHeaders());
 
-            operation
-                    .summary(apiOperation.value())
-                    .description(apiOperation.notes());
+            operation.summary(apiOperation.value()).description(apiOperation.notes());
+
+            customExtensions = parseCustomExtensions(apiOperation.extensions());
+            if (customExtensions != null) {
+                for (Map<String, Object> extension : customExtensions) {
+                    if (extension != null) {
+                        for (Map.Entry<String, Object> map : extension.entrySet()) {
+                            operation.setVendorExtension(map.getKey().startsWith("x-") ? map.getKey() : "x-" + map.getKey(), map.getValue());
+                        }
+                    }
+                }
+            }
 
             if (apiOperation.response() != null && !Void.class.equals(apiOperation.response()))
                 responseClass = apiOperation.response();
@@ -338,7 +331,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         Class[] parameterTypes = method.getParameterTypes();
         Type[] genericParameterTypes = method.getGenericParameterTypes();
         Annotation[][] paramAnnotations = method.getParameterAnnotations();
-        
+
         // paramTypes = method.getParameterTypes
         // genericParamTypes = method.getGenericParameterTypes
         for (int i = 0; i < parameterTypes.length; i++) {
@@ -353,10 +346,10 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         if (operation.getResponses() == null) {
             operation.defaultResponse(new Response().description("successful operation"));
         }
-        
+
         // Process @ApiImplicitParams
         this.readImplicitParameters(method, operation);
-        
+
         return operation;
     }
 
@@ -384,7 +377,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
             for (Annotation declaredAnnotation : declaredAnnotations) {
                 Annotation[] innerAnnotations = declaredAnnotation.annotationType().getAnnotations();
                 for (Annotation innerAnnotation : innerAnnotations) {
-                    if (innerAnnotation instanceof HttpMethod){
+                    if (innerAnnotation instanceof HttpMethod) {
                         HttpMethod httpMethod = (HttpMethod) innerAnnotation;
                         return httpMethod.value().toLowerCase();
                     }

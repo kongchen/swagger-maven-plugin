@@ -1,6 +1,5 @@
 package com.github.kongchen.swagger.docgen.reader;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.kongchen.swagger.docgen.LogAdapter;
 import com.github.kongchen.swagger.docgen.jaxrs.BeanParamInjectParamExtention;
 import com.github.kongchen.swagger.docgen.jaxrs.JaxrsParameterExtension;
@@ -12,54 +11,22 @@ import io.swagger.jaxrs.ParameterProcessor;
 import io.swagger.jaxrs.ext.SwaggerExtension;
 import io.swagger.jaxrs.ext.SwaggerExtensions;
 import io.swagger.jersey.SwaggerJerseyJaxrs;
-import io.swagger.models.Model;
-import io.swagger.models.Operation;
+import io.swagger.models.*;
 import io.swagger.models.Path;
-import io.swagger.models.Response;
-import io.swagger.models.Scheme;
-import io.swagger.models.SecurityRequirement;
-import io.swagger.models.Swagger;
 import io.swagger.models.Tag;
-import io.swagger.models.parameters.BodyParameter;
-import io.swagger.models.parameters.FormParameter;
-import io.swagger.models.parameters.HeaderParameter;
-import io.swagger.models.parameters.Parameter;
-import io.swagger.models.parameters.PathParameter;
-import io.swagger.models.parameters.QueryParameter;
+import io.swagger.models.parameters.*;
 import io.swagger.models.properties.ArrayProperty;
 import io.swagger.models.properties.MapProperty;
 import io.swagger.models.properties.Property;
 import io.swagger.models.properties.RefProperty;
-import io.swagger.models.properties.StringProperty;
-import io.swagger.models.RefModel;
-import io.swagger.models.parameters.AbstractSerializableParameter;
+import org.apache.commons.lang3.reflect.TypeUtils;
+import org.springframework.web.bind.annotation.*;
 
+import javax.ws.rs.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import javax.ws.rs.BeanParam;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-import org.apache.commons.lang3.reflect.TypeUtils;
-import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
+import java.util.*;
 
 /**
  * Created by chekong on 15/4/28.
@@ -72,19 +39,19 @@ public abstract class AbstractReader {
     public Set<Type> getTypesToSkip() {
         return typesToSkip;
     }
-    
+
     public void setTypesToSkip(List<Type> typesToSkip) {
         this.typesToSkip = new HashSet<Type>(typesToSkip);
     }
-    
+
     public void setTypesToSkip(Set<Type> typesToSkip) {
         this.typesToSkip = typesToSkip;
     }
-    
+
     public void addTypeToSkippedTypes(Type type) {
         this.typesToSkip.add(type);
     }
-       
+
     public AbstractReader(Swagger swagger, LogAdapter LOG) {
         this.swagger = swagger;
         this.LOG = LOG;
@@ -200,6 +167,34 @@ public abstract class AbstractReader {
         return responseHeaders;
     }
 
+    protected Set<Map<String, Object>> parseCustomExtensions(Extension[] extensions) {
+        Set<Map<String, Object>> resultSet = new HashSet<Map<String, Object>>();
+        if (extensions != null && extensions.length > 0) {
+            for (Extension extension : extensions) {
+                if (extension != null && extension.properties().length > 0) {
+                    Map<String, Object> extensionProperties = null;
+                    for (ExtensionProperty extensionProperty : extension.properties()) {
+                        String name = extensionProperty.name();
+                        if (!"".equals(name)) {
+                            if (extensionProperties == null)
+                                extensionProperties = new HashMap<String, Object>();
+                            String value = extensionProperty.value();
+                            extensionProperties.put(name, value);
+                        }
+                    }
+                    Map<String, Object> wrapper;
+                    if (extension.name() != null && extension.name().length() > 0) {
+                        wrapper = new HashMap<String, Object>();
+                        wrapper.put(extension.name(), extensionProperties);
+                        resultSet.add(wrapper);
+                    } else {
+                        resultSet.add(extensionProperties);
+                    }
+                }
+            }
+        }
+        return resultSet;
+    }
 
     protected void updatePath(String operationPath, String httpMethod, Operation operation) {
         if (httpMethod == null) {
@@ -324,27 +319,27 @@ public abstract class AbstractReader {
             operation.security(security);
         }
     }
-    
+
     private boolean isApiParamHidden(List<Annotation> parameterAnnotations) {
         boolean isHidden = false;
-        
+
         for (Annotation parameterAnnotation : parameterAnnotations) {
             if (parameterAnnotation instanceof ApiParam) {
-                isHidden = ((ApiParam)parameterAnnotation).hidden();
+                isHidden = ((ApiParam) parameterAnnotation).hidden();
                 break;
             }
         }
-        
+
         return isHidden;
     }
-    
+
     private boolean hasValidAnnotations(List<Annotation> parameterAnnotations) {
         // Because method parameters can contain parameters that are valid, but 
         // not part of the API contract, first check to make sure the parameter 
         // has at lease one annotation before processing it.  Also, check a 
         // whitelist to make sure that the annotation of the parameter is 
         // compatible with spring-maven-plugin 
-        
+
         if (parameterAnnotations.isEmpty()) {
             return false;
         }
@@ -374,22 +369,22 @@ public abstract class AbstractReader {
 
         return hasValidAnnotation;
     }
-    
+
     protected List<Parameter> getParameters(Type type, List<Annotation> annotations) {
-                
+
         if (hasValidAnnotations(annotations) == false) {
             return new ArrayList<Parameter>();
         }
-        
+
         if (isApiParamHidden(annotations)) {
             return new ArrayList<Parameter>();
         }
-        
+
         Iterator<SwaggerExtension> chain = SwaggerExtensions.chain();
         List<Parameter> parameters = new ArrayList<Parameter>();
         Class<?> cls = TypeUtils.getRawType(type, type);
         LOG.info("Looking for path/query/header/form/cookie params in " + cls);
-        
+
         if (chain.hasNext()) {
             SwaggerExtension extension = chain.next();
             LOG.info("trying extension " + extension);
@@ -421,10 +416,10 @@ public abstract class AbstractReader {
         // The collectionFormat for array-typed items is returning as "csv", even
         // in cases where a csv string does not apply. In these cases, we need to
         // re-set the type back to "multi".
-        
+
         if (parameter instanceof AbstractSerializableParameter) {
             final AbstractSerializableParameter<?> p = (AbstractSerializableParameter<?>) parameter;
-            
+
             // Check to see if the if the parameter has items. If it does, it's an array type.
             // If the collectionFormat is "csv", and the java type is Collection or Array, we need to change it to "multi" and re-define the parameter.
             if (p.getItems() != null && p.getCollectionFormat() == "csv" && (Collection.class.isAssignableFrom(cls) || cls.isArray())) {
@@ -432,19 +427,19 @@ public abstract class AbstractReader {
                 parameter = p;
             }
         }
-        
+
         return parameter;
     }
-    
+
     protected void updateApiResponse(Operation operation, ApiResponses responseAnnotation) {
         Class<?> responseClass;
         for (ApiResponse apiResponse : responseAnnotation.value()) {
             Map<String, Property> responseHeaders = parseResponseHeaders(apiResponse.responseHeaders());
-            responseClass = apiResponse.response();  
+            responseClass = apiResponse.response();
             Response response = new Response()
                     .description(apiResponse.message())
                     .headers(responseHeaders);
-            
+
             if (responseClass == null || responseClass.equals(Void.class)) {
                 if (operation.getResponses() != null && !operation.getResponses().isEmpty()) {
                     Response apiOperationResponse = operation.getResponses().get(String.valueOf(apiResponse.code()));
@@ -453,12 +448,12 @@ public abstract class AbstractReader {
                     }
                 }
             }
-            
+
             if (apiResponse.code() == 0)
                 operation.defaultResponse(response);
             else
                 operation.response(apiResponse.code(), response);
-            
+
             if (responseClass != null && !responseClass.equals(Void.class)) {
                 Map<String, Model> models = ModelConverters.getInstance().read(responseClass);
                 for (String key : models.keySet()) {
@@ -469,7 +464,7 @@ public abstract class AbstractReader {
                 for (String key : models.keySet()) {
                     swagger.model(key, models.get(key));
                 }
-            } 
+            }
         }
     }
 
@@ -497,18 +492,18 @@ public abstract class AbstractReader {
         return apiConsumes;
     }
 
-        protected void readImplicitParameters(Method method, Operation operation) {
+    protected void readImplicitParameters(Method method, Operation operation) {
         ApiImplicitParams implicitParams = method.getAnnotation(ApiImplicitParams.class);
         if (implicitParams != null && implicitParams.value().length > 0) {
             for (ApiImplicitParam param : implicitParams.value()) {
-                
+
                 Class<?> cls = null;
                 try {
                     cls = Class.forName(param.dataType());
                 } catch (ClassNotFoundException e) {
                     cls = method.getDeclaringClass();
-                }               
-                
+                }
+
                 Parameter p = readImplicitParam(param, cls);
                 if (p != null) {
                     operation.addParameter(p);
@@ -535,6 +530,6 @@ public abstract class AbstractReader {
 
         return ParameterProcessor.applyAnnotations(swagger, p, apiClass, Arrays.asList(new Annotation[]{param}));
     }
-    
+
 }
 
