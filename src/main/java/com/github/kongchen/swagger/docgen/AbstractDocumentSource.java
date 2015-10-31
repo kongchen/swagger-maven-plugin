@@ -86,8 +86,7 @@ public abstract class AbstractDocumentSource {
 
     public abstract void loadDocuments() throws Exception, GenerateException;
 
-    public void toSwaggerDocuments(String uiDocBasePath, String outputFormat)
-            throws GenerateException {
+    public void toSwaggerDocuments(String uiDocBasePath, String outputFormat) throws GenerateException {
         mapper.configure(SerializationFeature.WRITE_EMPTY_JSON_ARRAYS, false);
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
@@ -104,18 +103,14 @@ public abstract class AbstractDocumentSource {
         }
         File dir = new File(swaggerPath);
         if (dir.isFile()) {
-            throw new GenerateException(String.format(
-                    "Swagger-outputDirectory[%s] must be a directory!",
-                    swaggerPath));
+            throw new GenerateException(String.format("Swagger-outputDirectory[%s] must be a directory!", swaggerPath));
         }
 
         if (!dir.exists()) {
             try {
                 FileUtils.forceMkdir(dir);
             } catch (IOException e) {
-                throw new GenerateException(String.format(
-                        "Create Swagger-outputDirectory[%s] failed.",
-                        swaggerPath));
+                throw new GenerateException(String.format("Create Swagger-outputDirectory[%s] failed.", swaggerPath));
             }
         }
         cleanupOlds(dir);

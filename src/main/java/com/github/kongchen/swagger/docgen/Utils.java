@@ -6,9 +6,7 @@ import io.swagger.models.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Comparator;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * Created by chekong on 14-11-25.
@@ -59,6 +57,7 @@ public class Utils {
     }
 
     public static void sortSwagger(Swagger swagger) throws GenerateException {
+
         if (swagger == null || swagger.getPaths() == null) return;
         Comparator<String> strcomp = new Comparator<String>() {
             @Override
@@ -66,6 +65,7 @@ public class Utils {
                 return o1.compareTo(o2);
             }
         };
+
         TreeMap<String, Path> sortedMap = new TreeMap<String, Path>(strcomp);
         if(swagger.getPaths() == null) {
             return;
