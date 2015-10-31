@@ -23,6 +23,7 @@ import java.util.List;
 import static net.javacrumbs.jsonunit.JsonAssert.assertJsonEquals;
 import static net.javacrumbs.jsonunit.core.Option.IGNORING_ARRAY_ORDER;
 import net.javacrumbs.jsonunit.core.Configuration;
+import org.yaml.snakeyaml.Yaml;
 
 /**
  * Created by chekong on 8/15/14.
@@ -49,14 +50,25 @@ public class SpringMvcTest extends AbstractMojoTestCase {
     }
     
     @Test
-    public void testGeneratedSwaggerSpec() throws Exception {
+    public void testGeneratedSwaggerSpecJson() throws Exception {
         mojo.execute();
         ObjectMapper mapper = new ObjectMapper();
         JsonNode actualJson = mapper.readTree(new File(swaggerOutputDir, "swagger.json"));
         JsonNode expectJson = mapper.readTree(this.getClass().getResourceAsStream("/expectedOutput/swagger-spring.json"));
         assertJsonEquals(expectJson, actualJson, Configuration.empty().when(IGNORING_ARRAY_ORDER));
     }
-    
+
+    @Test
+    public void testGeneratedSwaggerSpecYaml() throws Exception {
+        mojo.getApiSources().get(0).setOutputFormat("yaml");
+        mojo.execute();
+        String actualYaml = io.swagger.util.Yaml.pretty().writeValueAsString(
+                new Yaml().load(FileUtils.readFileToString(new File(swaggerOutputDir, "swagger.yaml"))));
+        String expectYaml = io.swagger.util.Yaml.pretty().writeValueAsString(
+                new Yaml().load(this.getClass().getResourceAsStream("/expectedOutput/swagger-spring.yaml")));
+        assertEquals(actualYaml, expectYaml);
+    }
+
     @Test
     public void testGeneratedDoc() throws Exception {
 
