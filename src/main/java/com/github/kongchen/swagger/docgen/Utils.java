@@ -6,7 +6,10 @@ import io.swagger.models.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Created by chekong on 14-11-25.
@@ -88,11 +91,13 @@ public class Utils {
         }
 
         // order the tags
-        Collections.sort(swagger.getTags(), new Comparator<Tag>() {
-            public int compare(final Tag a, final Tag b) {
-                return a.toString().compareTo(b.toString());
-            }
-        });
+        if (swagger.getTags() != null) {
+            Collections.sort(swagger.getTags(), new Comparator<Tag>() {
+                public int compare(final Tag a, final Tag b) {
+                    return a.toString().compareTo(b.toString());
+                }
+            });
+        }
 
     }
 
