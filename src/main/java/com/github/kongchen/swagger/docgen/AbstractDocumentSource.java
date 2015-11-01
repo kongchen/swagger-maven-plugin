@@ -127,7 +127,7 @@ public abstract class AbstractDocumentSource {
         }
     }
 
-    public void loadModelModifier() throws GenerateException {
+    public void loadModelModifier() throws GenerateException, IOException {
 
         ModelModifier modelModifier = new ModelModifier(new ObjectMapper());
 
@@ -137,9 +137,11 @@ public abstract class AbstractDocumentSource {
         }
 
         if (modelSubstitute != null) {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream(this.modelSubstitute)));
-            String line = null;
+
+            BufferedReader reader = null;
             try {
+                reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream(this.modelSubstitute)));
+                String line = null;
                 line = reader.readLine();
                 while (line != null) {
                     String[] classes = line.split(":");
@@ -151,6 +153,8 @@ public abstract class AbstractDocumentSource {
                 }
             } catch (IOException e) {
                 throw new GenerateException(e);
+            } finally {
+                if (reader != null) reader.close();
             }
         }
 

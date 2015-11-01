@@ -15,11 +15,11 @@ info:
 host: "www.example.com:8080"
 basePath: "/api"
 tags:
-- name: "user"
-  description: "Operations about user"
 - name: "pet"
   description: "Operations about pets"
 - name: "store"
+- name: "user"
+  description: "Operations about user"
 schemes:
 - "http"
 - "https"

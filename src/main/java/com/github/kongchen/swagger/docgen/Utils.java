@@ -67,13 +67,13 @@ public class Utils {
         };
 
         TreeMap<String, Path> sortedMap = new TreeMap<String, Path>(strcomp);
-        if(swagger.getPaths() == null) {
+        if (swagger.getPaths() == null) {
             return;
         }
         sortedMap.putAll(swagger.getPaths());
         swagger.paths(sortedMap);
 
-        for(Path path : swagger.getPaths().values()) {
+        for (Path path : swagger.getPaths().values()) {
             String methods[] = {"Get", "Delete", "Post", "Put", "Options", "Patch"};
             for (String m : methods) {
                 sortResponses(path, m);
@@ -87,7 +87,15 @@ public class Utils {
             swagger.setDefinitions(defs);
         }
 
+        // order the tags
+        Collections.sort(swagger.getTags(), new Comparator<Tag>() {
+            public int compare(final Tag a, final Tag b) {
+                return a.toString().compareTo(b.toString());
+            }
+        });
+
     }
+
 
     private static void sortResponses(Path path, String method) throws GenerateException {
         try {
