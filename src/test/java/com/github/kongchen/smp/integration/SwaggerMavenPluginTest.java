@@ -7,6 +7,7 @@ import com.github.kongchen.swagger.docgen.mavenplugin.ApiSource;
 import net.javacrumbs.jsonunit.core.Configuration;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
+import org.codehaus.jettison.json.JSONObject;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
@@ -17,10 +18,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import static net.javacrumbs.jsonunit.JsonAssert.assertJsonEquals;
 import static net.javacrumbs.jsonunit.core.Option.IGNORING_ARRAY_ORDER;
@@ -62,11 +60,16 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
     public void testGeneratedSwaggerSpecYaml() throws Exception {
         mojo.getApiSources().get(0).setOutputFormat("yaml");
         mojo.execute();
+
         String actualYaml = io.swagger.util.Yaml.pretty().writeValueAsString(
                 new Yaml().load(FileUtils.readFileToString(new File(swaggerOutputDir, "swagger.yaml"))));
         String expectYaml = io.swagger.util.Yaml.pretty().writeValueAsString(
                 new Yaml().load(this.getClass().getResourceAsStream("/expectedOutput/swagger.yaml")));
-        assertEquals(expectYaml, actualYaml);
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode actualJson = mapper.readTree(YamlToJson(actualYaml));
+        JsonNode expectJson = mapper.readTree(YamlToJson(expectYaml));
+        assertJsonEquals(expectJson, actualJson, Configuration.empty().when(IGNORING_ARRAY_ORDER));
     }
 
     @Test
@@ -186,4 +189,11 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
         tempFile.delete();
         return path;
     }
+
+    private String YamlToJson(String yamlString) {
+        Yaml yaml = new Yaml();
+        Map<String, Object> map = (Map<String, Object>) yaml.load(yamlString);
+        return new JSONObject(map).toString();
+    }
+
 }
