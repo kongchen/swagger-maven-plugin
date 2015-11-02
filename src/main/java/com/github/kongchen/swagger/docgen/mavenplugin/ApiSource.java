@@ -61,6 +61,9 @@ public class ApiSource {
     private String outputPath;
 
     @Parameter
+    private String outputFormat;
+
+    @Parameter
     private String swaggerDirectory;
 
     @Parameter
@@ -173,6 +176,14 @@ public class ApiSource {
 
     public void setOutputPath(String outputPath) {
         this.outputPath = outputPath;
+    }
+
+    public String getOutputFormat() {
+        return outputFormat;
+    }
+
+    public void setOutputFormat(String outputFormat) {
+        this.outputFormat = outputFormat;
     }
 
     public String getBasePath() {

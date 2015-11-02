@@ -6,6 +6,7 @@ import io.swagger.models.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.TreeMap;
@@ -59,6 +60,7 @@ public class Utils {
     }
 
     public static void sortSwagger(Swagger swagger) throws GenerateException {
+
         if (swagger == null || swagger.getPaths() == null) return;
         Comparator<String> strcomp = new Comparator<String>() {
             @Override
@@ -66,14 +68,15 @@ public class Utils {
                 return o1.compareTo(o2);
             }
         };
+
         TreeMap<String, Path> sortedMap = new TreeMap<String, Path>(strcomp);
-        if(swagger.getPaths() == null) {
+        if (swagger.getPaths() == null) {
             return;
         }
         sortedMap.putAll(swagger.getPaths());
         swagger.paths(sortedMap);
 
-        for(Path path : swagger.getPaths().values()) {
+        for (Path path : swagger.getPaths().values()) {
             String methods[] = {"Get", "Delete", "Post", "Put", "Options", "Patch"};
             for (String m : methods) {
                 sortResponses(path, m);
@@ -87,7 +90,17 @@ public class Utils {
             swagger.setDefinitions(defs);
         }
 
+        // order the tags
+        if (swagger.getTags() != null) {
+            Collections.sort(swagger.getTags(), new Comparator<Tag>() {
+                public int compare(final Tag a, final Tag b) {
+                    return a.toString().compareTo(b.toString());
+                }
+            });
+        }
+
     }
+
 
     private static void sortResponses(Path path, String method) throws GenerateException {
         try {

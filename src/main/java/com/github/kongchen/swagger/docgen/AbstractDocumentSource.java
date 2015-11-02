@@ -16,22 +16,17 @@ import com.github.kongchen.swagger.docgen.reader.ModelModifier;
 import io.swagger.converter.ModelConverters;
 import io.swagger.models.Scheme;
 import io.swagger.models.Swagger;
+import io.swagger.models.properties.Property;
+import io.swagger.util.Yaml;
 import org.apache.commons.io.FileUtils;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
-import io.swagger.models.properties.Property;
 
 /**
  * Created with IntelliJ IDEA.
@@ -50,9 +45,9 @@ public abstract class AbstractDocumentSource {
     private final String swaggerPath;
 
     private final String modelSubstitute;
-    
+
     protected final List<Type> typesToSkip = new ArrayList<Type>();
-    
+
     private final boolean jsonExampleValues;
 
     protected Swagger swagger;
@@ -91,15 +86,14 @@ public abstract class AbstractDocumentSource {
 
     public abstract void loadDocuments() throws Exception, GenerateException;
 
-    public void toSwaggerDocuments(String swaggerUIDocBasePath)
-            throws GenerateException {
+    public void toSwaggerDocuments(String uiDocBasePath, String outputFormat) throws GenerateException {
         mapper.configure(SerializationFeature.WRITE_EMPTY_JSON_ARRAYS, false);
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        
+
         if (jsonExampleValues) {
             mapper.addMixInAnnotations(Property.class, PropertyExampleMixIn.class);
         }
-        
+
         if (swaggerPath == null) {
             return;
         }
@@ -109,44 +103,45 @@ public abstract class AbstractDocumentSource {
         }
         File dir = new File(swaggerPath);
         if (dir.isFile()) {
-            throw new GenerateException(String.format(
-                    "Swagger-outputDirectory[%s] must be a directory!",
-                    swaggerPath));
+            throw new GenerateException(String.format("Swagger-outputDirectory[%s] must be a directory!", swaggerPath));
         }
 
         if (!dir.exists()) {
             try {
                 FileUtils.forceMkdir(dir);
             } catch (IOException e) {
-                throw new GenerateException(String.format(
-                        "Create Swagger-outputDirectory[%s] failed.",
-                        swaggerPath));
+                throw new GenerateException(String.format("Create Swagger-outputDirectory[%s] failed.", swaggerPath));
             }
         }
         cleanupOlds(dir);
 
-        File swaggerFile = new File(dir, "swagger.json");
         try {
-            ObjectWriter jsonWriter = mapper.writer(new DefaultPrettyPrinter());
-            jsonWriter.writeValue(swaggerFile, swagger);
+            if (outputFormat != null && outputFormat.equalsIgnoreCase("yaml")) {
+                FileUtils.write(new File(dir, "swagger.yaml"), Yaml.pretty().writeValueAsString(swagger));
+            } else {
+                ObjectWriter jsonWriter = mapper.writer(new DefaultPrettyPrinter());
+                FileUtils.write(new File(dir, "swagger.json"), jsonWriter.writeValueAsString(swagger));
+            }
         } catch (IOException e) {
             throw new GenerateException(e);
         }
     }
 
-    public void loadModelModifier() throws GenerateException {
-        
+    public void loadModelModifier() throws GenerateException, IOException {
+
         ModelModifier modelModifier = new ModelModifier(new ObjectMapper());
-            
+
         List<String> apiModelPropertyAccessExclusions = apiSource.getApiModelPropertyAccessExclusions();
         if (apiModelPropertyAccessExclusions != null && !apiModelPropertyAccessExclusions.isEmpty()) {
             modelModifier.setApiModelPropertyAccessExclusions(apiModelPropertyAccessExclusions);
         }
 
         if (modelSubstitute != null) {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream(this.modelSubstitute)));
-            String line = null;
+
+            BufferedReader reader = null;
             try {
+                reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream(this.modelSubstitute)));
+                String line = null;
                 line = reader.readLine();
                 while (line != null) {
                     String[] classes = line.split(":");
@@ -158,9 +153,11 @@ public abstract class AbstractDocumentSource {
                 }
             } catch (IOException e) {
                 throw new GenerateException(e);
+            } finally {
+                if (reader != null) reader.close();
             }
         }
-        
+
         ModelConverters.getInstance().addConverter(modelModifier);
     }
 
@@ -177,8 +174,7 @@ public abstract class AbstractDocumentSource {
             }
         }
     }
-    
-    
+
 
     private void cleanupOlds(File dir) {
         if (dir.listFiles() != null) {

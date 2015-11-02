@@ -1,18 +1,14 @@
-/**
- * 
- */
 package com.wordnik.jaxrs;
-
-import javax.ws.rs.HeaderParam;
 
 import io.swagger.annotations.ApiParam;
 
+import javax.ws.rs.HeaderParam;
+
 /**
  * @author Vinayak Hulawale [vinhulawale@gmail.com]
- *
  */
 public class MyParentBean {
-    
+
     @ApiParam(value = "Header from parent", required = false)
     @HeaderParam("myParentHeader")
     private String myParentheader;
