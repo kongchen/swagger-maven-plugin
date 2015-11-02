@@ -22,6 +22,11 @@ import com.wordnik.sample.data.PetData;
 import com.wordnik.sample.model.Pet;
 import com.wordnik.sample.model.PetName;
 import io.swagger.annotations.*;
+import io.swagger.annotations.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -175,7 +180,6 @@ public class PetResource {
         return new Pet();
     }
 
-
     @ApiOperation(value = "Test pet as json string in query", response = Pet.class)
     @GET
     @Path("/test")
@@ -186,6 +190,21 @@ public class PetResource {
         return new Pet();
     }
 
+    @GET
+    @Path("/test/extensions")
+    @Produces("text/plain")
+    @ApiOperation(value = "testExtensions",
+            extensions = {
+                    @Extension(name = "firstExtension", properties = {
+                            @ExtensionProperty(name = "extensionName1", value = "extensionValue1"),
+                            @ExtensionProperty(name = "extensionName2", value = "extensionValue2")}),
+                    @Extension(properties = {
+                            @ExtensionProperty(name = "extensionName3", value = "extensionValue3")})
+            }
+    )
+    public Pet testingExtensions() {
+        return new Pet();
+    }
 
     @ApiOperation(value = "Test apiimplicitparams", response = Pet.class)
     @GET
