@@ -27,7 +27,6 @@ import java.util.*;
 public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerReader {
     private String resourcePath;
 
-
     public SpringMvcApiReader(Swagger swagger, LogAdapter log) {
         super(swagger, log);
 
@@ -46,7 +45,6 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
 
         return swagger;
     }
-
 
     public Swagger read(SpringResource resource) {
         if (swagger == null) {

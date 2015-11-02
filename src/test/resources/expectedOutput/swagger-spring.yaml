@@ -1,4 +1,3 @@
----
 swagger: "2.0"
 info:
   description: "This is a sample."
@@ -300,6 +299,30 @@ paths:
       - petstore_auth:
         - "write:pets"
         - "read:pets"
+  /pet/test/extensions:
+    get:
+      tags:
+      - "pet"
+      summary: "testExtensions"
+      description: ""
+      operationId: "testingExtensions"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Pet"
+      security:
+      - petstore_auth:
+        - "write:pets"
+        - "read:pets"
+      x-firstExtension:
+        extensionName2: "extensionValue2"
+        extensionName1: "extensionValue1"
+      x-extensionName3: "extensionValue3"
   /pet/testing:
     get:
       tags:

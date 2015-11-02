@@ -71,6 +71,7 @@ public class SpringMvcTest extends AbstractMojoTestCase {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode actualJson = mapper.readTree(YamlToJson(actualYaml));
         JsonNode expectJson = mapper.readTree(YamlToJson(expectYaml));
+
         assertJsonEquals(expectJson, actualJson, Configuration.empty().when(IGNORING_ARRAY_ORDER));
     }
 
