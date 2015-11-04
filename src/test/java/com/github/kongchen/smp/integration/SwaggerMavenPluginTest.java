@@ -59,7 +59,7 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
 
     @Test
     public void testGeneratedSwaggerSpecYaml() throws Exception {
-        mojo.getApiSources().get(0).setOutputFormat("yaml");
+        mojo.getApiSources().get(0).setOutputFormats("yaml");
         mojo.execute();
 
         String actualYaml = io.swagger.util.Yaml.pretty().writeValueAsString(

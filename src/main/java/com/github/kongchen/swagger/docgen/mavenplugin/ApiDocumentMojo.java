@@ -86,7 +86,7 @@ public class ApiDocumentMojo extends AbstractMojo {
                         apiSource.getSwaggerUIDocBasePath() == null
                                 ? apiSource.getBasePath()
                                 : apiSource.getSwaggerUIDocBasePath(),
-                        apiSource.getOutputFormat());
+                        apiSource.getOutputFormats());
             }
 
         } catch (GenerateException e) {
