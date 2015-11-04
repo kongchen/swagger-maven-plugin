@@ -121,6 +121,58 @@ This is a sample.
 # APIs
 
 
+## /
+
+
+### GET
+
+<a id="testingRootPathResource">testingRootPathResource</a>
+
+
+
+
+
+
+
+
+
+#### Request
+
+
+
+##### Parameters
+
+
+
+
+
+
+#### Response
+
+
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 200    | successful operation | |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## /pet
 
 
@@ -673,7 +725,7 @@ Muliple tags can be provided with comma seperated strings. Use tag1, tag2, tag3 
 
 
 
-## /pet/test/apiimplicitparams
+## /pet/test/apiimplicitparams/{path-test-name}
 
 
 ### GET
@@ -755,19 +807,6 @@ Muliple tags can be provided with comma seperated strings. Use tag1, tag2, tag3 
 
 </tr>
 
-<tr>
-    <th>form-test-name</th>
-    <td>formData</td>
-    <td>yes</td>
-    <td>form-test-value</td>
-    <td> - </td>
-
-    
-            <td>Array[string] (multi)</td>
-    
-
-</tr>
-
 
 </table>
 
@@ -842,6 +881,158 @@ Muliple tags can be provided with comma seperated strings. Use tag1, tag2, tag3 
 | Status Code | Reason      | Response Model |
 |-------------|-------------|----------------|
 | 200    | successful operation | <a href="#/definitions/Pet">Pet</a>|
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## /pet/test/testFormApiImplicitParams
+
+
+### GET
+
+<a id="testFormApiImplicitParams">Test testFormApiImplicitParams</a>
+
+
+
+
+
+
+#### Security
+
+
+
+
+* petstore_auth
+   * write:pets
+   * read:pets
+
+
+
+
+#### Request
+
+
+
+##### Parameters
+
+<table border="1">
+    <tr>
+        <th>Name</th>
+        <th>Located in</th>
+        <th>Required</th>
+        <th>Description</th>
+        <th>Default</th>
+        <th>Schema</th>
+    </tr>
+
+
+
+<tr>
+    <th>form-test-name</th>
+    <td>formData</td>
+    <td>yes</td>
+    <td>form-test-value</td>
+    <td> - </td>
+
+    
+            <td>Array[string] (multi)</td>
+    
+
+</tr>
+
+
+</table>
+
+
+
+#### Response
+
+**Content-Type: ** application/json
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 200    | successful operation | <a href="#/definitions/Pet">Pet</a>|
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## /pet/test/testingBasicAuth
+
+
+### GET
+
+<a id="testingBasicAuth">testingBasicAuth</a>
+
+
+
+
+
+
+#### Security
+
+
+
+
+* basicAuth
+
+
+
+
+* petstore_auth
+   * write:pets
+   * read:pets
+
+
+
+
+#### Request
+
+
+
+##### Parameters
+
+
+
+
+
+
+#### Response
+
+**Content-Type: ** application/xml, application/json
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 200    | successful operation | |
 
 
 

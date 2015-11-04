@@ -121,6 +121,58 @@ This is a sample.
 # APIs
 
 
+## /
+
+
+### GET
+
+<a id="testingRootPathResource">testingRootPathResource</a>
+
+
+
+
+
+
+
+
+
+#### Request
+
+
+
+##### Parameters
+
+
+
+
+
+
+#### Response
+
+
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 200    | successful operation | |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## /pet
 
 
@@ -589,6 +641,67 @@ Muliple tags can be provided with comma seperated strings. Use tags=tag1,tag2,ta
 
 
 
+## /pet/petPing
+
+
+### GET
+
+<a id="petPing">ping the service</a>
+
+
+
+
+
+
+#### Security
+
+
+
+
+* petstore_auth
+   * write:pets
+   * read:pets
+
+
+
+
+#### Request
+
+
+
+##### Parameters
+
+
+
+
+
+
+#### Response
+
+**Content-Type: ** application/xml, application/json
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 200    | successful operation | |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## /pet/pets
 
 
@@ -745,67 +858,6 @@ If you wish to paginate the results of this API, supply offset and limit query p
 | Status Code | Reason      | Response Model |
 |-------------|-------------|----------------|
 | 405    | Invalid input |  - |
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## /pet/ping
-
-
-### GET
-
-<a id="ping">ping the service</a>
-
-
-
-
-
-
-#### Security
-
-
-
-
-* petstore_auth
-   * write:pets
-   * read:pets
-
-
-
-
-#### Request
-
-
-
-##### Parameters
-
-
-
-
-
-
-#### Response
-
-**Content-Type: ** application/xml, application/json
-
-
-| Status Code | Reason      | Response Model |
-|-------------|-------------|----------------|
-| 200    | successful operation | |
-
-
-
 
 
 
@@ -1049,6 +1101,145 @@ If you wish to paginate the results of this API, supply offset and limit query p
     </td>
 
 </tr>
+
+
+</table>
+
+
+
+#### Response
+
+**Content-Type: ** application/json
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 200    | successful operation | |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## /pet/testingBasicAuth
+
+
+### GET
+
+<a id="testingBasicAuth">testingBasicAuth</a>
+
+
+
+
+
+
+#### Security
+
+
+
+
+* basicAuth
+
+
+
+
+* petstore_auth
+   * write:pets
+   * read:pets
+
+
+
+
+#### Request
+
+
+
+##### Parameters
+
+
+
+
+
+
+#### Response
+
+**Content-Type: ** application/json
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 200    | successful operation | |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## /pet/testingFormApiImplicitParam
+
+
+### GET
+
+<a id="testingFormApiImplicitParam">testingFormApiImplicitParam</a>
+
+
+
+
+
+
+#### Security
+
+
+
+
+* petstore_auth
+   * write:pets
+   * read:pets
+
+
+
+
+#### Request
+
+
+
+##### Parameters
+
+<table border="1">
+    <tr>
+        <th>Name</th>
+        <th>Located in</th>
+        <th>Required</th>
+        <th>Description</th>
+        <th>Default</th>
+        <th>Schema</th>
+    </tr>
+
+
 
 <tr>
     <th>form-test-name</th>
@@ -1591,7 +1782,7 @@ For valid response try integer IDs with value &lt; 1000. Anything above 1000 or 
 
 ### GET
 
-<a id="ping">ping</a>
+<a id="storePing">ping</a>
 
 
 

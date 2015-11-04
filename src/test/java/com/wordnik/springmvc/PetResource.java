@@ -183,11 +183,11 @@ public class PetResource {
     }
 
     @ApiOperation(value = "ping the service")
-    @RequestMapping(value = "/ping", method = RequestMethod.GET)
-    public ResponseEntity<String> ping(
+    @RequestMapping(value = "/petPing", method = RequestMethod.GET)
+    public ResponseEntity<String> petPing(
             @ApiParam(hidden = true, name = "thisShouldBeHidden")
             @RequestParam(required = false) Map<String, String> hiddenParameter) {
-        return new ResponseEntity<String>("pong", HttpStatus.OK);
+        return new ResponseEntity<String>("Pet pong", HttpStatus.OK);
     }
 
     @RequestMapping(value = "/test/extensions", method = RequestMethod.GET)
@@ -243,8 +243,18 @@ public class PetResource {
                     value = "body-test-value",
                     required = true,
                     dataType = "com.wordnik.sample.model.Pet",
-                    paramType = "body"),
-
+                    paramType = "body")
+    })
+    public String testingApiImplicitParams() {
+        return "testing";
+    }
+    
+    @ApiOperation(value = "testingFormApiImplicitParam")
+    @RequestMapping(
+            value = "/testingFormApiImplicitParam",
+            method = RequestMethod.GET,
+            produces = "application/json")
+    @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = "form-test-name",
                     value = "form-test-value",
@@ -255,7 +265,16 @@ public class PetResource {
                     defaultValue = "form-test-defaultValue")
 
     })
-    public String testingApiImplicitParams() {
+    public String testingFormApiImplicitParam() {
         return "testing";
+    }
+    
+    @ApiOperation(value = "testingBasicAuth", authorizations = @Authorization(value = "basicAuth"))
+    @RequestMapping(
+            value = "/testingBasicAuth",
+            method = RequestMethod.GET,
+            produces = "application/json")
+    public String testingBasicAuth() {
+        return "testingBasicAuth";
     }
 }

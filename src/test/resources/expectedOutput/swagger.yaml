@@ -23,6 +23,17 @@ schemes:
 - "http"
 - "https"
 paths:
+  /:
+    get:
+      summary: "testingRootPathResource"
+      description: ""
+      operationId: "testingRootPathResource"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "string"
   /pet:
     get:
       tags:
@@ -221,7 +232,7 @@ paths:
       - petstore_auth:
         - "write:pets"
         - "read:pets"
-  /pet/test/apiimplicitparams:
+  /pet/test/apiimplicitparams/{path-test-name}:
     get:
       tags:
       - "pet"
@@ -249,15 +260,6 @@ paths:
         required: true
         schema:
           $ref: "#/definitions/Pet"
-      - name: "form-test-name"
-        in: "formData"
-        description: "form-test-value"
-        required: true
-        type: "array"
-        items:
-          type: "string"
-          default: "form-test-defaultValue"
-        collectionFormat: "multi"
       responses:
         200:
           description: "successful operation"
@@ -290,6 +292,55 @@ paths:
         extensionName2: "extensionValue2"
         extensionName1: "extensionValue1"
       x-extensionName3: "extensionValue3"
+  /pet/test/testFormApiImplicitParams:
+    get:
+      tags:
+      - "pet"
+      summary: "Test testFormApiImplicitParams"
+      description: ""
+      operationId: "testFormApiImplicitParams"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "form-test-name"
+        in: "formData"
+        description: "form-test-value"
+        required: true
+        type: "array"
+        items:
+          type: "string"
+          default: "form-test-defaultValue"
+        collectionFormat: "multi"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Pet"
+      security:
+      - petstore_auth:
+        - "write:pets"
+        - "read:pets"
+  /pet/test/testingBasicAuth:
+    get:
+      tags:
+      - "pet"
+      summary: "testingBasicAuth"
+      description: ""
+      operationId: "testingBasicAuth"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "string"
+      security:
+      - basicAuth: []
+      - petstore_auth:
+        - "write:pets"
+        - "read:pets"
   /pet/{petId}:
     get:
       tags:

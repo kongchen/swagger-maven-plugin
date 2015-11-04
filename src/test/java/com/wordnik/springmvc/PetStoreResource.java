@@ -78,7 +78,7 @@ public class PetStoreResource {
 
   @ApiOperation(value = "ping")
   @RequestMapping(value = "/ping", method = RequestMethod.GET)
-  public ResponseEntity<String> ping() {
-    return new ResponseEntity<String>("pong", HttpStatus.OK);
+  public ResponseEntity<String> storePing() {
+    return new ResponseEntity<String>("Store pong", HttpStatus.OK);
   }
 }

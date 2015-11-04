@@ -208,7 +208,7 @@ public class PetResource {
 
     @ApiOperation(value = "Test apiimplicitparams", response = Pet.class)
     @GET
-    @Path("/test/apiimplicitparams")
+    @Path("/test/apiimplicitparams/{path-test-name}")
     @Produces("application/json")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
@@ -232,19 +232,28 @@ public class PetResource {
                     value = "body-test-value",
                     required = true,
                     dataType = "com.wordnik.sample.model.Pet",
-                    paramType = "body"),
-
-            @ApiImplicitParam(
-                    name = "form-test-name",
-                    value = "form-test-value",
-                    allowMultiple = true,
-                    required = true,
-                    dataType = "string",
-                    paramType = "form",
-                    defaultValue = "form-test-defaultValue")
-
+                    paramType = "body")
     })
     public Pet testapiimplicitparams() {
+        return new Pet();
+    }
+    
+    @ApiOperation(value = "Test testFormApiImplicitParams", response = Pet.class)
+    @GET
+    @Path("/test/testFormApiImplicitParams")
+    @Produces("application/json")
+    @ApiImplicitParams(value = {
+              @ApiImplicitParam(
+                name = "form-test-name",
+                value = "form-test-value",
+                allowMultiple = true,
+                required = true,
+                dataType = "string",
+                paramType = "form",
+                defaultValue = "form-test-defaultValue")
+
+    })
+    public Pet testFormApiImplicitParams() {
         return new Pet();
     }
 
@@ -253,6 +262,13 @@ public class PetResource {
     @Produces("application/json")
     public String testingHiddenApiOperation() {
         return "testingHiddenApiOperation";
+    }
+    
+    @ApiOperation(value = "testingBasicAuth", authorizations = @Authorization(value = "basicAuth"))
+    @GET
+    @Path("/test/testingBasicAuth")
+    public String testingBasicAuth() {
+        return "testingBasicAuth";
     }
 
 

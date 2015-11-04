@@ -95,6 +95,12 @@ public abstract class AbstractReader {
     }
 
     protected String parseOperationPath(String operationPath, Map<String, String> regexMap) {
+        
+        // If the operation's path is a simple "/", don't bother parsing - just return it as is.
+        if (operationPath.equalsIgnoreCase("/")) {
+            return operationPath;
+        }
+        
         String[] pps = operationPath.split("/");
         String[] pathParts = new String[pps.length];
 

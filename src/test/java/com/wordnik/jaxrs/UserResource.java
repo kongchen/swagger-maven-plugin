@@ -30,7 +30,6 @@ import javax.ws.rs.core.Response;
 @Produces({"application/json", "application/xml"})
 public class UserResource {
   static UserData userData = new UserData();
-
   @POST
   @ApiOperation(value = "Create user",
     notes = "This can only be done by the logged in user.",

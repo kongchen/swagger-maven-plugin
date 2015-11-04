@@ -24,6 +24,17 @@ schemes:
 - "http"
 - "https"
 paths:
+  /:
+    get:
+      summary: "testingRootPathResource"
+      description: ""
+      operationId: "testingRootPathResource"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "string"
   /pet:
     get:
       tags:
@@ -216,6 +227,26 @@ paths:
       - petstore_auth:
         - "write:pets"
         - "read:pets"
+  /pet/petPing:
+    get:
+      tags:
+      - "pet"
+      summary: "ping the service"
+      description: ""
+      operationId: "petPing"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "string"
+      security:
+      - petstore_auth:
+        - "write:pets"
+        - "read:pets"
   /pet/pets:
     get:
       tags:
@@ -275,26 +306,6 @@ paths:
       responses:
         405:
           description: "Invalid input"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-  /pet/ping:
-    get:
-      tags:
-      - "pet"
-      summary: "ping the service"
-      description: ""
-      operationId: "ping"
-      produces:
-      - "application/xml"
-      - "application/json"
-      parameters: []
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            type: "string"
       security:
       - petstore_auth:
         - "write:pets"
@@ -378,6 +389,45 @@ paths:
         required: true
         schema:
           $ref: "#/definitions/Pet"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "string"
+      security:
+      - petstore_auth:
+        - "write:pets"
+        - "read:pets"
+  /pet/testingBasicAuth:
+    get:
+      tags:
+      - "pet"
+      summary: "testingBasicAuth"
+      description: ""
+      operationId: "testingBasicAuth"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "string"
+      security:
+      - basicAuth: []
+      - petstore_auth:
+        - "write:pets"
+        - "read:pets"
+  /pet/testingFormApiImplicitParam:
+    get:
+      tags:
+      - "pet"
+      summary: "testingFormApiImplicitParam"
+      description: ""
+      operationId: "testingFormApiImplicitParam"
+      produces:
+      - "application/json"
+      parameters:
       - name: "form-test-name"
         in: "formData"
         description: "form-test-value"
@@ -575,7 +625,7 @@ paths:
       - "store"
       summary: "ping"
       description: ""
-      operationId: "ping"
+      operationId: "storePing"
       produces:
       - "application/xml"
       - "application/json"
