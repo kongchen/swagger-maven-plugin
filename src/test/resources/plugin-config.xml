@@ -50,7 +50,7 @@
                                 "${basedir}/src/main/resources/template/hello.html" -->
                             <templatePath>classpath:/templates/strapdown.html.hbs</templatePath>
                             <outputPath>${basedir}/generated/document.html</outputPath>
-                            <outputFormat>json</outputFormat>
+                            <outputFormats>json</outputFormats>
                             <swaggerDirectory>${basedir}/generated/swagger-ui</swaggerDirectory>
                             <swaggerUIDocBasePath>http://www.example.com/restapi/doc</swaggerUIDocBasePath>
                             <modelSubstitute>/override.map</modelSubstitute>

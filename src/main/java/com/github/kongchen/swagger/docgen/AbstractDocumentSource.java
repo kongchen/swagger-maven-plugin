@@ -86,7 +86,8 @@ public abstract class AbstractDocumentSource {
 
     public abstract void loadDocuments() throws Exception, GenerateException;
 
-    public void toSwaggerDocuments(String uiDocBasePath, String outputFormat) throws GenerateException {
+    public void toSwaggerDocuments(String uiDocBasePath, String outputFormats) throws GenerateException {
+
         mapper.configure(SerializationFeature.WRITE_EMPTY_JSON_ARRAYS, false);
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
@@ -116,9 +117,26 @@ public abstract class AbstractDocumentSource {
         cleanupOlds(dir);
 
         try {
-            if (outputFormat != null && outputFormat.equalsIgnoreCase("yaml")) {
-                FileUtils.write(new File(dir, "swagger.yaml"), Yaml.pretty().writeValueAsString(swagger));
+            if (outputFormats != null) {
+                for (String format : outputFormats.split(",")) {
+                    Output output;
+                    try {
+                        output = Output.valueOf(format.toLowerCase());
+                    } catch (Exception e) {
+                        throw new GenerateException(String.format("Declared output format [%s] is not supported.", format));
+                    }
+                    switch (output) {
+                        case json:
+                            ObjectWriter jsonWriter = mapper.writer(new DefaultPrettyPrinter());
+                            FileUtils.write(new File(dir, "swagger.json"), jsonWriter.writeValueAsString(swagger));
+                            break;
+                        case yaml:
+                            FileUtils.write(new File(dir, "swagger.yaml"), Yaml.pretty().writeValueAsString(swagger));
+                            break;
+                    }
+                }
             } else {
+                // Default to json
                 ObjectWriter jsonWriter = mapper.writer(new DefaultPrettyPrinter());
                 FileUtils.write(new File(dir, "swagger.json"), jsonWriter.writeValueAsString(swagger));
             }
@@ -303,6 +321,9 @@ public abstract class AbstractDocumentSource {
 
 }
 
+enum Output {
+    json, yaml;
+}
 
 class TemplatePath {
     String prefix;
