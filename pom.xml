@@ -49,7 +49,7 @@
     <properties>
         <maven.version>2.2.1</maven.version>
         <java.version>1.6</java.version>
-        <swagger.version>1.5.3</swagger.version>
+        <swagger.version>1.5.4</swagger.version>
         <github.global.server>github</github.global.server>
     </properties>
 

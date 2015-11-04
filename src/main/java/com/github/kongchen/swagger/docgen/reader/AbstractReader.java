@@ -7,7 +7,7 @@ import com.github.kongchen.swagger.docgen.spring.SpringSwaggerExtension;
 import com.sun.jersey.api.core.InjectParam;
 import io.swagger.annotations.*;
 import io.swagger.converter.ModelConverters;
-import io.swagger.jaxrs.ParameterProcessor;
+import io.swagger.util.ParameterProcessor;
 import io.swagger.jaxrs.ext.SwaggerExtension;
 import io.swagger.jaxrs.ext.SwaggerExtensions;
 import io.swagger.jersey.SwaggerJerseyJaxrs;

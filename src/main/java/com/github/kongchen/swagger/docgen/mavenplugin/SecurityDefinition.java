@@ -19,6 +19,7 @@ import java.util.Map;
 public class SecurityDefinition {
     private String name;
     private String type;
+    private String description;
     private String json;
 
     public Map<String, SecuritySchemeDefinition> getDefinitions() throws GenerateException {
@@ -87,9 +88,11 @@ public class SecurityDefinition {
     private SecuritySchemeDefinition getSecuritySchemeDefinitionByNameAndType() throws GenerateException {
         ObjectMapper mapper = new ObjectMapper();
         final String _type = type;
+        final String _description = description;
         SecuritySchemeDefinition def = new SecuritySchemeDefinition() {
 
             private String type = _type;
+            private String description = _description;
             private Map<String, Object> vendorExtensions;
 
             @Override
@@ -99,7 +102,7 @@ public class SecurityDefinition {
 
             @Override
             public void setType(String type) {
-
+                this.type = type;
             }
 
             @Override
@@ -110,6 +113,16 @@ public class SecurityDefinition {
             @Override
             public void setVendorExtension(String key, Object value) {
                 vendorExtensions.put(key, value);
+            }
+
+            @Override
+            public String getDescription() {
+                return description;
+            }
+
+            @Override
+            public void setDescription(String description) {
+                this.description = description;
             }
         };
 

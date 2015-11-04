@@ -537,6 +537,8 @@ paths:
         description: "Pet id to delete"
         required: true
         type: "integer"
+        maxItems: 2147483647
+        minItems: 0
         format: "int64"
       responses:
         400:
