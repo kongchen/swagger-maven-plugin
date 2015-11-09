@@ -123,7 +123,7 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
         ApiSource apiSource = apisources.get(0);
         // Force serialization of example values as json raw values
         apiSource.setJsonExampleValues(true);
-        // exclude part of the model when not compliant with jev option (e.g. example expressed as plain string) 
+        // exclude part of the model when not compliant with jev option (e.g. example expressed as plain string)
         apiSource.setApiModelPropertyExclusions(Collections.singletonList("exclude-when-jev-option-set"));
 
         mojo.execute();

@@ -393,7 +393,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
 
                         // Check for cases where method-level @RequestMapping#value is not set, and use the controllers @RequestMapping
                         if (methodRequestMappingValues == null || methodRequestMappingValues.length == 0) {
-                            // The map key is a concat of the following: 
+                            // The map key is a concat of the following:
                             //   1. The controller package
                             //   2. The controller class name
                             //   3. The controller-level @RequestMapping#value
@@ -409,7 +409,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
                             // iterate over all the @RequestMapping#value attributes, and add them to the resource map.
                             for (String methodRequestMappingValue : methodRequestMappingValues) {
                                 String resourceName = methodRequestMappingValue;
-                                // The map key is a concat of the following: 
+                                // The map key is a concat of the following:
                                 //   1. The controller package
                                 //   2. The controller class name
                                 //   3. The controller-level @RequestMapping#value
