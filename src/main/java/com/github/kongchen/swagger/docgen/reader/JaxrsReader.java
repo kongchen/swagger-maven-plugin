@@ -318,10 +318,10 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         if (responseAnnotation != null) {
             updateApiResponse(operation, responseAnnotation);
         }
-        boolean isDeprecated = false;
+
         annotation = method.getAnnotation(Deprecated.class);
         if (annotation != null)
-            isDeprecated = true;
+            operation.deprecated(true);
 
         boolean hidden = false;
         if (apiOperation != null)

@@ -279,10 +279,9 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
             }
         }
 
-        boolean isDeprecated = false;
         Deprecated annotation = method.getAnnotation(Deprecated.class);
         if (annotation != null)
-            isDeprecated = true;
+            operation.deprecated(true);
 
         boolean hidden = false;
         if (apiOperation != null)
