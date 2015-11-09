@@ -50,7 +50,6 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         if (swagger == null) {
             swagger = new Swagger();
         }
-        String description;
         List<Method> methods = resource.getMethods();
         Map<String, Tag> tags = new HashMap<String, Tag>();
 
@@ -75,7 +74,6 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
             }
             tags = updateTagsForApi(null, api);
             resourceSecurities = getSecurityRequirements(api);
-            description = api.description();
         }
 
         resourcePath = resource.getControllerMapping();
