@@ -281,6 +281,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         if (annotation != null)
             operation.deprecated(true);
 
+        // FIXME `hidden` is never used
         boolean hidden = false;
         if (apiOperation != null)
             hidden = apiOperation.hidden();

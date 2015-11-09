@@ -322,6 +322,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         if (annotation != null)
             operation.deprecated(true);
 
+        // FIXME `hidden` is never used
         boolean hidden = false;
         if (apiOperation != null)
             hidden = apiOperation.hidden();
