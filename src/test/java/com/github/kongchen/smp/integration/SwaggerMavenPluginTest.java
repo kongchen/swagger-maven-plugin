@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.kongchen.swagger.docgen.mavenplugin.ApiDocumentMojo;
 import com.github.kongchen.swagger.docgen.mavenplugin.ApiSource;
-import io.swagger.util.Json;
 import net.javacrumbs.jsonunit.core.Configuration;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
@@ -123,7 +122,7 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
         ApiSource apiSource = apisources.get(0);
         // Force serialization of example values as json raw values
         apiSource.setJsonExampleValues(true);
-        // exclude part of the model when not compliant with jev option (e.g. example expressed as plain string) 
+        // exclude part of the model when not compliant with jev option (e.g. example expressed as plain string)
         apiSource.setApiModelPropertyExclusions(Collections.singletonList("exclude-when-jev-option-set"));
 
         mojo.execute();

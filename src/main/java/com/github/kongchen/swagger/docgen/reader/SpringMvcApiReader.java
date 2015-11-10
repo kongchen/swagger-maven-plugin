@@ -50,7 +50,6 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         if (swagger == null) {
             swagger = new Swagger();
         }
-        String description;
         List<Method> methods = resource.getMethods();
         Map<String, Tag> tags = new HashMap<String, Tag>();
 
@@ -75,7 +74,6 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
             }
             tags = updateTagsForApi(null, api);
             resourceSecurities = getSecurityRequirements(api);
-            description = api.description();
         }
 
         resourcePath = resource.getControllerMapping();
@@ -279,11 +277,11 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
             }
         }
 
-        boolean isDeprecated = false;
         Deprecated annotation = method.getAnnotation(Deprecated.class);
         if (annotation != null)
-            isDeprecated = true;
+            operation.deprecated(true);
 
+        // FIXME `hidden` is never used
         boolean hidden = false;
         if (apiOperation != null)
             hidden = apiOperation.hidden();
@@ -394,7 +392,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
 
                         // Check for cases where method-level @RequestMapping#value is not set, and use the controllers @RequestMapping
                         if (methodRequestMappingValues == null || methodRequestMappingValues.length == 0) {
-                            // The map key is a concat of the following: 
+                            // The map key is a concat of the following:
                             //   1. The controller package
                             //   2. The controller class name
                             //   3. The controller-level @RequestMapping#value
@@ -410,7 +408,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
                             // iterate over all the @RequestMapping#value attributes, and add them to the resource map.
                             for (String methodRequestMappingValue : methodRequestMappingValues) {
                                 String resourceName = methodRequestMappingValue;
-                                // The map key is a concat of the following: 
+                                // The map key is a concat of the following:
                                 //   1. The controller package
                                 //   2. The controller class name
                                 //   3. The controller-level @RequestMapping#value

@@ -48,7 +48,7 @@
     </developers>
 
     <properties>
-      <maven.version>2.2.1</maven.version>
+        <maven.version>2.2.1</maven.version>
         <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
         <java.version>1.6</java.version>
         <swagger.version>1.5.4</swagger.version>

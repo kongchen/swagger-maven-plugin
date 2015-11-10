@@ -275,7 +275,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
                             .headers(defaultResponseHeaders));
                 }
                 for (String key : models.keySet()) {
-                    Property responseProperty = null;
+                    Property responseProperty;
 
                     if ("list".equalsIgnoreCase(responseContainer))
                         responseProperty = new ArrayProperty(new RefProperty().asDefault(key));
@@ -313,16 +313,16 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
                 operation.produces(mediaType);
         }
 
-        List<ApiResponse> apiResponses = new ArrayList<ApiResponse>();
         ApiResponses responseAnnotation = method.getAnnotation(ApiResponses.class);
         if (responseAnnotation != null) {
             updateApiResponse(operation, responseAnnotation);
         }
-        boolean isDeprecated = false;
+
         annotation = method.getAnnotation(Deprecated.class);
         if (annotation != null)
-            isDeprecated = true;
+            operation.deprecated(true);
 
+        // FIXME `hidden` is never used
         boolean hidden = false;
         if (apiOperation != null)
             hidden = apiOperation.hidden();
