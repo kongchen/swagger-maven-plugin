@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Helper;
 import com.github.jknack.handlebars.Options;
@@ -147,7 +148,12 @@ public abstract class AbstractDocumentSource {
 
     public void loadModelModifier() throws GenerateException, IOException {
 
-        ModelModifier modelModifier = new ModelModifier(new ObjectMapper());
+        ObjectMapper objectMapper = new ObjectMapper();
+        if (apiSource.isUseJAXBAnnotationProcessor()) {
+            objectMapper.registerModule(new JaxbAnnotationModule());
+            objectMapper.registerModule(new JaxbAnnotationModule());
+        }
+        ModelModifier modelModifier = new ModelModifier(objectMapper);
 
         List<String> apiModelPropertyAccessExclusions = apiSource.getApiModelPropertyAccessExclusions();
         if (apiModelPropertyAccessExclusions != null && !apiModelPropertyAccessExclusions.isEmpty()) {

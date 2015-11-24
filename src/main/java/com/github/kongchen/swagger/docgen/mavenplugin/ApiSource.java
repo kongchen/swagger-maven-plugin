@@ -88,6 +88,9 @@ public class ApiSource {
     private boolean springmvc;
 
     @Parameter
+    private boolean useJAXBAnnotationProcessor;
+
+    @Parameter
     private String swaggerSchemaConverter;
 
     @Parameter
@@ -95,13 +98,13 @@ public class ApiSource {
 
     @Parameter
     private List<String> typesToSkip = new ArrayList<String>();
-    
+
     @Parameter
     private List<String> apiModelPropertyAccessExclusions = new ArrayList<String>();
 
     @Parameter(required = false)
     private boolean jsonExampleValues = false;
-    
+
     public Set<Class<?>> getValidClasses() throws GenerateException {
         Set<Class<?>> classes = new HashSet<Class<?>>();
         if (getLocations() == null) {
@@ -118,7 +121,7 @@ public class ApiSource {
                 classes.addAll(new Reflections(locations).getTypesAnnotatedWith(Api.class));
             }
         }
-        
+
         return classes;
     }
 
@@ -273,13 +276,23 @@ public class ApiSource {
     public void setSwaggerSchemaConverter(String swaggerSchemaConverter) {
         this.swaggerSchemaConverter = swaggerSchemaConverter;
     }
-    
+
     public boolean isJsonExampleValues() {
         return jsonExampleValues;
     }
 
     public void setJsonExampleValues(boolean jsonExampleValues) {
         this.jsonExampleValues = jsonExampleValues;
+    }
+
+    public boolean isUseJAXBAnnotationProcessor()
+    {
+        return useJAXBAnnotationProcessor;
+    }
+
+    public void setUseJAXBAnnotationProcessor(boolean useJAXBAnnotationProcessor)
+    {
+        this.useJAXBAnnotationProcessor = useJAXBAnnotationProcessor;
     }
 }
 
