@@ -52,6 +52,7 @@
                             <outputPath>${basedir}/generated/document.html</outputPath>
                             <outputFormats>json</outputFormats>
                             <swaggerDirectory>${basedir}/generated/swagger-ui</swaggerDirectory>
+                            <attachSwagger>true</attachSwagger>
                             <swaggerUIDocBasePath>http://www.example.com/restapi/doc</swaggerUIDocBasePath>
                             <modelSubstitute>/override.map</modelSubstitute>
                             <apiModelPropertyAccessExclusions>

@@ -8,7 +8,6 @@ import com.github.kongchen.swagger.docgen.GenerateException;
 import io.swagger.annotations.Api;
 import io.swagger.models.Info;
 import java.util.ArrayList;
-import java.util.Iterator;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.reflections.Reflections;
 
@@ -67,6 +66,9 @@ public class ApiSource {
     private String swaggerDirectory;
 
     @Parameter
+    private boolean attachSwagger;
+
+    @Parameter
     private String swaggerUIDocBasePath;
 
     @Parameter
@@ -95,13 +97,13 @@ public class ApiSource {
 
     @Parameter
     private List<String> typesToSkip = new ArrayList<String>();
-    
+
     @Parameter
     private List<String> apiModelPropertyAccessExclusions = new ArrayList<String>();
 
     @Parameter(required = false)
     private boolean jsonExampleValues = false;
-    
+
     public Set<Class<?>> getValidClasses() throws GenerateException {
         Set<Class<?>> classes = new HashSet<Class<?>>();
         if (getLocations() == null) {
@@ -118,7 +120,7 @@ public class ApiSource {
                 classes.addAll(new Reflections(locations).getTypesAnnotatedWith(Api.class));
             }
         }
-        
+
         return classes;
     }
 
@@ -202,6 +204,15 @@ public class ApiSource {
         this.swaggerDirectory = swaggerDirectory;
     }
 
+    public boolean isAttachSwagger() {
+        return attachSwagger;
+    }
+
+    public void setAttachSwagger(boolean attachSwagger) {
+        this.attachSwagger = attachSwagger;
+    }
+
+
     public void setSwaggerUIDocBasePath(String swaggerUIDocBasePath) {
         this.swaggerUIDocBasePath = swaggerUIDocBasePath;
     }
@@ -273,7 +284,7 @@ public class ApiSource {
     public void setSwaggerSchemaConverter(String swaggerSchemaConverter) {
         this.swaggerSchemaConverter = swaggerSchemaConverter;
     }
-    
+
     public boolean isJsonExampleValues() {
         return jsonExampleValues;
     }
