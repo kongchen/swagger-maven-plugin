@@ -154,7 +154,7 @@ This is a sample.
 
 | Status Code | Reason      | Response Model |
 |-------------|-------------|----------------|
-| 200    | successful operation | |
+| 200    | successful operation | string|
 
 
 
@@ -1032,7 +1032,7 @@ Muliple tags can be provided with comma seperated strings. Use tag1, tag2, tag3 
 
 | Status Code | Reason      | Response Model |
 |-------------|-------------|----------------|
-| 200    | successful operation | |
+| 200    | successful operation | string|
 
 
 
@@ -1735,6 +1735,164 @@ For valid response try integer IDs with value &lt; 1000. Anything above 1000 or 
 
 
 
+## /store/pingGet
+
+
+### GET
+
+<a id="pingGet">Simple ping endpoint</a>
+
+
+
+
+
+
+
+
+
+#### Request
+
+
+
+##### Parameters
+
+
+
+
+
+
+#### Response
+
+**Content-Type: ** application/xml, application/json
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 200    | Successful request - see response for &#x27;pong&#x27; | string|
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## /store/pingPost
+
+
+
+
+
+
+### POST
+
+
+<a id="pingPost">Simple ping endpoint</a>
+
+
+
+
+
+
+
+
+
+#### Request
+
+
+
+##### Parameters
+
+
+
+
+
+
+#### Response
+
+**Content-Type: ** application/xml, application/json
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 200    | Successful request - see response for &#x27;pong&#x27; | string|
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## /store/pingPut
+
+
+
+
+### PUT
+
+<a id="pingPut">Simple ping endpoint</a>
+
+
+
+
+
+
+
+
+
+#### Request
+
+
+
+##### Parameters
+
+
+
+
+
+
+#### Response
+
+**Content-Type: ** application/xml, application/json
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 200    | Successful request - see response for &#x27;pong&#x27; | string|
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## /user
 
 
@@ -2046,7 +2204,7 @@ This can only be done by the logged in user.
 
 | Status Code | Reason      | Response Model |
 |-------------|-------------|----------------|
-| 200    | successful operation | |
+| 200    | successful operation | string|
 | 400    | Invalid username/password supplied |  - |
 
 

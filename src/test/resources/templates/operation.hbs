@@ -69,5 +69,5 @@
 
 | Status Code | Reason      | Response Model |
 |-------------|-------------|----------------|
-{{#each responses}}| {{@key}}    | {{description}} | {{#schema.$ref}}<a href="{{schema.$ref}}">{{basename schema.$ref}}</a>{{/schema.$ref}}{{#ifeq schema.type "array"}}Array[<a href="{{schema.items.$ref}}">{{basename schema.items.$ref}}</a>]{{/ifeq}}{{^schema}} - {{/schema}}|
+{{#each responses}}| {{@key}}    | {{description}} | {{#schema.$ref}}<a href="{{schema.$ref}}">{{basename schema.$ref}}</a>{{/schema.$ref}}{{^schema.$ref}}{{#ifeq schema.type "array"}}Array[<a href="{{schema.items.$ref}}">{{basename schema.items.$ref}}</a>]{{else}}{{schema.type}}{{/ifeq}}{{/schema.$ref}}{{^schema}} - {{/schema}}|
 {{/each}}

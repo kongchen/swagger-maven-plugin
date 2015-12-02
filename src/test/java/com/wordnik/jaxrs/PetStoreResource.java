@@ -29,6 +29,7 @@ import io.swagger.annotations.ApiResponses;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -70,6 +71,30 @@ public class PetStoreResource {
         required = true) Order order) {
     storeData.placeOrder(order);
     return storeData.placeOrder(order);
+  }
+  
+  @POST
+  @Path("/pingPost")
+  @ApiOperation(value = "Simple ping endpoint")
+  @ApiResponses({ @ApiResponse(code = 200, message = "Successful request - see response for 'pong'", response = String.class) })
+  public String pingPost() {
+      return "pingPost";
+  }
+  
+  @PUT
+  @Path("/pingPut")
+  @ApiOperation(value = "Simple ping endpoint")
+  @ApiResponses({ @ApiResponse(code = 200, message = "Successful request - see response for 'pong'", response = String.class) })
+  public String pingPut() {
+      return "pong";
+  }
+  
+  @GET
+  @Path("/pingGet")
+  @ApiOperation(value = "Simple ping endpoint")
+  @ApiResponses({ @ApiResponse(code = 200, message = "Successful request - see response for 'pong'", response = String.class) })
+  public String pingGet() {
+      return "pong";
   }
 
   @DELETE

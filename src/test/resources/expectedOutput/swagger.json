@@ -868,6 +868,72 @@
         }
       }
     },
+    "/store/pingGet": {
+      "get": {
+        "tags": [
+          "store"
+        ],
+        "summary": "Simple ping endpoint",
+        "description": "",
+        "operationId": "pingGet",
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request - see response for 'pong'",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "/store/pingPost": {
+      "post": {
+        "tags": [
+          "store"
+        ],
+        "summary": "Simple ping endpoint",
+        "description": "",
+        "operationId": "pingPost",
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request - see response for 'pong'",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "/store/pingPut": {
+      "put": {
+        "tags": [
+          "store"
+        ],
+        "summary": "Simple ping endpoint",
+        "description": "",
+        "operationId": "pingPut",
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request - see response for 'pong'",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
     "/user": {
       "post": {
         "tags": [
