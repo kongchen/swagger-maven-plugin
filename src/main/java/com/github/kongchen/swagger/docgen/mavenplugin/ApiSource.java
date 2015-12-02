@@ -8,7 +8,6 @@ import com.github.kongchen.swagger.docgen.GenerateException;
 import io.swagger.annotations.Api;
 import io.swagger.models.Info;
 import java.util.ArrayList;
-import java.util.Iterator;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.reflections.Reflections;
 
@@ -66,6 +65,14 @@ public class ApiSource {
     @Parameter
     private String swaggerDirectory;
 
+    /**
+     * <code>attachSwaggerArtifact</code> triggers plugin execution to attach the generated
+     * wagger.json to Maven session for deployment purpose.  The attached classifier
+     * is the directory name of <code>swaggerDirectory</code>
+     */
+    @Parameter
+    private boolean attachSwaggerArtifact;
+
     @Parameter
     private String swaggerUIDocBasePath;
 
@@ -95,13 +102,13 @@ public class ApiSource {
 
     @Parameter
     private List<String> typesToSkip = new ArrayList<String>();
-    
+
     @Parameter
     private List<String> apiModelPropertyAccessExclusions = new ArrayList<String>();
 
     @Parameter(required = false)
     private boolean jsonExampleValues = false;
-    
+
     public Set<Class<?>> getValidClasses() throws GenerateException {
         Set<Class<?>> classes = new HashSet<Class<?>>();
         if (getLocations() == null) {
@@ -118,7 +125,7 @@ public class ApiSource {
                 classes.addAll(new Reflections(locations).getTypesAnnotatedWith(Api.class));
             }
         }
-        
+
         return classes;
     }
 
@@ -202,6 +209,15 @@ public class ApiSource {
         this.swaggerDirectory = swaggerDirectory;
     }
 
+    public boolean isAttachSwaggerArtifact() {
+        return attachSwaggerArtifact;
+    }
+
+    public void setAttachSwaggerArtifact(boolean attachSwaggerArtifact) {
+        this.attachSwaggerArtifact = attachSwaggerArtifact;
+    }
+
+
     public void setSwaggerUIDocBasePath(String swaggerUIDocBasePath) {
         this.swaggerUIDocBasePath = swaggerUIDocBasePath;
     }
@@ -273,7 +289,7 @@ public class ApiSource {
     public void setSwaggerSchemaConverter(String swaggerSchemaConverter) {
         this.swaggerSchemaConverter = swaggerSchemaConverter;
     }
-    
+
     public boolean isJsonExampleValues() {
         return jsonExampleValues;
     }
