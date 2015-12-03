@@ -67,7 +67,7 @@ public class ApiSource {
 
     /**
      * <code>attachSwaggerArtifact</code> triggers plugin execution to attach the generated
-     * wagger.json to Maven session for deployment purpose.  The attached classifier
+     * swagger.json to Maven session for deployment purpose.  The attached classifier
      * is the directory name of <code>swaggerDirectory</code>
      */
     @Parameter

@@ -62,7 +62,7 @@ You can specify several `apiSource`s. Generally, one is enough.
 | `outputPath` | The path of the generated static document, not existed parent directories will be created. If you don't want to generate a static document, just don't set it. |
 | `outputFormats` | The format types of the generated swagger spec. Valid values are `json`, `yaml` or both `json,yaml`. The `json` format is default.|
 | `swaggerDirectory` | The directory of generated `swagger.json` file. If null, no `swagger.json` will be generated. |
-| `attachSwaggerArtifact` | If enable, install/deploy the generated `swagger.json` to Maven repository using `swaggerDirectory`'s name as classifier. Default is `false`. |
+| `attachSwaggerArtifact` | If enabled, the generated `swagger.json` file will be attached as a maven artifact. The swaggerDirectory's name will be used as an artifact classifier. Default is `false`.. |
 | `modelSubstitute` | The model substitute file's path, see more details [below](#model-substitution)|
 | `typesToSkip` | Nodes of class names to explicitly skip during parameter processing. More details [below](#typesToSkip)|
 | `apiModelPropertyAccessExclusions` | Allows the exclusion of specified `@ApiModelProperty` fields. This can be used to hide certain model properties from the swagger spec. More details [below](#apiModelPropertyAccessExclusions)|
