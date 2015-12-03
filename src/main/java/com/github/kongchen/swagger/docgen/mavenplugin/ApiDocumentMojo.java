@@ -101,7 +101,7 @@ public class ApiDocumentMojo extends AbstractMojo {
                         apiSource.getOutputFormats());
 
 
-                if ( apiSource.isAttachSwagger() && apiSource.getSwaggerDirectory() != null && this.project != null) {
+                if ( apiSource.isAttachSwaggerArtifact() && apiSource.getSwaggerDirectory() != null && this.project != null) {
                     String classifier = new File(apiSource.getSwaggerDirectory()).getName();
                     File swaggerFile = new File( apiSource.getSwaggerDirectory(), "swagger.json");
                     this.projectHelper.attachArtifact(project, "json", classifier, swaggerFile);

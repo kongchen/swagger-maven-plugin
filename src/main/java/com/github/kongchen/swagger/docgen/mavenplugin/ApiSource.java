@@ -66,12 +66,12 @@ public class ApiSource {
     private String swaggerDirectory;
 
     /**
-     * <code>attachSwagger</code> triggers plugin execution to attach the generated
+     * <code>attachSwaggerArtifact</code> triggers plugin execution to attach the generated
      * wagger.json to Maven session for deployment purpose.  The attached classifier
      * is the directory name of <code>swaggerDirectory</code>
      */
     @Parameter
-    private boolean attachSwagger;
+    private boolean attachSwaggerArtifact;
 
     @Parameter
     private String swaggerUIDocBasePath;
@@ -209,12 +209,12 @@ public class ApiSource {
         this.swaggerDirectory = swaggerDirectory;
     }
 
-    public boolean isAttachSwagger() {
-        return attachSwagger;
+    public boolean isAttachSwaggerArtifact() {
+        return attachSwaggerArtifact;
     }
 
-    public void setAttachSwagger(boolean attachSwagger) {
-        this.attachSwagger = attachSwagger;
+    public void setAttachSwaggerArtifact(boolean attachSwaggerArtifact) {
+        this.attachSwaggerArtifact = attachSwaggerArtifact;
     }
 
 
