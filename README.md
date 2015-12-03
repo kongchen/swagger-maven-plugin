@@ -63,7 +63,7 @@ You can specify several `apiSource`s. Generally, one is enough.
 | `outputFormats` | The format types of the generated swagger spec. Valid values are `json`, `yaml` or both `json,yaml`. The `json` format is default.|
 | `swaggerDirectory` | The directory of generated `swagger.json` file. If null, no `swagger.json` will be generated. |
 | `attachSwaggerArtifact` | If enable, install/deploy the generated `swagger.json` to Maven repository using `swaggerDirectory`'s name as classifier. Default is `false`. |
-| `attacheSwaggerArtifact`| The directory of generated `swagger.json` file. If null, no `swagger.json` will be generated. |
+| `attachSwaggerArtifact`| The directory of generated `swagger.json` file. If null, no `swagger.json` will be generated. |
 | `modelSubstitute` | The model substitute file's path, see more details [below](#model-substitution)|
 | `typesToSkip` | Nodes of class names to explicitly skip during parameter processing. More details [below](#typesToSkip)|
 | `apiModelPropertyAccessExclusions` | Allows the exclusion of specified `@ApiModelProperty` fields. This can be used to hide certain model properties from the swagger spec. More details [below](#apiModelPropertyAccessExclusions)|
@@ -214,12 +214,12 @@ Note: In order to use `apiModelPropertyAccessExclusions`, you must specify both 
 You can instruct `swagger-maven-plugin` to deploy the generated `swagger.json` by adding the following to your pom.xml:
 
 ```
-<swaggerDirectory>${project.build.directory}/myswagger</swaggerDirectry>
-<attachedSwaggerArtifact>true</attachedSwaggerArtifact>
+<swaggerDirectory>${project.build.directory}/swagger-ui</swaggerDirectry>
+<attachSwaggerArtifact>true</attachSwaggerArtifact>
 
 ```
 
-The above setting attaches the genenered file to Maven for install/deploy purpose with `myswagger`as classifier and `json` as type
+The above setting attaches the generated file to Maven for install/deploy purpose with `swagger-ui`as classifier and `json` as type
 
 
 
@@ -283,8 +283,7 @@ There's a [sample here](https://github.com/swagger-maven-plugin/swagger-maven-ex
                 <templatePath>${basedir}/src/test/resources/strapdown.html.hbs</templatePath>
                 <outputPath>${basedir}/generated/document.html</outputPath>
                 <swaggerDirectory>${basedir}/generated/swagger-ui</swaggerDirectory>
-                <!-- deploy 'swagger-ui' as classifier-->
-                <attacheSwaggerDirectory>true</attachSwaggerDirectory>
+                <attachSwaggerDirectory>true</attachSwaggerDirectory>
             </apiSource>
         </apiSources>
     </configuration>
