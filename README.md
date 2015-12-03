@@ -11,14 +11,14 @@ This plugin enables your Swagger-annotated project to generate **Swagger specs**
 
 # Versions
 - [3.1.0](https://github.com/kongchen/swagger-maven-plugin/) supports Swagger Spec [2.0](https://github
-.com/swagger-api/swagger-spec/blob/master/versions/2.0.md), support JAX-RS & SpingMVC. (**ACTIVE!**) 
+.com/swagger-api/swagger-spec/blob/master/versions/2.0.md), support JAX-RS & SpingMVC. (**ACTIVE!**)
 - [3.0.1](https://github.com/kongchen/swagger-maven-plugin/tree/swagger-core_com.wordnik_namespaces/) supports Swagger Spec [2.0](https://github
-.com/swagger-api/swagger-spec/blob/master/versions/2.0.md), support JAX-RS & SpingMVC. (**ACTIVE!**) 
+.com/swagger-api/swagger-spec/blob/master/versions/2.0.md), support JAX-RS & SpingMVC. (**ACTIVE!**)
 - [2.3.4](https://github.com/kongchen/swagger-maven-plugin/tree/spec1.2) supports Swagger Spec [1.2](https://github.com/swagger-api/swagger-spec/blob/master/versions/1.2.md), support JAX-RS & SpringMVC. (**Lazily maintained**)
 - [1.1.1](https://github.com/kongchen/swagger-maven-plugin/tree/1.1.1) supports Swagger Spec 1.1. (**No longer maintained**)
 
 ## Upgrading from 3.0.1 to 3.1.0+
-Version 3.1.0+ of this plugin depends on the repackaged/rebranded io.swagger.swagger-core dependency, which is formerly known as com.wordnik.swagger-core. If you use 3.1.0+, you must use the swagger-core dependency in the io.swagger namespace instead of the com.wordnik namespace, which is deprecated. You may see an example of migrating a project from 3.0.1 to 3.1.0 in the [swagger-maven-plugin example project](https://github.com/swagger-maven-plugin/swagger-maven-example/commit/3d6bfa06d638d0855edc04816d4e35bff4a5e771#diff-600376dffeb79835ede4a0b285078036). 
+Version 3.1.0+ of this plugin depends on the repackaged/rebranded io.swagger.swagger-core dependency, which is formerly known as com.wordnik.swagger-core. If you use 3.1.0+, you must use the swagger-core dependency in the io.swagger namespace instead of the com.wordnik namespace, which is deprecated. You may see an example of migrating a project from 3.0.1 to 3.1.0 in the [swagger-maven-plugin example project](https://github.com/swagger-maven-plugin/swagger-maven-example/commit/3d6bfa06d638d0855edc04816d4e35bff4a5e771#diff-600376dffeb79835ede4a0b285078036).
 
 
 # Usage
@@ -51,7 +51,7 @@ You can specify several `apiSource`s. Generally, one is enough.
 
 | **name** | **description** |
 |------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `springmvc` | Tell the plugin your project is a JAX-RS(`false`) or a SpringMvc(`true`) project | 
+| `springmvc` | Tell the plugin your project is a JAX-RS(`false`) or a SpringMvc(`true`) project |
 | `locations` **required**| Classes containing Swagger's annotation ```@Api```, or packages containing those classes can be configured here, using ```;``` as the delimiter. |
 | `schemes` | The transfer protocol of the API. Values MUST be from the list: `"http"`, `"https"`, `"ws"`, `"wss"`, using ```,``` as the delimiter.|
 | `host` | The host (name or ip) serving the API. This MUST be the host only and does not include the scheme nor sub-paths. It MAY include a port.  The host does not support [path templating](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#pathTemplating).|
@@ -62,6 +62,7 @@ You can specify several `apiSource`s. Generally, one is enough.
 | `outputPath` | The path of the generated static document, not existed parent directories will be created. If you don't want to generate a static document, just don't set it. |
 | `outputFormats` | The format types of the generated swagger spec. Valid values are `json`, `yaml` or both `json,yaml`. The `json` format is default.|
 | `swaggerDirectory` | The directory of generated `swagger.json` file. If null, no `swagger.json` will be generated. |
+| `attachSwaggerArtifact` | If enabled, the generated `swagger.json` file will be attached as a maven artifact. The swaggerDirectory's name will be used as an artifact classifier. Default is `false`.. |
 | `modelSubstitute` | The model substitute file's path, see more details [below](#model-substitution)|
 | `typesToSkip` | Nodes of class names to explicitly skip during parameter processing. More details [below](#typesToSkip)|
 | `apiModelPropertyAccessExclusions` | Allows the exclusion of specified `@ApiModelProperty` fields. This can be used to hide certain model properties from the swagger spec. More details [below](#apiModelPropertyAccessExclusions)|
@@ -74,13 +75,13 @@ The value for ```templatePath``` supports 2 kinds of path:
 
 1. Resource in classpath. You should specify a resource path with a **classpath:** prefix.
     e.g:
-    
+
     1. **`classpath:/markdown.hbs`**
     1. **`classpath:/templates/hello.html`**
-    
+
 1. Local file's absolute path.
-    e.g: 
-    
+    e.g:
+
     1. **`${basedir}/src/main/resources/markdown.hbs`**
     1. **`${basedir}/src/main/resources/template/hello.html`**
 
@@ -132,7 +133,7 @@ The `securityDefinition.json` file should also follow the spec, one sample file 
 }
 ```
 # <a id="modelSubstitute">Model Substitution</a>
-Throughout the course of working with Swagger, you may find that you need to substitute non-primitive objects for primitive objects. This is called model substituion, and it is supported by swagger-maven-plugin. In order to configure model substitution, you'll need to create a model substitute file. This file is a simple text file containing `n` lines, where each line tells swagger-maven-plugin to substitutes a model class with the supplied substitute. These two classes should be seperated by a colone (`:`). 
+Throughout the course of working with Swagger, you may find that you need to substitute non-primitive objects for primitive objects. This is called model substituion, and it is supported by swagger-maven-plugin. In order to configure model substitution, you'll need to create a model substitute file. This file is a simple text file containing `n` lines, where each line tells swagger-maven-plugin to substitutes a model class with the supplied substitute. These two classes should be seperated by a colone (`:`).
 
 ## Sample model substitution
 
@@ -169,7 +170,7 @@ The above model substitution configuration would tell the plugin to substitute `
     }
 ```
 
-The model substitution file will be read by `getClass().getResourceAsStream`, so please note the path you configured. 
+The model substitution file will be read by `getClass().getResourceAsStream`, so please note the path you configured.
 
 # <a id="typesToSkip">Skipping Types During Processing with `typesToSkip`</a>
 
@@ -206,6 +207,20 @@ The above setting would prevent `internalThing` from appearing in the swagger sp
 ```
 
 Note: In order to use `apiModelPropertyAccessExclusions`, you must specify both the `name` and `access` fields of the property you wish to exclude. Additionally, `apiModelPropertyAccessExclusions` requires at least `swagger-maven-plugin` version 3.1.1-SNAPSHOT.
+
+# Install/Deploy `swagger.json`
+
+You can instruct `swagger-maven-plugin` to deploy the generated `swagger.json` by adding the following to your pom.xml:
+
+```
+<swaggerDirectory>${project.build.directory}/swagger-ui</swaggerDirectry>
+<attachSwaggerArtifact>true</attachSwaggerArtifact>
+
+```
+
+The above setting attaches the generated file to Maven for install/deploy purpose with `swagger-ui`as classifier and `json` as type
+
+
 
 # Example
 There's a [sample here](https://github.com/swagger-maven-plugin/swagger-maven-example), just fork it and have a try.
@@ -267,6 +282,7 @@ There's a [sample here](https://github.com/swagger-maven-plugin/swagger-maven-ex
                 <templatePath>${basedir}/src/test/resources/strapdown.html.hbs</templatePath>
                 <outputPath>${basedir}/generated/document.html</outputPath>
                 <swaggerDirectory>${basedir}/generated/swagger-ui</swaggerDirectory>
+                <attachSwaggerDirectory>true</attachSwaggerDirectory>
             </apiSource>
         </apiSources>
     </configuration>
@@ -307,7 +323,7 @@ SNAPSHOT versions are available for verifing issues and new features. If you wou
 
 
 ## 2. Dependency conflicts
-If you have package depedency conflict issues, such as jackson, joda-time, or [jsr311-api](https://github.com/kongchen/swagger-maven-plugin/issues/81). 
+If you have package depedency conflict issues, such as jackson, joda-time, or [jsr311-api](https://github.com/kongchen/swagger-maven-plugin/issues/81).
 Run
 
 ```
@@ -331,6 +347,6 @@ To exclude `javax.ws.rs:jsr311-api:jar:1.1.1:compile` from `swagger-jaxrs_2.10`:
             <artifactId>jsr311-api</artifactId>
         </exclusion>
     </exclusions>
-</dependency>   
+</dependency>
 ```
 
