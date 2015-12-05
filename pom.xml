@@ -9,7 +9,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.kongchen</groupId>
     <artifactId>swagger-maven-plugin</artifactId>
-    <version>3.1.2-SNAPSHOT</version>
+    <version>3.1.2</version>
     <packaging>maven-plugin</packaging>
     <name>Swagger Maven Plugin</name>
     <description>
@@ -27,7 +27,7 @@
         <connection>scm:git:git@github.com:kongchen/swagger-maven-plugin.git</connection>
         <url>scm:git:git@github.com:kongchen/swagger-maven-plugin.git</url>
         <developerConnection>scm:git:git@github.com:kongchen/swagger-maven-plugin.git</developerConnection>
-      <tag>HEAD</tag>
+      <tag>swagger-maven-plugin-3.1.2</tag>
   </scm>
 
     <developers>
