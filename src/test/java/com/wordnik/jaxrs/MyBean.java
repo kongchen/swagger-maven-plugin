@@ -19,7 +19,7 @@ public class MyBean extends MyParentBean {
     @FormParam("name")
     private String name;
 
-    @ApiParam(value = "Updated status of the pet", required = false)
+    @ApiParam(value = "Updated status of the pet", required = false, allowableValues = "value1, value2")
     @FormParam("status")
     private String status;
 

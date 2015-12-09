@@ -404,6 +404,9 @@ paths:
         description: "Updated status of the pet"
         required: false
         type: "string"
+        enum:
+          - value1
+          - value2
       - name: "myHeader"
         in: "header"
         required: false
@@ -484,6 +487,9 @@ paths:
         description: "Updated status of the pet"
         required: false
         type: "string"
+        enum:
+          - value1
+          - value2
       - name: "myHeader"
         in: "header"
         required: false

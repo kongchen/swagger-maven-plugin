@@ -9,6 +9,7 @@ import io.swagger.models.parameters.HeaderParameter;
 import io.swagger.models.parameters.Parameter;
 import io.swagger.models.parameters.PathParameter;
 import io.swagger.models.parameters.QueryParameter;
+import io.swagger.models.parameters.SerializableParameter;
 import io.swagger.models.properties.Property;
 
 import javax.ws.rs.CookieParam;
@@ -24,8 +25,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by chekong on 15/5/12.
@@ -38,7 +37,7 @@ public class JaxrsParameterExtension extends AbstractSwaggerExtension implements
             return new ArrayList<Parameter>();
 
         List<Parameter> parameters = new ArrayList<Parameter>();
-        Parameter parameter = null;
+        SerializableParameter parameter = null;
         for(Annotation annotation : annotations) {
             parameter = getParameter(type, parameter, annotation);
         }
@@ -49,7 +48,7 @@ public class JaxrsParameterExtension extends AbstractSwaggerExtension implements
         return parameters;
     }
 
-    public static Parameter getParameter(Type type, Parameter parameter, Annotation annotation) {
+    public static SerializableParameter getParameter(Type type, SerializableParameter parameter, Annotation annotation) {
         String defaultValue = "";
         if(annotation instanceof DefaultValue) {
             DefaultValue defaultValueAnnotation = (DefaultValue) annotation;

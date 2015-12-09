@@ -604,7 +604,8 @@
             "in": "formData",
             "description": "Updated status of the pet",
             "required": false,
-            "type": "string"
+            "type": "string",
+            "enum":["value1","value2"]
           },
           {
             "name": "myHeader",
@@ -722,7 +723,8 @@
             "in": "formData",
             "description": "Updated status of the pet",
             "required": false,
-            "type": "string"
+            "type": "string",
+            "enum":["value1","value2"]
           },
           {
             "name": "myHeader",
