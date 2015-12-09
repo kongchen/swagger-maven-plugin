@@ -8,6 +8,7 @@ import io.swagger.config.FilterFactory;
 import io.swagger.core.filter.SpecFilter;
 import io.swagger.core.filter.SwaggerSpecFilter;
 import io.swagger.models.auth.SecuritySchemeDefinition;
+import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
 
 import java.util.HashMap;
@@ -26,9 +27,8 @@ public class SpringMavenDocumentSource extends AbstractDocumentSource {
 
     private final SpecFilter specFilter = new SpecFilter();
 
-    public SpringMavenDocumentSource(ApiSource apiSource, Log log) {
+    public SpringMavenDocumentSource(ApiSource apiSource, Log log) throws MojoFailureException {
         super(new LogAdapter(log), apiSource);
-
     }
 
     @Override
