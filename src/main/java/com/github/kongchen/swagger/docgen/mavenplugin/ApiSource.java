@@ -1,5 +1,6 @@
 package com.github.kongchen.swagger.docgen.mavenplugin;
 
+import java.io.File;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -111,6 +112,9 @@ public class ApiSource {
 
     @Parameter(required = false)
     private boolean jsonExampleValues = false;
+
+    @Parameter
+    private File descriptionFile;
 
     public Set<Class<?>> getValidClasses() throws GenerateException {
         Set<Class<?>> classes = new HashSet<Class<?>>();
@@ -309,6 +313,14 @@ public class ApiSource {
     public void setUseJAXBAnnotationProcessor(boolean useJAXBAnnotationProcessor)
     {
         this.useJAXBAnnotationProcessor = useJAXBAnnotationProcessor;
+    }
+
+    public File getDescriptionFile() {
+        return descriptionFile;
+    }
+
+    public void setDescriptionFile(File descriptionFile) {
+        this.descriptionFile = descriptionFile;
     }
 }
 

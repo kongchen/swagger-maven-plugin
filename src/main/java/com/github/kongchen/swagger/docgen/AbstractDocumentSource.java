@@ -20,6 +20,8 @@ import io.swagger.models.Swagger;
 import io.swagger.models.properties.Property;
 import io.swagger.util.Yaml;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.maven.plugin.MojoFailureException;
 
 import java.io.*;
 import java.lang.reflect.Type;
@@ -58,7 +60,7 @@ public abstract class AbstractDocumentSource {
 
     protected String swaggerSchemaConverter;
 
-    public AbstractDocumentSource(LogAdapter log, ApiSource apiSource) {
+    public AbstractDocumentSource(LogAdapter log, ApiSource apiSource) throws MojoFailureException {
         LOG = log;
         this.outputPath = apiSource.getOutputPath();
         this.templatePath = apiSource.getTemplatePath();
@@ -74,6 +76,25 @@ public abstract class AbstractDocumentSource {
                 }
             } else {
                 swagger.scheme(Scheme.forValue(apiSource.getSchemes()));
+            }
+        }
+
+        // read description from file
+        if (apiSource.getDescriptionFile() != null) {
+            try {
+                InputStream is = new FileInputStream(apiSource.getDescriptionFile());
+                try {
+                    apiSource.getInfo().setDescription(IOUtils.toString(is));
+                } catch (IOException e) {
+                    throw new MojoFailureException(e.getMessage(), e);
+                } finally {
+                    try {
+                        is.close();
+                    } catch (IOException e) {
+                    }
+                }
+            } catch (FileNotFoundException e) {
+                throw new MojoFailureException(e.getMessage(), e);
             }
         }
 
