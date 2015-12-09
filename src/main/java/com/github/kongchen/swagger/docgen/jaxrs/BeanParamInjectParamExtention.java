@@ -5,6 +5,10 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.jaxrs.ext.AbstractSwaggerExtension;
 import io.swagger.jaxrs.ext.SwaggerExtension;
 import io.swagger.models.parameters.Parameter;
+import io.swagger.models.parameters.SerializableParameter;
+import io.swagger.models.properties.PropertyBuilder;
+import io.swagger.util.AllowableValues;
+import io.swagger.util.AllowableValuesUtils;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.reflections.util.Utils;
 
@@ -43,7 +47,7 @@ public class BeanParamInjectParamExtention extends AbstractSwaggerExtension impl
         List<Parameter> parameters = new ArrayList<Parameter>();
 
         for (AccessibleObject f : getDeclaredAndInheritedFieldsAndMethods(cls)) {
-            Parameter parameter = null;
+            SerializableParameter parameter = null;
 
             int i = 0, apiParaIdx = -1;
 
@@ -61,6 +65,15 @@ public class BeanParamInjectParamExtention extends AbstractSwaggerExtension impl
                     parameter.setDescription(param.value());
                     parameter.setRequired(param.required());
                     parameter.setAccess(param.access());
+
+                    AllowableValues allowableValues = AllowableValuesUtils.create(param.allowableValues());
+                    if (allowableValues != null) {
+                        Map<PropertyBuilder.PropertyId, Object> args = allowableValues.asPropertyArguments();
+                        if (args.containsKey(PropertyBuilder.PropertyId.ENUM)) {
+                            parameter.setEnum((List<String>) args.get(PropertyBuilder.PropertyId.ENUM));
+                        }
+                    }
+
                     if (!Utils.isEmpty(param.name())) {
                         parameter.setName(param.name());
                     }
