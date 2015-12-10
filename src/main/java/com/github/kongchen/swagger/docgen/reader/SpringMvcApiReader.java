@@ -214,7 +214,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
                         responseProperty = new MapProperty(property);
                     else
                         responseProperty = property;
-                    operation.response(200, new Response()
+                    operation.response(apiOperation.code(), new Response()
                             .description("successful operation")
                             .schema(responseProperty)
                             .headers(defaultResponseHeaders));
@@ -223,7 +223,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
                 Map<String, Model> models = ModelConverters.getInstance().read(responseClass);
                 if (models.size() == 0) {
                     Property pp = ModelConverters.getInstance().readAsProperty(responseClass);
-                    operation.response(200, new Response()
+                    operation.response(apiOperation.code(), new Response()
                             .description("successful operation")
                             .schema(pp)
                             .headers(defaultResponseHeaders));
@@ -237,7 +237,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
                         responseProperty = new MapProperty(new RefProperty().asDefault(key));
                     else
                         responseProperty = new RefProperty().asDefault(key);
-                    operation.response(200, new Response()
+                    operation.response(apiOperation.code(), new Response()
                             .description("successful operation")
                             .schema(responseProperty)
                             .headers(defaultResponseHeaders));
