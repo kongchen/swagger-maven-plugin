@@ -60,7 +60,8 @@ public abstract class AbstractReader {
 
     private void updateExtensionChain() {
         List<SwaggerExtension> extensions = new ArrayList<SwaggerExtension>();
-        if (this.getClass() == SpringMvcApiReader.class) {
+        Class<? extends AbstractReader> clazz = this.getClass();
+        if (clazz == SpringMvcApiReader.class || SpringMvcApiReader.class.isAssignableFrom(clazz) ) {
             extensions.add(new SpringSwaggerExtension());
         } else {
             extensions.add(new BeanParamInjectParamExtention());

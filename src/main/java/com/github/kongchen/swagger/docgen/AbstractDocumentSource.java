@@ -13,6 +13,8 @@ import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.helper.StringHelpers;
 import com.github.jknack.handlebars.io.TemplateLoader;
 import com.github.kongchen.swagger.docgen.mavenplugin.ApiSource;
+import com.github.kongchen.swagger.docgen.reader.AbstractReader;
+import com.github.kongchen.swagger.docgen.reader.ClassSwaggerReader;
 import com.github.kongchen.swagger.docgen.reader.ModelModifier;
 import io.swagger.converter.ModelConverters;
 import io.swagger.models.Scheme;
@@ -24,6 +26,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.maven.plugin.MojoFailureException;
 
 import java.io.*;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -345,7 +348,20 @@ public abstract class AbstractDocumentSource {
         return strurl.substring(0, idx);
     }
 
-
+    protected ClassSwaggerReader getCustomApiReader(String customReaderClassName) throws GenerateException {
+        try {
+            LOG.info("Reading custom API reader: " + customReaderClassName);
+            Class<?> clazz = Class.forName(customReaderClassName);
+            if (AbstractReader.class.isAssignableFrom(clazz)) {
+                Constructor<?> constructor = clazz.getConstructor(Swagger.class, LogAdapter.class);
+                return (ClassSwaggerReader) constructor.newInstance(swagger, LOG);
+            } else {
+                return (ClassSwaggerReader) clazz.newInstance();
+            }
+        } catch (Exception e) {
+            throw new GenerateException("Cannot load Swagger API reader: " + customReaderClassName, e);
+        }
+    }
 }
 
 enum Output {
