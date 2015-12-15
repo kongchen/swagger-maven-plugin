@@ -6,8 +6,9 @@ import com.github.kongchen.swagger.docgen.mavenplugin.ApiDocumentMojo;
 import com.github.kongchen.swagger.docgen.mavenplugin.ApiSource;
 import net.javacrumbs.jsonunit.core.Configuration;
 import org.apache.commons.io.FileUtils;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
-import org.codehaus.jettison.json.JSONObject;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
@@ -17,9 +18,17 @@ import org.yaml.snakeyaml.Yaml;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
+import static com.github.kongchen.smp.integration.utils.TestUtils.YamlToJson;
+import static com.github.kongchen.smp.integration.utils.TestUtils.changeDescription;
+import static com.github.kongchen.smp.integration.utils.TestUtils.createTempDirPath;
+import static com.github.kongchen.smp.integration.utils.TestUtils.setCustomReader;
 import static net.javacrumbs.jsonunit.JsonAssert.assertJsonEquals;
 import static net.javacrumbs.jsonunit.core.Option.IGNORING_ARRAY_ORDER;
 
@@ -50,28 +59,47 @@ public class SpringMvcTest extends AbstractMojoTestCase {
 
     @Test
     public void testGeneratedSwaggerSpecJson() throws Exception {
-        mojo.execute();
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode actualJson = mapper.readTree(new File(swaggerOutputDir, "swagger.json"));
-        JsonNode expectJson = mapper.readTree(this.getClass().getResourceAsStream("/expectedOutput/swagger-spring.json"));
-        assertJsonEquals(expectJson, actualJson, Configuration.empty().when(IGNORING_ARRAY_ORDER));
+        assertGeneratedSwaggerSpecJson("This is a sample.");
     }
 
     @Test
     public void testGeneratedSwaggerSpecYaml() throws Exception {
-        mojo.getApiSources().get(0).setOutputFormats("yaml");
-        mojo.execute();
+        assertGeneratedSwaggerSpecYaml("This is a sample.");
+    }
 
-        String actualYaml = io.swagger.util.Yaml.pretty().writeValueAsString(
-                new Yaml().load(FileUtils.readFileToString(new File(swaggerOutputDir, "swagger.yaml"))));
-        String expectYaml = io.swagger.util.Yaml.pretty().writeValueAsString(
-                new Yaml().load(this.getClass().getResourceAsStream("/expectedOutput/swagger-spring.yaml")));
+    @Test
+    public void testSwaggerCustomReaderJson() throws Exception {
+        setCustomReader(mojo, "com.wordnik.springmvc.CustomSpringMvcReader");
+        assertGeneratedSwaggerSpecJson("Processed with CustomSpringMvcReader");
+    }
 
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode actualJson = mapper.readTree(YamlToJson(actualYaml));
-        JsonNode expectJson = mapper.readTree(YamlToJson(expectYaml));
+    @Test
+    public void testSwaggerCustomReaderYaml() throws Exception {
+        setCustomReader(mojo, "com.wordnik.springmvc.CustomSpringMvcReader");
+        assertGeneratedSwaggerSpecYaml("Processed with CustomSpringMvcReader");
+    }
 
-        assertJsonEquals(expectJson, actualJson, Configuration.empty().when(IGNORING_ARRAY_ORDER));
+    @Test
+    public void testInvalidCustomReaderJson() throws Exception {
+        String className = "com.wordnik.nonexisting.Class";
+
+        setCustomReader(mojo, className);
+        try {
+            testGeneratedSwaggerSpecJson();
+        } catch (MojoFailureException e) {
+            assertEquals(String.format("Cannot load Swagger API reader: %s", className), e.getMessage());
+        }
+    }
+
+    @Test
+    public void testInvalidCustomReaderYaml() throws Exception {
+        String className = "com.wordnik.nonexisting.Class";
+        setCustomReader(mojo, className);
+        try {
+            testGeneratedSwaggerSpecJson();
+        } catch (MojoFailureException e) {
+            assertEquals(String.format("Cannot load Swagger API reader: %s", className), e.getMessage());
+        }
     }
 
     @Test
@@ -188,17 +216,31 @@ public class SpringMvcTest extends AbstractMojoTestCase {
         }
     }
 
-    private String createTempDirPath() throws Exception {
-        File tempFile = File.createTempFile("swagmvn", "test");
-        String path = tempFile.getAbsolutePath();
-        tempFile.delete();
-        return path;
+    private void assertGeneratedSwaggerSpecJson(String description) throws MojoExecutionException, MojoFailureException, IOException {
+        mojo.execute();
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode actualJson = mapper.readTree(new File(swaggerOutputDir, "swagger.json"));
+        JsonNode expectJson = mapper.readTree(this.getClass().getResourceAsStream("/expectedOutput/swagger-spring.json"));
+
+        changeDescription(expectJson, description);
+        assertJsonEquals(expectJson, actualJson, Configuration.empty().when(IGNORING_ARRAY_ORDER));
     }
 
-    private String YamlToJson(String yamlString) {
-        Yaml yaml = new Yaml();
-        Map<String, Object> map = (Map<String, Object>) yaml.load(yamlString);
-        return new JSONObject(map).toString();
+    private void assertGeneratedSwaggerSpecYaml(String description) throws MojoExecutionException, MojoFailureException, IOException {
+        mojo.getApiSources().get(0).setOutputFormats("yaml");
+        mojo.execute();
+
+        String actualYaml = io.swagger.util.Yaml.pretty().writeValueAsString(
+            new Yaml().load(FileUtils.readFileToString(new File(swaggerOutputDir, "swagger.yaml"))));
+        String expectYaml = io.swagger.util.Yaml.pretty().writeValueAsString(
+            new Yaml().load(this.getClass().getResourceAsStream("/expectedOutput/swagger-spring.yaml")));
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode actualJson = mapper.readTree(YamlToJson(actualYaml));
+        JsonNode expectJson = mapper.readTree(YamlToJson(expectYaml));
+
+        changeDescription(expectJson, description);
+        assertJsonEquals(expectJson, actualJson, Configuration.empty().when(IGNORING_ARRAY_ORDER));
     }
 
 }
