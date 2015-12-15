@@ -412,6 +412,12 @@ paths:
         required: false
         type: "string"
         default: ""
+      - name: "intValue"
+        in: "header"
+        required: false
+        type: "integer"
+        default: ""
+        format: "int32"
       - name: "myParentHeader"
         in: "header"
         description: "Header from parent"
@@ -424,6 +430,13 @@ paths:
         required: false
         type: "string"
         default: ""
+      - name: "myLongHeaderOnMethod"
+        in: "header"
+        description: "Long header annotated on method"
+        required: false
+        type: "integer"
+        default: ""
+        format: "int64"
       responses:
         405:
           description: "Invalid input"
@@ -495,6 +508,12 @@ paths:
         required: false
         type: "string"
         default: ""
+      - name: "intValue"
+        in: "header"
+        required: false
+        type: "integer"
+        default: ""
+        format: "int32"
       - name: "myParentHeader"
         in: "header"
         description: "Header from parent"
@@ -507,6 +526,13 @@ paths:
         required: false
         type: "string"
         default: ""
+      - name: "myLongHeaderOnMethod"
+        in: "header"
+        description: "Long header annotated on method"
+        required: false
+        type: "integer"
+        default: ""
+        format: "int64"
       responses:
         405:
           description: "Invalid input"

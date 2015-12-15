@@ -26,6 +26,9 @@ public class MyBean extends MyParentBean {
     @HeaderParam("myHeader")
     private String myHeader;
 
+    @HeaderParam("intValue")
+    private int intValue;
+
     public String getMyheader() {
         return myHeader;
     }
@@ -58,8 +61,21 @@ public class MyBean extends MyParentBean {
         this.status = status;
     }
 
+    public int getIntValue() {
+        return intValue;
+    }
+
+    public void setIntValue(int intValue) {
+        this.intValue = intValue;
+    }
+
     @HeaderParam("myHeaderOnMethod")
     @ApiParam(value = "Header annotated on method", required = false)
     public void setMyheadronmethod(String myheadronmethod){
+    }
+
+    @HeaderParam("myLongHeaderOnMethod")
+    @ApiParam(value = "Long header annotated on method", required = false)
+    public void setMyintheaderonmethod(long mylongheaderonmethod){
     }
 }

@@ -15,6 +15,8 @@ import org.reflections.util.Utils;
 import javax.ws.rs.BeanParam;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.*;
 
@@ -56,9 +58,10 @@ public class BeanParamInjectParamExtention extends AbstractSwaggerExtension impl
                     apiParaIdx = i;
                 }
                 i++;
-                parameter = JaxrsParameterExtension.getParameter(cls, parameter, annotation);
-
+                Type paramType = extractType(f, cls);
+                parameter = JaxrsParameterExtension.getParameter(paramType, parameter, annotation);
             }
+
             if (parameter != null) {
                 if (apiParaIdx != -1) {
                     ApiParam param = (ApiParam) f.getAnnotations()[apiParaIdx];
@@ -110,5 +113,17 @@ public class BeanParamInjectParamExtention extends AbstractSwaggerExtension impl
         if (superClass != null) {
             recurseGetDeclaredAndInheritedMethods(superClass, methods);
         }
+    }
+
+    private Type extractType(AccessibleObject accessibleObject, Type defaulType) {
+        if (accessibleObject instanceof Field) {
+            return ((Field) accessibleObject).getType();
+        } else if (accessibleObject instanceof Method) {
+            Method method = (Method) accessibleObject;
+            if (method.getParameterTypes().length == 1) {
+                return method.getParameterTypes()[0];
+            }
+        }
+        return defaulType;
     }
 }
