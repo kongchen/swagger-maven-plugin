@@ -22,7 +22,7 @@ Version 3.1.0+ of this plugin depends on the repackaged/rebranded io.swagger.swa
 
 
 # Usage
-Import the plugin in your project by adding following configuration in your `plugins` block:
+Import the plugin in your project by adding following configuration in your `plugins` block: 
 
 ```xml
 <build>
