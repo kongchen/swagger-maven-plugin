@@ -40,7 +40,12 @@ public class ApiDocumentMojo extends AbstractMojo {
 
     @Component
     private MavenProjectHelper projectHelper;
-
+    
+    /**
+     * A flag indicating if the generation should be skipped.
+     */
+    @Parameter(defaultValue = "false")
+    private boolean skipSwaggerGeneration;
 
     public List<ApiSource> getApiSources() {
         return apiSources;
@@ -52,6 +57,11 @@ public class ApiDocumentMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+        if (skipSwaggerGeneration) {
+            getLog().info("Swagger generation is skipped.");
+            return;
+        }
+        
         if (apiSources == null) {
             throw new MojoFailureException("You must configure at least one apiSources element");
         }
