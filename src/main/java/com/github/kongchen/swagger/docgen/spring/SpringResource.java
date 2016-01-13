@@ -1,5 +1,6 @@
 package com.github.kongchen.swagger.docgen.spring;
 
+import com.github.kongchen.swagger.docgen.util.Annotations;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.lang.reflect.Method;
@@ -29,8 +30,9 @@ public class SpringResource {
             this.description = description;
             methods = new ArrayList<Method>();
             
-            if(controllerClass.getAnnotation(RequestMapping.class)!=null && controllerClass.getAnnotation(RequestMapping.class).value()!=null){
-            	RequestMapping req = controllerClass.getAnnotation(RequestMapping.class);
+            if(Annotations.get(controllerClass, RequestMapping.class) != null
+					&& Annotations.get(controllerClass, RequestMapping.class).value() != null) {
+            	RequestMapping req = Annotations.get(controllerClass, RequestMapping.class);
             	String fullPath = req.value()[0];
             	if(fullPath.endsWith("/")){
             		fullPath = fullPath.substring(0,fullPath.length()-1);

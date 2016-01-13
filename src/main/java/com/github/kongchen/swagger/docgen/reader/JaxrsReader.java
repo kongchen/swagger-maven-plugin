@@ -2,6 +2,7 @@ package com.github.kongchen.swagger.docgen.reader;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.kongchen.swagger.docgen.LogAdapter;
+import com.github.kongchen.swagger.docgen.util.Annotations;
 import io.swagger.annotations.*;
 import io.swagger.converter.ModelConverters;
 import io.swagger.jaxrs.ext.SwaggerExtension;
@@ -53,10 +54,10 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
     protected Swagger read(Class<?> cls, String parentPath, String parentMethod, boolean readHidden, String[] parentConsumes, String[] parentProduces, Map<String, Tag> parentTags, List<Parameter> parentParameters) {
         if (swagger == null)
             swagger = new Swagger();
-        Api api = cls.getAnnotation(Api.class);
+        Api api = Annotations.get(cls, Api.class);
         Map<String, SecurityScope> globalScopes = new HashMap<String, SecurityScope>();
 
-        javax.ws.rs.Path apiPath = cls.getAnnotation(javax.ws.rs.Path.class);
+        javax.ws.rs.Path apiPath = Annotations.get(cls, javax.ws.rs.Path.class);
 
         // only read if allowing hidden apis OR api is not marked as hidden
         if (!canReadApi(readHidden, api)) {
@@ -77,11 +78,11 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         Method methods[] = cls.getMethods();
         for (Method method : methods) {
 
-            ApiOperation apiOperation = method.getAnnotation(ApiOperation.class);
+            ApiOperation apiOperation = Annotations.get(method, ApiOperation.class);
             if (apiOperation == null || apiOperation.hidden()) {
                 continue;
             }
-            javax.ws.rs.Path methodPath = method.getAnnotation(javax.ws.rs.Path.class);
+            javax.ws.rs.Path methodPath = Annotations.get(method, javax.ws.rs.Path.class);
 
             String operationPath = getPath(apiPath, methodPath, parentPath);
             if (operationPath != null && apiOperation != null) {
@@ -99,10 +100,10 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
                 String[] apiConsumes = new String[0];
                 String[] apiProduces = new String[0];
 
-                Annotation annotation = cls.getAnnotation(Consumes.class);
+                Annotation annotation = Annotations.get(cls, Consumes.class);
                 if (annotation != null)
                     apiConsumes = ((Consumes) annotation).value();
-                annotation = cls.getAnnotation(Produces.class);
+                annotation = Annotations.get(cls, Produces.class);
                 if (annotation != null)
                     apiProduces = ((Produces) annotation).value();
 
@@ -135,7 +136,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
     protected boolean isSubResource(Method method) {
         Type t = method.getGenericReturnType();
         Class<?> responseClass = method.getReturnType();
-        if (responseClass != null && responseClass.getAnnotation(Api.class) != null) {
+        if (responseClass != null && Annotations.get(responseClass, Api.class) != null) {
             return true;
         }
         return false;
@@ -179,7 +180,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
     public Operation parseMethod(Method method) {
         Operation operation = new Operation();
 
-        ApiOperation apiOperation = (ApiOperation) method.getAnnotation(ApiOperation.class);
+        ApiOperation apiOperation = (ApiOperation) Annotations.get(method, ApiOperation.class);
 
 
         String operationId = method.getName();
@@ -241,7 +242,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
             LOGGER.debug("picking up response class from method " + method);
             Type t = method.getGenericReturnType();
             responseClass = method.getReturnType();
-            if (!responseClass.equals(java.lang.Void.class) && !"void".equals(responseClass.toString()) && responseClass.getAnnotation(Api.class) == null) {
+            if (!responseClass.equals(java.lang.Void.class) && !"void".equals(responseClass.toString()) && Annotations.get(responseClass, Api.class) == null) {
                 LOGGER.debug("reading model " + responseClass);
                 Map<String, Model> models = ModelConverters.getInstance().readAll(t);
             }
@@ -249,7 +250,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         if (responseClass != null
                 && !responseClass.equals(java.lang.Void.class)
                 && !responseClass.equals(javax.ws.rs.core.Response.class)
-                && responseClass.getAnnotation(Api.class) == null) {
+                && Annotations.get(responseClass, Api.class) == null) {
             if (isPrimitive(responseClass)) {
                 Property responseProperty = null;
                 Property property = ModelConverters.getInstance().readAsProperty(responseClass);
@@ -299,26 +300,26 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         operation.operationId(operationId);
 
         Annotation annotation;
-        annotation = method.getAnnotation(Consumes.class);
+        annotation = Annotations.get(method, Consumes.class);
         if (annotation != null) {
             String[] apiConsumes = ((Consumes) annotation).value();
             for (String mediaType : apiConsumes)
                 operation.consumes(mediaType);
         }
 
-        annotation = method.getAnnotation(Produces.class);
+        annotation = Annotations.get(method, Produces.class);
         if (annotation != null) {
             String[] apiProduces = ((Produces) annotation).value();
             for (String mediaType : apiProduces)
                 operation.produces(mediaType);
         }
 
-        ApiResponses responseAnnotation = method.getAnnotation(ApiResponses.class);
+        ApiResponses responseAnnotation = Annotations.get(method, ApiResponses.class);
         if (responseAnnotation != null) {
             updateApiResponse(operation, responseAnnotation);
         }
 
-        annotation = method.getAnnotation(Deprecated.class);
+        annotation = Annotations.get(method, Deprecated.class);
         if (annotation != null)
             operation.deprecated(true);
 
@@ -357,19 +358,19 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
     public String extractOperationMethod(ApiOperation apiOperation, Method method, Iterator<SwaggerExtension> chain) {
         if (apiOperation.httpMethod() != null && !"".equals(apiOperation.httpMethod()))
             return apiOperation.httpMethod().toLowerCase();
-        else if (method.getAnnotation(javax.ws.rs.GET.class) != null)
+        else if (Annotations.get(method, javax.ws.rs.GET.class) != null)
             return "get";
-        else if (method.getAnnotation(javax.ws.rs.PUT.class) != null)
+        else if (Annotations.get(method, javax.ws.rs.PUT.class) != null)
             return "put";
-        else if (method.getAnnotation(javax.ws.rs.POST.class) != null)
+        else if (Annotations.get(method, javax.ws.rs.POST.class) != null)
             return "post";
-        else if (method.getAnnotation(javax.ws.rs.DELETE.class) != null)
+        else if (Annotations.get(method, javax.ws.rs.DELETE.class) != null)
             return "delete";
-        else if (method.getAnnotation(javax.ws.rs.OPTIONS.class) != null)
+        else if (Annotations.get(method, javax.ws.rs.OPTIONS.class) != null)
             return "options";
-        else if (method.getAnnotation(javax.ws.rs.HEAD.class) != null)
+        else if (Annotations.get(method, javax.ws.rs.HEAD.class) != null)
             return "head";
-        else if (method.getAnnotation(io.swagger.jaxrs.PATCH.class) != null)
+        else if (Annotations.get(method, io.swagger.jaxrs.PATCH.class) != null)
             return "patch";
         else {
             // check for custom HTTP Method annotations
