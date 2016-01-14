@@ -3,6 +3,7 @@ package com.github.kongchen.swagger.docgen.mavenplugin;
 import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
 import com.github.kongchen.swagger.docgen.GenerateException;
 import com.github.kongchen.swagger.docgen.LogAdapter;
+import com.github.kongchen.swagger.docgen.reader.ClassSwaggerReader;
 import com.github.kongchen.swagger.docgen.reader.JaxrsReader;
 import io.swagger.config.FilterFactory;
 import io.swagger.core.filter.SpecFilter;
@@ -41,10 +42,8 @@ public class MavenDocumentSource extends AbstractDocumentSource {
                 throw new GenerateException("Cannot load: " + apiSource.getSwaggerInternalFilter(), e);
             }
         }
-        
-        JaxrsReader reader = new JaxrsReader(swagger, LOG);
-        reader.setTypesToSkip(this.typesToSkip);
-        swagger = reader.read(apiSource.getValidClasses());
+
+        swagger = resolveApiReader().read(apiSource.getValidClasses());
 
         if(apiSource.getSecurityDefinitions() != null) {
             for (SecurityDefinition sd : apiSource.getSecurityDefinitions()) {
@@ -66,12 +65,23 @@ public class MavenDocumentSource extends AbstractDocumentSource {
             sortedDefs.putAll(defs);
             swagger.setSecurityDefinitions(sortedDefs);
         }
-        
+
         if (FilterFactory.getFilter() != null) {
             swagger = new SpecFilter().filter(swagger, FilterFactory.getFilter(),
                 new HashMap<String, List<String>>(), new HashMap<String, String>(),
                 new HashMap<String, List<String>>());
         }
 
-	}
+    }
+
+    private ClassSwaggerReader resolveApiReader() throws GenerateException {
+        String customReaderClassName = apiSource.getSwaggerApiReader();
+        if (customReaderClassName == null) {
+            JaxrsReader reader = new JaxrsReader(swagger, LOG);
+            reader.setTypesToSkip(this.typesToSkip);
+            return reader;
+        } else {
+            return getCustomApiReader(customReaderClassName);
+        }
+    }
 }
