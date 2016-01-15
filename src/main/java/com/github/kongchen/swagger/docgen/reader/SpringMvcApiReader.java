@@ -3,7 +3,6 @@ package com.github.kongchen.swagger.docgen.reader;
 import com.github.kongchen.swagger.docgen.GenerateException;
 import com.github.kongchen.swagger.docgen.LogAdapter;
 import com.github.kongchen.swagger.docgen.spring.SpringResource;
-import com.github.kongchen.swagger.docgen.util.Annotations;
 import io.swagger.annotations.*;
 import io.swagger.converter.ModelConverters;
 import io.swagger.models.*;
@@ -14,6 +13,7 @@ import io.swagger.models.properties.MapProperty;
 import io.swagger.models.properties.Property;
 import io.swagger.models.properties.RefProperty;
 import org.codehaus.plexus.util.StringUtils;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -58,7 +58,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
 
         // Add the description from the controller api
         Class<?> controller = resource.getControllerClass();
-        RequestMapping controllerRM = Annotations.get(controller, RequestMapping.class);
+        RequestMapping controllerRM = AnnotationUtils.findAnnotation(controller, RequestMapping.class);
 
 
         String[] controllerProduces = new String[0];
@@ -69,7 +69,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         }
 
         if (controller != null && controller.isAnnotationPresent(Api.class)) {
-            Api api = Annotations.get(controller, Api.class);
+            Api api = AnnotationUtils.findAnnotation(controller, Api.class);
             if (!canReadApi(false, api)) {
                 return swagger;
             }
@@ -85,11 +85,11 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         for (String path : apiMethodMap.keySet()) {
             for (Method method : apiMethodMap.get(path)) {
 
-                RequestMapping requestMapping = Annotations.get(method, RequestMapping.class);
+                RequestMapping requestMapping = AnnotationUtils.findAnnotation(method, RequestMapping.class);
                 if (requestMapping == null) {
                     continue;
                 }
-                ApiOperation apiOperation = Annotations.get(method, ApiOperation.class);
+                ApiOperation apiOperation = AnnotationUtils.findAnnotation(method, ApiOperation.class);
                 if (apiOperation == null || apiOperation.hidden()) {
                     continue;
                 }
@@ -130,7 +130,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
     private Operation parseMethod(Method method) {
         Operation operation = new Operation();
 
-        RequestMapping requestMapping = Annotations.get(method, RequestMapping.class);
+        RequestMapping requestMapping = AnnotationUtils.findAnnotation(method, RequestMapping.class);
         Class<?> responseClass = null;
         List<String> produces = new ArrayList<String>();
         List<String> consumes = new ArrayList<String>();
@@ -139,7 +139,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         Map<String, Property> defaultResponseHeaders = null;
         Set<Map<String, Object>> customExtensions = null;
 
-        ApiOperation apiOperation = Annotations.get(method, ApiOperation.class);
+        ApiOperation apiOperation = AnnotationUtils.findAnnotation(method, ApiOperation.class);
 
         if (apiOperation.hidden())
             return null;
@@ -196,7 +196,8 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
             if (responseClass.equals(ResponseEntity.class)) {
                 responseClass = getGenericSubtype(method.getReturnType(), method.getGenericReturnType());
             }
-            if (!responseClass.equals(Void.class) && !"void".equals(responseClass.toString()) && Annotations.get(responseClass, Api.class) == null) {
+            if (!responseClass.equals(Void.class) && !"void".equals(responseClass.toString())
+                    && AnnotationUtils.findAnnotation(responseClass, Api.class) == null) {
                 LOG.info("reading model " + responseClass);
                 Map<String, Model> models = ModelConverters.getInstance().readAll(t);
             }
@@ -204,7 +205,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         if (responseClass != null
                 && !responseClass.equals(Void.class)
                 && !responseClass.equals(ResponseEntity.class)
-                && Annotations.get(responseClass, Api.class) == null) {
+                && AnnotationUtils.findAnnotation(responseClass, Api.class) == null) {
             if (isPrimitive(responseClass)) {
                 Property responseProperty = null;
                 Property property = ModelConverters.getInstance().readAsProperty(responseClass);
@@ -268,17 +269,17 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
             }
         }
 
-        ApiResponses responseAnnotation = Annotations.get(method, ApiResponses.class);
+        ApiResponses responseAnnotation = AnnotationUtils.findAnnotation(method, ApiResponses.class);
         if (responseAnnotation != null) {
             updateApiResponse(operation, responseAnnotation);
         } else {
-            ResponseStatus responseStatus = Annotations.get(method, ResponseStatus.class);
+            ResponseStatus responseStatus = AnnotationUtils.findAnnotation(method, ResponseStatus.class);
             if (responseStatus != null) {
                 operation.response(responseStatus.value().value(), new Response().description(responseStatus.reason()));
             }
         }
 
-        Deprecated annotation = Annotations.get(method, Deprecated.class);
+        Deprecated annotation = AnnotationUtils.findAnnotation(method, Deprecated.class);
         if (annotation != null)
             operation.deprecated(true);
 
@@ -318,7 +319,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         Map<String, List<Method>> apiMethodMap = new HashMap<String, List<Method>>();
         for (Method method : methods) {
             if (method.isAnnotationPresent(RequestMapping.class)) {
-                RequestMapping requestMapping = Annotations.get(method, RequestMapping.class);
+                RequestMapping requestMapping = AnnotationUtils.findAnnotation(method, RequestMapping.class);
                 String path = "";
                 if (requestMapping.value() != null && requestMapping.value().length != 0) {
                     path = generateFullPath(requestMapping.value()[0]);
@@ -368,8 +369,9 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         String[] controllerRequestMappingValues = null;
 
         //Determine if we will use class-level requestmapping or dummy string
-        if (Annotations.get(clazz, RequestMapping.class) != null && Annotations.get(clazz, RequestMapping.class).value() != null) {
-            controllerRequestMappingValues = Annotations.get(clazz, RequestMapping.class).value();
+        if (AnnotationUtils.findAnnotation(clazz, RequestMapping.class) != null
+                && AnnotationUtils.findAnnotation(clazz, RequestMapping.class).value() != null) {
+            controllerRequestMappingValues = AnnotationUtils.findAnnotation(clazz, RequestMapping.class).value();
         } else {
             controllerRequestMappingValues = new String[1];
             controllerRequestMappingValues[0] = "";
@@ -381,7 +383,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
             // Iterate over all methods inside the controller
             Method[] methods = clazz.getMethods();
             for (Method method : methods) {
-                RequestMapping methodRequestMapping = Annotations.get(method, RequestMapping.class);
+                RequestMapping methodRequestMapping = AnnotationUtils.findAnnotation(method, RequestMapping.class);
 
                 // Look for method-level @RequestMapping annotation
                 if (methodRequestMapping instanceof RequestMapping) {
@@ -438,7 +440,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
     protected Map<String, SpringResource> generateResourceMap(Set<Class<?>> validClasses) throws GenerateException {
         Map<String, SpringResource> resourceMap = new HashMap<String, SpringResource>();
         for (Class<?> c : validClasses) {
-            RequestMapping requestMapping = Annotations.get(c, RequestMapping.class);
+            RequestMapping requestMapping = AnnotationUtils.findAnnotation(c, RequestMapping.class);
             String description = "";
             //This try/catch block is to stop a bamboo build from failing due to NoClassDefFoundError
             //This occurs when a class or method loaded by reflections contains a type that has no dependency

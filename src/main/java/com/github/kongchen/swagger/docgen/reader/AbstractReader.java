@@ -4,7 +4,6 @@ import com.github.kongchen.swagger.docgen.LogAdapter;
 import com.github.kongchen.swagger.docgen.jaxrs.BeanParamInjectParamExtention;
 import com.github.kongchen.swagger.docgen.jaxrs.JaxrsParameterExtension;
 import com.github.kongchen.swagger.docgen.spring.SpringSwaggerExtension;
-import com.github.kongchen.swagger.docgen.util.Annotations;
 import com.sun.jersey.api.core.InjectParam;
 import io.swagger.annotations.*;
 import io.swagger.converter.ModelConverters;
@@ -21,6 +20,7 @@ import io.swagger.models.properties.MapProperty;
 import io.swagger.models.properties.Property;
 import io.swagger.models.properties.RefProperty;
 import org.apache.commons.lang3.reflect.TypeUtils;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.ws.rs.*;
@@ -509,7 +509,7 @@ public abstract class AbstractReader {
     }
 
     protected void readImplicitParameters(Method method, Operation operation) {
-        ApiImplicitParams implicitParams = Annotations.get(method, ApiImplicitParams.class);
+        ApiImplicitParams implicitParams = AnnotationUtils.findAnnotation(method, ApiImplicitParams.class);
         if (implicitParams != null && implicitParams.value().length > 0) {
             for (ApiImplicitParam param : implicitParams.value()) {
 
