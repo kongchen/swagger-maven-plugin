@@ -14,7 +14,6 @@ public class Annotations {
                 try {
                     superClassMethod = superClass.getMethod(method.getName(), method.getParameterTypes());
                 } catch (NoSuchMethodException e) {
-
                 }
                 if (superClassMethod != null) {
                     return get(superClassMethod, annotationClass);
@@ -44,4 +43,5 @@ public class Annotations {
         }
         return null;
     }
+
 }
