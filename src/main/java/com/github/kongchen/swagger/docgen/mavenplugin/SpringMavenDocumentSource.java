@@ -3,6 +3,7 @@ package com.github.kongchen.swagger.docgen.mavenplugin;
 import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
 import com.github.kongchen.swagger.docgen.GenerateException;
 import com.github.kongchen.swagger.docgen.LogAdapter;
+import com.github.kongchen.swagger.docgen.reader.ClassSwaggerReader;
 import com.github.kongchen.swagger.docgen.reader.SpringMvcApiReader;
 import io.swagger.config.FilterFactory;
 import io.swagger.core.filter.SpecFilter;
@@ -41,10 +42,8 @@ public class SpringMavenDocumentSource extends AbstractDocumentSource {
                 throw new GenerateException("Cannot load: " + apiSource.getSwaggerInternalFilter(), e);
             }
         }
-        
-        SpringMvcApiReader reader = new SpringMvcApiReader(swagger, LOG);
-        reader.setTypesToSkip(this.typesToSkip);
-        swagger = reader.read(apiSource.getValidClasses());
+
+        swagger = resolveApiReader().read(apiSource.getValidClasses());
         
         if(apiSource.getSecurityDefinitions() != null) {
             for (SecurityDefinition sd : apiSource.getSecurityDefinitions()) {
@@ -70,7 +69,16 @@ public class SpringMavenDocumentSource extends AbstractDocumentSource {
                     new HashMap<String, List<String>>(), new HashMap<String, String>(),
                     new HashMap<String, List<String>>());
         }
+    }
 
-
+    private ClassSwaggerReader resolveApiReader() throws GenerateException {
+        String customReaderClassName = apiSource.getSwaggerApiReader();
+        if (customReaderClassName == null) {
+            SpringMvcApiReader reader = new SpringMvcApiReader(swagger, LOG);
+            reader.setTypesToSkip(this.typesToSkip);
+            return reader;
+        } else {
+            return getCustomApiReader(customReaderClassName);
+        }
     }
 }

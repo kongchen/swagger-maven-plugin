@@ -615,6 +615,14 @@
             "default": ""
           },
           {
+            "name": "intValue",
+            "in": "header",
+            "required": false,
+            "type": "integer",
+            "default": "",
+            "format": "int32"
+          },
+          {
             "name": "myParentHeader",
             "in": "header",
             "description": "Header from parent",
@@ -629,6 +637,15 @@
             "required": false,
             "type": "string",
             "default": ""
+          },
+          {
+            "name": "myLongHeaderOnMethod",
+            "in": "header",
+            "description": "Long header annotated on method",
+            "required": false,
+            "type": "integer",
+            "default": "",
+            "format": "int64"
           }
         ],
         "responses": {
@@ -734,6 +751,14 @@
             "default": ""
           },
           {
+            "name": "intValue",
+            "in": "header",
+            "required": false,
+            "type": "integer",
+            "default": "",
+            "format": "int32"
+          },
+          {
             "name": "myParentHeader",
             "in": "header",
             "description": "Header from parent",
@@ -748,6 +773,15 @@
             "required": false,
             "type": "string",
             "default": ""
+          },
+          {
+            "name": "myLongHeaderOnMethod",
+            "in": "header",
+            "description": "Long header annotated on method",
+            "required": false,
+            "type": "integer",
+            "default": "",
+            "format": "int64"
           }
         ],
         "responses": {

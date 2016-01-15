@@ -22,7 +22,7 @@ Version 3.1.0+ of this plugin depends on the repackaged/rebranded io.swagger.swa
 
 
 # Usage
-Import the plugin in your project by adding following configuration in your `plugins` block:
+Import the plugin in your project by adding following configuration in your `plugins` block: 
 
 ```xml
 <build>
@@ -63,11 +63,13 @@ You can specify several `apiSource`s. Generally, one is enough.
 | `outputPath` | The path of the generated static document, not existed parent directories will be created. If you don't want to generate a static document, just don't set it. |
 | `outputFormats` | The format types of the generated swagger spec. Valid values are `json`, `yaml` or both `json,yaml`. The `json` format is default.|
 | `swaggerDirectory` | The directory of generated `swagger.json` file. If null, no `swagger.json` will be generated. |
+| `swaggerApiReader` | If not null, the value should be a full name of the class implementing `com.github.kongchen.swagger.docgen.reader.ClassSwaggerReader`. This allows you to flexibly implement/override the reader's implementation. Default is `com.github.kongchen.swagger.docgen.reader.JaxrsReader` |
 | `attachSwaggerArtifact` | If enabled, the generated `swagger.json` file will be attached as a maven artifact. The `swaggerDirectory`'s name will be used as an artifact classifier. Default is `false`. |
 | `modelSubstitute` | The model substitute file's path, see more details [below](#model-substitution)|
 | `typesToSkip` | Nodes of class names to explicitly skip during parameter processing. More details [below](#typesToSkip)|
 | `apiModelPropertyAccessExclusions` | Allows the exclusion of specified `@ApiModelProperty` fields. This can be used to hide certain model properties from the swagger spec. More details [below](#apiModelPropertyAccessExclusions)|
 | `jsonExampleValues` | If `true`, all example values in `@ApiModelProperty` will be handled as json raw values. This is useful for creating valid examples in the generated json for all property types, including non-string ones. |
+| `skipSwaggerGeneration` | If `true`, swagger generation will be skipped. Default is `false`. |
 
 # <a id="templatefile">Template File</a>
 
@@ -283,7 +285,8 @@ There's a [sample here](https://github.com/swagger-maven-plugin/swagger-maven-ex
                 <templatePath>${basedir}/src/test/resources/strapdown.html.hbs</templatePath>
                 <outputPath>${basedir}/generated/document.html</outputPath>
                 <swaggerDirectory>${basedir}/generated/swagger-ui</swaggerDirectory>
-                <attachSwaggerDirectory>true</attachSwaggerDirectory>
+                <swaggerApiReader>com.wordnik.swagger.jaxrs.reader.DefaultJaxrsApiReader</swaggerApiReader>
+                <attachSwaggerArtifact>true</attachSwaggerArtifact>
             </apiSource>
         </apiSources>
     </configuration>

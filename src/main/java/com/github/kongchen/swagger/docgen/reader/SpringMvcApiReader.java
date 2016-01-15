@@ -435,7 +435,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         return resourceMap;
     }
 
-    private Map<String, SpringResource> generateResourceMap(Set<Class<?>> validClasses) throws GenerateException {
+    protected Map<String, SpringResource> generateResourceMap(Set<Class<?>> validClasses) throws GenerateException {
         Map<String, SpringResource> resourceMap = new HashMap<String, SpringResource>();
         for (Class<?> c : validClasses) {
             RequestMapping requestMapping = Annotations.get(c, RequestMapping.class);
