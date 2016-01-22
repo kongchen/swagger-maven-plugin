@@ -116,6 +116,9 @@ public class ApiSource {
     @Parameter
     private File descriptionFile;
 
+    @Parameter
+    private List<String> modelConverters;
+
     public Set<Class<?>> getValidClasses() throws GenerateException {
         Set<Class<?>> classes = new HashSet<Class<?>>();
         if (getLocations() == null) {
@@ -321,6 +324,14 @@ public class ApiSource {
 
     public void setDescriptionFile(File descriptionFile) {
         this.descriptionFile = descriptionFile;
+    }
+
+    public List<String> getModelConverters() {
+        return modelConverters;
+    }
+
+    public void setModelConverters(List<String> modelConverters) {
+        this.modelConverters = modelConverters;
     }
 }
 

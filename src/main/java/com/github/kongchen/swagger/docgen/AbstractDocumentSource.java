@@ -16,6 +16,7 @@ import com.github.kongchen.swagger.docgen.mavenplugin.ApiSource;
 import com.github.kongchen.swagger.docgen.reader.AbstractReader;
 import com.github.kongchen.swagger.docgen.reader.ClassSwaggerReader;
 import com.github.kongchen.swagger.docgen.reader.ModelModifier;
+import io.swagger.converter.ModelConverter;
 import io.swagger.converter.ModelConverters;
 import io.swagger.models.Scheme;
 import io.swagger.models.Swagger;
@@ -23,6 +24,7 @@ import io.swagger.models.properties.Property;
 import io.swagger.util.Yaml;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
 import java.io.*;
@@ -209,6 +211,31 @@ public abstract class AbstractDocumentSource {
         ModelConverters.getInstance().addConverter(modelModifier);
     }
 
+    public void loadModelConverters() throws MojoExecutionException {
+        final List<String> modelConverters = apiSource.getModelConverters();
+        if(modelConverters == null) return;
+
+        for(String modelConverter : modelConverters) {
+            try {
+                final Class<?> modelConverterClass = Class.forName(modelConverter);
+                if(ModelConverter.class.isAssignableFrom(modelConverterClass)) {
+                    final ModelConverter modelConverterInstance = (ModelConverter) modelConverterClass.newInstance();
+                    ModelConverters.getInstance().addConverter(modelConverterInstance);
+                } else {
+                    throw new MojoExecutionException(
+                       String.format("Class %s has to be a subclass of %s",
+                          modelConverterClass.getName(), ModelConverter.class));
+                }
+            } catch (ClassNotFoundException e) {
+                throw new MojoExecutionException(String.format("Could not find custom model converter %s", modelConverter), e);
+            } catch (InstantiationException e) {
+                throw new MojoExecutionException(String.format("Unable to instantiate custom model converter %s", modelConverter), e);
+            } catch (IllegalAccessException e) {
+                throw new MojoExecutionException(String.format("Unable to instantiate custom model converter %s", modelConverter), e);
+            }
+        }
+    }
+
     public void loadTypesToSkip() throws GenerateException {
         List<String> typesToSkip = apiSource.getTypesToSkip();
         if (typesToSkip != null && !typesToSkip.isEmpty()) {
@@ -253,7 +280,7 @@ public abstract class AbstractDocumentSource {
     }
 
     protected File createFile(File dir, String outputResourcePath)
-            throws IOException {
+       throws IOException {
         File serviceFile;
         int i = outputResourcePath.lastIndexOf("/");
         if (i != -1) {
@@ -287,7 +314,7 @@ public abstract class AbstractDocumentSource {
             throw new GenerateException(e);
         }
         OutputStreamWriter writer = new OutputStreamWriter(fileOutputStream,
-                Charset.forName("UTF-8"));
+           Charset.forName("UTF-8"));
 
         try {
             TemplatePath tp = Utils.parseTemplateUrl(templatePath);

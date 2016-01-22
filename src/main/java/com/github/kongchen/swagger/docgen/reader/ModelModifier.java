@@ -41,7 +41,7 @@ public class ModelModifier extends ModelResolver {
             throw new GenerateException(e);
         }
     }
-    
+
     List<String> apiModelPropertyAccessExclusions = new ArrayList<String>();
 
     public List<String> getApiModelPropertyAccessExclusions() {
@@ -51,11 +51,13 @@ public class ModelModifier extends ModelResolver {
     public void setApiModelPropertyAccessExclusions(List<String> apiModelPropertyAccessExclusions) {
         this.apiModelPropertyAccessExclusions = apiModelPropertyAccessExclusions;
     }
-    
+
     @Override
     public Property resolveProperty(Type type, ModelConverterContext context, Annotation[] annotations, Iterator<ModelConverter> chain) {
         if(modelSubtitutes.containsKey(type)) {
             return super.resolveProperty(modelSubtitutes.get(type), context, annotations, chain);
+        } else if(chain.hasNext()) {
+            return chain.next().resolveProperty(type, context, annotations, chain);
         } else {
             return super.resolveProperty(type, context, annotations, chain);
         }
@@ -74,37 +76,37 @@ public class ModelModifier extends ModelResolver {
     @Override
     public Model resolve(JavaType type, ModelConverterContext context, Iterator<ModelConverter> chain) {
         Model model = super.resolve(type, context, chain);
-        
+
         // If there are no @ApiModelPropety exclusions configured, return the untouched model
         if (apiModelPropertyAccessExclusions == null || apiModelPropertyAccessExclusions.isEmpty()) {
             return model;
-        } 
-        
+        }
+
         Class<?> cls = type.getRawClass();
-                
+
         for (Method method : cls.getDeclaredMethods()) {
-            
+
             ApiModelProperty apiModelPropertyAnnotation = AnnotationUtils.findAnnotation(method, ApiModelProperty.class);
-            
+
             if (false == (apiModelPropertyAnnotation instanceof ApiModelProperty)) {
                 continue;
             }
-            
+
             String apiModelPropertyAccess = apiModelPropertyAnnotation.access();
             String apiModelPropertyName = apiModelPropertyAnnotation.name();
-            
+
             // If the @ApiModelProperty is not populated with both #name and #access, skip it
             if (apiModelPropertyAccess.isEmpty() || apiModelPropertyName.isEmpty()) {
                 continue;
             }
-            
+
             // Check to see if the value of @ApiModelProperty#access is one to exclude.
             // If so, remove it from the previously-calculated model.
             if (apiModelPropertyAccessExclusions.contains(apiModelPropertyAccess)) {
                 model.getProperties().remove(apiModelPropertyName);
             }
         }
-        
+
         return model;
     }
 }
