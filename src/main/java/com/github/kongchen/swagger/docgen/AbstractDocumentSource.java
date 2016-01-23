@@ -280,7 +280,7 @@ public abstract class AbstractDocumentSource {
     }
 
     protected File createFile(File dir, String outputResourcePath)
-       throws IOException {
+            throws IOException {
         File serviceFile;
         int i = outputResourcePath.lastIndexOf("/");
         if (i != -1) {
@@ -314,7 +314,7 @@ public abstract class AbstractDocumentSource {
             throw new GenerateException(e);
         }
         OutputStreamWriter writer = new OutputStreamWriter(fileOutputStream,
-           Charset.forName("UTF-8"));
+                Charset.forName("UTF-8"));
 
         try {
             TemplatePath tp = Utils.parseTemplateUrl(templatePath);

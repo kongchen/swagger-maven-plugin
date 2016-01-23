@@ -23,7 +23,7 @@ import com.github.kongchen.swagger.docgen.GenerateException;
  * Date: 3/7/13
  */
 @Mojo( name = "generate", defaultPhase = LifecyclePhase.COMPILE, configurator = "include-project-dependencies",
-   requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME)
+       requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME)
 public class ApiDocumentMojo extends AbstractMojo {
 
     /**
@@ -67,12 +67,12 @@ public class ApiDocumentMojo extends AbstractMojo {
         }
         if (useSwaggerSpec11()) {
             throw new MojoExecutionException("You may use an old version of swagger which is not supported by swagger-maven-plugin 2.0+\n" +
-               "swagger-maven-plugin 2.0+ only supports swagger-core 1.3.x");
+                "swagger-maven-plugin 2.0+ only supports swagger-core 1.3.x");
         }
 
         if (useSwaggerSpec13()) {
             throw new MojoExecutionException("You may use an old version of swagger which is not supported by swagger-maven-plugin 3.0+\n" +
-               "swagger-maven-plugin 3.0+ only supports swagger spec 2.0");
+                    "swagger-maven-plugin 3.0+ only supports swagger spec 2.0");
         }
 
         try {
