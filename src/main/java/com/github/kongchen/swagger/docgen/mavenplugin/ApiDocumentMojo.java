@@ -40,7 +40,7 @@ public class ApiDocumentMojo extends AbstractMojo {
 
     @Component
     private MavenProjectHelper projectHelper;
-
+    
     /**
      * A flag indicating if the generation should be skipped.
      */
@@ -61,7 +61,7 @@ public class ApiDocumentMojo extends AbstractMojo {
             getLog().info("Swagger generation is skipped.");
             return;
         }
-
+        
         if (apiSources == null) {
             throw new MojoFailureException("You must configure at least one apiSources element");
         }
@@ -84,32 +84,32 @@ public class ApiDocumentMojo extends AbstractMojo {
                 AbstractDocumentSource documentSource;
 
                 if(apiSource.isSpringmvc()){
-                    documentSource = new SpringMavenDocumentSource(apiSource, getLog());
+                	documentSource = new SpringMavenDocumentSource(apiSource, getLog());
                 }else{
-                    documentSource = new MavenDocumentSource(apiSource, getLog());
+                	documentSource = new MavenDocumentSource(apiSource, getLog());
                 }
 
                 documentSource.loadTypesToSkip();
                 documentSource.loadModelModifier();
                 documentSource.loadModelConverters();
                 documentSource.loadDocuments();
-                if (apiSource.getOutputPath() != null){
-                    File outputDirectory = new File(apiSource.getOutputPath()).getParentFile();
-                    if (outputDirectory != null && !outputDirectory.exists()) {
-                        if (!outputDirectory.mkdirs()) {
-                            throw new MojoExecutionException("Create directory[" +
-                               apiSource.getOutputPath() + "] for output failed.");
-                        }
-                    }
-                }
-                if (apiSource.getTemplatePath()!=null) {
-                    documentSource.toDocuments();
-                }
+				if (apiSource.getOutputPath() != null){
+					File outputDirectory = new File(apiSource.getOutputPath()).getParentFile();
+					if (outputDirectory != null && !outputDirectory.exists()) {
+						if (!outputDirectory.mkdirs()) {
+							throw new MojoExecutionException("Create directory[" +
+									apiSource.getOutputPath() + "] for output failed.");
+						}
+					}
+				}
+				if (apiSource.getTemplatePath()!=null) {
+					documentSource.toDocuments();
+				}
                 documentSource.toSwaggerDocuments(
-                   apiSource.getSwaggerUIDocBasePath() == null
-                      ? apiSource.getBasePath()
-                      : apiSource.getSwaggerUIDocBasePath(),
-                   apiSource.getOutputFormats());
+                        apiSource.getSwaggerUIDocBasePath() == null
+                                ? apiSource.getBasePath()
+                                : apiSource.getSwaggerUIDocBasePath(),
+                        apiSource.getOutputFormats());
 
 
                 if ( apiSource.isAttachSwaggerArtifact() && apiSource.getSwaggerDirectory() != null && this.project != null) {
