@@ -10,6 +10,9 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Iterator;
 
+/**
+ * A ModelConverter used for testing adding custom model converters.
+ */
 public class PetIdToStringModelConverter extends AbstractModelConverter {
 
     public PetIdToStringModelConverter() {
@@ -26,7 +29,6 @@ public class PetIdToStringModelConverter extends AbstractModelConverter {
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
-        return iterator.hasNext() ? iterator.next().resolveProperty(type, modelConverterContext, annotations, iterator) :
-                super.resolveProperty(type, modelConverterContext, annotations, iterator);
+        return super.resolveProperty(type, modelConverterContext, annotations, iterator);
     }
 }
