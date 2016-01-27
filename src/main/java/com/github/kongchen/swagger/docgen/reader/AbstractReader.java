@@ -460,7 +460,12 @@ public abstract class AbstractReader {
             if (responseClass != null && !responseClass.equals(Void.class)) {
                 Map<String, Model> models = ModelConverters.getInstance().read(responseClass);
                 for (String key : models.keySet()) {
-                    response.schema(new RefProperty().asDefault(key));
+                    final Property schema = new RefProperty().asDefault(key);
+                    if ("List".equals(apiResponse.responseContainer())) {
+                        response.schema(new ArrayProperty(schema));
+                    } else {
+                        response.schema(schema);
+                    }
                     swagger.model(key, models.get(key));
                 }
                 models = ModelConverters.getInstance().readAll(responseClass);

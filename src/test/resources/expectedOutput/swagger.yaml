@@ -342,6 +342,28 @@ paths:
       - petstore_auth:
         - "write:pets"
         - "read:pets"
+  /pet/test/testingArrayResponse:
+    get:
+      tags:
+      - "pet"
+      summary: "testingArrayResponse"
+      description: ""
+      operationId: "testingArrayResponse"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "array"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Pet"
+      security:
+      - petstore_auth:
+        - "write:pets"
+        - "read:pets"
   /pet/{petId}:
     get:
       tags:
