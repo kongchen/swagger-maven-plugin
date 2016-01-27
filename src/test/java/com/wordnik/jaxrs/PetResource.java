@@ -271,5 +271,12 @@ public class PetResource {
         return "testingBasicAuth";
     }
 
+    @ApiOperation(value = "testingArrayResponse")
+    @ApiResponses(@ApiResponse(code = 200, message = "array", response = Pet.class, responseContainer = "List"))
+    @GET
+    @Path("/test/testingArrayResponse")
+    public Response testingArrayResponse() {
+        return null;
+    }
 
 }
