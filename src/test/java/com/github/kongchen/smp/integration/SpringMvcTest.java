@@ -125,7 +125,7 @@ public class SpringMvcTest extends AbstractMojoTestCase {
                 String actual = actualReader.readLine();
                 if (expect == null && actual == null)
                     break;
-                Assert.assertEquals(expect.trim(), actual.trim(), "" + count);
+                Assert.assertEquals(actual.trim(), expect.trim(), "" + count);
 
             }
 

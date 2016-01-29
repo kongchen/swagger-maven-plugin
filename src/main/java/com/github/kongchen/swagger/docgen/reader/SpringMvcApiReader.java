@@ -3,9 +3,17 @@ package com.github.kongchen.swagger.docgen.reader;
 import com.github.kongchen.swagger.docgen.GenerateException;
 import com.github.kongchen.swagger.docgen.LogAdapter;
 import com.github.kongchen.swagger.docgen.spring.SpringResource;
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.Authorization;
+import io.swagger.annotations.AuthorizationScope;
 import io.swagger.converter.ModelConverters;
-import io.swagger.models.*;
+import io.swagger.models.Model;
+import io.swagger.models.Operation;
+import io.swagger.models.Response;
+import io.swagger.models.SecurityRequirement;
+import io.swagger.models.Swagger;
 import io.swagger.models.Tag;
 import io.swagger.models.parameters.Parameter;
 import io.swagger.models.properties.ArrayProperty;
@@ -23,7 +31,12 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerReader {
     private String resourcePath;
@@ -131,7 +144,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         Operation operation = new Operation();
 
         RequestMapping requestMapping = AnnotationUtils.findAnnotation(method, RequestMapping.class);
-        Class<?> responseClass = null;
+        Type responseClass = null;
         List<String> produces = new ArrayList<String>();
         List<String> consumes = new ArrayList<String>();
         String responseContainer = null;
@@ -191,21 +204,19 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         if (responseClass == null) {
             // pick out response from method declaration
             LOG.info("picking up response class from method " + method);
-            Type t = method.getGenericReturnType();
-            responseClass = method.getReturnType();
-            if (responseClass.equals(ResponseEntity.class)) {
-                responseClass = getGenericSubtype(method.getReturnType(), method.getGenericReturnType());
-            }
-            if (!responseClass.equals(Void.class) && !"void".equals(responseClass.toString())
-                    && AnnotationUtils.findAnnotation(responseClass, Api.class) == null) {
-                LOG.info("reading model " + responseClass);
-                Map<String, Model> models = ModelConverters.getInstance().readAll(t);
-            }
+            responseClass = method.getGenericReturnType();
+        }
+        if (responseClass instanceof ParameterizedType && ResponseEntity.class.equals(((ParameterizedType) responseClass).getRawType())) {
+            responseClass = ((ParameterizedType) responseClass).getActualTypeArguments()[0];
+        }
+        boolean hasApiAnnotation = false;
+        if (responseClass instanceof Class) {
+            hasApiAnnotation = AnnotationUtils.findAnnotation((Class) responseClass, Api.class) != null;
         }
         if (responseClass != null
                 && !responseClass.equals(Void.class)
                 && !responseClass.equals(ResponseEntity.class)
-                && AnnotationUtils.findAnnotation(responseClass, Api.class) == null) {
+                && !hasApiAnnotation) {
             if (isPrimitive(responseClass)) {
                 Property responseProperty = null;
                 Property property = ModelConverters.getInstance().readAsProperty(responseClass);
