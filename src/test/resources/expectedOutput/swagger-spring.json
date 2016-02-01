@@ -325,6 +325,15 @@
           }
         } ],
         "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/Pet"
+              }
+            }
+          },
           "405" : {
             "description" : "Invalid input"
           }
