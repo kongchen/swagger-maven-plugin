@@ -282,7 +282,7 @@ public abstract class AbstractReader {
         return tagsMap;
     }
 
-    boolean isPrimitive(Class<?> cls) {
+    protected boolean isPrimitive(Class<?> cls) {
         boolean out = false;
 
         Property property = ModelConverters.getInstance().readAsProperty(cls);
