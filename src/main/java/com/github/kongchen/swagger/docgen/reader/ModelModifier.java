@@ -56,6 +56,8 @@ public class ModelModifier extends ModelResolver {
     public Property resolveProperty(Type type, ModelConverterContext context, Annotation[] annotations, Iterator<ModelConverter> chain) {
         if(modelSubtitutes.containsKey(type)) {
             return super.resolveProperty(modelSubtitutes.get(type), context, annotations, chain);
+        } else if(chain.hasNext()) {
+            return chain.next().resolveProperty(type, context, annotations, chain);
         } else {
             return super.resolveProperty(type, context, annotations, chain);
         }

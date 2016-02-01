@@ -70,6 +70,7 @@ You can specify several `apiSource`s. Generally, one is enough.
 | `apiModelPropertyAccessExclusions` | Allows the exclusion of specified `@ApiModelProperty` fields. This can be used to hide certain model properties from the swagger spec. More details [below](#apiModelPropertyAccessExclusions)|
 | `jsonExampleValues` | If `true`, all example values in `@ApiModelProperty` will be handled as json raw values. This is useful for creating valid examples in the generated json for all property types, including non-string ones. |
 | `skipSwaggerGeneration` | If `true`, swagger generation will be skipped. Default is `false`. |
+| `modelConverters` | List of custom implementations of `io.swagger.converter.ModelConverter` that should be used when generating the swagger files. | 
 
 # <a id="templatefile">Template File</a>
 
@@ -287,6 +288,7 @@ There's a [sample here](https://github.com/swagger-maven-plugin/swagger-maven-ex
                 <swaggerDirectory>${basedir}/generated/swagger-ui</swaggerDirectory>
                 <swaggerApiReader>com.wordnik.swagger.jaxrs.reader.DefaultJaxrsApiReader</swaggerApiReader>
                 <attachSwaggerArtifact>true</attachSwaggerArtifact>
+                <modelConverters>io.swagger.validator.BeanValidator</modelConverters>
             </apiSource>
         </apiSources>
     </configuration>
@@ -298,6 +300,15 @@ There's a [sample here](https://github.com/swagger-maven-plugin/swagger-maven-ex
             </goals>
         </execution>
     </executions>
+    <dependencies>
+        <!-- Adding dependency to swagger-hibernate-validations to enable the BeanValidator as a custom
+             model converter -->
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-hibernate-validations</artifactId>
+            <version>1.5.6</version>
+        </dependency>
+    </dependencies>
 </plugin>
 ...
 </plugins>
