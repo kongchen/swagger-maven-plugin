@@ -10,11 +10,15 @@ import io.swagger.annotations.Authorization;
 import io.swagger.annotations.AuthorizationScope;
 import io.swagger.converter.ModelConverters;
 import io.swagger.models.Model;
+import io.swagger.models.ModelImpl;
 import io.swagger.models.Operation;
+import io.swagger.models.RefModel;
 import io.swagger.models.Response;
 import io.swagger.models.SecurityRequirement;
 import io.swagger.models.Swagger;
 import io.swagger.models.Tag;
+import io.swagger.models.parameters.BodyParameter;
+import io.swagger.models.parameters.FormParameter;
 import io.swagger.models.parameters.Parameter;
 import io.swagger.models.properties.ArrayProperty;
 import io.swagger.models.properties.MapProperty;
@@ -25,6 +29,7 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.lang.annotation.Annotation;
@@ -311,6 +316,33 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
             List<Parameter> parameters = getParameters(type, annotations);
 
             for (Parameter parameter : parameters) {
+            	
+            	if(parameter instanceof BodyParameter && consumes.contains("multipart/form-data")){
+            		String name = "file";
+            		boolean required = false;
+            		
+                	if(annotations.size() > 1){
+                		Annotation a = annotations.get(1);
+                		if(a instanceof RequestPart){
+                			RequestPart reqPart = (RequestPart) a;
+                			name = reqPart.value();
+                			required = reqPart.required();
+                		}
+                	}
+            		BodyParameter bp = (BodyParameter) parameter;
+            		FormParameter fp = new FormParameter();
+            		fp.setRequired(required);
+            		fp.setName(name);
+            		fp.setIn("formData");
+            		Model schema = bp.getSchema();
+            		if(schema instanceof ModelImpl){
+            			fp.setType(((ModelImpl) schema).getType());
+            		} else if(schema instanceof RefModel){
+            			fp.setType("file");
+            		}
+            		parameter = fp;
+            	}
+            	
                 operation.parameter(parameter);
             }
         }
