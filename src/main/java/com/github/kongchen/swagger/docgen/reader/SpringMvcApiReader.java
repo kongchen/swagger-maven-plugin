@@ -316,33 +316,6 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
             List<Parameter> parameters = getParameters(type, annotations);
 
             for (Parameter parameter : parameters) {
-            	
-            	if(parameter instanceof BodyParameter && consumes.contains("multipart/form-data")){
-            		String name = "file";
-            		boolean required = false;
-            		
-                	if(annotations.size() > 1){
-                		Annotation a = annotations.get(1);
-                		if(a instanceof RequestPart){
-                			RequestPart reqPart = (RequestPart) a;
-                			name = reqPart.value();
-                			required = reqPart.required();
-                		}
-                	}
-            		BodyParameter bp = (BodyParameter) parameter;
-            		FormParameter fp = new FormParameter();
-            		fp.setRequired(required);
-            		fp.setName(name);
-            		fp.setIn("formData");
-            		Model schema = bp.getSchema();
-            		if(schema instanceof ModelImpl){
-            			fp.setType(((ModelImpl) schema).getType());
-            		} else if(schema instanceof RefModel){
-            			fp.setType("file");
-            		}
-            		parameter = fp;
-            	}
-            	
                 operation.parameter(parameter);
             }
         }

@@ -5,6 +5,7 @@ import io.swagger.converter.ModelConverters;
 import io.swagger.jaxrs.ext.AbstractSwaggerExtension;
 import io.swagger.jaxrs.ext.SwaggerExtension;
 import io.swagger.models.parameters.CookieParameter;
+import io.swagger.models.parameters.FormParameter;
 import io.swagger.models.parameters.HeaderParameter;
 import io.swagger.models.parameters.Parameter;
 import io.swagger.models.parameters.PathParameter;
@@ -30,6 +31,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Created by chekong on 15/4/27.
@@ -120,7 +123,27 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension implements 
             cp.setRequired(param.required());
 
             parameter = cp;
-        }
+        } else if(annotation instanceof RequestPart){
+			RequestPart param = (RequestPart) annotation;
+			FormParameter fp = new FormParameter()
+					.name(param.value());
+
+			if (!defaultValue.isEmpty()) {
+				fp.setDefaultValue(defaultValue);
+			}
+			if(type.equals(MultipartFile.class)){
+				fp.setType("file");
+			} else{
+				Property schema = ModelConverters.getInstance().readAsProperty(type);
+				if (schema != null) {
+					fp.setProperty(schema);
+				}
+			}
+
+			fp.setRequired(param.required());
+
+			parameter = fp;	
+		}
 
         return parameter;
     }
@@ -194,7 +217,8 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension implements 
     public boolean shouldIgnoreType(Type type, Set<Type> typesToSkip) {
         boolean output = false;
         Class<?> cls = TypeUtils.getRawType(type, type);
-        if (cls.getName().startsWith("org.springframework")) {
+        if (cls.getName().startsWith("org.springframework") &&
+        		!cls.getName().equals("org.springframework.web.multipart.MultipartFile")) {
             output = true;
         } else {
             output = false;
