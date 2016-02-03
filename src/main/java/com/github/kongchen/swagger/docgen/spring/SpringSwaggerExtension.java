@@ -132,7 +132,7 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension implements 
 				fp.setDefaultValue(defaultValue);
 			}
 			if(type.equals(MultipartFile.class)){
-				fp.setType("file");
+				fp.setType("file");//Schema contains a ref, should be file
 			} else{
 				Property schema = ModelConverters.getInstance().readAsProperty(type);
 				if (schema != null) {
