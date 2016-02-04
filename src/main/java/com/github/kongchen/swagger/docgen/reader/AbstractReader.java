@@ -474,9 +474,12 @@ public abstract class AbstractReader {
                 }
                 
                 if (response.getSchema() == null) {
-                    Response apiOperationResponse = operation.getResponses().get(String.valueOf(apiResponse.code()));
-                    if (apiOperationResponse != null) {
-                        response.setSchema(apiOperationResponse.getSchema());
+                    Map<String, Response> responses = operation.getResponses();
+                    if (responses != null) {
+                        Response apiOperationResponse = responses.get(String.valueOf(apiResponse.code()));
+                        if (apiOperationResponse != null) {
+                            response.setSchema(apiOperationResponse.getSchema());
+                        }
                     }
                 }
             }
