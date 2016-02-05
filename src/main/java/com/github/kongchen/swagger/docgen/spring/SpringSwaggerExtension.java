@@ -232,7 +232,6 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension implements 
     public boolean shouldIgnoreType(Type type, Set<Type> typesToSkip) {
         boolean output = false;
         Class<?> cls = TypeUtils.getRawType(type, type);
-        System.out.println(cls);
         if (cls.getName().startsWith("org.springframework") &&
         		!cls.getName().equals("org.springframework.web.multipart.MultipartFile")) {
             output = true;
