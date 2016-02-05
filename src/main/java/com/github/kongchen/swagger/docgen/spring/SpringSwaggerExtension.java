@@ -10,20 +10,23 @@ import io.swagger.models.parameters.HeaderParameter;
 import io.swagger.models.parameters.Parameter;
 import io.swagger.models.parameters.PathParameter;
 import io.swagger.models.parameters.QueryParameter;
+import io.swagger.models.properties.ArrayProperty;
+import io.swagger.models.properties.FileProperty;
 import io.swagger.models.properties.Property;
+import io.swagger.models.properties.RefProperty;
 
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
 import org.apache.commons.lang3.reflect.TypeUtils;
-
 import org.reflections.util.Utils;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -33,6 +36,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.fasterxml.jackson.databind.JavaType;
 
 /**
  * Created by chekong on 15/4/27.
@@ -131,15 +136,25 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension implements 
 			if (!defaultValue.isEmpty()) {
 				fp.setDefaultValue(defaultValue);
 			}
-			if(type.equals(MultipartFile.class)){
-				fp.setType("file");//Schema contains a ref, should be file
+			
+			JavaType ct = constructType(type);
+			Property schema;
+			
+			if(MultipartFile.class.isAssignableFrom(ct.getRawClass())){
+				schema = new FileProperty();
+			} else if(ct.isContainerType() && 
+					MultipartFile.class.isAssignableFrom(ct.getContentType().getRawClass())){
+				ArrayProperty arrayProperty = new ArrayProperty();
+				arrayProperty.setItems(new FileProperty());
+				schema = arrayProperty;
 			} else{
-				Property schema = ModelConverters.getInstance().readAsProperty(type);
-				if (schema != null) {
-					fp.setProperty(schema);
-				}
+				schema = ModelConverters.getInstance().readAsProperty(type);
 			}
 
+			if (schema != null) {
+				fp.setProperty(schema);
+			}
+			
 			fp.setRequired(param.required());
 
 			parameter = fp;	
@@ -217,6 +232,7 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension implements 
     public boolean shouldIgnoreType(Type type, Set<Type> typesToSkip) {
         boolean output = false;
         Class<?> cls = TypeUtils.getRawType(type, type);
+        System.out.println(cls);
         if (cls.getName().startsWith("org.springframework") &&
         		!cls.getName().equals("org.springframework.web.multipart.MultipartFile")) {
             output = true;
