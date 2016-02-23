@@ -13,7 +13,6 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -21,11 +20,10 @@ import java.util.TreeMap;
 /**
  * @author tedleman
  *         01/21/15
- * @author: chekong
+ * @author chekong
  * 05/13/2013
  */
 public class SpringMavenDocumentSource extends AbstractDocumentSource {
-
     private final SpecFilter specFilter = new SpecFilter();
 
     public SpringMavenDocumentSource(ApiSource apiSource, Log log) throws MojoFailureException {
@@ -47,12 +45,7 @@ public class SpringMavenDocumentSource extends AbstractDocumentSource {
         
         if(apiSource.getSecurityDefinitions() != null) {
             for (SecurityDefinition sd : apiSource.getSecurityDefinitions()) {
-                if(sd.getDefinitions().isEmpty()) {
-                    continue;
-                }
-                Iterator<Map.Entry<String, SecuritySchemeDefinition>> it = sd.getDefinitions().entrySet().iterator();
-                while (it.hasNext()) {
-                    Map.Entry<String, SecuritySchemeDefinition> entry = it.next();
+                for (Map.Entry<String, SecuritySchemeDefinition> entry : sd.getDefinitions().entrySet()) {
                     swagger.addSecurityDefinition(entry.getKey(), entry.getValue());
                 }
             }
@@ -61,7 +54,6 @@ public class SpringMavenDocumentSource extends AbstractDocumentSource {
             Map<String, SecuritySchemeDefinition> sortedDefs = new TreeMap<String, SecuritySchemeDefinition>();
             sortedDefs.putAll(defs);
             swagger.setSecurityDefinitions(sortedDefs);
-
         }
 
         if (FilterFactory.getFilter() != null) {

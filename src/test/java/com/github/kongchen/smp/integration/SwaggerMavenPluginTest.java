@@ -35,14 +35,13 @@ import static net.javacrumbs.jsonunit.JsonAssert.assertJsonEquals;
 import static net.javacrumbs.jsonunit.core.Option.IGNORING_ARRAY_ORDER;
 
 /**
- * Created by chekong on 8/15/14.
+ * @author chekong on 8/15/14.
  */
 public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
-
     private File swaggerOutputDir = new File(getBasedir(), "generated/swagger-ui");
     private File docOutput = new File(getBasedir(), "generated/document.html");
     private ApiDocumentMojo mojo;
-    ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper mapper = new ObjectMapper();
 
     @BeforeMethod
     protected void setUp() throws Exception {
@@ -123,8 +122,9 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
 
                 String expect = expectReader.readLine();
                 String actual = actualReader.readLine();
-                if (expect == null && actual == null)
+                if (expect == null && actual == null) {
                     break;
+                }
                 Assert.assertEquals(actual.trim(), expect.trim(), "" + count);
             }
 
@@ -139,10 +139,18 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
             }
 
         } finally {
-            if (actualReader != null) actualReader.close();
-            if (expectReader != null) expectReader.close();
-            if (swaggerJson != null) swaggerJson.close();
-            if (swaggerReader != null) swaggerReader.close();
+            if (actualReader != null) {
+                actualReader.close();
+            }
+            if (expectReader != null) {
+                expectReader.close();
+            }
+            if (swaggerJson != null) {
+                swaggerJson.close();
+            }
+            if (swaggerReader != null) {
+                swaggerReader.close();
+            }
         }
 
     }
@@ -189,10 +197,10 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
     }
 
     @DataProvider
-    private Iterator<String[]> pathProvider() throws Exception {
+    private Iterator<Object[]> pathProvider() throws Exception {
         String tempDirPath = createTempDirPath();
 
-        List<String[]> dataToBeReturned = new ArrayList<String[]>();
+        List<Object[]> dataToBeReturned = new ArrayList<Object[]>();
         dataToBeReturned.add(new String[]{tempDirPath + "foo" + File.separator + "bar" + File.separator + "test.html"});
         dataToBeReturned.add(new String[]{tempDirPath + File.separator + "bar" + File.separator + "test.html"});
         dataToBeReturned.add(new String[]{tempDirPath + File.separator + "test.html"});
@@ -229,9 +237,9 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
         mojo.execute();
 
         String actualYaml = io.swagger.util.Yaml.pretty().writeValueAsString(
-           new Yaml().load(FileUtils.readFileToString(new File(swaggerOutputDir, "swagger.yaml"))));
+                new Yaml().load(FileUtils.readFileToString(new File(swaggerOutputDir, "swagger.yaml"))));
         String expectYaml = io.swagger.util.Yaml.pretty().writeValueAsString(
-           new Yaml().load(this.getClass().getResourceAsStream(expectedOutput)));
+                new Yaml().load(this.getClass().getResourceAsStream(expectedOutput)));
 
         JsonNode actualJson = mapper.readTree(YamlToJson(actualYaml));
         JsonNode expectJson = mapper.readTree(YamlToJson(expectYaml));

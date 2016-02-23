@@ -7,7 +7,7 @@ import javax.ws.rs.HeaderParam;
 import javax.ws.rs.PathParam;
 
 /**
- * Created by chekong on 15/5/9.
+ * @author chekong on 15/5/9.
  */
 public class MyBean extends MyParentBean {
 
@@ -71,11 +71,11 @@ public class MyBean extends MyParentBean {
 
     @HeaderParam("myHeaderOnMethod")
     @ApiParam(value = "Header annotated on method", required = false)
-    public void setMyheadronmethod(String myheadronmethod){
+    public void setMyheadronmethod(String myheadronmethod) {
     }
 
     @HeaderParam("myLongHeaderOnMethod")
     @ApiParam(value = "Long header annotated on method", required = false)
-    public void setMyintheaderonmethod(long mylongheaderonmethod){
+    public void setMyintheaderonmethod(long mylongheaderonmethod) {
     }
 }

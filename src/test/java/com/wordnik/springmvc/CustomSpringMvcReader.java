@@ -10,8 +10,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * @author: Igor Gursky
- * 11.12.2015.
+ * @author Igor Gursky
+ *         11.12.2015.
  */
 public class CustomSpringMvcReader extends SpringMvcApiReader {
     public CustomSpringMvcReader(Swagger swagger, LogAdapter log) {

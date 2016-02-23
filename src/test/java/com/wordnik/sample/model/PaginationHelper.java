@@ -13,7 +13,7 @@ public class PaginationHelper {
         return limit;
     }
 
-    @ApiParam(value = "The pagination limit", name="limit")
+    @ApiParam(value = "The pagination limit", name = "limit")
     public void setLimit(Integer limit) {
         this.limit = limit;
     }
@@ -21,8 +21,8 @@ public class PaginationHelper {
     public Integer getOffset() {
         return offset;
     }
-    
-    @ApiParam(value = "The pagination offset", name="offset")
+
+    @ApiParam(value = "The pagination offset", name = "offset")
     public void setOffset(Integer offset) {
         this.offset = offset;
     }

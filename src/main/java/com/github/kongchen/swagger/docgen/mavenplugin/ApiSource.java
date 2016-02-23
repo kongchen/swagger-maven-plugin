@@ -1,19 +1,17 @@
 package com.github.kongchen.swagger.docgen.mavenplugin;
 
+import io.swagger.annotations.Api;
+import io.swagger.models.Info;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.reflections.Reflections;
+
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.github.kongchen.swagger.docgen.GenerateException;
-import io.swagger.annotations.Api;
-import io.swagger.models.Info;
-import java.util.ArrayList;
-import org.apache.maven.plugins.annotations.Parameter;
-import org.reflections.Reflections;
-
 /**
- * Created with IntelliJ IDEA.
  * User: kongchen
  * Date: 3/7/13
  */
@@ -26,7 +24,7 @@ public class ApiSource {
     @Parameter(required = true)
     private String locations;
 
-    @Parameter(name = "info", required = true)
+    @Parameter(required = true)
     private Info info;
 
     /**
@@ -54,7 +52,7 @@ public class ApiSource {
      * see more details in next section.
      * If you don't want to generate extra api documents, just don't set it.
      */
-    @Parameter(required = false)
+    @Parameter
     private String templatePath;
 
     @Parameter
@@ -110,7 +108,7 @@ public class ApiSource {
     @Parameter
     private List<String> apiModelPropertyAccessExclusions = new ArrayList<String>();
 
-    @Parameter(required = false)
+    @Parameter
     private boolean jsonExampleValues = false;
 
     @Parameter
@@ -119,7 +117,7 @@ public class ApiSource {
     @Parameter
     private List<String> modelConverters;
 
-    public Set<Class<?>> getValidClasses() throws GenerateException {
+    public Set<Class<?>> getValidClasses() {
         Set<Class<?>> classes = new HashSet<Class<?>>();
         if (getLocations() == null) {
             Set<Class<?>> c = new Reflections("").getTypesAnnotatedWith(Api.class);
@@ -308,13 +306,11 @@ public class ApiSource {
         this.jsonExampleValues = jsonExampleValues;
     }
 
-    public boolean isUseJAXBAnnotationProcessor()
-    {
+    public boolean isUseJAXBAnnotationProcessor() {
         return useJAXBAnnotationProcessor;
     }
 
-    public void setUseJAXBAnnotationProcessor(boolean useJAXBAnnotationProcessor)
-    {
+    public void setUseJAXBAnnotationProcessor(boolean useJAXBAnnotationProcessor) {
         this.useJAXBAnnotationProcessor = useJAXBAnnotationProcessor;
     }
 

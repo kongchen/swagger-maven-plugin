@@ -21,28 +21,24 @@ import java.util.List;
  * to the
  *
  * @author Brian Jackson
- * @since Aug 1, 2008 3:04:17 PM
- *
  * @plexus.component role="org.codehaus.plexus.component.configurator.ComponentConfigurator"
- *                   role-hint="include-project-dependencies"
+ * role-hint="include-project-dependencies"
  * @plexus.requirement role="org.codehaus.plexus.component.configurator.converters.lookup.ConverterLookup"
- *                   role-hint="default"
+ * role-hint="default"
+ * @since Aug 1, 2008 3:04:17 PM
  */
 public class IncludeProjectDependenciesComponentConfigurator extends AbstractComponentConfigurator {
 
-
-    public void configureComponent( Object component, PlexusConfiguration configuration,
-                                    ExpressionEvaluator expressionEvaluator, ClassRealm containerRealm,
-                                    ConfigurationListener listener )
+    @Override
+    public void configureComponent(Object component, PlexusConfiguration configuration,
+                                   ExpressionEvaluator expressionEvaluator, ClassRealm containerRealm,
+                                   ConfigurationListener listener)
             throws ComponentConfigurationException {
-
         addProjectDependenciesToClassRealm(expressionEvaluator, containerRealm);
 
         ObjectWithFieldsConverter converter = new ObjectWithFieldsConverter();
-
-        converter.processConfiguration( converterLookup, component, containerRealm.getClassLoader(), configuration,
-                expressionEvaluator, listener );
-
+        converter.processConfiguration(converterLookup, component, containerRealm.getClassLoader(), configuration,
+                expressionEvaluator, listener);
     }
 
     private void addProjectDependenciesToClassRealm(ExpressionEvaluator expressionEvaluator, ClassRealm containerRealm) throws ComponentConfigurationException {
@@ -65,11 +61,9 @@ public class IncludeProjectDependenciesComponentConfigurator extends AbstractCom
         // Add the projects classes and dependencies
         List<URL> urls = new ArrayList<URL>(runtimeClasspathElements.size());
         for (String element : runtimeClasspathElements) {
-
             try {
                 final URL url = new File(element).toURI().toURL();
                 urls.add(url);
-
             } catch (MalformedURLException e) {
                 throw new ComponentConfigurationException("Unable to access project dependency: " + element, e);
             }

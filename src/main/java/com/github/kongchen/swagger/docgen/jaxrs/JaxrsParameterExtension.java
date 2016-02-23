@@ -18,7 +18,6 @@ import javax.ws.rs.FormParam;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -27,21 +26,22 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Created by chekong on 15/5/12.
+ * @author chekong on 15/5/12.
  */
-public class JaxrsParameterExtension extends AbstractSwaggerExtension implements SwaggerExtension {
+public class JaxrsParameterExtension extends AbstractSwaggerExtension {
 
+    @Override
     public List<Parameter> extractParameters(List<Annotation> annotations, Type type, Set<Type> typesToSkip, Iterator<SwaggerExtension> chain) {
-
-        if(this.shouldIgnoreType(type, typesToSkip))
+        if (this.shouldIgnoreType(type, typesToSkip)) {
             return new ArrayList<Parameter>();
+        }
 
         List<Parameter> parameters = new ArrayList<Parameter>();
         SerializableParameter parameter = null;
-        for(Annotation annotation : annotations) {
+        for (Annotation annotation : annotations) {
             parameter = getParameter(type, parameter, annotation);
         }
-        if(parameter != null) {
+        if (parameter != null) {
             parameters.add(parameter);
         }
 
@@ -50,90 +50,90 @@ public class JaxrsParameterExtension extends AbstractSwaggerExtension implements
 
     public static SerializableParameter getParameter(Type type, SerializableParameter parameter, Annotation annotation) {
         String defaultValue = "";
-        if(annotation instanceof DefaultValue) {
+        if (annotation instanceof DefaultValue) {
             DefaultValue defaultValueAnnotation = (DefaultValue) annotation;
             defaultValue = defaultValueAnnotation.value();
         }
 
-        if(annotation instanceof QueryParam) {
+        if (annotation instanceof QueryParam) {
             QueryParam param = (QueryParam) annotation;
-            QueryParameter qp = new QueryParameter()
-                    .name(param.value());
+            QueryParameter queryParameter = new QueryParameter().name(param.value());
 
-            if(!defaultValue.isEmpty()) {
-                qp.setDefaultValue(defaultValue);
+            if (!defaultValue.isEmpty()) {
+                queryParameter.setDefaultValue(defaultValue);
             }
             Property schema = ModelConverters.getInstance().readAsProperty(type);
-            if(schema != null)
-                qp.setProperty(schema);
-            
-            String parameterType = qp.getType();
-            if (parameterType == null || parameterType.equals("ref")) {
-                qp.setType("string");
+            if (schema != null) {
+                queryParameter.setProperty(schema);
             }
-            parameter = qp;
-        }
-        else if(annotation instanceof PathParam) {
+
+            String parameterType = queryParameter.getType();
+            if (parameterType == null || parameterType.equals("ref")) {
+                queryParameter.setType("string");
+            }
+            parameter = queryParameter;
+        } else if (annotation instanceof PathParam) {
             PathParam param = (PathParam) annotation;
-            PathParameter pp = new PathParameter().name(param.value());
-            if(!defaultValue.isEmpty())
-                pp.setDefaultValue(defaultValue);
+            PathParameter pathParameter = new PathParameter().name(param.value());
+            if (!defaultValue.isEmpty()) {
+                pathParameter.setDefaultValue(defaultValue);
+            }
             Property schema = ModelConverters.getInstance().readAsProperty(type);
-            if(schema != null)
-                pp.setProperty(schema);
+            if (schema != null) {
+                pathParameter.setProperty(schema);
+            }
 
-            String parameterType = pp.getType();
+            String parameterType = pathParameter.getType();
             if (parameterType == null || parameterType.equals("ref")) {
-                pp.setType("string");
+                pathParameter.setType("string");
             }
-            parameter = pp;
-        }
-        else if(annotation instanceof HeaderParam) {
+            parameter = pathParameter;
+        } else if (annotation instanceof HeaderParam) {
             HeaderParam param = (HeaderParam) annotation;
-            HeaderParameter hp = new HeaderParameter()
-                    .name(param.value());
-            hp.setDefaultValue(defaultValue);
+            HeaderParameter headerParameter = new HeaderParameter().name(param.value());
+            headerParameter.setDefaultValue(defaultValue);
             Property schema = ModelConverters.getInstance().readAsProperty(type);
-            if(schema != null)
-                hp.setProperty(schema);
-
-            String parameterType = hp.getType();
-            if (parameterType == null || parameterType.equals("ref") || parameterType.equals("array")) {
-                hp.setType("string");
+            if (schema != null) {
+                headerParameter.setProperty(schema);
             }
-            parameter = hp;
-        }
-        else if(annotation instanceof CookieParam) {
+
+            String parameterType = headerParameter.getType();
+            if (parameterType == null || parameterType.equals("ref") || parameterType.equals("array")) {
+                headerParameter.setType("string");
+            }
+            parameter = headerParameter;
+        } else if (annotation instanceof CookieParam) {
             CookieParam param = (CookieParam) annotation;
-            CookieParameter cp = new CookieParameter()
-                    .name(param.value());
-            if(!defaultValue.isEmpty())
-                cp.setDefaultValue(defaultValue);
-            Property schema = ModelConverters.getInstance().readAsProperty(type);
-            if(schema != null)
-                cp.setProperty(schema);
-
-            String parameterType = cp.getType(); 
-            if (parameterType == null || parameterType.equals("ref") || parameterType.equals("array")) {
-                cp.setType("string");
+            CookieParameter cookieParameter = new CookieParameter().name(param.value());
+            if (!defaultValue.isEmpty()) {
+                cookieParameter.setDefaultValue(defaultValue);
             }
-            parameter = cp;
-        }
-        else if(annotation instanceof FormParam) {
+            Property schema = ModelConverters.getInstance().readAsProperty(type);
+            if (schema != null) {
+                cookieParameter.setProperty(schema);
+            }
+
+            String parameterType = cookieParameter.getType();
+            if (parameterType == null || parameterType.equals("ref") || parameterType.equals("array")) {
+                cookieParameter.setType("string");
+            }
+            parameter = cookieParameter;
+        } else if (annotation instanceof FormParam) {
             FormParam param = (FormParam) annotation;
-            FormParameter fp = new FormParameter()
-                    .name(param.value());
-            if(!defaultValue.isEmpty())
-                fp.setDefaultValue(defaultValue);
-            Property schema = ModelConverters.getInstance().readAsProperty(type);
-            if(schema != null)
-                fp.setProperty(schema);
-
-            String parameterType = fp.getType(); 
-            if (parameterType == null || parameterType.equals("ref") || parameterType.equals("array")) {
-                fp.setType("string");
+            FormParameter formParameter = new FormParameter().name(param.value());
+            if (!defaultValue.isEmpty()) {
+                formParameter.setDefaultValue(defaultValue);
             }
-            parameter = fp;
+            Property schema = ModelConverters.getInstance().readAsProperty(type);
+            if (schema != null) {
+                formParameter.setProperty(schema);
+            }
+
+            String parameterType = formParameter.getType();
+            if (parameterType == null || parameterType.equals("ref") || parameterType.equals("array")) {
+                formParameter.setType("string");
+            }
+            parameter = formParameter;
         }
 
         //                //fix parameter type issue, try to access parameter's type

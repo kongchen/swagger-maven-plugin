@@ -8,8 +8,6 @@ package com.github.kongchen.swagger.docgen.reader;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.converter.ModelConverter;
 import io.swagger.jackson.AbstractModelConverter;
-import io.swagger.models.properties.Property;
-import io.swagger.util.PrimitiveType;
 
 /**
  *

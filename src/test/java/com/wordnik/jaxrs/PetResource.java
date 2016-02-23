@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Reverb Technologies, Inc.
- * <p/>
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p/>
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,14 +21,29 @@ import com.wordnik.sample.JavaRestResourceUtil;
 import com.wordnik.sample.data.PetData;
 import com.wordnik.sample.model.Pet;
 import com.wordnik.sample.model.PetName;
-import io.swagger.annotations.*;
-import io.swagger.annotations.*;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.Authorization;
+import io.swagger.annotations.AuthorizationScope;
+import io.swagger.annotations.Extension;
+import io.swagger.annotations.ExtensionProperty;
 
-import javax.ws.rs.*;
+import javax.ws.rs.BeanParam;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -58,7 +73,7 @@ public class PetResource {
             @ApiParam(value = "ID of pet that needs to be fetched", allowableValues = "range[1,5]", required = true) @PathParam("petId") Long petId)
             throws com.wordnik.sample.exception.NotFoundException {
         Pet pet = petData.getPetbyId(petId);
-        if (null != pet) {
+        if (pet != null) {
             return Response.ok().entity(pet).build();
         } else {
             throw new com.wordnik.sample.exception.NotFoundException(404, "Pet not found");
@@ -106,9 +121,7 @@ public class PetResource {
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Invalid status value")})
     public Response findPetByPetName(
-            @ApiParam(
-                    value = "petName",
-                    required = true)
+            @ApiParam(value = "petName", required = true)
             @PathParam("petName") PetName petName) {
         return Response.ok(petData.getPetbyId(1)).build();
     }
@@ -237,21 +250,20 @@ public class PetResource {
     public Pet testapiimplicitparams() {
         return new Pet();
     }
-    
+
     @ApiOperation(value = "Test testFormApiImplicitParams", response = Pet.class)
     @GET
     @Path("/test/testFormApiImplicitParams")
     @Produces("application/json")
     @ApiImplicitParams(value = {
-              @ApiImplicitParam(
-                name = "form-test-name",
-                value = "form-test-value",
-                allowMultiple = true,
-                required = true,
-                dataType = "string",
-                paramType = "form",
-                defaultValue = "form-test-defaultValue")
-
+            @ApiImplicitParam(
+                    name = "form-test-name",
+                    value = "form-test-value",
+                    allowMultiple = true,
+                    required = true,
+                    dataType = "string",
+                    paramType = "form",
+                    defaultValue = "form-test-defaultValue")
     })
     public Pet testFormApiImplicitParams() {
         return new Pet();
@@ -263,7 +275,7 @@ public class PetResource {
     public String testingHiddenApiOperation() {
         return "testingHiddenApiOperation";
     }
-    
+
     @ApiOperation(value = "testingBasicAuth", authorizations = @Authorization(value = "basicAuth"))
     @GET
     @Path("/test/testingBasicAuth")

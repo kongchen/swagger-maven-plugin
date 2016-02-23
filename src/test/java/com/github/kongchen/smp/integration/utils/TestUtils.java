@@ -11,8 +11,8 @@ import java.io.File;
 import java.util.Map;
 
 /**
- * @author: Igor Gursky
- * 15.12.2015.
+ * @author Igor Gursky
+ *         15.12.2015.
  */
 public class TestUtils {
 
