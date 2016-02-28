@@ -23,7 +23,6 @@ import io.swagger.models.properties.MapProperty;
 import io.swagger.models.properties.Property;
 import io.swagger.models.properties.RefProperty;
 
-import org.apache.commons.lang3.reflect.TypeUtils;
 import org.codehaus.plexus.util.StringUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.http.ResponseEntity;
@@ -119,7 +118,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
                 //http method
                 for (RequestMethod requestMethod : requestMapping.method()) {
                     httpMethod = requestMethod.toString().toLowerCase();
-                    Operation operation = parseMethod(method);
+                    Operation operation = parseMethod(method, operationPath);
 
                     updateOperationParameters(new ArrayList<Parameter>(), regexMap, operation);
 
@@ -144,7 +143,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         return swagger;
     }
 
-    private Operation parseMethod(Method method) {
+    private Operation parseMethod(Method method, String operationPath) {
         Operation operation = new Operation();
 
         RequestMapping requestMapping = AnnotationUtils.findAnnotation(method, RequestMapping.class);
@@ -319,21 +318,14 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
             List<Parameter> parameters = getParameters(type, annotations);
 
             for (Parameter parameter : parameters) {
-            	if(parameter instanceof PathParameter 
-            			&& type.toString().equals("java.util.Map<java.lang.String, java.lang.String>")){
-            		for(String value : requestMapping.value()){
-            			for(String param : value.split("/")){
-            				if(param.startsWith("{") && param.endsWith("}")){
-            					String name = param.substring(1, param.length()-1);
-            					if(!implicitPathParams.contains(name)){
-            						PathParameter pathParam = new PathParameter();
-            						pathParam.setName(name);
-            						pathParam.setType("string");
-            						operation.parameter(pathParam);
-            					}
-            				}
-            			}
-            		}
+            	if(parameter instanceof PathParameter && 
+            			type.toString().equals("java.util.Map<java.lang.String, java.lang.String>")){
+            	    /*
+            		 *  Spring MVC allows Map<String, String> to store all 
+            		 *  path variable names and values so expand this out 
+            		 *  into individual parameters in the spec file.
+            		 */
+            		expandMapOfPathParams(operation, operationPath, implicitPathParams);
             	} else{
             		operation.parameter(parameter);
             	}
@@ -348,7 +340,26 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
 
     }
 
-    private Map<String, List<Method>> collectApisByRequestMapping(List<Method> methods) {
+    private void expandMapOfPathParams(Operation operation, String operationPath, List<String> pathParams) {
+    	for(String param : operationPath.split("/")){
+    		if(param.startsWith("{") && param.endsWith("}")){
+    			String name = param.substring(1, param.length()-1);
+
+    			/*
+    			 * If an ApiImplicitParam already uses a name in the path use the details of this to
+    			 * provide the information about the parameter, otherwise create a default string PathParam.
+    			 */
+    			if(!pathParams.contains(name)){
+    				PathParameter pathParam = new PathParameter();
+    				pathParam.setName(name);
+    				pathParam.setType("string");
+    				operation.parameter(pathParam);
+    			}
+    		}
+    	}
+    }
+
+	private Map<String, List<Method>> collectApisByRequestMapping(List<Method> methods) {
         Map<String, List<Method>> apiMethodMap = new HashMap<String, List<Method>>();
         for (Method method : methods) {
             if (method.isAnnotationPresent(RequestMapping.class)) {
