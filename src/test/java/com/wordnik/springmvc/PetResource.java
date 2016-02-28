@@ -287,4 +287,15 @@ public class PetResource {
 	public ResponseEntity<Void> testingMapPathVariables(@PathVariable Map<String, String> pathVariables){
 		return new ResponseEntity<Void>(HttpStatus.OK);
 	}
+	
+	@ApiOperation(value = "testingMapPathVariablesImplicit", response = Void.class)
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "successful operation") })
+	@ApiImplicitParams({
+		@ApiImplicitParam(name = "abc", dataType = "string", paramType = "path"),
+		@ApiImplicitParam(name = "efg", dataType = "integer", paramType = "path")
+	})
+	@RequestMapping(value = "/testPathParamsImpl/{abc}/{efg}", method = RequestMethod.GET)
+	public ResponseEntity<Void> testingMapPathVariablesImplicit(@PathVariable Map<String, String> pathVariables){
+		return new ResponseEntity<Void>(HttpStatus.OK);
+	}
 }
