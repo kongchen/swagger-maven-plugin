@@ -705,6 +705,34 @@
         }
       }
     },
+    "/pet/testPathParams/{abc}/{efg}" : {
+      "get" : {
+      	"tags" : [ "pet" ],
+        "summary" : "testingMapPathVariables",
+        "description" : "",
+        "operationId" : "testingMapPathVariables",
+        "produces" : [ "application/json", "application/xml" ],
+        "parameters" : [ { 
+          "name" : "abc",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "efg",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : { 
+          "200" : { 
+            "description" : "successful operation"
+          }   
+        },
+        "security" : [ {
+          "petstore_auth" : [ "write:pets", "read:pets" ]
+        } ]  
+      }
+    },
     "/user" : {
       "post" : {
         "tags" : [ "user" ],

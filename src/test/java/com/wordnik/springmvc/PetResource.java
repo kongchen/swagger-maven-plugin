@@ -21,7 +21,9 @@ import com.wordnik.sample.data.PetData;
 import com.wordnik.sample.exception.NotFoundException;
 import com.wordnik.sample.model.PaginationHelper;
 import com.wordnik.sample.model.Pet;
+
 import io.swagger.annotations.*;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +33,7 @@ import javax.validation.constraints.Size;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+
 import java.util.*;
 
 @Api(value = "/pet", description = "Operations about pets", authorizations = {
@@ -277,4 +280,11 @@ public class PetResource {
     public String testingBasicAuth() {
         return "testingBasicAuth";
     }
+    
+	@ApiOperation(value = "testingMapPathVariables", response = Void.class)
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "successful operation") })
+	@RequestMapping(value = "/testPathParams/{abc}/{efg}", method = RequestMethod.GET)
+	public ResponseEntity<Void> testingMapPathVariables(@PathVariable Map<String, String> pathVariables){
+		return new ResponseEntity<Void>(HttpStatus.OK);
+	}
 }
