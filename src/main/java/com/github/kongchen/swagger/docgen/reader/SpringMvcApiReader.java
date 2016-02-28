@@ -3,6 +3,7 @@ package com.github.kongchen.swagger.docgen.reader;
 import com.github.kongchen.swagger.docgen.GenerateException;
 import com.github.kongchen.swagger.docgen.LogAdapter;
 import com.github.kongchen.swagger.docgen.spring.SpringResource;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponses;
@@ -16,10 +17,13 @@ import io.swagger.models.SecurityRequirement;
 import io.swagger.models.Swagger;
 import io.swagger.models.Tag;
 import io.swagger.models.parameters.Parameter;
+import io.swagger.models.parameters.PathParameter;
 import io.swagger.models.properties.ArrayProperty;
 import io.swagger.models.properties.MapProperty;
 import io.swagger.models.properties.Property;
 import io.swagger.models.properties.RefProperty;
+
+import org.apache.commons.lang3.reflect.TypeUtils;
 import org.codehaus.plexus.util.StringUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.http.ResponseEntity;
@@ -298,6 +302,10 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         boolean hidden = false;
         if (apiOperation != null)
             hidden = apiOperation.hidden();
+        
+        // Process @ApiImplicitParams
+        List<String> implicitPathParams = new ArrayList<String>();
+        this.readImplicitParameters(method, operation, implicitPathParams);
 
         // process parameters
         Class[] parameterTypes = method.getParameterTypes();
@@ -311,16 +319,30 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
             List<Parameter> parameters = getParameters(type, annotations);
 
             for (Parameter parameter : parameters) {
-                operation.parameter(parameter);
+            	if(parameter instanceof PathParameter 
+            			&& type.toString().equals("java.util.Map<java.lang.String, java.lang.String>")){
+            		for(String value : requestMapping.value()){
+            			for(String param : value.split("/")){
+            				if(param.startsWith("{") && param.endsWith("}")){
+            					String name = param.substring(1, param.length()-1);
+            					if(!implicitPathParams.contains(name)){
+            						PathParameter pathParam = new PathParameter();
+            						pathParam.setName(name);
+            						pathParam.setType("string");
+            						operation.parameter(pathParam);
+            					}
+            				}
+            			}
+            		}
+            	} else{
+            		operation.parameter(parameter);
+            	}
             }
         }
 
         if (operation.getResponses() == null) {
             operation.defaultResponse(new Response().description("successful operation"));
         }
-
-        // Process @ApiImplicitParams
-        this.readImplicitParameters(method, operation);
 
         return operation;
 
