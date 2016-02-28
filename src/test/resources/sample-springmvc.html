@@ -935,6 +935,204 @@ If you wish to paginate the results of this API, supply offset and limit query p
 
 
 
+## /pet/testPathParams/{abc}/{efg}
+
+
+### GET
+
+<a id="testingMapPathVariables">testingMapPathVariables</a>
+
+
+
+
+
+
+#### Security
+
+
+
+
+* petstore_auth
+   * write:pets
+   * read:pets
+
+
+
+
+#### Request
+
+
+
+##### Parameters
+
+<table border="1">
+    <tr>
+        <th>Name</th>
+        <th>Located in</th>
+        <th>Required</th>
+        <th>Description</th>
+        <th>Default</th>
+        <th>Schema</th>
+    </tr>
+
+
+
+<tr>
+    <th>abc</th>
+    <td>path</td>
+    <td>yes</td>
+    <td></td>
+    <td> - </td>
+
+    
+            <td>string </td>
+    
+
+</tr>
+
+<tr>
+    <th>efg</th>
+    <td>path</td>
+    <td>yes</td>
+    <td></td>
+    <td> - </td>
+
+    
+            <td>string </td>
+    
+
+</tr>
+
+
+</table>
+
+
+
+#### Response
+
+**Content-Type: ** application/xml, application/json
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 200    | successful operation |  - |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## /pet/testPathParamsImpl/{abc}/{efg}
+
+
+### GET
+
+<a id="testingMapPathVariablesImplicit">testingMapPathVariablesImplicit</a>
+
+
+
+
+
+
+#### Security
+
+
+
+
+* petstore_auth
+   * write:pets
+   * read:pets
+
+
+
+
+#### Request
+
+
+
+##### Parameters
+
+<table border="1">
+    <tr>
+        <th>Name</th>
+        <th>Located in</th>
+        <th>Required</th>
+        <th>Description</th>
+        <th>Default</th>
+        <th>Schema</th>
+    </tr>
+
+
+
+<tr>
+    <th>abc</th>
+    <td>path</td>
+    <td>yes</td>
+    <td></td>
+    <td> - </td>
+
+    
+            <td>string </td>
+    
+
+</tr>
+
+<tr>
+    <th>efg</th>
+    <td>path</td>
+    <td>yes</td>
+    <td></td>
+    <td> - </td>
+
+    
+            <td>integer </td>
+    
+
+</tr>
+
+
+</table>
+
+
+
+#### Response
+
+**Content-Type: ** application/xml, application/json
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 200    | successful operation |  - |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## /pet/testing
 
 

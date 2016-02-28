@@ -517,6 +517,10 @@ public abstract class AbstractReader {
     }
 
     protected void readImplicitParameters(Method method, Operation operation) {
+        readImplicitParameters(method, operation, null);
+    }
+    
+    protected void readImplicitParameters(Method method, Operation operation, List<String> pathParamNames) {
         ApiImplicitParams implicitParams = AnnotationUtils.findAnnotation(method, ApiImplicitParams.class);
         if (implicitParams != null && implicitParams.value().length > 0) {
             for (ApiImplicitParam param : implicitParams.value()) {
@@ -530,6 +534,9 @@ public abstract class AbstractReader {
 
                 Parameter p = readImplicitParam(param, cls);
                 if (p != null) {
+                	if(pathParamNames != null && p instanceof PathParameter){
+                		pathParamNames.add(p.getName());
+                	}
                     operation.addParameter(p);
                 }
             }
