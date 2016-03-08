@@ -217,7 +217,7 @@ Note: In order to use `apiModelPropertyAccessExclusions`, you must specify both 
 You can instruct `swagger-maven-plugin` to deploy the generated `swagger.json` by adding the following to your pom.xml:
 
 ```
-<swaggerDirectory>${project.build.directory}/swagger-ui</swaggerDirectry>
+<swaggerDirectory>${project.build.directory}/swagger-ui</swaggerDirectory>
 <attachSwaggerArtifact>true</attachSwaggerArtifact>
 
 ```
