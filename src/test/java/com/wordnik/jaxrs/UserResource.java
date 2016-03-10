@@ -25,6 +25,10 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.Contact;
+import io.swagger.annotations.Info;
+import io.swagger.annotations.License;
+import io.swagger.annotations.SwaggerDefinition;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -36,6 +40,18 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
+@SwaggerDefinition(
+        host = "www.example.com:8080",
+        basePath = "/api",
+        info = @Info(
+                title = "Swagger Maven Plugin Sample",
+                version = "v1",
+                description = "This is a sample.",
+                termsOfService = "http://www.github.com/kongchen/swagger-maven-plugin",
+                contact = @Contact(name = "Kong Chen", email = "kongchen@gmail.com", url = "http://kongch.com"),
+                license = @License(name = "Apache 2.0", url = "http://www.apache.org/licenses/LICENSE-2.0.html")
+        )
+)
 @Path("/user")
 @Api(value = "/user", description = "Operations about user")
 @Produces({"application/json", "application/xml"})

@@ -1,11 +1,15 @@
 package com.github.kongchen.swagger.docgen.mavenplugin;
 
-import io.swagger.annotations.Api;
+import io.swagger.annotations.SwaggerDefinition;
+import io.swagger.models.Contact;
 import io.swagger.models.Info;
+import io.swagger.models.License;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.reflections.Reflections;
+import org.springframework.core.annotation.AnnotationUtils;
 
 import java.io.File;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -24,13 +28,13 @@ public class ApiSource {
     @Parameter(required = true)
     private String locations;
 
-    @Parameter(required = true)
+    @Parameter
     private Info info;
 
     /**
      * The basePath of your APIs.
      */
-    @Parameter(required = true)
+    @Parameter
     private String basePath;
 
     /**
@@ -117,20 +121,20 @@ public class ApiSource {
     @Parameter
     private List<String> modelConverters;
 
-    public Set<Class<?>> getValidClasses() {
+    public Set<Class<?>> getValidClasses(Class<? extends Annotation> clazz) {
         Set<Class<?>> classes = new HashSet<Class<?>>();
         if (getLocations() == null) {
-            Set<Class<?>> c = new Reflections("").getTypesAnnotatedWith(Api.class);
+            Set<Class<?>> c = new Reflections("").getTypesAnnotatedWith(clazz);
             classes.addAll(c);
         } else {
             if (locations.contains(";")) {
                 String[] sources = locations.split(";");
                 for (String source : sources) {
-                    Set<Class<?>> c = new Reflections(source).getTypesAnnotatedWith(Api.class);
+                    Set<Class<?>> c = new Reflections(source).getTypesAnnotatedWith(clazz);
                     classes.addAll(c);
                 }
             } else {
-                classes.addAll(new Reflections(locations).getTypesAnnotatedWith(Api.class));
+                classes.addAll(new Reflections(locations).getTypesAnnotatedWith(clazz));
             }
         }
 
@@ -162,7 +166,53 @@ public class ApiSource {
     }
 
     public Info getInfo() {
+        if (info == null) {
+            setInfoFromAnnotation();
+        }
         return info;
+    }
+
+    private void setInfoFromAnnotation() {
+        Info resultInfo = new Info();
+        for (Class<?> aClass : getValidClasses(SwaggerDefinition.class)) {
+            SwaggerDefinition swaggerDefinition = AnnotationUtils.findAnnotation(aClass, SwaggerDefinition.class);
+            io.swagger.annotations.Info infoAnnotation = swaggerDefinition.info();
+            Info info = new Info().title(infoAnnotation.title())
+                    .description(infoAnnotation.description())
+                    .version(infoAnnotation.version())
+                    .termsOfService(infoAnnotation.termsOfService())
+                    .license(from(infoAnnotation.license()))
+                    .contact(from(infoAnnotation.contact()));
+            resultInfo.mergeWith(info);
+        }
+        info = resultInfo;
+    }
+
+    private Contact from(io.swagger.annotations.Contact contactAnnotation) {
+        return new Contact()
+                .name(contactAnnotation.name())
+                .email(contactAnnotation.email())
+                .url(contactAnnotation.url());
+    }
+
+    private License from(io.swagger.annotations.License licenseAnnotation) {
+        return new License()
+                .name(licenseAnnotation.name())
+                .url(licenseAnnotation.url());
+    }
+
+    private void setBasePathFromAnnotation() {
+        for (Class<?> aClass : getValidClasses(SwaggerDefinition.class)) {
+            SwaggerDefinition swaggerDefinition = AnnotationUtils.findAnnotation(aClass, SwaggerDefinition.class);
+            basePath = swaggerDefinition.basePath();
+        }
+    }
+
+    private void setHostFromAnnotation() {
+        for (Class<?> aClass : getValidClasses(SwaggerDefinition.class)) {
+            SwaggerDefinition swaggerDefinition = AnnotationUtils.findAnnotation(aClass, SwaggerDefinition.class);
+            host = swaggerDefinition.host();
+        }
     }
 
     public void setInfo(Info info) {
@@ -202,6 +252,9 @@ public class ApiSource {
     }
 
     public String getBasePath() {
+        if (basePath == null) {
+            setBasePathFromAnnotation();
+        }
         return basePath;
     }
 
@@ -225,7 +278,6 @@ public class ApiSource {
         this.attachSwaggerArtifact = attachSwaggerArtifact;
     }
 
-
     public void setSwaggerUIDocBasePath(String swaggerUIDocBasePath) {
         this.swaggerUIDocBasePath = swaggerUIDocBasePath;
     }
@@ -235,6 +287,9 @@ public class ApiSource {
     }
 
     public String getHost() {
+        if (host == null) {
+            setHostFromAnnotation();
+        }
         return host;
     }
 

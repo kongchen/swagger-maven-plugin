@@ -5,6 +5,7 @@ import com.github.kongchen.swagger.docgen.GenerateException;
 import com.github.kongchen.swagger.docgen.LogAdapter;
 import com.github.kongchen.swagger.docgen.reader.ClassSwaggerReader;
 import com.github.kongchen.swagger.docgen.reader.SpringMvcApiReader;
+import io.swagger.annotations.Api;
 import io.swagger.config.FilterFactory;
 import io.swagger.core.filter.SpecFilter;
 import io.swagger.core.filter.SwaggerSpecFilter;
@@ -41,7 +42,7 @@ public class SpringMavenDocumentSource extends AbstractDocumentSource {
             }
         }
 
-        swagger = resolveApiReader().read(apiSource.getValidClasses());
+        swagger = resolveApiReader().read(apiSource.getValidClasses(Api.class));
         
         if(apiSource.getSecurityDefinitions() != null) {
             for (SecurityDefinition sd : apiSource.getSecurityDefinitions()) {
