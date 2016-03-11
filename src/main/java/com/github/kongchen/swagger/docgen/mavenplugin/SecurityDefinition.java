@@ -14,7 +14,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * Created by chekong on 15/5/5.
+ * @author chekong on 15/5/5.
  */
 public class SecurityDefinition {
     private String name;
@@ -26,12 +26,9 @@ public class SecurityDefinition {
         Map<String, SecuritySchemeDefinition> map = new HashMap<String, SecuritySchemeDefinition>();
         if (name != null && type != null) {
             map.put(name, getSecuritySchemeDefinitionByNameAndType());
-
         } else if (json != null) {
-
-            ObjectMapper objectMapper = new ObjectMapper();
             try {
-                JsonNode tree = objectMapper.readTree(this.getClass().getResourceAsStream(json));
+                JsonNode tree = new ObjectMapper().readTree(this.getClass().getResourceAsStream(json));
                 Iterator<String> fit = tree.fieldNames();
                 while (fit.hasNext()) {
                     String field = fit.next();
@@ -51,46 +48,35 @@ public class SecurityDefinition {
     }
 
     private SecuritySchemeDefinition getSecuritySchemeDefinitionByType(String type, JsonNode node) throws GenerateException {
-        ObjectMapper mapper = new ObjectMapper();
-        SecuritySchemeDefinition def = null;
-        if (type.equals(new OAuth2Definition().getType())) {
-            def = new OAuth2Definition();
-            if (node != null) {
-                try {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            SecuritySchemeDefinition def = null;
+            if (type.equals(new OAuth2Definition().getType())) {
+                def = new OAuth2Definition();
+                if (node != null) {
                     def = mapper.readValue(node.traverse(), OAuth2Definition.class);
-                } catch (IOException e) {
-                    throw new GenerateException(e);
                 }
-            }
-
-        } else if (type.equals(new BasicAuthDefinition().getType())) {
-            def = new BasicAuthDefinition();
-            if (node != null) {
-                try {
+            } else if (type.equals(new BasicAuthDefinition().getType())) {
+                def = new BasicAuthDefinition();
+                if (node != null) {
                     def = mapper.readValue(node.traverse(), BasicAuthDefinition.class);
-                } catch (IOException e) {
-                    throw new GenerateException(e);
                 }
-            }
-        } else if (type.equals(new ApiKeyAuthDefinition().getType())) {
-            def = new ApiKeyAuthDefinition();
-            if (node != null) {
-                try {
+            } else if (type.equals(new ApiKeyAuthDefinition().getType())) {
+                def = new ApiKeyAuthDefinition();
+                if (node != null) {
                     def = mapper.readValue(node.traverse(), ApiKeyAuthDefinition.class);
-                } catch (IOException e) {
-                    throw new GenerateException(e);
                 }
             }
+            return def;
+        } catch (IOException e) {
+            throw new GenerateException(e);
         }
-        return def;
     }
 
     private SecuritySchemeDefinition getSecuritySchemeDefinitionByNameAndType() throws GenerateException {
-        ObjectMapper mapper = new ObjectMapper();
         final String _type = type;
         final String _description = description;
         SecuritySchemeDefinition def = new SecuritySchemeDefinition() {
-
             private String type = _type;
             private String description = _description;
             private Map<String, Object> vendorExtensions;
@@ -126,9 +112,8 @@ public class SecurityDefinition {
             }
         };
 
-        JsonNode node = mapper.valueToTree(def);
-        SecuritySchemeDefinition securitySchemeDefinition = getSecuritySchemeDefinitionByType(type, node);
-        return securitySchemeDefinition;
+        JsonNode node = new ObjectMapper().valueToTree(def);
+        return getSecuritySchemeDefinitionByType(type, node);
     }
 
 

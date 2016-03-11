@@ -6,7 +6,7 @@ import io.swagger.models.Swagger;
 import java.util.Set;
 
 /**
- * Created by chekong on 15/4/28.
+ * @author chekong on 15/4/28.
  */
 public interface ClassSwaggerReader {
     Swagger read(Set<Class<?>> classes) throws GenerateException;

@@ -11,30 +11,6 @@
                             <springmvc>false</springmvc>
                             <locations>com.wordnik.jaxrs</locations>
                             <schemes>http,https</schemes>
-                            <host>www.example.com:8080</host>
-                            <basePath>/api</basePath>
-                            <info>
-                                <title>Swagger Maven Plugin Sample</title>
-                                <version>v1</version>
-                                <!-- use markdown here because I'm using markdown for output,
-                                if you need to use html or other markup language, you need to use your target language,
-                                 and note escape your description for xml -->
-                                <description>
-                                    This is a sample.
-                                </description>
-                                <termsOfService>
-                                    http://www.github.com/kongchen/swagger-maven-plugin
-                                </termsOfService>
-                                <contact>
-                                    <email>kongchen@gmail.com</email>
-                                    <name>Kong Chen</name>
-                                    <url>http://kongch.com</url>
-                                </contact>
-                                <license>
-                                    <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
-                                    <name>Apache 2.0</name>
-                                </license>
-                            </info>
                             <securityDefinitions>
                                 <securityDefinition>
                                     <name>basicAuth</name>

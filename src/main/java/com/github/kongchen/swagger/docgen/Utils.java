@@ -2,7 +2,12 @@ package com.github.kongchen.swagger.docgen;
 
 import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
 import com.github.jknack.handlebars.io.FileTemplateLoader;
-import io.swagger.models.*;
+import io.swagger.models.Model;
+import io.swagger.models.Operation;
+import io.swagger.models.Path;
+import io.swagger.models.Response;
+import io.swagger.models.Swagger;
+import io.swagger.models.Tag;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -12,14 +17,16 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * Created by chekong on 14-11-25.
+ * @author chekong on 14-11-25.
  */
 public class Utils {
 
     private static final java.lang.String CLASSPATH = "classpath:";
 
     public static TemplatePath parseTemplateUrl(String templatePath) throws GenerateException {
-        if (templatePath == null) return null;
+        if (templatePath == null) {
+            return null;
+        }
         TemplatePath tp;
         if (templatePath.startsWith(CLASSPATH)) {
             String resPath = templatePath.substring(CLASSPATH.length());
@@ -60,16 +67,11 @@ public class Utils {
     }
 
     public static void sortSwagger(Swagger swagger) throws GenerateException {
+        if (swagger == null || swagger.getPaths() == null) {
+            return;
+        }
 
-        if (swagger == null || swagger.getPaths() == null) return;
-        Comparator<String> strcomp = new Comparator<String>() {
-            @Override
-            public int compare(String o1, String o2) {
-                return o1.compareTo(o2);
-            }
-        };
-
-        TreeMap<String, Path> sortedMap = new TreeMap<String, Path>(strcomp);
+        TreeMap<String, Path> sortedMap = new TreeMap<String, Path>();
         if (swagger.getPaths() == null) {
             return;
         }
@@ -85,7 +87,7 @@ public class Utils {
 
         //reorder definitions
         if (swagger.getDefinitions() != null) {
-            TreeMap<String, Model> defs = new TreeMap<String, Model>(strcomp);
+            TreeMap<String, Model> defs = new TreeMap<String, Model>();
             defs.putAll(swagger.getDefinitions());
             swagger.setDefinitions(defs);
         }
@@ -101,12 +103,13 @@ public class Utils {
 
     }
 
-
     private static void sortResponses(Path path, String method) throws GenerateException {
         try {
             Method m = Path.class.getDeclaredMethod("get" + method);
             Operation op = (Operation) m.invoke(path);
-            if (op == null) return;
+            if (op == null) {
+                return;
+            }
             Map<String, Response> responses = op.getResponses();
             TreeMap<String, Response> res = new TreeMap<String, Response>();
             res.putAll(responses);

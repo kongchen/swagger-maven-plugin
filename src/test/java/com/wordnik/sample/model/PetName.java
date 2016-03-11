@@ -4,13 +4,13 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Created by chekong on 15/5/19.
+ * @author chekong on 15/5/19.
  */
 public class PetName {
     private final String name;
 
     @JsonCreator
-    public static PetName fromString(@JsonProperty("name") String name){
+    public static PetName fromString(@JsonProperty("name") String name) {
 
         return new PetName(name);
     }

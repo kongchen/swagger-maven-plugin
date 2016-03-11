@@ -1,8 +1,7 @@
 package com.github.kongchen.swagger.docgen.mavenplugin;
 
-import java.io.File;
-import java.util.List;
-
+import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
+import com.github.kongchen.swagger.docgen.GenerateException;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -14,22 +13,20 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
 
-import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
-import com.github.kongchen.swagger.docgen.GenerateException;
+import java.io.File;
+import java.util.List;
 
 /**
- * Created with IntelliJ IDEA.
  * User: kongchen
  * Date: 3/7/13
  */
-@Mojo( name = "generate", defaultPhase = LifecyclePhase.COMPILE, configurator = "include-project-dependencies",
-       requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME)
+@Mojo(name = "generate", defaultPhase = LifecyclePhase.COMPILE, configurator = "include-project-dependencies",
+        requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME)
 public class ApiDocumentMojo extends AbstractMojo {
 
     /**
      * A set of apiSources.
      * One apiSource can be considered as a set of APIs for one apiVersion in a basePath
-     *
      */
     @Parameter
     private List<ApiSource> apiSources;
@@ -40,7 +37,7 @@ public class ApiDocumentMojo extends AbstractMojo {
 
     @Component
     private MavenProjectHelper projectHelper;
-    
+
     /**
      * A flag indicating if the generation should be skipped.
      */
@@ -61,13 +58,13 @@ public class ApiDocumentMojo extends AbstractMojo {
             getLog().info("Swagger generation is skipped.");
             return;
         }
-        
+
         if (apiSources == null) {
             throw new MojoFailureException("You must configure at least one apiSources element");
         }
         if (useSwaggerSpec11()) {
             throw new MojoExecutionException("You may use an old version of swagger which is not supported by swagger-maven-plugin 2.0+\n" +
-                "swagger-maven-plugin 2.0+ only supports swagger-core 1.3.x");
+                    "swagger-maven-plugin 2.0+ only supports swagger-core 1.3.x");
         }
 
         if (useSwaggerSpec13()) {
@@ -78,33 +75,27 @@ public class ApiDocumentMojo extends AbstractMojo {
         try {
             getLog().debug(apiSources.toString());
             for (ApiSource apiSource : apiSources) {
-
                 validateConfiguration(apiSource);
-
-                AbstractDocumentSource documentSource;
-
-                if(apiSource.isSpringmvc()){
-                	documentSource = new SpringMavenDocumentSource(apiSource, getLog());
-                }else{
-                	documentSource = new MavenDocumentSource(apiSource, getLog());
-                }
+                AbstractDocumentSource documentSource = apiSource.isSpringmvc()
+                        ? new SpringMavenDocumentSource(apiSource, getLog())
+                        : new MavenDocumentSource(apiSource, getLog());
 
                 documentSource.loadTypesToSkip();
                 documentSource.loadModelModifier();
                 documentSource.loadModelConverters();
                 documentSource.loadDocuments();
-				if (apiSource.getOutputPath() != null){
-					File outputDirectory = new File(apiSource.getOutputPath()).getParentFile();
-					if (outputDirectory != null && !outputDirectory.exists()) {
-						if (!outputDirectory.mkdirs()) {
-							throw new MojoExecutionException("Create directory[" +
-									apiSource.getOutputPath() + "] for output failed.");
-						}
-					}
-				}
-				if (apiSource.getTemplatePath()!=null) {
-					documentSource.toDocuments();
-				}
+                if (apiSource.getOutputPath() != null) {
+                    File outputDirectory = new File(apiSource.getOutputPath()).getParentFile();
+                    if (outputDirectory != null && !outputDirectory.exists()) {
+                        if (!outputDirectory.mkdirs()) {
+                            throw new MojoExecutionException("Create directory[" +
+                                    apiSource.getOutputPath() + "] for output failed.");
+                        }
+                    }
+                }
+                if (apiSource.getTemplatePath() != null) {
+                    documentSource.toDocuments();
+                }
                 documentSource.toSwaggerDocuments(
                         apiSource.getSwaggerUIDocBasePath() == null
                                 ? apiSource.getBasePath()
@@ -112,13 +103,12 @@ public class ApiDocumentMojo extends AbstractMojo {
                         apiSource.getOutputFormats());
 
 
-                if ( apiSource.isAttachSwaggerArtifact() && apiSource.getSwaggerDirectory() != null && this.project != null) {
+                if (apiSource.isAttachSwaggerArtifact() && apiSource.getSwaggerDirectory() != null && project != null) {
                     String classifier = new File(apiSource.getSwaggerDirectory()).getName();
-                    File swaggerFile = new File( apiSource.getSwaggerDirectory(), "swagger.json");
-                    this.projectHelper.attachArtifact(project, "json", classifier, swaggerFile);
+                    File swaggerFile = new File(apiSource.getSwaggerDirectory(), "swagger.json");
+                    projectHelper.attachArtifact(project, "json", classifier, swaggerFile);
                 }
             }
-
         } catch (GenerateException e) {
             throw new MojoFailureException(e.getMessage(), e);
         } catch (Exception e) {
@@ -132,7 +122,7 @@ public class ApiDocumentMojo extends AbstractMojo {
      * @param apiSource
      * @throws GenerateException
      */
-    private void validateConfiguration(ApiSource apiSource)  throws GenerateException {
+    private void validateConfiguration(ApiSource apiSource) throws GenerateException {
         if (apiSource == null) {
             throw new GenerateException("You do not configure any apiSource!");
         } else if (apiSource.getInfo() == null) {

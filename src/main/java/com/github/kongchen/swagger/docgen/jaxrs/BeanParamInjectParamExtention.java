@@ -1,6 +1,7 @@
 package com.github.kongchen.swagger.docgen.jaxrs;
 
 import com.sun.jersey.api.core.InjectParam;
+import com.sun.jersey.core.header.FormDataContentDisposition;
 import io.swagger.annotations.ApiParam;
 import io.swagger.jaxrs.ext.AbstractSwaggerExtension;
 import io.swagger.jaxrs.ext.SwaggerExtension;
@@ -10,7 +11,6 @@ import io.swagger.models.properties.PropertyBuilder;
 import io.swagger.util.AllowableValues;
 import io.swagger.util.AllowableValuesUtils;
 import org.apache.commons.lang3.reflect.TypeUtils;
-import org.reflections.util.Utils;
 
 import javax.ws.rs.BeanParam;
 import java.lang.annotation.Annotation;
@@ -18,13 +18,20 @@ import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
- * Created by chekong on 15/5/9.
+ * @author chekong on 15/5/9.
  */
-public class BeanParamInjectParamExtention extends AbstractSwaggerExtension implements SwaggerExtension {
+public class BeanParamInjectParamExtention extends AbstractSwaggerExtension {
 
+    @Override
     public List<Parameter> extractParameters(List<Annotation> annotations, Type type, Set<Type> typesToSkip, Iterator<SwaggerExtension> chain) {
         Class<?> cls = TypeUtils.getRawType(type, type);
 
@@ -37,34 +44,35 @@ public class BeanParamInjectParamExtention extends AbstractSwaggerExtension impl
         for (Annotation annotation : annotations) {
             if (annotation instanceof BeanParam || annotation instanceof InjectParam) {
                 return extractParameters(cls);
-
             }
         }
-        if (chain.hasNext())
+        if (chain.hasNext()) {
             return chain.next().extractParameters(annotations, type, typesToSkip, chain);
-        return null;
+        }
+        return Collections.emptyList();
     }
 
     private List<Parameter> extractParameters(Class<?> cls) {
         List<Parameter> parameters = new ArrayList<Parameter>();
 
-        for (AccessibleObject f : getDeclaredAndInheritedFieldsAndMethods(cls)) {
+        for (AccessibleObject accessibleObject : getDeclaredAndInheritedFieldsAndMethods(cls)) {
             SerializableParameter parameter = null;
 
-            int i = 0, apiParaIdx = -1;
+            int i = 0;
+            int apiParaIdx = -1;
 
-            for (Annotation annotation : f.getAnnotations()) {
+            for (Annotation annotation : accessibleObject.getAnnotations()) {
                 if (annotation instanceof ApiParam && !((ApiParam) annotation).hidden()) {
                     apiParaIdx = i;
                 }
                 i++;
-                Type paramType = extractType(f, cls);
+                Type paramType = extractType(accessibleObject, cls);
                 parameter = JaxrsParameterExtension.getParameter(paramType, parameter, annotation);
             }
 
             if (parameter != null) {
                 if (apiParaIdx != -1) {
-                    ApiParam param = (ApiParam) f.getAnnotations()[apiParaIdx];
+                    ApiParam param = (ApiParam) accessibleObject.getAnnotations()[apiParaIdx];
                     parameter.setDescription(param.value());
                     parameter.setRequired(param.required());
                     parameter.setAccess(param.access());
@@ -77,7 +85,7 @@ public class BeanParamInjectParamExtention extends AbstractSwaggerExtension impl
                         }
                     }
 
-                    if (!Utils.isEmpty(param.name())) {
+                    if (!param.name().isEmpty()) {
                         parameter.setName(param.name());
                     }
                 }
@@ -88,28 +96,29 @@ public class BeanParamInjectParamExtention extends AbstractSwaggerExtension impl
         return parameters;
     }
 
+    @Override
     public boolean shouldIgnoreClass(Class<?> cls) {
-        return com.sun.jersey.core.header.FormDataContentDisposition.class.equals(cls);
+        return FormDataContentDisposition.class.equals(cls);
     }
 
-    private List<AccessibleObject> getDeclaredAndInheritedFieldsAndMethods(Class<?> c) {
+    private List<AccessibleObject> getDeclaredAndInheritedFieldsAndMethods(Class<?> clazz) {
         List<AccessibleObject> accessibleObjects = new ArrayList<AccessibleObject>();
-        recurseGetDeclaredAndInheritedFields(c, accessibleObjects);
-        recurseGetDeclaredAndInheritedMethods(c, accessibleObjects);
+        recurseGetDeclaredAndInheritedFields(clazz, accessibleObjects);
+        recurseGetDeclaredAndInheritedMethods(clazz, accessibleObjects);
         return accessibleObjects;
     }
 
-    private void recurseGetDeclaredAndInheritedFields(Class<?> c, List<AccessibleObject> fields) {
-        fields.addAll(Arrays.asList(c.getDeclaredFields()));
-        Class<?> superClass = c.getSuperclass();
+    private void recurseGetDeclaredAndInheritedFields(Class<?> clazz, List<AccessibleObject> fields) {
+        fields.addAll(Arrays.asList(clazz.getDeclaredFields()));
+        Class<?> superClass = clazz.getSuperclass();
         if (superClass != null) {
             recurseGetDeclaredAndInheritedFields(superClass, fields);
         }
     }
 
-    private void recurseGetDeclaredAndInheritedMethods(Class<?> c, List<AccessibleObject> methods) {
-        methods.addAll(Arrays.asList(c.getDeclaredMethods()));
-        Class<?> superClass = c.getSuperclass();
+    private void recurseGetDeclaredAndInheritedMethods(Class<?> clazz, List<AccessibleObject> methods) {
+        methods.addAll(Arrays.asList(clazz.getDeclaredMethods()));
+        Class<?> superClass = clazz.getSuperclass();
         if (superClass != null) {
             recurseGetDeclaredAndInheritedMethods(superClass, methods);
         }

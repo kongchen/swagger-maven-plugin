@@ -27,7 +27,14 @@ import org.apache.commons.io.IOUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
@@ -37,33 +44,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created with IntelliJ IDEA.
- *
- * @author: chekong 05/13/2013
+ * @author chekong 05/13/2013
  */
 public abstract class AbstractDocumentSource {
     protected final ApiSource apiSource;
-
     protected final LogAdapter LOG;
-
-    private final String outputPath;
-
-    private final String templatePath;
-
-    private final String swaggerPath;
-
-    private final String modelSubstitute;
-
     protected final List<Type> typesToSkip = new ArrayList<Type>();
-
-    private final boolean jsonExampleValues;
-
     protected Swagger swagger;
-
+    protected String swaggerSchemaConverter;
+    private final String outputPath;
+    private final String templatePath;
+    private final String swaggerPath;
+    private final String modelSubstitute;
+    private final boolean jsonExampleValues;
     private ObjectMapper mapper = new ObjectMapper();
     private boolean isSorted = false;
-
-    protected String swaggerSchemaConverter;
 
     public AbstractDocumentSource(LogAdapter log, ApiSource apiSource) throws MojoFailureException {
         LOG = log;
@@ -88,17 +83,9 @@ public abstract class AbstractDocumentSource {
         if (apiSource.getDescriptionFile() != null) {
             try {
                 InputStream is = new FileInputStream(apiSource.getDescriptionFile());
-                try {
-                    apiSource.getInfo().setDescription(IOUtils.toString(is));
-                } catch (IOException e) {
-                    throw new MojoFailureException(e.getMessage(), e);
-                } finally {
-                    try {
-                        is.close();
-                    } catch (IOException e) {
-                    }
-                }
-            } catch (FileNotFoundException e) {
+                apiSource.getInfo().setDescription(IOUtils.toString(is));
+                is.close();
+            } catch (IOException e) {
                 throw new MojoFailureException(e.getMessage(), e);
             }
         }
@@ -111,10 +98,9 @@ public abstract class AbstractDocumentSource {
     }
 
 
-    public abstract void loadDocuments() throws Exception, GenerateException;
+    public abstract void loadDocuments() throws GenerateException;
 
     public void toSwaggerDocuments(String uiDocBasePath, String outputFormats) throws GenerateException {
-
         mapper.configure(SerializationFeature.WRITE_EMPTY_JSON_ARRAYS, false);
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
@@ -146,20 +132,19 @@ public abstract class AbstractDocumentSource {
         try {
             if (outputFormats != null) {
                 for (String format : outputFormats.split(",")) {
-                    Output output;
                     try {
-                        output = Output.valueOf(format.toLowerCase());
+                        Output output = Output.valueOf(format.toLowerCase());
+                        switch (output) {
+                            case json:
+                                ObjectWriter jsonWriter = mapper.writer(new DefaultPrettyPrinter());
+                                FileUtils.write(new File(dir, "swagger.json"), jsonWriter.writeValueAsString(swagger));
+                                break;
+                            case yaml:
+                                FileUtils.write(new File(dir, "swagger.yaml"), Yaml.pretty().writeValueAsString(swagger));
+                                break;
+                        }
                     } catch (Exception e) {
                         throw new GenerateException(String.format("Declared output format [%s] is not supported.", format));
-                    }
-                    switch (output) {
-                        case json:
-                            ObjectWriter jsonWriter = mapper.writer(new DefaultPrettyPrinter());
-                            FileUtils.write(new File(dir, "swagger.json"), jsonWriter.writeValueAsString(swagger));
-                            break;
-                        case yaml:
-                            FileUtils.write(new File(dir, "swagger.yaml"), Yaml.pretty().writeValueAsString(swagger));
-                            break;
                     }
                 }
             } else {
@@ -173,7 +158,6 @@ public abstract class AbstractDocumentSource {
     }
 
     public void loadModelModifier() throws GenerateException, IOException {
-
         ObjectMapper objectMapper = new ObjectMapper();
         if (apiSource.isUseJAXBAnnotationProcessor()) {
             objectMapper.registerModule(new JaxbAnnotationModule());
@@ -187,15 +171,13 @@ public abstract class AbstractDocumentSource {
         }
 
         if (modelSubstitute != null) {
-
             BufferedReader reader = null;
             try {
                 reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream(this.modelSubstitute)));
-                String line = null;
-                line = reader.readLine();
+                String line = reader.readLine();
                 while (line != null) {
                     String[] classes = line.split(":");
-                    if (classes == null || classes.length != 2) {
+                    if (classes.length != 2) {
                         throw new GenerateException("Bad format of override model file, it should be ${actualClassName}:${expectClassName}");
                     }
                     modelModifier.addModelSubstitute(classes[0].trim(), classes[1].trim());
@@ -204,7 +186,9 @@ public abstract class AbstractDocumentSource {
             } catch (IOException e) {
                 throw new GenerateException(e);
             } finally {
-                if (reader != null) reader.close();
+                if (reader != null) {
+                    reader.close();
+                }
             }
         }
 
@@ -213,18 +197,20 @@ public abstract class AbstractDocumentSource {
 
     public void loadModelConverters() throws MojoExecutionException {
         final List<String> modelConverters = apiSource.getModelConverters();
-        if(modelConverters == null) return;
+        if (modelConverters == null) {
+            return;
+        }
 
-        for(String modelConverter : modelConverters) {
+        for (String modelConverter : modelConverters) {
             try {
                 final Class<?> modelConverterClass = Class.forName(modelConverter);
-                if(ModelConverter.class.isAssignableFrom(modelConverterClass)) {
+                if (ModelConverter.class.isAssignableFrom(modelConverterClass)) {
                     final ModelConverter modelConverterInstance = (ModelConverter) modelConverterClass.newInstance();
                     ModelConverters.getInstance().addConverter(modelConverterInstance);
                 } else {
                     throw new MojoExecutionException(
-                       String.format("Class %s has to be a subclass of %s",
-                          modelConverterClass.getName(), ModelConverter.class));
+                            String.format("Class %s has to be a subclass of %s",
+                                    modelConverterClass.getName(), ModelConverter.class));
                 }
             } catch (ClassNotFoundException e) {
                 throw new MojoExecutionException(String.format("Could not find custom model converter %s", modelConverter), e);
@@ -238,14 +224,15 @@ public abstract class AbstractDocumentSource {
 
     public void loadTypesToSkip() throws GenerateException {
         List<String> typesToSkip = apiSource.getTypesToSkip();
-        if (typesToSkip != null && !typesToSkip.isEmpty()) {
-            for (String typeToSkip : typesToSkip) {
-                try {
-                    Type type = Class.forName(typeToSkip);
-                    this.typesToSkip.add(type);
-                } catch (ClassNotFoundException e) {
-                    throw new GenerateException(e);
-                }
+        if (typesToSkip == null) {
+            return;
+        }
+        for (String typeToSkip : typesToSkip) {
+            try {
+                Type type = Class.forName(typeToSkip);
+                this.typesToSkip.add(type);
+            } catch (ClassNotFoundException e) {
+                throw new GenerateException(e);
             }
         }
     }
@@ -279,8 +266,7 @@ public abstract class AbstractDocumentSource {
 //		}
     }
 
-    protected File createFile(File dir, String outputResourcePath)
-            throws IOException {
+    protected File createFile(File dir, String outputResourcePath) throws IOException {
         File serviceFile;
         int i = outputResourcePath.lastIndexOf("/");
         if (i != -1) {
@@ -300,23 +286,16 @@ public abstract class AbstractDocumentSource {
     }
 
     public void toDocuments() throws GenerateException {
-
         if (!isSorted) {
             Utils.sortSwagger(swagger);
             isSorted = true;
         }
         LOG.info("Writing doc to " + outputPath + "...");
 
-        FileOutputStream fileOutputStream;
         try {
-            fileOutputStream = new FileOutputStream(outputPath);
-        } catch (FileNotFoundException e) {
-            throw new GenerateException(e);
-        }
-        OutputStreamWriter writer = new OutputStreamWriter(fileOutputStream,
-                Charset.forName("UTF-8"));
+            FileOutputStream fileOutputStream = new FileOutputStream(outputPath);
+            OutputStreamWriter writer = new OutputStreamWriter(fileOutputStream, Charset.forName("UTF-8"));
 
-        try {
             TemplatePath tp = Utils.parseTemplateUrl(templatePath);
 
             Handlebars handlebars = new Handlebars(tp.loader);
@@ -338,7 +317,9 @@ public abstract class AbstractDocumentSource {
         handlebars.registerHelper("ifeq", new Helper<String>() {
             @Override
             public CharSequence apply(String value, Options options) throws IOException {
-                if (value == null || options.param(0) == null) return options.inverse();
+                if (value == null || options.param(0) == null) {
+                    return options.inverse();
+                }
                 if (value.equals(options.param(0))) {
                     return options.fn();
                 }
@@ -349,7 +330,9 @@ public abstract class AbstractDocumentSource {
         handlebars.registerHelper("basename", new Helper<String>() {
             @Override
             public CharSequence apply(String value, Options options) throws IOException {
-                if (value == null) return null;
+                if (value == null) {
+                    return null;
+                }
                 int lastSlash = value.lastIndexOf("/");
                 if (lastSlash == -1) {
                     return value;
@@ -364,8 +347,9 @@ public abstract class AbstractDocumentSource {
     }
 
     private String getUrlParent(URL url) {
-
-        if (url == null) return null;
+        if (url == null) {
+            return null;
+        }
 
         String strurl = url.toString();
         int idx = strurl.lastIndexOf('/');
@@ -392,7 +376,7 @@ public abstract class AbstractDocumentSource {
 }
 
 enum Output {
-    json, yaml;
+    json, yaml
 }
 
 class TemplatePath {

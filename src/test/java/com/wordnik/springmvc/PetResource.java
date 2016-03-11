@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Reverb Technologies, Inc.
- * <p/>
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p/>
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,17 +21,34 @@ import com.wordnik.sample.data.PetData;
 import com.wordnik.sample.exception.NotFoundException;
 import com.wordnik.sample.model.PaginationHelper;
 import com.wordnik.sample.model.Pet;
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.Authorization;
+import io.swagger.annotations.AuthorizationScope;
+import io.swagger.annotations.Extension;
+import io.swagger.annotations.ExtensionProperty;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.validation.constraints.Size;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Api(value = "/pet", description = "Operations about pets", authorizations = {
         @Authorization(value = "petstore_auth",
@@ -61,7 +78,7 @@ public class PetResource {
             @PathVariable("petId") Long petId)
             throws NotFoundException {
         Pet pet = petData.getPetbyId(petId);
-        if (null != pet) {
+        if (pet != null) {
             return new ResponseEntity(pet, HttpStatus.OK);
         } else {
             throw new NotFoundException(404, "Pet not found");
@@ -248,7 +265,7 @@ public class PetResource {
     public String testingApiImplicitParams() {
         return "testing";
     }
-    
+
     @ApiOperation(value = "testingFormApiImplicitParam")
     @RequestMapping(
             value = "/testingFormApiImplicitParam",
@@ -268,7 +285,7 @@ public class PetResource {
     public String testingFormApiImplicitParam() {
         return "testing";
     }
-    
+
     @ApiOperation(value = "testingBasicAuth", authorizations = @Authorization(value = "basicAuth"))
     @RequestMapping(
             value = "/testingBasicAuth",

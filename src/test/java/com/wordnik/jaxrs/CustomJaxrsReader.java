@@ -7,8 +7,8 @@ import io.swagger.models.Swagger;
 import java.util.Set;
 
 /**
- * @author: Igor Gursky
- * 11.12.2015.
+ * @author Igor Gursky
+ *         11.12.2015.
  */
 public class CustomJaxrsReader extends JaxrsReader {
     public CustomJaxrsReader(Swagger swagger, LogAdapter LOG) {

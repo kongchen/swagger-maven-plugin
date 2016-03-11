@@ -1,23 +1,20 @@
 package com.github.kongchen.swagger.docgen;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
 import org.apache.log4j.Logger;
 import org.apache.maven.plugin.logging.Log;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 /**
- * Created with IntelliJ IDEA.
- *
- * @author: chekong
- * 05/13/2013
+ * @author chekong
+ *         05/13/2013
  */
 public class LogAdapter {
     Object logger;
 
     public LogAdapter(Logger logger) {
         this.logger = logger;
-
     }
 
     public LogAdapter(Log log) {

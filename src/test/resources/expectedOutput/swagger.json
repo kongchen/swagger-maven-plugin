@@ -536,7 +536,7 @@
             "description": "array",
             "schema": {
               "type": "array",
-              "items" : {
+              "items": {
                 "$ref": "#/definitions/Pet"
               }
             }
@@ -638,7 +638,10 @@
             "description": "Updated status of the pet",
             "required": false,
             "type": "string",
-            "enum":["value1","value2"]
+            "enum": [
+              "value1",
+              "value2"
+            ]
           },
           {
             "name": "myHeader",
@@ -774,7 +777,10 @@
             "description": "Updated status of the pet",
             "required": false,
             "type": "string",
-            "enum":["value1","value2"]
+            "enum": [
+              "value1",
+              "value2"
+            ]
           },
           {
             "name": "myHeader",

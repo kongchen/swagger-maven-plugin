@@ -5,6 +5,7 @@ import com.github.kongchen.swagger.docgen.GenerateException;
 import com.github.kongchen.swagger.docgen.LogAdapter;
 import com.github.kongchen.swagger.docgen.reader.ClassSwaggerReader;
 import com.github.kongchen.swagger.docgen.reader.JaxrsReader;
+import io.swagger.annotations.Api;
 import io.swagger.config.FilterFactory;
 import io.swagger.core.filter.SpecFilter;
 import io.swagger.core.filter.SwaggerSpecFilter;
@@ -13,19 +14,15 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * Created with IntelliJ IDEA.
- *
- * @author: chekong
- * 05/13/2013
+ * @author chekong
+ *         05/13/2013
  */
 public class MavenDocumentSource extends AbstractDocumentSource {
-
     private final SpecFilter specFilter = new SpecFilter();
 
     public MavenDocumentSource(ApiSource apiSource, Log log) throws MojoFailureException {
@@ -43,16 +40,11 @@ public class MavenDocumentSource extends AbstractDocumentSource {
             }
         }
 
-        swagger = resolveApiReader().read(apiSource.getValidClasses());
+        swagger = resolveApiReader().read(apiSource.getValidClasses(Api.class));
 
-        if(apiSource.getSecurityDefinitions() != null) {
+        if (apiSource.getSecurityDefinitions() != null) {
             for (SecurityDefinition sd : apiSource.getSecurityDefinitions()) {
-                if(sd.getDefinitions().isEmpty()) {
-                    continue;
-                }
-                Iterator<Map.Entry<String, SecuritySchemeDefinition>> it = sd.getDefinitions().entrySet().iterator();
-                while (it.hasNext()) {
-                    Map.Entry<String, SecuritySchemeDefinition> entry = it.next();
+                for (Map.Entry<String, SecuritySchemeDefinition> entry : sd.getDefinitions().entrySet()) {
                     swagger.addSecurityDefinition(entry.getKey(), entry.getValue());
                 }
             }
@@ -68,10 +60,9 @@ public class MavenDocumentSource extends AbstractDocumentSource {
 
         if (FilterFactory.getFilter() != null) {
             swagger = new SpecFilter().filter(swagger, FilterFactory.getFilter(),
-                new HashMap<String, List<String>>(), new HashMap<String, String>(),
-                new HashMap<String, List<String>>());
+                    new HashMap<String, List<String>>(), new HashMap<String, String>(),
+                    new HashMap<String, List<String>>());
         }
-
     }
 
     private ClassSwaggerReader resolveApiReader() throws GenerateException {

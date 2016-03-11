@@ -25,22 +25,17 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import static com.github.kongchen.smp.integration.utils.TestUtils.YamlToJson;
-import static com.github.kongchen.smp.integration.utils.TestUtils.changeDescription;
-import static com.github.kongchen.smp.integration.utils.TestUtils.createTempDirPath;
-import static com.github.kongchen.smp.integration.utils.TestUtils.setCustomReader;
+import static com.github.kongchen.smp.integration.utils.TestUtils.*;
 import static net.javacrumbs.jsonunit.JsonAssert.assertJsonEquals;
 import static net.javacrumbs.jsonunit.core.Option.IGNORING_ARRAY_ORDER;
 
 /**
- * Created by chekong on 8/15/14.
+ * @author chekong on 8/15/14.
  */
 public class SpringMvcTest extends AbstractMojoTestCase {
-
     private File swaggerOutputDir = new File(getBasedir(), "generated/swagger-ui-spring");
     private File docOutput = new File(getBasedir(), "generated/document-spring.html");
     private ApiDocumentMojo mojo;
-
 
     @BeforeMethod
     protected void setUp() throws Exception {
@@ -104,7 +99,6 @@ public class SpringMvcTest extends AbstractMojoTestCase {
 
     @Test
     public void testGeneratedDoc() throws Exception {
-
         mojo.execute();
 
         BufferedReader actualReader = null;
@@ -113,7 +107,6 @@ public class SpringMvcTest extends AbstractMojoTestCase {
         BufferedReader swaggerReader = null;
 
         try {
-
             actualReader = new BufferedReader(new InputStreamReader(new FileInputStream(docOutput)));
             expectReader = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream("/sample-springmvc.html")));
 
@@ -123,10 +116,10 @@ public class SpringMvcTest extends AbstractMojoTestCase {
 
                 String expect = expectReader.readLine();
                 String actual = actualReader.readLine();
-                if (expect == null && actual == null)
+                if (expect == null && actual == null) {
                     break;
+                }
                 Assert.assertEquals(actual.trim(), expect.trim(), "" + count);
-
             }
 
             swaggerJson = new FileInputStream(new File(swaggerOutputDir, "swagger.json"));
@@ -140,10 +133,18 @@ public class SpringMvcTest extends AbstractMojoTestCase {
             }
 
         } finally {
-            if (actualReader != null) actualReader.close();
-            if (expectReader != null) expectReader.close();
-            if (swaggerJson != null) swaggerJson.close();
-            if (swaggerReader != null) swaggerReader.close();
+            if (actualReader != null) {
+                actualReader.close();
+            }
+            if (expectReader != null) {
+                expectReader.close();
+            }
+            if (swaggerJson != null) {
+                swaggerJson.close();
+            }
+            if (swaggerReader != null) {
+                swaggerReader.close();
+            }
         }
 
     }
@@ -191,10 +192,10 @@ public class SpringMvcTest extends AbstractMojoTestCase {
     }
 
     @DataProvider
-    private Iterator<String[]> pathProvider() throws Exception {
+    private Iterator<Object[]> pathProvider() throws Exception {
         String tempDirPath = createTempDirPath();
 
-        List<String[]> dataToBeReturned = new ArrayList<String[]>();
+        List<Object[]> dataToBeReturned = new ArrayList<Object[]>();
         dataToBeReturned.add(new String[]{tempDirPath + "foo" + File.separator + "bar" + File.separator + "test.html"});
         dataToBeReturned.add(new String[]{tempDirPath + File.separator + "bar" + File.separator + "test.html"});
         dataToBeReturned.add(new String[]{tempDirPath + File.separator + "test.html"});
@@ -205,7 +206,6 @@ public class SpringMvcTest extends AbstractMojoTestCase {
 
     @Test(enabled = false, dataProvider = "pathProvider")
     public void testExecuteDirectoryCreated(String path) throws Exception {
-
         mojo.getApiSources().get(0).setOutputPath(path);
 
         File file = new File(path);
@@ -231,9 +231,9 @@ public class SpringMvcTest extends AbstractMojoTestCase {
         mojo.execute();
 
         String actualYaml = io.swagger.util.Yaml.pretty().writeValueAsString(
-            new Yaml().load(FileUtils.readFileToString(new File(swaggerOutputDir, "swagger.yaml"))));
+                new Yaml().load(FileUtils.readFileToString(new File(swaggerOutputDir, "swagger.yaml"))));
         String expectYaml = io.swagger.util.Yaml.pretty().writeValueAsString(
-            new Yaml().load(this.getClass().getResourceAsStream("/expectedOutput/swagger-spring.yaml")));
+                new Yaml().load(this.getClass().getResourceAsStream("/expectedOutput/swagger-spring.yaml")));
 
         ObjectMapper mapper = new ObjectMapper();
         JsonNode actualJson = mapper.readTree(YamlToJson(actualYaml));
