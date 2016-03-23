@@ -45,11 +45,10 @@ public class ApiSource {
      */
     private String host;
 
-    /**
-     * The transfer protocol of the API. Values MUST be from the list: "http", "https", "ws", "wss"
-     * use ',' as delimiter
+    /*
+     * The transfer protocols of the API. Values MUST be from the list: "http", "https", "ws", "wss"
      */
-    private String schemes;
+    private List<String> schemes;
 
     /**
      * <code>templatePath</code> is the path of a hbs template file,
@@ -325,11 +324,11 @@ public class ApiSource {
         this.host = host;
     }
 
-    public String getSchemes() {
+    public List<String> getSchemes() {
         return schemes;
     }
 
-    public void setSchemes(String schemes) {
+    public void setSchemes(List<String> schemes) {
         this.schemes = schemes;
     }
 
