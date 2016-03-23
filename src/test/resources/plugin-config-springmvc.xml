@@ -10,7 +10,10 @@
                         <apiSource>
                             <springmvc>true</springmvc>
                             <locations>com.wordnik.springmvc</locations>
-                            <schemes>http,https</schemes>
+                            <schemes>
+                                <scheme>http</scheme>
+                                <scheme>https</scheme>
+                            </schemes>
                             <host>www.example.com:8080</host>
                             <basePath>/api</basePath>
                             <info>

@@ -10,7 +10,10 @@
                         <apiSource>
                             <springmvc>false</springmvc>
                             <locations>com.wordnik.jaxrs</locations>
-                            <schemes>http,https</schemes>
+                            <schemes>
+                                <scheme>http</scheme>
+                                <scheme>https</scheme>
+                            </schemes>
                             <securityDefinitions>
                                 <securityDefinition>
                                     <name>basicAuth</name>

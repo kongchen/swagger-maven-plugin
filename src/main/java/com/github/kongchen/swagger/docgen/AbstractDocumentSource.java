@@ -70,12 +70,8 @@ public abstract class AbstractDocumentSource {
 
         swagger = new Swagger();
         if (apiSource.getSchemes() != null) {
-            if (apiSource.getSchemes().contains(",")) {
-                for (String scheme : apiSource.getSchemes().split(",")) {
-                    swagger.scheme(Scheme.forValue(scheme));
-                }
-            } else {
-                swagger.scheme(Scheme.forValue(apiSource.getSchemes()));
+            for (String scheme : apiSource.getSchemes()) {
+                swagger.scheme(Scheme.forValue(scheme));
             }
         }
 
