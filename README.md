@@ -52,7 +52,7 @@ You can specify several `apiSource`s. Generally, one is enough.
 | **name** | **description** |
 |------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `springmvc` | Tell the plugin your project is a JAX-RS(`false`) or a SpringMvc(`true`) project |
-| `locations` **required**| Classes containing Swagger's annotation ```@Api```, or packages containing those classes can be configured here, using ```;``` as the delimiter. |
+| `locations` **required**| Classes containing Swagger's annotation ```@Api```, or packages containing those classes can be configured here, using Each item must be located inside \<location> tag. |
 | `schemes` | The transfer protocol of the API. Values MUST be from the list: `"http"`, `"https"`, `"ws"`, `"wss"`. Each value must be located inside `<scheme>` tag|
 | `host` | The host (name or ip) serving the API. This MUST be the host only and does not include the scheme nor sub-paths. It MAY include a port.  The host does not support [path templating](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#pathTemplating).|
 | `basePath` | The base path on which the API is served, which is relative to the host. The value MUST start with a leading slash (/). The basePath does not support [path templating](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#pathTemplating). |
@@ -244,7 +244,9 @@ There's a [sample here](https://github.com/swagger-maven-plugin/swagger-maven-ex
         <apiSources>
             <apiSource>
 	            <springmvc>true</springmvc>
-                <locations>com.wordnik.swagger.sample</locations>
+                <locations>
+                    <location>com.wordnik.swagger.sample</location>
+                </locations>
                 <schemes>
                     <scheme>http</scheme>
                     <scheme>https</scheme>
