@@ -75,7 +75,7 @@ import java.util.Set;
 public abstract class AbstractReader {
     protected final LogAdapter LOG;
     protected Swagger swagger;
-    protected Set<Type> typesToSkip = new HashSet<Type>();
+    private Set<Type> typesToSkip = new HashSet<Type>();
 
     public Set<Type> getTypesToSkip() {
         return typesToSkip;
@@ -113,11 +113,6 @@ public abstract class AbstractReader {
     }
 
     protected List<SecurityRequirement> getSecurityRequirements(Api api) {
-        int position = api.position();
-        String produces = api.produces();
-        String consumes = api.consumes();
-        String schems = api.protocols();
-
         List<SecurityRequirement> securities = new ArrayList<SecurityRequirement>();
         for (Authorization auth : api.authorizations()) {
             if (auth.value().isEmpty()) {
@@ -432,10 +427,9 @@ public abstract class AbstractReader {
         if (!parameters.isEmpty()) {
             for (Parameter parameter : parameters) {
                 ParameterProcessor.applyAnnotations(swagger, parameter, type, annotations);
-                parameter = this.fixCollectionFormatForArrayTypes(cls, parameter);
+                parameter = fixCollectionFormatForArrayTypes(cls, parameter);
             }
         } else {
-            // look for body parameters
             LOG.info("Looking for body params in " + cls);
             if (!typesToSkip.contains(type)) {
                 Parameter param = ParameterProcessor.applyAnnotations(swagger, null, type, annotations);

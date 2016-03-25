@@ -11,7 +11,7 @@ import java.lang.reflect.Method;
  *         05/13/2013
  */
 public class LogAdapter {
-    Object logger;
+    private Object logger;
 
     public LogAdapter(Logger logger) {
         this.logger = logger;
