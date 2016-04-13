@@ -21,6 +21,7 @@ import io.swagger.converter.ModelConverters;
 import io.swagger.models.Scheme;
 import io.swagger.models.Swagger;
 import io.swagger.models.properties.Property;
+import io.swagger.util.Json;
 import io.swagger.util.Yaml;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -154,7 +155,7 @@ public abstract class AbstractDocumentSource {
     }
 
     public void loadModelModifier() throws GenerateException, IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = Json.mapper();
         if (apiSource.isUseJAXBAnnotationProcessor()) {
             objectMapper.registerModule(new JaxbAnnotationModule());
             objectMapper.registerModule(new JaxbAnnotationModule());
