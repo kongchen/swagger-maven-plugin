@@ -219,6 +219,14 @@ You can instruct `swagger-maven-plugin` to deploy the generated `swagger.json` b
 
 ```
 <swaggerDirectory>${project.build.directory}/swagger-ui</swaggerDirectory>
+<attachSwaggerArtifact>true</attachSwaggerArtifact>
+
+```
+
+or `custom.json` by adding the following to your pom.xml:
+
+```
+<swaggerDirectory>${project.build.directory}/swagger-ui</swaggerDirectory>
 <swaggerFileName>custom</swaggerFileName>
 <attachSwaggerArtifact>true</attachSwaggerArtifact>
 
