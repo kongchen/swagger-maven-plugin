@@ -83,7 +83,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         Map<String, Tag> tags = updateTagsForApi(parentTags, api);
         List<SecurityRequirement> securities = getSecurityRequirements(api);
 
-        // merge consumes, produces
+        // merge consumes, pro duces
 
         // look for method-level annotated properties
 
@@ -138,14 +138,12 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
 
     private void handleSubResource(String[] apiConsumes, String httpMethod, String[] apiProduces, Map<String, Tag> tags, Method method, String operationPath, Operation operation) {
         if (isSubResource(method)) {
-            Type t = method.getGenericReturnType();
             Class<?> responseClass = method.getReturnType();
             Swagger subSwagger = read(responseClass, operationPath, httpMethod, true, apiConsumes, apiProduces, tags, operation.getParameters());
         }
     }
 
     protected boolean isSubResource(Method method) {
-        Type t = method.getGenericReturnType();
         Class<?> responseClass = method.getReturnType();
         return (responseClass != null) && (AnnotationUtils.findAnnotation(responseClass, Api.class) != null);
     }
@@ -155,7 +153,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
             return null;
         }
         StringBuilder stringBuilder = new StringBuilder();
-        if (parentPath != null && !parentPath.isEmpty() && !"/".equals(parentPath)) {
+        if (parentPath != null && !parentPath.isEmpty() && !parentPath.equals("/")) {
             if (!parentPath.startsWith("/")) {
                 parentPath = "/" + parentPath;
             }

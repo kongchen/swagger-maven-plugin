@@ -9,7 +9,9 @@
                     <apiSources>
                         <apiSource>
                             <springmvc>false</springmvc>
-                            <locations>com.wordnik.jaxrs</locations>
+                            <locations>
+                                <location>com.wordnik.jaxrs</location>
+                            </locations>
                             <schemes>
                                 <scheme>http</scheme>
                                 <scheme>https</scheme>

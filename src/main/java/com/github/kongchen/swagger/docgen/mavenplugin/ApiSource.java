@@ -23,10 +23,10 @@ public class ApiSource {
 
     /**
      * Java classes containing Swagger's annotation <code>@Api</code>, or Java packages containing those classes
-     * can be configured here, use ; as the delimiter if you have more than one location.
+     * can be configured here.
      */
     @Parameter(required = true)
-    private String locations;
+    private List<String> locations;
 
     @Parameter
     private Info info;
@@ -129,14 +129,9 @@ public class ApiSource {
             Set<Class<?>> c = new Reflections("").getTypesAnnotatedWith(clazz);
             classes.addAll(c);
         } else {
-            if (locations.contains(";")) {
-                String[] sources = locations.split(";");
-                for (String source : sources) {
-                    Set<Class<?>> c = new Reflections(source).getTypesAnnotatedWith(clazz);
-                    classes.addAll(c);
-                }
-            } else {
-                classes.addAll(new Reflections(locations).getTypesAnnotatedWith(clazz));
+            for (String location : locations) {
+                Set<Class<?>> c = new Reflections(location).getTypesAnnotatedWith(clazz);
+                classes.addAll(c);
             }
         }
 
@@ -221,11 +216,11 @@ public class ApiSource {
         this.info = info;
     }
 
-    public String getLocations() {
+    public List<String> getLocations() {
         return locations;
     }
 
-    public void setLocations(String locations) {
+    public void setLocations(List<String> locations) {
         this.locations = locations;
     }
 
