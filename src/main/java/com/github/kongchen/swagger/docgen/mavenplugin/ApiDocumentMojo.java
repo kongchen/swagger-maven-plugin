@@ -2,6 +2,7 @@ package com.github.kongchen.swagger.docgen.mavenplugin;
 
 import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
 import com.github.kongchen.swagger.docgen.GenerateException;
+
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -96,17 +97,23 @@ public class ApiDocumentMojo extends AbstractMojo {
                 if (apiSource.getTemplatePath() != null) {
                     documentSource.toDocuments();
                 }
+                String swaggerFileName = getSwaggerFileName(apiSource.getSwaggerFileName());
                 documentSource.toSwaggerDocuments(
                         apiSource.getSwaggerUIDocBasePath() == null
                                 ? apiSource.getBasePath()
                                 : apiSource.getSwaggerUIDocBasePath(),
-                        apiSource.getOutputFormats());
+                        apiSource.getOutputFormats(), swaggerFileName);
 
 
                 if (apiSource.isAttachSwaggerArtifact() && apiSource.getSwaggerDirectory() != null && project != null) {
-                    String classifier = new File(apiSource.getSwaggerDirectory()).getName();
-                    File swaggerFile = new File(apiSource.getSwaggerDirectory(), "swagger.json");
-                    projectHelper.attachArtifact(project, "json", classifier, swaggerFile);
+                    String outputFormats = apiSource.getOutputFormats();
+                    if (outputFormats != null) {
+                        for (String format : outputFormats.split(",")) {
+                            String classifier = new File(apiSource.getSwaggerDirectory()).getName();
+                            File swaggerFile = new File(apiSource.getSwaggerDirectory(), swaggerFileName + "." + format.toLowerCase());
+                            projectHelper.attachArtifact(project, format.toLowerCase(), classifier, swaggerFile);
+                        }
+                    }
                 }
             }
         } catch (GenerateException e) {
@@ -162,5 +169,9 @@ public class ApiDocumentMojo extends AbstractMojo {
         } catch (ClassNotFoundException e) {
             return false;
         }
+    }
+    
+    private String getSwaggerFileName(String swaggerFileName) {
+        return swaggerFileName == null || "".equals(swaggerFileName.trim()) ? "swagger" : swaggerFileName;
     }
 }

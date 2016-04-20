@@ -66,6 +66,9 @@ public class ApiSource {
 
     @Parameter
     private String swaggerDirectory;
+    
+    @Parameter
+    private String swaggerFileName;
 
     /**
      * <code>attachSwaggerArtifact</code> triggers plugin execution to attach the generated
@@ -262,6 +265,14 @@ public class ApiSource {
 
     public void setSwaggerDirectory(String swaggerDirectory) {
         this.swaggerDirectory = swaggerDirectory;
+    }
+    
+    public String getSwaggerFileName() {
+        return swaggerFileName;
+    }
+
+    public void setSwaggerFileName(String swaggerFileName) {
+        this.swaggerFileName = swaggerFileName;
     }
 
     public boolean isAttachSwaggerArtifact() {

@@ -52,8 +52,8 @@ You can specify several `apiSource`s. Generally, one is enough.
 | **name** | **description** |
 |------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `springmvc` | Tell the plugin your project is a JAX-RS(`false`) or a SpringMvc(`true`) project |
-| `locations` **required**| Classes containing Swagger's annotation ```@Api```, or packages containing those classes can be configured here, using Each item must be located inside \<location> tag. |
-| `schemes` | The transfer protocol of the API. Values MUST be from the list: `"http"`, `"https"`, `"ws"`, `"wss"`. Each value must be located inside `<scheme>` tag|
+| `locations` **required**| Classes containing Swagger's annotation ```@Api```, or packages containing those classes can be configured here. Each item must be located inside \<location> tag. |
+| `schemes` | The transfer protocol of the API. Values MUST be from the list: `"http"`, `"https"`, `"ws"`, `"wss"`. Each value must be located inside its own `<scheme>` tag. Example: `<schemes><scheme>http</scheme><scheme>https</scheme></schemes>` |
 | `host` | The host (name or ip) serving the API. This MUST be the host only and does not include the scheme nor sub-paths. It MAY include a port.  The host does not support [path templating](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#pathTemplating).|
 | `basePath` | The base path on which the API is served, which is relative to the host. The value MUST start with a leading slash (/). The basePath does not support [path templating](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#pathTemplating). |
 | `descriptionFile` | A Path to file with description to be set to Swagger Spec 2.0's [info Object](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#infoObject) |
@@ -63,6 +63,7 @@ You can specify several `apiSource`s. Generally, one is enough.
 | `outputPath` | The path of the generated static document, not existed parent directories will be created. If you don't want to generate a static document, just don't set it. |
 | `outputFormats` | The format types of the generated swagger spec. Valid values are `json`, `yaml` or both `json,yaml`. The `json` format is default.|
 | `swaggerDirectory` | The directory of generated `swagger.json` file. If null, no `swagger.json` will be generated. |
+| `swaggerFileName` | The filename of generated `filename.json` file. If null, `swagger.json` will be generated. |
 | `swaggerApiReader` | If not null, the value should be a full name of the class implementing `com.github.kongchen.swagger.docgen.reader.ClassSwaggerReader`. This allows you to flexibly implement/override the reader's implementation. Default is `com.github.kongchen.swagger.docgen.reader.JaxrsReader` |
 | `attachSwaggerArtifact` | If enabled, the generated `swagger.json` file will be attached as a maven artifact. The `swaggerDirectory`'s name will be used as an artifact classifier. Default is `false`. |
 | `modelSubstitute` | The model substitute file's path, see more details [below](#model-substitution)|
@@ -218,6 +219,15 @@ You can instruct `swagger-maven-plugin` to deploy the generated `swagger.json` b
 
 ```
 <swaggerDirectory>${project.build.directory}/swagger-ui</swaggerDirectory>
+<attachSwaggerArtifact>true</attachSwaggerArtifact>
+
+```
+
+or `custom.json` by adding the following to your pom.xml:
+
+```
+<swaggerDirectory>${project.build.directory}/swagger-ui</swaggerDirectory>
+<swaggerFileName>custom</swaggerFileName>
 <attachSwaggerArtifact>true</attachSwaggerArtifact>
 
 ```
