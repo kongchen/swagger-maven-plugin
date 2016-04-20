@@ -96,8 +96,12 @@ public abstract class AbstractDocumentSource {
 
 
     public abstract void loadDocuments() throws GenerateException;
-
+    
     public void toSwaggerDocuments(String uiDocBasePath, String outputFormats) throws GenerateException {
+        toSwaggerDocuments(uiDocBasePath, outputFormats, null);
+    }
+
+    public void toSwaggerDocuments(String uiDocBasePath, String outputFormats, String fileName) throws GenerateException {
         mapper.configure(SerializationFeature.WRITE_EMPTY_JSON_ARRAYS, false);
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
@@ -124,8 +128,10 @@ public abstract class AbstractDocumentSource {
                 throw new GenerateException(String.format("Create Swagger-outputDirectory[%s] failed.", swaggerPath));
             }
         }
-        cleanupOlds(dir);
-
+        cleanupOlds(dir, outputFormats);
+        if (fileName == null || "".equals(fileName.trim())) {
+            fileName = "swagger";
+        }
         try {
             if (outputFormats != null) {
                 for (String format : outputFormats.split(",")) {
@@ -134,10 +140,10 @@ public abstract class AbstractDocumentSource {
                         switch (output) {
                             case json:
                                 ObjectWriter jsonWriter = mapper.writer(new DefaultPrettyPrinter());
-                                FileUtils.write(new File(dir, "swagger.json"), jsonWriter.writeValueAsString(swagger));
+                                FileUtils.write(new File(dir, fileName + ".json"), jsonWriter.writeValueAsString(swagger));
                                 break;
                             case yaml:
-                                FileUtils.write(new File(dir, "swagger.yaml"), Yaml.pretty().writeValueAsString(swagger));
+                                FileUtils.write(new File(dir, fileName + ".yaml"), Yaml.pretty().writeValueAsString(swagger));
                                 break;
                         }
                     } catch (Exception e) {
@@ -147,7 +153,7 @@ public abstract class AbstractDocumentSource {
             } else {
                 // Default to json
                 ObjectWriter jsonWriter = mapper.writer(new DefaultPrettyPrinter());
-                FileUtils.write(new File(dir, "swagger.json"), jsonWriter.writeValueAsString(swagger));
+                FileUtils.write(new File(dir, fileName + ".json"), jsonWriter.writeValueAsString(swagger));
             }
         } catch (IOException e) {
             throw new GenerateException(e);
@@ -235,11 +241,13 @@ public abstract class AbstractDocumentSource {
     }
 
 
-    private void cleanupOlds(File dir) {
-        if (dir.listFiles() != null) {
-            for (File f : dir.listFiles()) {
-                if (f.getName().endsWith("json")) {
-                    f.delete();
+    private void cleanupOlds(File dir, String outputFormats) {
+        if (dir.listFiles() != null && outputFormats != null) {
+            for (String format : outputFormats.split(",")) {
+                for (File f : dir.listFiles()) {
+                    if (f.getName().endsWith(format.toLowerCase())) {
+                        f.delete();
+                    }
                 }
             }
         }

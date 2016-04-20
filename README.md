@@ -63,6 +63,7 @@ You can specify several `apiSource`s. Generally, one is enough.
 | `outputPath` | The path of the generated static document, not existed parent directories will be created. If you don't want to generate a static document, just don't set it. |
 | `outputFormats` | The format types of the generated swagger spec. Valid values are `json`, `yaml` or both `json,yaml`. The `json` format is default.|
 | `swaggerDirectory` | The directory of generated `swagger.json` file. If null, no `swagger.json` will be generated. |
+| `swaggerFileName` | The filename of generated `filename.json` file. If null, no `swagger.json` will be generated. |
 | `swaggerApiReader` | If not null, the value should be a full name of the class implementing `com.github.kongchen.swagger.docgen.reader.ClassSwaggerReader`. This allows you to flexibly implement/override the reader's implementation. Default is `com.github.kongchen.swagger.docgen.reader.JaxrsReader` |
 | `attachSwaggerArtifact` | If enabled, the generated `swagger.json` file will be attached as a maven artifact. The `swaggerDirectory`'s name will be used as an artifact classifier. Default is `false`. |
 | `modelSubstitute` | The model substitute file's path, see more details [below](#model-substitution)|
@@ -218,6 +219,15 @@ You can instruct `swagger-maven-plugin` to deploy the generated `swagger.json` b
 
 ```
 <swaggerDirectory>${project.build.directory}/swagger-ui</swaggerDirectory>
+<attachSwaggerArtifact>true</attachSwaggerArtifact>
+
+```
+
+or `custom.json` by adding the following to your pom.xml:
+
+```
+<swaggerDirectory>${project.build.directory}/swagger-ui</swaggerDirectory>
+<swaggerFileName>custom</swaggerFileName>
 <attachSwaggerArtifact>true</attachSwaggerArtifact>
 
 ```
