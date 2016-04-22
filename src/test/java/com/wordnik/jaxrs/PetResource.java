@@ -79,6 +79,27 @@ public class PetResource {
             throw new com.wordnik.sample.exception.NotFoundException(404, "Pet not found");
         }
     }
+    //contrived example test case for swagger-maven-plugin issue #304
+    @GET
+    @Path("/{startId : [0-9]}:{endId : [0-9]}")
+    @ApiOperation(value = "Find pet(s) by ID",
+            notes = "This is a contrived example of a path segment containing multiple path parameters, separated by a character which may be present in the path parameter template. You may think that it returns a range of pets from startId to endId, inclusive, but it doesn't.",
+            response = Pet.class,
+            authorizations = @Authorization(value = "api_key")
+    )
+    @ApiResponses(value = {@ApiResponse(code = 400, message = "Invalid ID supplied"),
+            @ApiResponse(code = 404, message = "Pet not found")})
+    public Response getPetsById(
+            @ApiParam(value = "start ID of pets that need to be fetched", allowableValues = "range[1,5]", required = true) @PathParam("startId") Long startId,
+            @ApiParam(value = "end ID of pets that need to be fetched", allowableValues = "range[1,5]", required = true) @PathParam("endId") Long endId)
+            throws com.wordnik.sample.exception.NotFoundException {
+        Pet pet = petData.getPetbyId(startId);
+        if (pet != null) {
+            return Response.ok().entity(pet).build();
+        } else {
+            throw new com.wordnik.sample.exception.NotFoundException(404, "Pet not found");
+        }
+    }
 
     @DELETE
     @Path("/{petId}")

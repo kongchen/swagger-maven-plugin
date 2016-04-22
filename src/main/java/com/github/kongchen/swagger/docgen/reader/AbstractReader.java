@@ -41,6 +41,7 @@ import io.swagger.models.properties.MapProperty;
 import io.swagger.models.properties.Property;
 import io.swagger.models.properties.RefProperty;
 import io.swagger.util.ParameterProcessor;
+import io.swagger.util.PathUtils;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -131,38 +132,7 @@ public abstract class AbstractReader {
     }
 
     protected String parseOperationPath(String operationPath, Map<String, String> regexMap) {
-        // If the operation's path is a simple "/", don't bother parsing - just return it as is.
-        if (operationPath.equalsIgnoreCase("/")) {
-            return operationPath;
-        }
-
-        String[] pps = operationPath.split("/");
-        String[] pathParts = new String[pps.length];
-
-        for (int i = 0; i < pps.length; i++) {
-            String p = pps[i];
-            if (p.startsWith("{")) {
-                int pos = p.indexOf(":");
-                if (pos > 0) {
-                    String left = p.substring(1, pos);
-                    String right = p.substring(pos + 1, p.length() - 1);
-                    pathParts[i] = "{" + left.trim() + "}";
-                    regexMap.put(left.trim(), right);
-                } else {
-                    pathParts[i] = p;
-                }
-            } else {
-                pathParts[i] = p;
-            }
-        }
-        StringBuilder pathBuilder = new StringBuilder();
-        for (String pathPart : pathParts) {
-            if (!pathPart.isEmpty()) {
-                pathBuilder.append("/").append(pathPart);
-            }
-        }
-        operationPath = pathBuilder.toString();
-        return operationPath;
+        return PathUtils.parsePath(operationPath, regexMap);
     }
 
     protected void updateOperationParameters(List<Parameter> parentParameters, Map<String, String> regexMap, Operation operation) {
