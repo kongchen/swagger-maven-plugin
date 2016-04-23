@@ -377,20 +377,22 @@ paths:
       parameters:
       - name: "startId"
         in: "path"
-        description: "start ID of pets that needs to be fetched"
+        description: "start ID of pets that need to be fetched"
         required: true
         type: "integer"
         maximum: 5.0
         minimum: 1.0
         format: "int64"
+        pattern: "[0-9]"
       - name: "endId"
         in: "path"
-        description: "end ID of pets that needs to be fetched"
+        description: "end ID of pets that need to be fetched"
         required: true
         type: "integer"
         maximum: 5.0
         minimum: 1.0
         format: "int64"
+        pattern: "[0-9]"
       responses:
         200:
           description: "successful operation"
