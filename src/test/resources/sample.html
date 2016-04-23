@@ -598,7 +598,7 @@ Muliple tags can be provided with comma seperated strings. Use tag1, tag2, tag3 
     <th>petName</th>
     <td>path</td>
     <td>yes</td>
-    <td>petName</td>
+    <td>petName (**Pattern**: `[^/]*`)</td>
     <td> - </td>
 
     
@@ -1679,7 +1679,7 @@ This is a contrived example of a path segment containing multiple path parameter
     <th>startId</th>
     <td>path</td>
     <td>yes</td>
-    <td>start ID of pets that need to be fetched (**Pattern**: `[0-9]`)</td>
+    <td>start ID of pets that need to be fetched (**Pattern**: `[0-9]{1,2}`)</td>
     <td> - </td>
 
     
@@ -1692,7 +1692,7 @@ This is a contrived example of a path segment containing multiple path parameter
     <th>endId</th>
     <td>path</td>
     <td>yes</td>
-    <td>end ID of pets that need to be fetched (**Pattern**: `[0-9]`)</td>
+    <td>end ID of pets that need to be fetched (**Pattern**: `[0-9]{1,2}`)</td>
     <td> - </td>
 
     

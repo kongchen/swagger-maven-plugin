@@ -288,7 +288,8 @@
             "in": "path",
             "description": "petName",
             "required": true,
-            "type": "string"
+            "type": "string",
+            "pattern": "[^/]*"
           }
         ],
         "responses": {
@@ -570,9 +571,9 @@
           "description" : "start ID of pets that need to be fetched",
           "required" : true,
           "type" : "integer",
-          "maximum" : 5.0,
+          "maximum" : 99.0,
           "minimum" : 1.0,
-          "pattern" : "[0-9]",
+          "pattern" : "[0-9]{1,2}",
           "format" : "int64"
         }, {
           "name" : "endId",
@@ -580,9 +581,9 @@
           "description" : "end ID of pets that need to be fetched",
           "required" : true,
           "type" : "integer",
-          "maximum" : 5.0,
+          "maximum" : 99.0,
           "minimum" : 1.0,
-          "pattern" : "[0-9]",
+          "pattern" : "[0-9]{1,2}",
           "format" : "int64"
         } ],
         "responses": {

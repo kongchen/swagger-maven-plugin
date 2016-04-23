@@ -196,6 +196,7 @@ paths:
         description: "petName"
         required: true
         type: "string"
+        pattern: "[^/]*"
       responses:
         200:
           description: "successful operation"
@@ -380,19 +381,19 @@ paths:
         required: true
         description: "start ID of pets that need to be fetched"
         type: "integer"
-        maximum: 5.0
+        maximum: 99.0
         minimum: 1.0
         format: "int64"
-        pattern: "[0-9]"
+        pattern: "[0-9]{1,2}"
       - name: "endId"
         in: "path"
         description: "end ID of pets that need to be fetched"
         required: true
         type: "integer"
-        maximum: 5.0
+        maximum: 99.0
         minimum: 1.0
         format: "int64"
-        pattern: "[0-9]"
+        pattern: "[0-9]{1,2}"
       responses:
         200:
           description: "successful operation"
