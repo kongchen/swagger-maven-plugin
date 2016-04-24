@@ -598,7 +598,7 @@ Muliple tags can be provided with comma seperated strings. Use tag1, tag2, tag3 
     <th>petName</th>
     <td>path</td>
     <td>yes</td>
-    <td>petName</td>
+    <td>petName (**Pattern**: `[^/]*`)</td>
     <td> - </td>
 
     
@@ -1163,7 +1163,7 @@ Returns a pet when ID &lt; 10.  ID &gt; 10 or nonintegers will simulate API erro
     <th>petId</th>
     <td>path</td>
     <td>yes</td>
-    <td>ID of pet that needs to be fetched (**Pattern**: ` [0-9]`)</td>
+    <td>ID of pet that needs to be fetched (**Pattern**: `[0-9]`)</td>
     <td> - </td>
 
     
@@ -1613,6 +1613,112 @@ Returns a pet when ID &lt; 10.  ID &gt; 10 or nonintegers will simulate API erro
 | Status Code | Reason      | Response Model |
 |-------------|-------------|----------------|
 | 405    | Invalid input |  - |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## /pet/{startId}:{endId}
+
+
+### GET
+
+<a id="getPetsById">Find pet(s) by ID</a>
+
+This is a contrived example of a path segment containing multiple path parameters, separated by a character which may be present in the path parameter template. You may think that it returns a range of pets from startId to endId, inclusive, but it doesn&#x27;t.
+
+
+
+
+#### Security
+
+
+
+
+* api_key
+
+
+
+
+* petstore_auth
+   * write:pets
+   * read:pets
+
+
+
+
+#### Request
+
+
+
+##### Parameters
+
+<table border="1">
+    <tr>
+        <th>Name</th>
+        <th>Located in</th>
+        <th>Required</th>
+        <th>Description</th>
+        <th>Default</th>
+        <th>Schema</th>
+    </tr>
+
+
+
+<tr>
+    <th>startId</th>
+    <td>path</td>
+    <td>yes</td>
+    <td>start ID of pets that need to be fetched (**Pattern**: `[0-9]{1,2}`)</td>
+    <td> - </td>
+
+    
+            <td>integer (int64)</td>
+    
+
+</tr>
+
+<tr>
+    <th>endId</th>
+    <td>path</td>
+    <td>yes</td>
+    <td>end ID of pets that need to be fetched (**Pattern**: `[0-9]{1,2}`)</td>
+    <td> - </td>
+
+    
+            <td>integer (int64)</td>
+    
+
+</tr>
+
+
+</table>
+
+
+
+#### Response
+
+**Content-Type: ** application/xml, application/json
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 200    | successful operation | <a href="#/definitions/Pet">Pet</a>|
+| 400    | Invalid ID supplied |  - |
+| 404    | Pet not found |  - |
+
+
+
 
 
 
