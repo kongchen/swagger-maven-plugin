@@ -2,9 +2,12 @@ package com.wordnik.jaxrs;
 
 import io.swagger.annotations.ApiParam;
 
+import java.util.List;
+
 import javax.ws.rs.FormParam;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 
 /**
  * @author chekong on 15/5/9.
@@ -28,6 +31,9 @@ public class MyBean extends MyParentBean {
 
     @HeaderParam("intValue")
     private int intValue;
+
+    @QueryParam(value = "listValue")
+    private List<String> listValue;
 
     public String getMyheader() {
         return myHeader;
@@ -69,6 +75,14 @@ public class MyBean extends MyParentBean {
         this.intValue = intValue;
     }
 
+    public List<String> getListValue() {
+        return listValue;
+    }
+
+    public void setListValue(List<String> listValue) {
+        this.listValue = listValue;
+    }
+
     @HeaderParam("myHeaderOnMethod")
     @ApiParam(value = "Header annotated on method", required = false)
     public void setMyheadronmethod(String myheadronmethod) {
@@ -77,5 +91,11 @@ public class MyBean extends MyParentBean {
     @HeaderParam("myLongHeaderOnMethod")
     @ApiParam(value = "Long header annotated on method", required = false)
     public void setMyintheaderonmethod(long mylongheaderonmethod) {
+    }
+
+    @QueryParam("genericListQueryParamOnMethod")
+    @ApiParam(value = "Generic List QueryParam on a method")
+    public void setFooValue(List<String> fooish) {
+
     }
 }
