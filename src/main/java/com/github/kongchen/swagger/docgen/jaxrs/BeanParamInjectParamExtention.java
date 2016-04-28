@@ -60,11 +60,16 @@ public class BeanParamInjectParamExtention extends AbstractSwaggerExtension {
 
             int i = 0;
             int apiParaIdx = -1;
+	    boolean hidden = false;
 
-            for (Annotation annotation : accessibleObject.getAnnotations()) {
-                if (annotation instanceof ApiParam && !((ApiParam) annotation).hidden()) {
-                    apiParaIdx = i;
-                }
+	    for (Annotation annotation : accessibleObject.getAnnotations()) {
+		if (annotation instanceof ApiParam) {
+		    if (((ApiParam) annotation).hidden()) {
+			hidden = true;
+		    } else {
+			apiParaIdx = i;
+		    }
+		}
                 i++;
                 Type paramType = extractType(accessibleObject, cls);
                 parameter = JaxrsParameterExtension.getParameter(paramType, parameter, annotation);
@@ -89,7 +94,9 @@ public class BeanParamInjectParamExtention extends AbstractSwaggerExtension {
                         parameter.setName(param.name());
                     }
                 }
-                parameters.add(parameter);
+		if (!hidden) {
+		    parameters.add(parameter);
+		}
             }
         }
 

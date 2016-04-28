@@ -1,10 +1,11 @@
 package com.wordnik.jaxrs;
 
-import io.swagger.annotations.ApiParam;
-
 import javax.ws.rs.FormParam;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
+
+import io.swagger.annotations.ApiParam;
 
 /**
  * @author chekong on 15/5/9.
@@ -28,6 +29,10 @@ public class MyBean extends MyParentBean {
 
     @HeaderParam("intValue")
     private int intValue;
+
+    @ApiParam(value = "hidden", hidden = true)
+    @QueryParam(value = "hiddenValue")
+    private String hiddenValue;
 
     public String getMyheader() {
         return myHeader;
