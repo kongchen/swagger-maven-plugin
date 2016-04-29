@@ -1,17 +1,17 @@
 package com.wordnik.jaxrs;
 
-import com.github.kongchen.swagger.docgen.LogAdapter;
 import com.github.kongchen.swagger.docgen.reader.JaxrsReader;
 import io.swagger.models.Swagger;
 
 import java.util.Set;
+import org.apache.maven.plugin.logging.Log;
 
 /**
  * @author Igor Gursky
  *         11.12.2015.
  */
 public class CustomJaxrsReader extends JaxrsReader {
-    public CustomJaxrsReader(Swagger swagger, LogAdapter LOG) {
+    public CustomJaxrsReader(Swagger swagger, Log LOG) {
         super(swagger, LOG);
     }
 

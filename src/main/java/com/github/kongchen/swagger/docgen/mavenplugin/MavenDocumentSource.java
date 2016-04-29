@@ -2,7 +2,6 @@ package com.github.kongchen.swagger.docgen.mavenplugin;
 
 import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
 import com.github.kongchen.swagger.docgen.GenerateException;
-import com.github.kongchen.swagger.docgen.LogAdapter;
 import com.github.kongchen.swagger.docgen.reader.ClassSwaggerReader;
 import com.github.kongchen.swagger.docgen.reader.JaxrsReader;
 import io.swagger.annotations.Api;
@@ -26,7 +25,7 @@ public class MavenDocumentSource extends AbstractDocumentSource {
     private final SpecFilter specFilter = new SpecFilter();
 
     public MavenDocumentSource(ApiSource apiSource, Log log) throws MojoFailureException {
-        super(new LogAdapter(log), apiSource);
+        super(log, apiSource);
     }
 
     @Override

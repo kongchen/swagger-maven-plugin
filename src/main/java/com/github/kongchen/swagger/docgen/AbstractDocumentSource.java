@@ -43,13 +43,14 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.maven.plugin.logging.Log;
 
 /**
  * @author chekong 05/13/2013
  */
 public abstract class AbstractDocumentSource {
     protected final ApiSource apiSource;
-    protected final LogAdapter LOG;
+    protected final Log LOG;
     protected final List<Type> typesToSkip = new ArrayList<Type>();
     protected Swagger swagger;
     protected String swaggerSchemaConverter;
@@ -61,7 +62,7 @@ public abstract class AbstractDocumentSource {
     private ObjectMapper mapper = new ObjectMapper();
     private boolean isSorted = false;
 
-    public AbstractDocumentSource(LogAdapter log, ApiSource apiSource) throws MojoFailureException {
+    public AbstractDocumentSource(Log log, ApiSource apiSource) throws MojoFailureException {
         LOG = log;
         this.outputPath = apiSource.getOutputPath();
         this.templatePath = apiSource.getTemplatePath();
@@ -369,7 +370,7 @@ public abstract class AbstractDocumentSource {
             LOG.info("Reading custom API reader: " + customReaderClassName);
             Class<?> clazz = Class.forName(customReaderClassName);
             if (AbstractReader.class.isAssignableFrom(clazz)) {
-                Constructor<?> constructor = clazz.getConstructor(Swagger.class, LogAdapter.class);
+                Constructor<?> constructor = clazz.getConstructor(Swagger.class, Log.class);
                 return (ClassSwaggerReader) constructor.newInstance(swagger, LOG);
             } else {
                 return (ClassSwaggerReader) clazz.newInstance();

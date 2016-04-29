@@ -1,6 +1,5 @@
 package com.github.kongchen.swagger.docgen.reader;
 
-import com.github.kongchen.swagger.docgen.LogAdapter;
 import com.github.kongchen.swagger.docgen.jaxrs.BeanParamInjectParamExtention;
 import com.github.kongchen.swagger.docgen.jaxrs.JaxrsParameterExtension;
 import com.github.kongchen.swagger.docgen.spring.SpringSwaggerExtension;
@@ -43,6 +42,7 @@ import io.swagger.models.properties.RefProperty;
 import io.swagger.util.ParameterProcessor;
 import io.swagger.util.PathUtils;
 import org.apache.commons.lang3.reflect.TypeUtils;
+import org.apache.maven.plugin.logging.Log;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -74,7 +74,7 @@ import java.util.Set;
  * @author chekong on 15/4/28.
  */
 public abstract class AbstractReader {
-    protected final LogAdapter LOG;
+    protected final Log LOG;
     protected Swagger swagger;
     private Set<Type> typesToSkip = new HashSet<Type>();
 
@@ -94,7 +94,7 @@ public abstract class AbstractReader {
         this.typesToSkip.add(type);
     }
 
-    public AbstractReader(Swagger swagger, LogAdapter LOG) {
+    public AbstractReader(Swagger swagger, Log LOG) {
         this.swagger = swagger;
         this.LOG = LOG;
         updateExtensionChain();
@@ -386,11 +386,11 @@ public abstract class AbstractReader {
         Iterator<SwaggerExtension> chain = SwaggerExtensions.chain();
         List<Parameter> parameters = new ArrayList<Parameter>();
         Class<?> cls = TypeUtils.getRawType(type, type);
-        LOG.info("Looking for path/query/header/form/cookie params in " + cls);
+        LOG.debug("Looking for path/query/header/form/cookie params in " + cls);
 
         if (chain.hasNext()) {
             SwaggerExtension extension = chain.next();
-            LOG.info("trying extension " + extension);
+            LOG.debug("trying extension " + extension);
             parameters = extension.extractParameters(annotations, type, typesToSkip, chain);
         }
 
@@ -400,7 +400,7 @@ public abstract class AbstractReader {
                 parameter = fixCollectionFormatForArrayTypes(cls, parameter);
             }
         } else {
-            LOG.info("Looking for body params in " + cls);
+            LOG.debug("Looking for body params in " + cls);
             if (!typesToSkip.contains(type)) {
                 Parameter param = ParameterProcessor.applyAnnotations(swagger, null, type, annotations);
                 if (param != null) {
