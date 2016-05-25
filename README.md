@@ -42,10 +42,13 @@ Import the plugin in your project by adding following configuration in your `plu
 	</plugins>
 </build>
 ```
-One `apiSource` can be considered as a version of APIs of your service.
 
-You can specify several `apiSource`s. Generally, one is enough.
+# Configuration for `configuration`
 
+| **name** | **description** |
+|------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `skipSwaggerGeneration` | If `true`, swagger generation will be skipped. Default is `false`. |
+| `apiSources` | List of `apiSource` elements. One `apiSource` can be considered as a version of APIs of your service. You can specify several `apiSource` elements, though generally one is enough. |
 
 # Configuration for `apiSource`
 
@@ -70,7 +73,6 @@ You can specify several `apiSource`s. Generally, one is enough.
 | `typesToSkip` | Nodes of class names to explicitly skip during parameter processing. More details [below](#typesToSkip)|
 | `apiModelPropertyAccessExclusions` | Allows the exclusion of specified `@ApiModelProperty` fields. This can be used to hide certain model properties from the swagger spec. More details [below](#apiModelPropertyAccessExclusions)|
 | `jsonExampleValues` | If `true`, all example values in `@ApiModelProperty` will be handled as json raw values. This is useful for creating valid examples in the generated json for all property types, including non-string ones. |
-| `skipSwaggerGeneration` | If `true`, swagger generation will be skipped. Default is `false`. |
 | `modelConverters` | List of custom implementations of `io.swagger.converter.ModelConverter` that should be used when generating the swagger files. | 
 
 # <a id="templatefile">Template File</a>
