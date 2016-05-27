@@ -118,9 +118,9 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
 
                     String[] apiProduces = requestMapping.produces();
                     String[] apiConsumes = requestMapping.consumes();
-
+                    
                     apiProduces = (apiProduces.length == 0) ? controllerProduces : apiProduces;
-                    apiConsumes = (apiProduces.length == 0) ? controllerConsumes : apiConsumes;
+                    apiConsumes = (apiConsumes.length == 0) ? controllerConsumes : apiConsumes;
 
                     apiConsumes = updateOperationConsumes(new String[0], apiConsumes, operation);
                     apiProduces = updateOperationProduces(new String[0], apiProduces, operation);
