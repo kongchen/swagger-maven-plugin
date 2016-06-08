@@ -2,6 +2,8 @@ package com.github.kongchen.swagger.docgen.reader;
 
 import com.github.kongchen.swagger.docgen.GenerateException;
 import com.github.kongchen.swagger.docgen.spring.SpringResource;
+import com.github.kongchen.swagger.docgen.util.SpringUtils;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponses;
@@ -353,6 +355,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         }
     }
 
+    @Deprecated // TODO: Delete method never used
     private Class<?> getGenericSubtype(Class<?> clazz, Type type) {
         if (!(clazz.getName().equals("void") || type.toString().equals("void"))) {
             try {
@@ -370,15 +373,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
 
     //Helper method for loadDocuments()
     private Map<String, SpringResource> analyzeController(Class<?> controllerClazz, Map<String, SpringResource> resourceMap, String description) {
-        String[] controllerRequestMappingValues;
-
-        //Determine if we will use class-level requestmapping or dummy string
-        if (AnnotationUtils.findAnnotation(controllerClazz, RequestMapping.class) != null) {
-            controllerRequestMappingValues = AnnotationUtils.findAnnotation(controllerClazz, RequestMapping.class).value();
-        } else {
-            controllerRequestMappingValues = new String[1];
-            controllerRequestMappingValues[0] = "";
-        }
+	String[] controllerRequestMappingValues = SpringUtils.getControllerResquestMapping(controllerClazz);
 
         // Iterate over all value attributes of the class-level RequestMapping annotation
         for (String controllerRequestMappingValue : controllerRequestMappingValues) {
