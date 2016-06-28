@@ -44,6 +44,21 @@
         }
       }
     },
+    "/testingEmptyRootPathResource" : {
+      "get" : {
+        "summary" : "testingEmptyRootPathResource",
+        "description" : "",
+        "operationId" : "testingEmptyRootPathResource",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "string"
+            }
+          }
+        }
+      }
+    },
     "/pet" : {
       "get" : {
         "tags" : [ "pet" ],
