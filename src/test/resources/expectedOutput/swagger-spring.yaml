@@ -35,6 +35,17 @@ paths:
           description: "successful operation"
           schema:
             type: "string"
+  /testingEmptyRootPathResource:
+    get:
+      summary: "testingEmptyRootPathResource"
+      description: ""
+      operationId: "testingEmptyRootPathResource"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "string"
   /pet:
     get:
       tags:

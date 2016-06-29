@@ -1,19 +1,11 @@
 package com.github.kongchen.smp.integration;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.kongchen.swagger.docgen.mavenplugin.ApiDocumentMojo;
-import com.github.kongchen.swagger.docgen.mavenplugin.ApiSource;
-import net.javacrumbs.jsonunit.core.Configuration;
-import org.apache.commons.io.FileUtils;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugin.testing.AbstractMojoTestCase;
-import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
-import org.yaml.snakeyaml.Yaml;
+import static com.github.kongchen.smp.integration.utils.TestUtils.YamlToJson;
+import static com.github.kongchen.smp.integration.utils.TestUtils.changeDescription;
+import static com.github.kongchen.smp.integration.utils.TestUtils.createTempDirPath;
+import static com.github.kongchen.smp.integration.utils.TestUtils.setCustomReader;
+import static net.javacrumbs.jsonunit.JsonAssert.assertJsonEquals;
+import static net.javacrumbs.jsonunit.core.Option.IGNORING_ARRAY_ORDER;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -25,9 +17,23 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import static com.github.kongchen.smp.integration.utils.TestUtils.*;
-import static net.javacrumbs.jsonunit.JsonAssert.assertJsonEquals;
-import static net.javacrumbs.jsonunit.core.Option.IGNORING_ARRAY_ORDER;
+import org.apache.commons.io.FileUtils;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugin.testing.AbstractMojoTestCase;
+import org.testng.Assert;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
+import org.yaml.snakeyaml.Yaml;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.kongchen.swagger.docgen.mavenplugin.ApiDocumentMojo;
+import com.github.kongchen.swagger.docgen.mavenplugin.ApiSource;
+
+import junitx.framework.FileAssert;
+import net.javacrumbs.jsonunit.core.Configuration;
 
 /**
  * @author chekong on 8/15/14.
@@ -107,20 +113,9 @@ public class SpringMvcTest extends AbstractMojoTestCase {
         BufferedReader swaggerReader = null;
 
         try {
-            actualReader = new BufferedReader(new InputStreamReader(new FileInputStream(docOutput)));
-            expectReader = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream("/sample-springmvc.html")));
-
-            int count = 0;
-            while (true) {
-                count++;
-
-                String expect = expectReader.readLine();
-                String actual = actualReader.readLine();
-                if (expect == null && actual == null) {
-                    break;
-                }
-                Assert.assertEquals(actual.trim(), expect.trim(), "" + count);
-            }
+	    File expected = docOutput;
+	    File actual = new File(this.getClass().getResource("/sample-springmvc.html").getFile());
+	    FileAssert.assertEquals(expected, actual);
 
             swaggerJson = new FileInputStream(new File(swaggerOutputDir, "swagger.json"));
             swaggerReader = new BufferedReader(new InputStreamReader(swaggerJson));

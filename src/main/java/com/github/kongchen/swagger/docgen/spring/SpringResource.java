@@ -1,7 +1,12 @@
 package com.github.kongchen.swagger.docgen.spring;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.github.kongchen.swagger.docgen.util.SpringUtils;
+
+import edu.emory.mathcs.backport.java.util.Arrays;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -13,7 +18,7 @@ import java.util.List;
 public class SpringResource {
     private Class<?> controllerClass;
     private List<Method> methods;
-    private String controllerMapping;
+    private String controllerMapping; //FIXME should be an array
     private String resourceName;
     private String resourceKey;
     private String description;
@@ -29,21 +34,9 @@ public class SpringResource {
         this.description = description;
         methods = new ArrayList<Method>();
 
-        if (AnnotationUtils.findAnnotation(controllerClass, RequestMapping.class) != null) {
-            RequestMapping req = AnnotationUtils.findAnnotation(controllerClass, RequestMapping.class);
-            String fullPath = req.value()[0];
-            if (fullPath.endsWith("/")) {
-                fullPath = fullPath.substring(0, fullPath.length() - 1);
-            }
-            this.controllerMapping = req.value()[0];
-        } else {
-            this.controllerMapping = "";
-        }
+        String[] controllerRequestMappingValues = SpringUtils.getControllerResquestMapping(controllerClass);
 
-        String tempMapping = this.controllerMapping;
-        if (tempMapping.startsWith("/")) {
-            tempMapping = tempMapping.substring(1);
-        }
+        this.controllerMapping = StringUtils.removeEnd(controllerRequestMappingValues[0], "/");
     }
 
     public Class<?> getControllerClass() {
