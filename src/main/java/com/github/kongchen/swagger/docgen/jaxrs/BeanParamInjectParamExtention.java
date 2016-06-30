@@ -5,6 +5,7 @@ import com.sun.jersey.core.header.FormDataContentDisposition;
 import io.swagger.annotations.ApiParam;
 import io.swagger.jaxrs.ext.AbstractSwaggerExtension;
 import io.swagger.jaxrs.ext.SwaggerExtension;
+import io.swagger.models.parameters.AbstractSerializableParameter;
 import io.swagger.models.parameters.Parameter;
 import io.swagger.models.parameters.SerializableParameter;
 import io.swagger.models.properties.PropertyBuilder;
@@ -76,6 +77,10 @@ public class BeanParamInjectParamExtention extends AbstractSwaggerExtension {
                     parameter.setDescription(param.value());
                     parameter.setRequired(param.required());
                     parameter.setAccess(param.access());
+
+                    if (parameter instanceof AbstractSerializableParameter) {
+                        ((AbstractSerializableParameter)parameter).setDefaultValue(param.defaultValue());
+                    }
 
                     AllowableValues allowableValues = AllowableValuesUtils.create(param.allowableValues());
                     if (allowableValues != null) {
