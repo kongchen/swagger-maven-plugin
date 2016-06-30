@@ -465,6 +465,7 @@ paths:
         description: "Updated name of the pet"
         required: false
         type: "string"
+        default: "defaultValue"
       - name: "status"
         in: "formData"
         description: "Updated status of the pet"
@@ -561,6 +562,7 @@ paths:
         description: "Updated name of the pet"
         required: false
         type: "string"
+        default: "defaultValue"
       - name: "status"
         in: "formData"
         description: "Updated status of the pet"
