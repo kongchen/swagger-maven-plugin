@@ -11,6 +11,9 @@ trim_trailing_whitespace=true
 max_line_length=120
 
 # 2 space indentation as suggested in
-[*.{java,xml,json}]
+[*.{java}]
 indent_style = space
-indent_size = 2
+indent_size = 4
+[*.{xml,json}]
+indent_style = space
+indent_size = 4

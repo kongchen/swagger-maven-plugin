@@ -16,6 +16,7 @@
 
 package com.wordnik.jaxrs;
 
+import com.google.common.collect.Lists;
 import com.wordnik.sample.JavaRestResourceUtil;
 import com.wordnik.sample.data.StoreData;
 import com.wordnik.sample.exception.NotFoundException;
@@ -26,6 +27,7 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
+import java.util.List;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -60,6 +62,30 @@ public class PetStoreResource {
         } else {
             throw new NotFoundException(404, "Order not found");
         }
+    }
+
+    @GET
+    @Path("/orders/{orderIds}")
+    @ApiOperation(value = "Find multiple purchase orders by IDs",
+            notes = "For valid response try integer IDs with value <= 5 or > 10. Other values will generated exceptions",
+            responseContainer = "List", response = Order.class)
+    @ApiResponses(value = { @ApiResponse(code = 400, message = "Invalid ID supplied"),
+            @ApiResponse(code = 404, message = "Order not found") })
+    public Response getOrdersById(
+            @ApiParam(value = "IDs of pets that needs to be fetched",
+                    required = true) @PathParam("orderIds") List<String> orderIds)
+            throws com.wordnik.sample.exception.NotFoundException {
+        List<Order> orders = Lists.newArrayList();
+        for (String orderId : orderIds) {
+            Order order = storeData.findOrderById(ru.getLong(0, 10000, 0, orderId));
+            if (order != null) {
+                orders.add(order);
+            } else {
+                throw new NotFoundException(404, "Order #" + orderId + " not found");
+            }
+
+        }
+        return Response.ok().entity(orders).build();
     }
 
     @POST
