@@ -347,11 +347,11 @@ public abstract class AbstractReader {
     }
 
     private boolean hasValidAnnotations(List<Annotation> parameterAnnotations) {
-        // Because method parameters can contain parameters that are valid, but 
-        // not part of the API contract, first check to make sure the parameter 
-        // has at lease one annotation before processing it.  Also, check a 
-        // whitelist to make sure that the annotation of the parameter is 
-        // compatible with spring-maven-plugin 
+        // Because method parameters can contain parameters that are valid, but
+        // not part of the API contract, first check to make sure the parameter
+        // has at lease one annotation before processing it.  Also, check a
+        // whitelist to make sure that the annotation of the parameter is
+        // compatible with spring-maven-plugin
 
         List<Type> validParameterAnnotations = new ArrayList<Type>();
         validParameterAnnotations.add(ModelAttribute.class);
@@ -421,15 +421,25 @@ public abstract class AbstractReader {
         // in cases where a csv string does not apply. In these cases, we need to
         // re-set the type back to "multi".
 
-        if (parameter instanceof AbstractSerializableParameter) {
-            final AbstractSerializableParameter<?> p = (AbstractSerializableParameter<?>) parameter;
+        if (!(parameter instanceof AbstractSerializableParameter)) {
+            return parameter;
+        }
 
-            // Check to see if the if the parameter has items. If it does, it's an array type.
-            // If the collectionFormat is "csv", and the java type is Collection or Array, we need to change it to "multi" and re-define the parameter.
-            if (p.getItems() != null && p.getCollectionFormat().equals("csv") && (Collection.class.isAssignableFrom(cls) || cls.isArray())) {
-                p.collectionFormat("multi");
-                parameter = p;
-            }
+        final AbstractSerializableParameter<?> p = (AbstractSerializableParameter<?>) parameter;
+
+        final String in = p.getIn();
+        if (!"query".equals(in) && !"formData".equals(in)) {
+            // collectionFormat=multi is allowed for in=query and in=formData only - see the spec
+            return parameter;
+        }
+
+        // Check to see if the if the parameter has items. If it does, it's an array type.
+        // If the collectionFormat is "csv", and the java type is Collection or Array, we need to change it to
+        // "multi" and re-define the parameter.
+        if (p.getItems() != null && "csv".equals(p.getCollectionFormat())
+                && (Collection.class.isAssignableFrom(cls) || cls.isArray())) {
+            p.collectionFormat("multi");
+            parameter = p;
         }
 
         return parameter;

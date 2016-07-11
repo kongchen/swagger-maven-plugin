@@ -1954,6 +1954,85 @@ For valid response try integer IDs with value &lt; 1000. Anything above 1000 or 
 
 
 
+## /store/orders/{orderIds}
+
+
+### GET
+
+<a id="getOrdersById">Find multiple purchase orders by IDs</a>
+
+For valid response try integer IDs with value &lt;= 5 or &gt; 10. Other values will generated exceptions
+
+
+
+
+
+
+
+#### Request
+
+
+
+##### Parameters
+
+<table border="1">
+    <tr>
+        <th>Name</th>
+        <th>Located in</th>
+        <th>Required</th>
+        <th>Description</th>
+        <th>Default</th>
+        <th>Schema</th>
+    </tr>
+
+
+
+<tr>
+    <th>orderIds</th>
+    <td>path</td>
+    <td>yes</td>
+    <td>IDs of pets that needs to be fetched</td>
+    <td> - </td>
+
+    
+            <td>Array[string] (csv)</td>
+    
+
+</tr>
+
+
+</table>
+
+
+
+#### Response
+
+**Content-Type: ** application/xml, application/json
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 200    | successful operation | Array[<a href="#/definitions/Order">Order</a>]|
+| 400    | Invalid ID supplied |  - |
+| 404    | Order not found |  - |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## /store/pingGet
 
 
