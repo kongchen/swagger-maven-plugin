@@ -15,7 +15,7 @@ public class MyBean extends MyParentBean {
     @PathParam("petId")
     private String petId;
 
-    @ApiParam(value = "Updated name of the pet", required = false)
+    @ApiParam(value = "Updated name of the pet", required = false, defaultValue = "defaultValue")
     @FormParam("name")
     private String name;
 

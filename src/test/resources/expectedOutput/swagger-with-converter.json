@@ -691,7 +691,8 @@
             "in": "formData",
             "description": "Updated name of the pet",
             "required": false,
-            "type": "string"
+            "type": "string",
+            "default": "defaultValue"
           },
           {
             "name": "status",
@@ -827,7 +828,8 @@
             "in": "formData",
             "description": "Updated name of the pet",
             "required": false,
-            "type": "string"
+            "type": "string",
+            "default": "defaultValue"
           },
           {
             "name": "status",
