@@ -478,31 +478,26 @@ paths:
         in: "header"
         required: false
         type: "string"
-        default: ""
       - name: "intValue"
         in: "header"
         required: false
         type: "integer"
-        default: ""
         format: "int32"
       - name: "myParentHeader"
         in: "header"
         description: "Header from parent"
         required: false
         type: "string"
-        default: ""
       - name: "myHeaderOnMethod"
         in: "header"
         description: "Header annotated on method"
         required: false
         type: "string"
-        default: ""
       - name: "myLongHeaderOnMethod"
         in: "header"
         description: "Long header annotated on method"
         required: false
         type: "integer"
-        default: ""
         format: "int64"
       responses:
         405:
@@ -525,7 +520,6 @@ paths:
         in: "header"
         required: false
         type: "string"
-        default: ""
       - name: "petId"
         in: "path"
         description: "Pet id to delete"
@@ -575,31 +569,26 @@ paths:
         in: "header"
         required: false
         type: "string"
-        default: ""
       - name: "intValue"
         in: "header"
         required: false
         type: "integer"
-        default: ""
         format: "int32"
       - name: "myParentHeader"
         in: "header"
         description: "Header from parent"
         required: false
         type: "string"
-        default: ""
       - name: "myHeaderOnMethod"
         in: "header"
         description: "Header annotated on method"
         required: false
         type: "string"
-        default: ""
       - name: "myLongHeaderOnMethod"
         in: "header"
         description: "Long header annotated on method"
         required: false
         type: "integer"
-        default: ""
         format: "int64"
       responses:
         405:
@@ -1057,7 +1046,7 @@ definitions:
       userStatus:
         type: "integer"
         format: "int32"
-        example: "2"
+        example: 2
         description: "User Status"
     xml:
       name: "User"

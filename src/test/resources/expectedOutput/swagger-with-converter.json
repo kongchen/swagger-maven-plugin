@@ -706,15 +706,13 @@
             "name": "myHeader",
             "in": "header",
             "required": false,
-            "type": "string",
-            "default": ""
+            "type": "string"
           },
           {
             "name": "intValue",
             "in": "header",
             "required": false,
             "type": "integer",
-            "default": "",
             "format": "int32"
           },
           {
@@ -722,16 +720,14 @@
             "in": "header",
             "description": "Header from parent",
             "required": false,
-            "type": "string",
-            "default": ""
+            "type": "string"
           },
           {
             "name": "myHeaderOnMethod",
             "in": "header",
             "description": "Header annotated on method",
             "required": false,
-            "type": "string",
-            "default": ""
+            "type": "string"
           },
           {
             "name": "myLongHeaderOnMethod",
@@ -739,7 +735,6 @@
             "description": "Long header annotated on method",
             "required": false,
             "type": "integer",
-            "default": "",
             "format": "int64"
           }
         ],
@@ -773,8 +768,7 @@
             "name": "api_key",
             "in": "header",
             "required": false,
-            "type": "string",
-            "default": ""
+            "type": "string"
           },
           {
             "name": "petId",
@@ -843,15 +837,13 @@
             "name": "myHeader",
             "in": "header",
             "required": false,
-            "type": "string",
-            "default": ""
+            "type": "string"
           },
           {
             "name": "intValue",
             "in": "header",
             "required": false,
             "type": "integer",
-            "default": "",
             "format": "int32"
           },
           {
@@ -859,16 +851,14 @@
             "in": "header",
             "description": "Header from parent",
             "required": false,
-            "type": "string",
-            "default": ""
+            "type": "string"
           },
           {
             "name": "myHeaderOnMethod",
             "in": "header",
             "description": "Header annotated on method",
             "required": false,
-            "type": "string",
-            "default": ""
+            "type": "string"
           },
           {
             "name": "myLongHeaderOnMethod",
@@ -876,7 +866,6 @@
             "description": "Long header annotated on method",
             "required": false,
             "type": "integer",
-            "default": "",
             "format": "int64"
           }
         ],
@@ -1530,7 +1519,7 @@
         "userStatus": {
           "type": "integer",
           "format": "int32",
-          "example": "2",
+          "example": 2,
           "description": "User Status"
         }
       },

@@ -549,7 +549,6 @@ paths:
         in: "header"
         required: true
         type: "string"
-        default: ""
       - name: "petId"
         in: "path"
         description: "Pet id to delete"
@@ -1018,7 +1017,7 @@ definitions:
       userStatus:
         type: "integer"
         format: "int32"
-        example: "2"
+        example: 2
         description: "User Status"
     xml:
       name: "User"
