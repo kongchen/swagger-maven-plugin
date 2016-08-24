@@ -497,10 +497,10 @@ public abstract class AbstractReader {
 
     protected String[] updateOperationProduces(String[] parentProduces, String[] apiProduces, Operation operation) {
         if (parentProduces != null) {
-            Set<String> both = new HashSet<String>(Arrays.asList(apiProduces));
+            Set<String> both = new LinkedHashSet<String>(Arrays.asList(apiProduces));
             both.addAll(Arrays.asList(parentProduces));
             if (operation.getProduces() != null) {
-                both.addAll(new HashSet<String>(operation.getProduces()));
+                both.addAll(operation.getProduces());
             }
             apiProduces = both.toArray(new String[both.size()]);
         }
@@ -509,7 +509,7 @@ public abstract class AbstractReader {
 
     protected String[] updateOperationConsumes(String[] parentConsumes, String[] apiConsumes, Operation operation) {
         if (parentConsumes != null) {
-            Set<String> both = new HashSet<String>(Arrays.asList(apiConsumes));
+            Set<String> both = new LinkedHashSet<String>(Arrays.asList(apiConsumes));
             both.addAll(Arrays.asList(parentConsumes));
             if (operation.getConsumes() != null) {
                 both.addAll(operation.getConsumes());
