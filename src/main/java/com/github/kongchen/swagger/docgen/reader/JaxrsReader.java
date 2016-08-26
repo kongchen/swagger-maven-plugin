@@ -111,11 +111,18 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
                 String[] apiConsumes = new String[0];
                 String[] apiProduces = new String[0];
 
-                Consumes consumes = AnnotationUtils.getAnnotation(cls, Consumes.class);
+                Consumes consumes = AnnotationUtils.findAnnotation(method, Consumes.class);
+                if (consumes == null) {
+                    consumes = AnnotationUtils.findAnnotation(cls, Consumes.class);
+                }
                 if (consumes != null) {
                     apiConsumes = consumes.value();
                 }
-                Produces produces = AnnotationUtils.getAnnotation(cls, Produces.class);
+
+                Produces produces = AnnotationUtils.findAnnotation(method, Produces.class);
+                if (produces == null) {
+                    produces = AnnotationUtils.findAnnotation(cls, Produces.class);
+                }
                 if (produces != null) {
                     apiProduces = produces.value();
                 }
