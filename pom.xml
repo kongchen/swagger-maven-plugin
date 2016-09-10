@@ -62,7 +62,7 @@
         <commons-io.version>2.0.1</commons-io.version>
         <reflections.version>0.9.10</reflections.version>
         <maven-testing-harness.version>1.3</maven-testing-harness.version>
-        <springframework.version>4.0.5.RELEASE</springframework.version>
+        <springframework.version>4.3.2.RELEASE</springframework.version>
         <commons-lang3.version>[3.4,4.0)</commons-lang3.version>
         <junit-addons.version>[1.4,2.0)</junit-addons.version>
     </properties>
