@@ -29,6 +29,7 @@ import io.swagger.annotations.Contact;
 import io.swagger.annotations.Info;
 import io.swagger.annotations.License;
 import io.swagger.annotations.SwaggerDefinition;
+import io.swagger.annotations.Tag;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -50,10 +51,13 @@ import javax.ws.rs.core.Response;
                 termsOfService = "http://www.github.com/kongchen/swagger-maven-plugin",
                 contact = @Contact(name = "Kong Chen", email = "kongchen@gmail.com", url = "http://kongch.com"),
                 license = @License(name = "Apache 2.0", url = "http://www.apache.org/licenses/LICENSE-2.0.html")
-        )
+        ),
+        tags = { @Tag(name = "user", description = "Operations about user"),
+                 @Tag(name = "spurioustag", description = "Operations about something spurious")
+        }
 )
 @Path("/user")
-@Api(value = "/user", description = "Operations about user")
+@Api(value = "/user")
 @Produces({"application/json", "application/xml"})
 public class UserResource {
     static UserData userData = new UserData();
