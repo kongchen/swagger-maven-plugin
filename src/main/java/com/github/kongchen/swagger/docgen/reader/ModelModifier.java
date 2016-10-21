@@ -9,6 +9,9 @@ import io.swagger.converter.ModelConverterContext;
 import io.swagger.jackson.ModelResolver;
 import io.swagger.models.Model;
 import io.swagger.models.properties.Property;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.AnnotationUtils;
 
 import java.lang.annotation.Annotation;
@@ -26,6 +29,7 @@ import java.util.Map;
 public class ModelModifier extends ModelResolver {
     private Map<Type, Type> modelSubtitutes = new HashMap<Type, Type>();
     private List<String> apiModelPropertyAccessExclusions = new ArrayList<String>();
+    Logger LOGGER = LoggerFactory.getLogger(ModelModifier.class);
 
     public ModelModifier(ObjectMapper mapper) {
         super(mapper);
@@ -39,7 +43,7 @@ public class ModelModifier extends ModelResolver {
             modelSubtitutes.put(type, toType);
 
         } catch (ClassNotFoundException e) {
-            throw new GenerateException(e);
+        	LOGGER.warn("Problem with load " + fromClass + ". Mapping will be ignored.");      
         }
     }
 
