@@ -31,6 +31,7 @@ public class ModelModifier extends ModelResolver {
     private Map<Type, Type> modelSubtitutes = new HashMap<Type, Type>();
     private List<String> apiModelPropertyAccessExclusions = new ArrayList<String>();
     Logger LOGGER = LoggerFactory.getLogger(ModelModifier.class);
+    private static final String CLASS_NOT_FOUND_STRING = "ClassNotFoundException: ";
 
     public ModelModifier(ObjectMapper mapper) {
         super(mapper);
@@ -42,9 +43,10 @@ public class ModelModifier extends ModelResolver {
             Type toType = _mapper.constructType(Class.forName(toClass));
 
             modelSubtitutes.put(type, toType);
-            
-        } catch (ClassNotFoundException e) {        
-        	LOGGER.warn("Problem with load " + fromClass + ". Mapping will be ignored.");            	
+
+        } catch (ClassNotFoundException e) {
+        	int pos = e.getMessage().indexOf(CLASS_NOT_FOUND_STRING) + CLASS_NOT_FOUND_STRING.length();        	
+        	LOGGER.warn("Problem with loading " + e.getMessage().substring(pos) + ". Mapping will be ignored.");           
         }
     }
 
