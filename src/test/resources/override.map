@@ -1,3 +1,7 @@
 com.wordnik.sample.model.PetName:java.lang.String
+<<<<<<< HEAD
 com.wordnik.sample.model.PetId: java.math.BigInteger
 bla : java.lang.String
+=======
+com.wordnik.sample.model.PetId: java.math.BigInteger
+>>>>>>> 605dc0affb616bc557133eaccc9b2ec873587ae7

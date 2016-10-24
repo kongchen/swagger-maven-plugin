@@ -1,5 +1,6 @@
 package com.github.kongchen.swagger.docgen.reader;
 
+import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.kongchen.swagger.docgen.GenerateException;
