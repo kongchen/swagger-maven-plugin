@@ -29,21 +29,27 @@ import java.util.Map;
 public class ModelModifier extends ModelResolver {
     private Map<Type, Type> modelSubtitutes = new HashMap<Type, Type>();
     private List<String> apiModelPropertyAccessExclusions = new ArrayList<String>();
-    Logger LOGGER = LoggerFactory.getLogger(ModelModifier.class);
+    Logger LOGGER = LoggerFactory.getLogger(ModelModifier.class);  
 
     public ModelModifier(ObjectMapper mapper) {
         super(mapper);
     }
 
     public void addModelSubstitute(String fromClass, String toClass) throws GenerateException {
-        try {
-            Type type = _mapper.constructType(Class.forName(fromClass));
-            Type toType = _mapper.constructType(Class.forName(toClass));
-
-            modelSubtitutes.put(type, toType);
-
+    	Type type = null;
+    	Type toType = null;
+        try {        	
+            type = _mapper.constructType(Class.forName(fromClass));
         } catch (ClassNotFoundException e) {
-        	LOGGER.warn("Problem with load " + fromClass + ". Mapping will be ignored.");      
+        	LOGGER.warn("Problem with loading " + fromClass + ". Mapping will be ignored.");          
+        }
+        try {    
+            toType = _mapper.constructType(Class.forName(toClass));
+        } catch (ClassNotFoundException e) {
+        	LOGGER.warn("Problem with loading " + toClass + ". Mapping will be ignored.");          	
+        }
+        if(type != null && toType != null) {
+        	modelSubtitutes.put(type, toType);    
         }
     }
 
