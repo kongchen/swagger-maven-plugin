@@ -27,15 +27,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugin.logging.Log;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
@@ -43,7 +37,6 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.maven.plugin.logging.Log;
 
 /**
  * @author chekong 05/13/2013
@@ -61,6 +54,7 @@ public abstract class AbstractDocumentSource {
     private final boolean jsonExampleValues;
     private ObjectMapper mapper = new ObjectMapper();
     private boolean isSorted = false;
+    protected String encoding = "UTF-8";
 
     public AbstractDocumentSource(Log log, ApiSource apiSource) throws MojoFailureException {
         LOG = log;
@@ -141,10 +135,11 @@ public abstract class AbstractDocumentSource {
                         switch (output) {
                             case json:
                                 ObjectWriter jsonWriter = mapper.writer(new DefaultPrettyPrinter());
-                                FileUtils.write(new File(dir, fileName + ".json"), jsonWriter.writeValueAsString(swagger));
+                                LOG.info(jsonWriter.writeValueAsString(swagger));
+                                FileUtils.write(new File(dir, fileName + ".json"), jsonWriter.writeValueAsString(swagger), encoding);
                                 break;
                             case yaml:
-                                FileUtils.write(new File(dir, fileName + ".yaml"), Yaml.pretty().writeValueAsString(swagger));
+                                FileUtils.write(new File(dir, fileName + ".yaml"), Yaml.pretty().writeValueAsString(swagger), encoding);
                                 break;
                         }
                     } catch (Exception e) {
@@ -154,7 +149,7 @@ public abstract class AbstractDocumentSource {
             } else {
                 // Default to json
                 ObjectWriter jsonWriter = mapper.writer(new DefaultPrettyPrinter());
-                FileUtils.write(new File(dir, fileName + ".json"), jsonWriter.writeValueAsString(swagger));
+                FileUtils.write(new File(dir, fileName + ".json"), jsonWriter.writeValueAsString(swagger), encoding);
             }
         } catch (IOException e) {
             throw new GenerateException(e);

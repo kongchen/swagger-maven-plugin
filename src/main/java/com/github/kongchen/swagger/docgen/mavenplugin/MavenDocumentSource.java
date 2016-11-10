@@ -24,8 +24,11 @@ import java.util.TreeMap;
 public class MavenDocumentSource extends AbstractDocumentSource {
     private final SpecFilter specFilter = new SpecFilter();
 
-    public MavenDocumentSource(ApiSource apiSource, Log log) throws MojoFailureException {
+    public MavenDocumentSource(ApiSource apiSource, Log log, String encoding) throws MojoFailureException {
         super(log, apiSource);
+        if(encoding !=null) {
+            this.encoding = encoding;
+        }
     }
 
     @Override

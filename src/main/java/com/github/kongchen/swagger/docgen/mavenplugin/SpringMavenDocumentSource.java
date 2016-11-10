@@ -26,8 +26,11 @@ import java.util.TreeMap;
 public class SpringMavenDocumentSource extends AbstractDocumentSource {
     private final SpecFilter specFilter = new SpecFilter();
 
-    public SpringMavenDocumentSource(ApiSource apiSource, Log log) throws MojoFailureException {
+    public SpringMavenDocumentSource(ApiSource apiSource, Log log, String encoding) throws MojoFailureException {
         super(log, apiSource);
+        if(encoding !=null) {
+            this.encoding = encoding;
+        }
     }
 
     @Override
