@@ -1,5 +1,6 @@
 package com.github.kongchen.swagger.docgen.reader;
 
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponses;
@@ -23,7 +24,6 @@ import org.apache.maven.plugin.logging.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.AnnotationUtils;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -187,7 +187,6 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         }
     }
 
-
     public Operation parseMethod(Method method) {
         Operation operation = new Operation();
         ApiOperation apiOperation = AnnotationUtils.findAnnotation(method, ApiOperation.class);
@@ -195,7 +194,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         String operationId = method.getName();
         String responseContainer = null;
 
-        Class<?> responseClass = null;
+        Type responseType = null;
         Map<String, Property> defaultResponseHeaders = null;
 
         if (apiOperation != null) {
@@ -222,7 +221,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
             }
 
             if (!apiOperation.response().equals(Void.class)) {
-                responseClass = apiOperation.response();
+                responseType = apiOperation.response();
             }
             if (!apiOperation.responseContainer().isEmpty()) {
                 responseContainer = apiOperation.responseContainer();
@@ -247,24 +246,18 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         }
         operation.operationId(operationId);
 
-        if (responseClass == null) {
+        if (responseType == null) {
             // pick out response from method declaration
             LOGGER.debug("picking up response class from method " + method);
-            Type t = method.getGenericReturnType();
-            responseClass = method.getReturnType();
-            if (!responseClass.equals(Void.class) && !responseClass.equals(void.class)
-                    && (AnnotationUtils.findAnnotation(responseClass, Api.class) == null)) {
-                LOGGER.debug("reading model " + responseClass);
-                Map<String, Model> models = ModelConverters.getInstance().readAll(t);
-            }
+            responseType = method.getGenericReturnType();
         }
-        if ((responseClass != null)
-                && !responseClass.equals(Void.class)
-                && !responseClass.equals(javax.ws.rs.core.Response.class)
-                && (AnnotationUtils.findAnnotation(responseClass, Api.class) == null)) {
-            if (isPrimitive(responseClass)) {
+        if ((responseType != null)
+                && !responseType.equals(Void.class)
+                && !responseType.equals(javax.ws.rs.core.Response.class)
+                && (AnnotationUtils.findAnnotation(toClass(responseType), Api.class) == null)) {
+            if (isPrimitive(responseType)) {
                 Property responseProperty;
-                Property property = ModelConverters.getInstance().readAsProperty(responseClass);
+                Property property = ModelConverters.getInstance().readAsProperty(responseType);
                 if (property != null) {
                     if ("list".equalsIgnoreCase(responseContainer)) {
                         responseProperty = new ArrayProperty(property);
@@ -278,10 +271,10 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
                             .schema(responseProperty)
                             .headers(defaultResponseHeaders));
                 }
-            } else if (!responseClass.equals(Void.class) && !responseClass.equals(void.class)) {
-                Map<String, Model> models = ModelConverters.getInstance().read(responseClass);
+            } else if (!responseType.equals(Void.class) && !responseType.equals(void.class)) {
+                Map<String, Model> models = ModelConverters.getInstance().read(responseType);
                 if (models.isEmpty()) {
-                    Property p = ModelConverters.getInstance().readAsProperty(responseClass);
+                    Property p = ModelConverters.getInstance().readAsProperty(responseType);
                     operation.response(apiOperation.code(), new Response()
                             .description("successful operation")
                             .schema(p)
@@ -303,7 +296,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
                             .headers(defaultResponseHeaders));
                     swagger.model(key, models.get(key));
                 }
-                models = ModelConverters.getInstance().readAll(responseClass);
+                models = ModelConverters.getInstance().readAll(responseType);
                 for (Map.Entry<String, Model> entry : models.entrySet()) {
                     swagger.model(entry.getKey(), entry.getValue());
                 }
@@ -365,7 +358,6 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         return operation;
     }
 
-
     public String extractOperationMethod(ApiOperation apiOperation, Method method, Iterator<SwaggerExtension> chain) {
         if (!apiOperation.httpMethod().isEmpty()) {
             return apiOperation.httpMethod().toLowerCase();
@@ -403,5 +395,11 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         return null;
     }
 
+    /**
+     * Returns a Class that matches the Type given
+     */
+    public Class<?> toClass(Type type) {
+        return TypeFactory.defaultInstance().constructType(type).getRawClass();
+    }
 
 }

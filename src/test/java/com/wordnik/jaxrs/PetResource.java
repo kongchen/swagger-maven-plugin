@@ -32,7 +32,6 @@ import io.swagger.annotations.Authorization;
 import io.swagger.annotations.AuthorizationScope;
 import io.swagger.annotations.Extension;
 import io.swagger.annotations.ExtensionProperty;
-
 import javax.ws.rs.BeanParam;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -46,6 +45,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 @Path("/pet")
 @Api(value = "/pet", description = "Operations about pets", authorizations = {
@@ -305,10 +305,10 @@ public class PetResource {
     }
 
     @ApiOperation(value = "testingArrayResponse")
-    @ApiResponses(@ApiResponse(code = 200, message = "array", response = Pet.class, responseContainer = "List"))
+    @ApiResponses(@ApiResponse(code = 200, message = "array"))
     @GET
     @Path("/test/testingArrayResponse")
-    public Response testingArrayResponse() {
+    public List<Pet> testingArrayResponse() {
         return null;
     }
 
