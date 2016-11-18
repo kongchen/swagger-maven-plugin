@@ -17,8 +17,6 @@ import io.swagger.models.SecurityRequirement;
 import io.swagger.models.Swagger;
 import io.swagger.models.Tag;
 import io.swagger.models.parameters.Parameter;
-import io.swagger.models.properties.ArrayProperty;
-import io.swagger.models.properties.MapProperty;
 import io.swagger.models.properties.Property;
 import io.swagger.models.properties.RefProperty;
 import org.apache.maven.plugin.logging.Log;
@@ -41,6 +39,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerReader {
+    private static final ResponseContainerConverter RESPONSE_CONTAINER_CONVERTER = new ResponseContainerConverter();
     private String resourcePath;
 
     public SpringMvcApiReader(Swagger swagger, Log log) {
@@ -120,7 +119,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
 
                     String[] apiProduces = requestMapping.produces();
                     String[] apiConsumes = requestMapping.consumes();
-                    
+
                     apiProduces = (apiProduces.length == 0) ? controllerProduces : apiProduces;
                     apiConsumes = (apiConsumes.length == 0) ? controllerConsumes : apiConsumes;
 
@@ -216,16 +215,9 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
                 && !responseClass.equals(ResponseEntity.class)
                 && !hasApiAnnotation) {
             if (isPrimitive(responseClass)) {
-                Property responseProperty;
                 Property property = ModelConverters.getInstance().readAsProperty(responseClass);
                 if (property != null) {
-                    if ("list".equalsIgnoreCase(responseContainer)) {
-                        responseProperty = new ArrayProperty(property);
-                    } else if ("map".equalsIgnoreCase(responseContainer)) {
-                        responseProperty = new MapProperty(property);
-                    } else {
-                        responseProperty = property;
-                    }
+                    Property responseProperty = RESPONSE_CONTAINER_CONVERTER.withResponseContainer(responseContainer, property);
                     operation.response(apiOperation.code(), new Response()
                             .description("successful operation")
                             .schema(responseProperty)
@@ -241,15 +233,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
                             .headers(defaultResponseHeaders));
                 }
                 for (String key : models.keySet()) {
-                    Property responseProperty;
-
-                    if ("list".equalsIgnoreCase(responseContainer)) {
-                        responseProperty = new ArrayProperty(new RefProperty().asDefault(key));
-                    } else if ("map".equalsIgnoreCase(responseContainer)) {
-                        responseProperty = new MapProperty(new RefProperty().asDefault(key));
-                    } else {
-                        responseProperty = new RefProperty().asDefault(key);
-                    }
+                    Property responseProperty = RESPONSE_CONTAINER_CONVERTER.withResponseContainer(responseContainer, new RefProperty().asDefault(key));
                     operation.response(apiOperation.code(), new Response()
                             .description("successful operation")
                             .schema(responseProperty)
@@ -322,6 +306,8 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
 
         return operation;
     }
+
+
 
     private Map<String, List<Method>> collectApisByRequestMapping(List<Method> methods) {
         Map<String, List<Method>> apiMethodMap = new HashMap<String, List<Method>>();

@@ -15,8 +15,6 @@ import io.swagger.models.SecurityRequirement;
 import io.swagger.models.Swagger;
 import io.swagger.models.Tag;
 import io.swagger.models.parameters.Parameter;
-import io.swagger.models.properties.ArrayProperty;
-import io.swagger.models.properties.MapProperty;
 import io.swagger.models.properties.Property;
 import io.swagger.models.properties.RefProperty;
 import org.apache.maven.plugin.logging.Log;
@@ -47,6 +45,7 @@ import java.util.Set;
 
 public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
     private static final Logger LOGGER = LoggerFactory.getLogger(JaxrsReader.class);
+    private static final ResponseContainerConverter RESPONSE_CONTAINER_CONVERTER = new ResponseContainerConverter();
 
     public JaxrsReader(Swagger swagger, Log LOG) {
         super(swagger, LOG);
@@ -263,16 +262,10 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
                 && !responseClass.equals(javax.ws.rs.core.Response.class)
                 && (AnnotationUtils.findAnnotation(responseClass, Api.class) == null)) {
             if (isPrimitive(responseClass)) {
-                Property responseProperty;
                 Property property = ModelConverters.getInstance().readAsProperty(responseClass);
                 if (property != null) {
-                    if ("list".equalsIgnoreCase(responseContainer)) {
-                        responseProperty = new ArrayProperty(property);
-                    } else if ("map".equalsIgnoreCase(responseContainer)) {
-                        responseProperty = new MapProperty(property);
-                    } else {
-                        responseProperty = property;
-                    }
+                    Property responseProperty = RESPONSE_CONTAINER_CONVERTER.withResponseContainer(responseContainer, property);
+
                     operation.response(apiOperation.code(), new Response()
                             .description("successful operation")
                             .schema(responseProperty)
@@ -288,15 +281,9 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
                             .headers(defaultResponseHeaders));
                 }
                 for (String key : models.keySet()) {
-                    Property responseProperty;
+                    Property responseProperty = RESPONSE_CONTAINER_CONVERTER.withResponseContainer(responseContainer, new RefProperty().asDefault(key));
 
-                    if ("list".equalsIgnoreCase(responseContainer)) {
-                        responseProperty = new ArrayProperty(new RefProperty().asDefault(key));
-                    } else if ("map".equalsIgnoreCase(responseContainer)) {
-                        responseProperty = new MapProperty(new RefProperty().asDefault(key));
-                    } else {
-                        responseProperty = new RefProperty().asDefault(key);
-                    }
+
                     operation.response(apiOperation.code(), new Response()
                             .description("successful operation")
                             .schema(responseProperty)
