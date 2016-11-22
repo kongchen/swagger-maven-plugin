@@ -109,8 +109,8 @@ public class SpringMvcTest extends AbstractMojoTestCase {
         BufferedReader swaggerReader = null;
 
         try {
-            File expected = docOutput;
-            File actual = new File(this.getClass().getResource("/sample-springmvc.html").getFile());
+            File actual = docOutput;
+            File expected = new File(this.getClass().getResource("/sample-springmvc.html").getFile());
             FileAssert.assertEquals(expected, actual);
 
             swaggerJson = new FileInputStream(new File(swaggerOutputDir, "swagger.json"));
