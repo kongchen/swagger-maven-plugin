@@ -36,6 +36,8 @@ public class ApiDocumentMojo extends AbstractMojo {
     @Parameter(defaultValue = "${project}", readonly = true)
     private MavenProject project;
 
+    private String projectEncoding;
+
     @Component
     private MavenProjectHelper projectHelper;
 
@@ -55,6 +57,10 @@ public class ApiDocumentMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+        if(project !=null) {
+            projectEncoding = project.getProperties().getProperty("project.build.sourceEncoding");
+        }
+
         if (skipSwaggerGeneration) {
             getLog().info("Swagger generation is skipped.");
             return;
@@ -78,8 +84,8 @@ public class ApiDocumentMojo extends AbstractMojo {
             for (ApiSource apiSource : apiSources) {
                 validateConfiguration(apiSource);
                 AbstractDocumentSource documentSource = apiSource.isSpringmvc()
-                        ? new SpringMavenDocumentSource(apiSource, getLog())
-                        : new MavenDocumentSource(apiSource, getLog());
+                        ? new SpringMavenDocumentSource(apiSource, getLog(), projectEncoding)
+                        : new MavenDocumentSource(apiSource, getLog(), projectEncoding);
 
                 documentSource.loadTypesToSkip();
                 documentSource.loadModelModifier();
