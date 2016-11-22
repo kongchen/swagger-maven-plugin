@@ -17,6 +17,8 @@ import io.swagger.models.Tag;
 import io.swagger.models.parameters.Parameter;
 import io.swagger.models.properties.Property;
 import io.swagger.models.properties.RefProperty;
+import io.swagger.util.ReflectionUtils;
+
 import org.apache.maven.plugin.logging.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,12 +34,14 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -110,11 +114,11 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
                 String[] apiConsumes = new String[0];
                 String[] apiProduces = new String[0];
 
-                Consumes consumes = AnnotationUtils.getAnnotation(cls, Consumes.class);
+                Consumes consumes = AnnotationUtils.findAnnotation(cls, Consumes.class);
                 if (consumes != null) {
                     apiConsumes = consumes.value();
                 }
-                Produces produces = AnnotationUtils.getAnnotation(cls, Produces.class);
+                Produces produces = AnnotationUtils.findAnnotation(cls, Produces.class);
                 if (produces != null) {
                     apiProduces = produces.value();
                 }
@@ -329,7 +333,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         // process parameters
         Class[] parameterTypes = method.getParameterTypes();
         Type[] genericParameterTypes = method.getGenericParameterTypes();
-        Annotation[][] paramAnnotations = method.getParameterAnnotations();
+        Annotation[][] paramAnnotations = findParamAnnotations(method);
 
         // paramTypes = method.getParameterTypes
         // genericParamTypes = method.getGenericParameterTypes
@@ -354,8 +358,37 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         return operation;
     }
 
+	private Annotation[][] findParamAnnotations(Method method) {
+		Annotation[][] paramAnnotation = method.getParameterAnnotations();
+		
+		method = ReflectionUtils.getOverriddenMethod(method);
+		while(method != null) {
+			paramAnnotation = merge(paramAnnotation, method.getParameterAnnotations());
+			method = ReflectionUtils.getOverriddenMethod(method);
+		}
+		return paramAnnotation;
+	}
 
-    public String extractOperationMethod(ApiOperation apiOperation, Method method, Iterator<SwaggerExtension> chain) {
+
+    private Annotation[][] merge(Annotation[][] paramAnnotation,
+			Annotation[][] superMethodParamAnnotations) {
+    	Annotation[][] mergedAnnotations = new Annotation[paramAnnotation.length][];
+    	
+    	for(int i=0; i<paramAnnotation.length; i++) {
+    		mergedAnnotations[i] = merge(paramAnnotation[i], superMethodParamAnnotations[i]);
+    	}
+		return mergedAnnotations;
+	}
+
+	private Annotation[] merge(Annotation[] annotations,
+			Annotation[] annotations2) {
+		Set<Annotation> mergedAnnotations = new HashSet<Annotation>();
+		mergedAnnotations.addAll(Arrays.asList(annotations));
+		mergedAnnotations.addAll(Arrays.asList(annotations2));
+		return mergedAnnotations.toArray(new Annotation[0]);
+	}
+
+	public String extractOperationMethod(ApiOperation apiOperation, Method method, Iterator<SwaggerExtension> chain) {
         if (!apiOperation.httpMethod().isEmpty()) {
             return apiOperation.httpMethod().toLowerCase();
         } else if (AnnotationUtils.findAnnotation(method, GET.class) != null) {

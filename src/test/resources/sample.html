@@ -173,6 +173,98 @@ This is a sample.
 
 
 
+## /myResourceImpl
+
+
+### GET
+
+<a id="getPetsById">Find pet(s) by ID</a>
+
+This is a contrived example
+
+
+
+
+
+
+
+#### Request
+
+
+
+##### Parameters
+
+<table border="1">
+    <tr>
+        <th>Name</th>
+        <th>Located in</th>
+        <th>Required</th>
+        <th>Description</th>
+        <th>Default</th>
+        <th>Schema</th>
+    </tr>
+
+
+
+<tr>
+    <th>startId</th>
+    <td>query</td>
+    <td>yes</td>
+    <td>start ID of pets that need to be fetched</td>
+    <td> - </td>
+
+    
+            <td>integer (int64)</td>
+    
+
+</tr>
+
+<tr>
+    <th>endId</th>
+    <td>query</td>
+    <td>yes</td>
+    <td>end ID of pets that need to be fetched</td>
+    <td> - </td>
+
+    
+            <td>integer (int64)</td>
+    
+
+</tr>
+
+
+</table>
+
+
+
+#### Response
+
+**Content-Type: ** application/xml, application/json
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 200    | successful operation | <a href="#/definitions/Pet">Pet</a>|
+| 400    | Invalid ID supplied |  - |
+| 404    | Pet not found |  - |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## /pet
 
 

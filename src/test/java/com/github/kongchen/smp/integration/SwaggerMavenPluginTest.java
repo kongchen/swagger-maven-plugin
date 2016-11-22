@@ -261,5 +261,4 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
 
         assertGeneratedSwaggerSpecJson("This is a sample.", "/expectedOutput/swagger-with-converter.json");
     }
-
 }
