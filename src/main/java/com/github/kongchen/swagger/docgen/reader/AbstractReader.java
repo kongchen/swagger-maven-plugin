@@ -558,5 +558,13 @@ public abstract class AbstractReader {
         return ParameterProcessor.applyAnnotations(swagger, parameter, apiClass, Arrays.asList(new Annotation[]{param}));
     }
 
+    void processOperationDecorator(Operation operation, Method method) {
+        final Iterator<SwaggerExtension> chain = SwaggerExtensions.chain();
+        if (chain.hasNext()) {
+            SwaggerExtension extension = chain.next();
+            extension.decorateOperation(operation, method, chain);
+        }
+    }
+
 }
 

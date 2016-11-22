@@ -436,6 +436,27 @@ paths:
       - petstore_auth:
         - "write:pets"
         - "read:pets"
+  /pet/testingVendorExtensions:
+    get:
+      tags:
+      - "pet"
+      summary: "testingVendorExtensions"
+      description: ""
+      operationId: "testingVendorExtensions"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "string"
+        401:
+          description: "Some vendor error description"
+      security:
+      - petstore_auth:
+        - "write:pets"
+        - "read:pets"
   /pet/testingFormApiImplicitParam:
     get:
       tags:

@@ -51,7 +51,7 @@
         <maven.version>2.2.1</maven.version>
         <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
         <java.version>1.6</java.version>
-        <swagger.version>1.5.9</swagger.version>
+        <swagger.version>1.5.10</swagger.version>
         <github.global.server>github</github.global.server>
         <jackson.version>1.9.13</jackson.version>
         <log4j.version>1.2.16</log4j.version>
@@ -140,6 +140,11 @@
             <groupId>io.swagger</groupId>
             <artifactId>swagger-jersey-jaxrs</artifactId>
             <version>${swagger.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-server</artifactId>
+            <version>1.13</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven.plugin-tools</groupId>

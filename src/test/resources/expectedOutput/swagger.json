@@ -520,6 +520,26 @@
         ]
       }
     },
+    "/pet/test/testingVendorExtensions" : {
+      "get" : {
+        "tags" : [ "pet" ],
+        "summary" : "testingVendorExtensions",
+        "description" : "",
+        "operationId" : "testingVendorExtensions",
+        "produces" : [ "application/xml", "application/json" ],
+        "responses" : {
+          "401" : {
+            "description" : "Some vendor error description"
+          },
+          "default" : {
+            "description" : "successful operation"
+          }
+        },
+        "security" : [ {
+          "petstore_auth" : [ "write:pets", "read:pets" ]
+        } ]
+      }
+    },
     "/pet/test/testingArrayResponse": {
       "get": {
         "tags": [

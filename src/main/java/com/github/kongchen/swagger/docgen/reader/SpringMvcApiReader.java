@@ -304,6 +304,8 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         // Process @ApiImplicitParams
         this.readImplicitParameters(method, operation);
 
+        processOperationDecorator(operation, method);
+
         return operation;
     }
 
