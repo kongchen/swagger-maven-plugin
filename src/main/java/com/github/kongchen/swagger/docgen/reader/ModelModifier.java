@@ -24,7 +24,7 @@ import java.util.Map;
  * @author chekong on 15/5/19.
  */
 public class ModelModifier extends ModelResolver {
-    private Map<Type, Type> modelSubtitutes = new HashMap<Type, Type>();
+    private Map<JavaType, JavaType> modelSubtitutes = new HashMap<JavaType, JavaType>();
     private List<String> apiModelPropertyAccessExclusions = new ArrayList<String>();
 
     public ModelModifier(ObjectMapper mapper) {
@@ -33,8 +33,8 @@ public class ModelModifier extends ModelResolver {
 
     public void addModelSubstitute(String fromClass, String toClass) throws GenerateException {
         try {
-            Type type = _mapper.constructType(Class.forName(fromClass));
-            Type toType = _mapper.constructType(Class.forName(toClass));
+        	JavaType type = _mapper.constructType(Class.forName(fromClass));
+            JavaType toType = _mapper.constructType(Class.forName(toClass));
 
             modelSubtitutes.put(type, toType);
 
@@ -53,8 +53,10 @@ public class ModelModifier extends ModelResolver {
 
     @Override
     public Property resolveProperty(Type type, ModelConverterContext context, Annotation[] annotations, Iterator<ModelConverter> chain) {
-        if (modelSubtitutes.containsKey(type)) {
-            return super.resolveProperty(modelSubtitutes.get(type), context, annotations, chain);
+    	// for method parameter types we get here Type but we need JavaType
+    	JavaType javaType = toJavaType(type);
+        if (modelSubtitutes.containsKey(javaType)) {
+            return super.resolveProperty(modelSubtitutes.get(javaType), context, annotations, chain);
         } else if (chain.hasNext()) {
             return chain.next().resolveProperty(type, context, annotations, chain);
         } else {
@@ -65,8 +67,10 @@ public class ModelModifier extends ModelResolver {
 
     @Override
     public Model resolve(Type type, ModelConverterContext context, Iterator<ModelConverter> chain) {
-        if (modelSubtitutes.containsKey(type)) {
-            return super.resolve(modelSubtitutes.get(type), context, chain);
+    	// for method parameter types we get here Type but we need JavaType
+    	JavaType javaType = toJavaType(type);
+        if (modelSubtitutes.containsKey(javaType)) {
+            return super.resolve(modelSubtitutes.get(javaType), context, chain);
         } else {
             return super.resolve(type, context, chain);
         }
@@ -107,4 +111,19 @@ public class ModelModifier extends ModelResolver {
 
         return model;
     }
+    
+    /**
+     * Converts {@link Type} to {@link JavaType}.
+     * @param type object to convert
+     * @return object converted to {@link JavaType}
+     */
+    private JavaType toJavaType(Type type) {
+		JavaType typeToFind;
+    	if (type instanceof JavaType) {
+    		typeToFind = (JavaType) type;
+    	} else {
+    		typeToFind = _mapper.constructType(type);
+    	}
+		return typeToFind;
+	}
 }
