@@ -18,6 +18,7 @@ package com.wordnik.jaxrs;
 
 import com.sun.jersey.api.core.InjectParam;
 import com.wordnik.sample.JavaRestResourceUtil;
+import com.wordnik.sample.TestVendorExtension;
 import com.wordnik.sample.data.PetData;
 import com.wordnik.sample.model.Pet;
 import com.wordnik.sample.model.PetName;
@@ -312,4 +313,11 @@ public class PetResource {
         return null;
     }
 
+    @ApiOperation("testingVendorExtensions")
+    @TestVendorExtension.TestVendorAnnotation
+    @GET
+    @Path("/test/testingVendorExtensions")
+    public Response testingVendorExtensions() {
+        return null;
+    }
 }

@@ -17,6 +17,7 @@
 package com.wordnik.springmvc;
 
 import com.wordnik.sample.JavaRestResourceUtil;
+import com.wordnik.sample.TestVendorExtension;
 import com.wordnik.sample.data.PetData;
 import com.wordnik.sample.exception.NotFoundException;
 import com.wordnik.sample.model.PaginationHelper;
@@ -293,5 +294,15 @@ public class PetResource {
             produces = "application/json")
     public String testingBasicAuth() {
         return "testingBasicAuth";
+    }
+
+    @ApiOperation("testingVendorExtensions")
+    @TestVendorExtension.TestVendorAnnotation
+    @RequestMapping(
+            value = "/testingVendorExtensions",
+            method = RequestMethod.GET,
+            produces = "application/json")
+    public String testingVendorExtensions() {
+        return null;
     }
 }
