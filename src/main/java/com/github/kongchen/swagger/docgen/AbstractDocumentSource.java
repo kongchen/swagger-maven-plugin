@@ -98,11 +98,11 @@ public abstract class AbstractDocumentSource {
 
     public abstract void loadDocuments() throws GenerateException;
     
-    public void toSwaggerDocuments(String uiDocBasePath, String outputFormats) throws GenerateException {
-        toSwaggerDocuments(uiDocBasePath, outputFormats, null);
+    public void toSwaggerDocuments(String uiDocBasePath, String outputFormats, String encoding) throws GenerateException {
+        toSwaggerDocuments(uiDocBasePath, outputFormats, null, encoding);
     }
 
-    public void toSwaggerDocuments(String uiDocBasePath, String outputFormats, String fileName) throws GenerateException {
+    public void toSwaggerDocuments(String uiDocBasePath, String outputFormats, String fileName, String encoding) throws GenerateException {
         mapper.configure(SerializationFeature.WRITE_EMPTY_JSON_ARRAYS, false);
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
@@ -141,10 +141,10 @@ public abstract class AbstractDocumentSource {
                         switch (output) {
                             case json:
                                 ObjectWriter jsonWriter = mapper.writer(new DefaultPrettyPrinter());
-                                FileUtils.write(new File(dir, fileName + ".json"), jsonWriter.writeValueAsString(swagger));
+                                FileUtils.write(new File(dir, fileName + ".json"), jsonWriter.writeValueAsString(swagger), encoding);
                                 break;
                             case yaml:
-                                FileUtils.write(new File(dir, fileName + ".yaml"), Yaml.pretty().writeValueAsString(swagger));
+                                FileUtils.write(new File(dir, fileName + ".yaml"), Yaml.pretty().writeValueAsString(swagger), encoding);
                                 break;
                         }
                     } catch (Exception e) {
@@ -154,7 +154,7 @@ public abstract class AbstractDocumentSource {
             } else {
                 // Default to json
                 ObjectWriter jsonWriter = mapper.writer(new DefaultPrettyPrinter());
-                FileUtils.write(new File(dir, fileName + ".json"), jsonWriter.writeValueAsString(swagger));
+                FileUtils.write(new File(dir, fileName + ".json"), jsonWriter.writeValueAsString(swagger), encoding);
             }
         } catch (IOException e) {
             throw new GenerateException(e);
