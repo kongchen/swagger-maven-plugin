@@ -122,8 +122,8 @@ public class ApiDocumentMojo extends AbstractMojo {
                     }
                 }
             }
-        } catch (GenerateException e) {
-            throw new MojoFailureException(e.getMessage(), e);
+        } catch (GenerateException e) {  
+        	throw new MojoFailureException(e.getMessage(), e);        
         } catch (Exception e) {
             throw new MojoExecutionException(e.getMessage(), e);
         }
