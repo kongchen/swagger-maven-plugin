@@ -1031,6 +1031,8 @@ definitions:
       complete:
         type: "boolean"
         default: false
+      optionalStatus:
+        type: "string"
     xml:
       name: "Order"
   Pet:

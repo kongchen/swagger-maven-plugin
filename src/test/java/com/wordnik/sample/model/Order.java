@@ -16,6 +16,7 @@
 
 package com.wordnik.sample.model;
 
+import com.google.common.base.Optional; // Must be Google Guava Optional, because we run Java 6.
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -30,6 +31,8 @@ public class Order {
     private Date shipDate;
     private String status;
     private boolean complete;
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+    private Optional<String> optionalStatus;
 
     private String internalThing;
     private String anotherInternalThing;
@@ -87,6 +90,11 @@ public class Order {
     public void setShipDate(Date shipDate) {
         this.shipDate = shipDate;
     }
+
+    @XmlElement(name = "optionalStatus")
+    public Optional<String> getOptionalStatus() { return optionalStatus; }
+
+    public void setOptionalStatus(@SuppressWarnings("OptionalUsedAsFieldOrParameterType") Optional<String> optionalStatus) { this.optionalStatus = optionalStatus; }
 
     @ApiModelProperty(name = "internalThing", access = "secret-property")
     public String getInternalThing() {
