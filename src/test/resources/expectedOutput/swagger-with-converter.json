@@ -1479,8 +1479,11 @@
         },
         "complete": {
           "type": "boolean",
-          "default": false
-        }
+          "default" : false
+        },
+          "optionalStatus" : {
+              "type" : "string"
+          }
       },
       "xml": {
         "name": "Order"
