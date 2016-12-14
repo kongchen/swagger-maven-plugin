@@ -777,6 +777,14 @@
             "format": "int32"
           },
           {
+            "name": "listValue",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": { "type": "string" },
+            "collectionFormat": "multi"
+          },
+          {
             "name": "myParentHeader",
             "in": "header",
             "description": "Header from parent",
@@ -906,6 +914,14 @@
             "required": false,
             "type": "integer",
             "format": "int32"
+          },
+          {
+            "name": "listValue",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": { "type": "string" },
+            "collectionFormat": "multi"
           },
           {
             "name": "myParentHeader",

@@ -132,7 +132,7 @@ public class BeanParamInjectParamExtention extends AbstractSwaggerExtension {
 
     private Type extractType(AccessibleObject accessibleObject, Type defaulType) {
         if (accessibleObject instanceof Field) {
-            return ((Field) accessibleObject).getType();
+            return ((Field) accessibleObject).getGenericType();
         } else if (accessibleObject instanceof Method) {
             Method method = (Method) accessibleObject;
             if (method.getParameterTypes().length == 1) {

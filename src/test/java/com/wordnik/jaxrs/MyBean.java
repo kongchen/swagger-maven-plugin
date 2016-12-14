@@ -5,6 +5,8 @@ import io.swagger.annotations.ApiParam;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
+import java.util.List;
 
 /**
  * @author chekong on 15/5/9.
@@ -28,6 +30,9 @@ public class MyBean extends MyParentBean {
 
     @HeaderParam("intValue")
     private int intValue;
+
+    @QueryParam(value = "listValue")
+    private List<String> listValue;
 
     public String getMyheader() {
         return myHeader;
@@ -67,6 +72,14 @@ public class MyBean extends MyParentBean {
 
     public void setIntValue(int intValue) {
         this.intValue = intValue;
+    }
+
+    public List<String> getListValue() {
+        return listValue;
+    }
+
+    public void setListValue(List<String> listValue) {
+        this.listValue = listValue;
     }
 
     @HeaderParam("myHeaderOnMethod")
