@@ -9,6 +9,9 @@ import io.swagger.converter.ModelConverterContext;
 import io.swagger.jackson.ModelResolver;
 import io.swagger.models.Model;
 import io.swagger.models.properties.Property;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.AnnotationUtils;
 
 import java.lang.annotation.Annotation;
@@ -27,19 +30,29 @@ public class ModelModifier extends ModelResolver {
     private Map<JavaType, JavaType> modelSubtitutes = new HashMap<JavaType, JavaType>();
     private List<String> apiModelPropertyAccessExclusions = new ArrayList<String>();
 
+    private static Logger LOGGER = LoggerFactory.getLogger(ModelModifier.class);
+
     public ModelModifier(ObjectMapper mapper) {
         super(mapper);
     }
 
     public void addModelSubstitute(String fromClass, String toClass) throws GenerateException {
-        try {
-        	JavaType type = _mapper.constructType(Class.forName(fromClass));
-            JavaType toType = _mapper.constructType(Class.forName(toClass));
-
-            modelSubtitutes.put(type, toType);
-
+        JavaType type = null;
+        JavaType toType = null;
+        try {           
+            type = _mapper.constructType(Class.forName(fromClass));
         } catch (ClassNotFoundException e) {
-            throw new GenerateException(e);
+            LOGGER.warn(String.format("Problem with loading class: %s. Mapping from: %s to: %s will be ignored.", 
+                    fromClass, fromClass, toClass));          
+        }
+        try {    
+            toType = _mapper.constructType(Class.forName(toClass));
+        } catch (ClassNotFoundException e) {
+            LOGGER.warn(String.format("Problem with loading class: %s. Mapping from: %s to: %s will be ignored.", 
+                    toClass, fromClass, toClass));          
+        }
+        if(type != null && toType != null) {
+            modelSubtitutes.put(type, toType);    
         }
     }
 
