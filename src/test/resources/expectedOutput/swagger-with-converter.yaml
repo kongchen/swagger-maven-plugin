@@ -1044,7 +1044,6 @@ definitions:
         - "delivered"
       complete:
         type: "boolean"
-        default: false
       optionalStatus:
         type: "string"
     xml:
@@ -1065,16 +1064,18 @@ definitions:
       photoUrls:
         type: "array"
         xml:
-          name: "photoUrl"
           wrapped: true
         items:
           type: "string"
+          xml:
+            name: "photoUrl"
       tags:
         type: "array"
         xml:
-          name: "tag"
           wrapped: true
         items:
+          xml:
+            name: "tag"
           $ref: "#/definitions/Tag"
       status:
         type: "string"

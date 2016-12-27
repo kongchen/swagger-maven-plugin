@@ -575,8 +575,8 @@ paths:
         description: "Pet id to delete"
         required: true
         type: "integer"
-        maxItems: 2147483647
-        minItems: 0
+        maximum: 2147483647
+        minimum: 0
         format: "int64"
       responses:
         400:
@@ -968,7 +968,6 @@ definitions:
         - "delivered"
       complete:
         type: "boolean"
-        default: false
       optionalStatus:
         type: "string"
     xml:
@@ -989,16 +988,18 @@ definitions:
       photoUrls:
         type: "array"
         xml:
-          name: "photoUrl"
           wrapped: true
         items:
           type: "string"
+          xml:
+            name: "photoUrl"
       tags:
         type: "array"
         xml:
-          name: "tag"
           wrapped: true
         items:
+          xml:
+            name: "tag"
           $ref: "#/definitions/Tag"
       status:
         type: "string"

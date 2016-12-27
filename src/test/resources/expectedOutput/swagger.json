@@ -62,8 +62,8 @@
           "description" : "start ID of pets that need to be fetched",
           "required" : true,
           "type" : "integer",
-          "maximum" : 99.0,
-          "minimum" : 1.0,
+          "maximum" : 99,
+          "minimum" : 1,
           "format" : "int64"
         }, {
           "name" : "endId",
@@ -71,8 +71,8 @@
           "description" : "end ID of pets that need to be fetched",
           "required" : true,
           "type" : "integer",
-          "maximum" : 99.0,
-          "minimum" : 1.0,
+          "maximum" : 99,
+          "minimum" : 1,
           "format" : "int64"
         } ],
         "responses" : {
@@ -632,8 +632,8 @@
           "description" : "start ID of pets that need to be fetched",
           "required" : true,
           "type" : "integer",
-          "maximum" : 99.0,
-          "minimum" : 1.0,
+          "maximum" : 99,
+          "minimum" : 1,
           "pattern" : "[0-9]{1,2}",
           "format" : "int64"
         }, {
@@ -642,8 +642,8 @@
           "description" : "end ID of pets that need to be fetched",
           "required" : true,
           "type" : "integer",
-          "maximum" : 99.0,
-          "minimum" : 1.0,
+          "maximum" : 99,
+          "minimum" : 1,
           "pattern" : "[0-9]{1,2}",
           "format" : "int64"
         } ],
@@ -693,8 +693,8 @@
             "description": "ID of pet that needs to be fetched",
             "required": true,
             "type": "integer",
-            "maximum": 5.0,
-            "minimum": 1.0,
+            "maximum": 5,
+            "minimum": 1,
             "pattern": "[0-9]",
             "format": "int64"
           }
@@ -1022,8 +1022,8 @@
             "description": "ID of pet that needs to be fetched",
             "required": true,
             "type": "string",
-            "maximum": 5.0,
-            "minimum": 1.0
+            "maximum": 5,
+            "minimum": 1
           }
         ],
         "responses": {
@@ -1059,7 +1059,7 @@
             "description": "ID of the order that needs to be deleted",
             "required": true,
             "type": "string",
-            "minimum": 1.0
+            "minimum": 1
           }
         ],
         "responses": {
@@ -1500,8 +1500,7 @@
           ]
         },
         "complete": {
-          "type": "boolean",
-          "default" : false
+          "type": "boolean"
         },
           "optionalStatus" : {
               "type" : "string"
@@ -1531,20 +1530,24 @@
         "photoUrls": {
           "type": "array",
           "xml": {
-            "name": "photoUrl",
             "wrapped": true
           },
           "items": {
-            "type": "string"
+            "type": "string",
+            "xml": {
+              "name": "photoUrl"
+            }
           }
         },
         "tags": {
           "type": "array",
           "xml": {
-            "name": "tag",
             "wrapped": true
           },
           "items": {
+            "xml": {
+              "name": "tag"
+            },
             "$ref": "#/definitions/Tag"
           }
         },
