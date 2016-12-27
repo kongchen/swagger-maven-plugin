@@ -91,7 +91,7 @@ public abstract class AbstractDocumentSource {
 
 
     public abstract void loadDocuments() throws GenerateException;
-    
+
     public void toSwaggerDocuments(String uiDocBasePath, String outputFormats) throws GenerateException {
         toSwaggerDocuments(uiDocBasePath, outputFormats, null);
     }
@@ -159,7 +159,6 @@ public abstract class AbstractDocumentSource {
     public void loadModelModifier() throws GenerateException, IOException {
         ObjectMapper objectMapper = Json.mapper();
         if (apiSource.isUseJAXBAnnotationProcessor()) {
-            objectMapper.registerModule(new JaxbAnnotationModule());
             objectMapper.registerModule(new JaxbAnnotationModule());
         }
         ModelModifier modelModifier = new ModelModifier(objectMapper);
