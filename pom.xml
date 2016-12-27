@@ -54,7 +54,7 @@
         <java.version>1.6</java.version>
         <swagger.version>1.5.10</swagger.version>
         <github.global.server>github</github.global.server>
-        <jackson.version>1.9.13</jackson.version>
+        <jackson.version>2.8.4</jackson.version>
         <log4j.version>1.2.16</log4j.version>
         <handlebars.version>1.3.2</handlebars.version>
         <testng.version>6.8.8</testng.version>
@@ -164,13 +164,13 @@
             <version>${springframework.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-core-asl</artifactId>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
             <version>${jackson.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-mapper-asl</artifactId>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
             <version>${jackson.version}</version>
         </dependency>
         <dependency>
