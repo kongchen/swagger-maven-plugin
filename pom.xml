@@ -52,7 +52,7 @@
         <maven.version>2.2.1</maven.version>
         <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
         <java.version>1.6</java.version>
-        <swagger.version>1.5.11</swagger.version>
+        <swagger.version>1.5.12</swagger.version>
         <github.global.server>github</github.global.server>
         <jackson.version>2.8.4</jackson.version>
         <log4j.version>1.2.16</log4j.version>
