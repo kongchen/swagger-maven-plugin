@@ -82,13 +82,4 @@ public class MyBean extends MyParentBean {
         this.listValue = listValue;
     }
 
-    @HeaderParam("myHeaderOnMethod")
-    @ApiParam(value = "Header annotated on method", required = false)
-    public void setMyheadronmethod(String myheadronmethod) {
-    }
-
-    @HeaderParam("myLongHeaderOnMethod")
-    @ApiParam(value = "Long header annotated on method", required = false)
-    public void setMyintheaderonmethod(long mylongheaderonmethod) {
-    }
 }
