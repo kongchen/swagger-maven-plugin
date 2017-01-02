@@ -793,21 +793,6 @@
             "description": "Header from parent",
             "required": false,
             "type": "string"
-          },
-          {
-            "name": "myHeaderOnMethod",
-            "in": "header",
-            "description": "Header annotated on method",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "myLongHeaderOnMethod",
-            "in": "header",
-            "description": "Long header annotated on method",
-            "required": false,
-            "type": "integer",
-            "format": "int64"
           }
         ],
         "responses": {
@@ -935,21 +920,6 @@
             "description": "Header from parent",
             "required": false,
             "type": "string"
-          },
-          {
-            "name": "myHeaderOnMethod",
-            "in": "header",
-            "description": "Header annotated on method",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "myLongHeaderOnMethod",
-            "in": "header",
-            "description": "Long header annotated on method",
-            "required": false,
-            "type": "integer",
-            "format": "int64"
           }
         ],
         "responses": {
