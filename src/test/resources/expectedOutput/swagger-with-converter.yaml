@@ -544,6 +544,17 @@ paths:
         items:
           type: "string"
         collectionFormat: "multi"
+      - name: "testIntegerAllowableValues"
+        in: "query"
+        description: "testIntegerAllowableValues"
+        required: false
+        type: "integer"
+        default: 25
+        format: "int32"
+        enum:
+        - 25
+        - 50
+        - 100
       - name: "myParentHeader"
         in: "header"
         description: "Header from parent"
@@ -631,6 +642,17 @@ paths:
         items:
           type: "string"
         collectionFormat: "multi"
+      - name: "testIntegerAllowableValues"
+        in: "query"
+        description: "testIntegerAllowableValues"
+        required: false
+        type: "integer"
+        default: 25
+        format: "int32"
+        enum:
+        - 25
+        - 50
+        - 100
       - name: "myParentHeader"
         in: "header"
         description: "Header from parent"
