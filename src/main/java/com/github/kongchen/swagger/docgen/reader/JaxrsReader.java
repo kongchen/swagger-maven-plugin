@@ -1,10 +1,6 @@
 package com.github.kongchen.swagger.docgen.reader;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.Authorization;
-import io.swagger.annotations.AuthorizationScope;
+import io.swagger.annotations.*;
 import io.swagger.converter.ModelConverters;
 import io.swagger.jaxrs.ext.SwaggerExtension;
 import io.swagger.jaxrs.ext.SwaggerExtensions;
@@ -20,6 +16,7 @@ import io.swagger.models.properties.RefProperty;
 import io.swagger.util.ReflectionUtils;
 
 import org.apache.maven.plugin.logging.Log;
+import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -134,9 +131,33 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
                 updateOperation(apiConsumes, apiProduces, tags, securities, operation);
                 updatePath(operationPath, httpMethod, operation);
             }
+            updateTagDescriptions();
         }
 
         return swagger;
+    }
+
+    private void updateTagDescriptions() {
+        HashMap<String, Tag> tags = new HashMap<String, Tag>();
+        for (Class<?> aClass: new Reflections("").getTypesAnnotatedWith(SwaggerDefinition.class)) {
+            SwaggerDefinition swaggerDefinition = AnnotationUtils.findAnnotation(aClass, SwaggerDefinition.class);
+
+            for (io.swagger.annotations.Tag tag : swaggerDefinition.tags()) {
+
+                String tagName = tag.name();
+                if (!tagName.isEmpty()) {
+                    tags.put(tag.name(), new Tag().name(tag.name()).description(tag.description()));
+                }
+            }
+        }
+        if (swagger.getTags() != null) {
+            for (Tag tag : swagger.getTags()) {
+                Tag rightTag = tags.get(tag.getName());
+                if (rightTag != null && rightTag.getDescription() != null) {
+                    tag.setDescription(rightTag.getDescription());
+                }
+            }
+        }
     }
 
     private void handleSubResource(String[] apiConsumes, String httpMethod, String[] apiProduces, Map<String, Tag> tags, Method method, String operationPath, Operation operation) {
