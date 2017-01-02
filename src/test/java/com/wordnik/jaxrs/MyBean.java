@@ -2,10 +2,8 @@ package com.wordnik.jaxrs;
 
 import io.swagger.annotations.ApiParam;
 
-import javax.ws.rs.FormParam;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
+import javax.validation.constraints.Min;
+import javax.ws.rs.*;
 import java.util.List;
 
 /**
@@ -33,6 +31,11 @@ public class MyBean extends MyParentBean {
 
     @QueryParam(value = "listValue")
     private List<String> listValue;
+
+    @ApiParam(value = "testIntegerAllowableValues", defaultValue = "25", allowableValues = "25, 50, 100")
+    @QueryParam("testIntegerAllowableValues")
+    @DefaultValue("25")
+    public Integer testIntegerAllowableValues;
 
     public String getMyheader() {
         return myHeader;

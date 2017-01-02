@@ -59,7 +59,7 @@
         <handlebars.version>1.3.2</handlebars.version>
         <testng.version>6.8.8</testng.version>
         <jettison.version>1.3.3</jettison.version>
-        <json-unit.version>1.6.1</json-unit.version>
+        <json-unit.version>1.17.0</json-unit.version>
         <commons-io.version>2.0.1</commons-io.version>
         <reflections.version>0.9.10</reflections.version>
         <maven-testing-harness.version>1.3</maven-testing-harness.version>
