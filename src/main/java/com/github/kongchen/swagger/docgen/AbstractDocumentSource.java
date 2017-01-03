@@ -92,11 +92,11 @@ public abstract class AbstractDocumentSource {
 
     public abstract void loadDocuments() throws GenerateException;
 
-    public void toSwaggerDocuments(String uiDocBasePath, String outputFormats) throws GenerateException {
-        toSwaggerDocuments(uiDocBasePath, outputFormats, null);
+    public void toSwaggerDocuments(String uiDocBasePath, String outputFormats, String encoding) throws GenerateException {
+        toSwaggerDocuments(uiDocBasePath, outputFormats, null, encoding);
     }
 
-    public void toSwaggerDocuments(String uiDocBasePath, String outputFormats, String fileName) throws GenerateException {
+    public void toSwaggerDocuments(String uiDocBasePath, String outputFormats, String fileName, String encoding) throws GenerateException {
         mapper.configure(SerializationFeature.WRITE_EMPTY_JSON_ARRAYS, false);
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 

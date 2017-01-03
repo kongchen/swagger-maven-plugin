@@ -46,6 +46,9 @@ public class ApiDocumentMojo extends AbstractMojo {
      */
     @Parameter(defaultValue = "false")
     private boolean skipSwaggerGeneration;
+    
+    @Parameter(property="file.encoding")
+    private String encoding;
 
     public List<ApiSource> getApiSources() {
         return apiSources;
@@ -108,7 +111,7 @@ public class ApiDocumentMojo extends AbstractMojo {
                         apiSource.getSwaggerUIDocBasePath() == null
                                 ? apiSource.getBasePath()
                                 : apiSource.getSwaggerUIDocBasePath(),
-                        apiSource.getOutputFormats(), swaggerFileName);
+                        apiSource.getOutputFormats(), swaggerFileName, encoding);
 
 
                 if (apiSource.isAttachSwaggerArtifact() && apiSource.getSwaggerDirectory() != null && project != null) {
