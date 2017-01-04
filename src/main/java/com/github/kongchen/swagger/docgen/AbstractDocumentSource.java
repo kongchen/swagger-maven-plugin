@@ -141,6 +141,12 @@ public abstract class AbstractDocumentSource {
                             case yaml:
                                 FileUtils.write(new File(dir, fileName + ".yaml"), Yaml.pretty().writeValueAsString(swagger), encoding);
                                 break;
+                            case js:
+                                ObjectWriter jsWriter = mapper.writer(new DefaultPrettyPrinter());
+                                LOG.info("var swaggerSpec = " + jsWriter.writeValueAsString(swagger));
+                                FileUtils.write(new File(dir, fileName + ".js"),
+                                        "var swaggerSpec = " + jsWriter.writeValueAsString(swagger), encoding);
+                                break;
                         }
                     } catch (Exception e) {
                         throw new GenerateException(String.format("Declared output format [%s] is not supported.", format));
@@ -376,7 +382,7 @@ public abstract class AbstractDocumentSource {
 }
 
 enum Output {
-    json, yaml
+    json, yaml, js
 }
 
 class TemplatePath {
