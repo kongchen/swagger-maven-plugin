@@ -39,4 +39,8 @@ public class TestUtils {
         JsonNode node = root.path("info");
         ((ObjectNode) node).put("description", text);
     }
+
+    public static String changeDescriptionJs(String javaScript, String text) {
+        return javaScript.replace("This is a sample.", text);
+    }
 }

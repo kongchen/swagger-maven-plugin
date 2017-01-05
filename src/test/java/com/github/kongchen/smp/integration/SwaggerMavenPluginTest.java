@@ -8,6 +8,7 @@ import com.github.kongchen.swagger.docgen.mavenplugin.ApiSource;
 import com.google.common.collect.ImmutableList;
 import net.javacrumbs.jsonunit.core.Configuration;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
@@ -17,20 +18,13 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import static com.github.kongchen.smp.integration.utils.TestUtils.YamlToJson;
-import static com.github.kongchen.smp.integration.utils.TestUtils.changeDescription;
-import static com.github.kongchen.smp.integration.utils.TestUtils.createTempDirPath;
-import static com.github.kongchen.smp.integration.utils.TestUtils.setCustomReader;
+import static com.github.kongchen.smp.integration.utils.TestUtils.*;
 import static net.javacrumbs.jsonunit.JsonAssert.assertJsonEquals;
 import static net.javacrumbs.jsonunit.core.Option.IGNORING_ARRAY_ORDER;
 
@@ -69,6 +63,11 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
     }
 
     @Test
+    public void testGeneratedSwaggerSpecJs() throws Exception {
+        assertGeneratedSwaggerSpecJs("This is a sample.", "/expectedOutput/swagger.js");
+    }
+
+    @Test
     public void testSwaggerCustomReaderJson() throws Exception {
         setCustomReader(mojo, "com.wordnik.jaxrs.CustomJaxrsReader");
         assertGeneratedSwaggerSpecJson("Processed with CustomJaxrsReader", "/expectedOutput/swagger.json");
@@ -78,6 +77,12 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
     public void testSwaggerCustomReaderYaml() throws Exception {
         setCustomReader(mojo, "com.wordnik.jaxrs.CustomJaxrsReader");
         assertGeneratedSwaggerSpecYaml("Processed with CustomJaxrsReader", "/expectedOutput/swagger.yaml");
+    }
+
+    @Test
+    public void testSwaggerCustomReaderJs() throws Exception {
+        setCustomReader(mojo, "com.wordnik.jaxrs.CustomJaxrsReader");
+        assertGeneratedSwaggerSpecJs("Processed with CustomJaxrsReader", "/expectedOutput/swagger.js");
     }
 
     @Test
@@ -248,6 +253,17 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
         assertJsonEquals(expectJson, actualJson, Configuration.empty().when(IGNORING_ARRAY_ORDER));
     }
 
+    private void assertGeneratedSwaggerSpecJs(String description, String expectedOutput) throws MojoExecutionException, MojoFailureException, IOException {
+        mojo.getApiSources().get(0).setOutputFormats("js");
+        mojo.execute();
+
+        String actualJs = FileUtils.readFileToString(new File(swaggerOutputDir, "swagger.js"));
+        String expectJs = IOUtils.toString(this.getClass().getResourceAsStream(expectedOutput));
+
+        expectJs = changeDescriptionJs(expectJs, description);
+        assertEquals(expectJs, actualJs);
+    }
+
     @Test
     public void testCustomModelConverterYaml() throws MojoFailureException, MojoExecutionException, IOException {
         mojo.getApiSources().get(0).setModelConverters(ImmutableList.of(PetIdToStringModelConverter.class.getName()));
@@ -260,5 +276,12 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
         mojo.getApiSources().get(0).setModelConverters(ImmutableList.of(PetIdToStringModelConverter.class.getName()));
 
         assertGeneratedSwaggerSpecJson("This is a sample.", "/expectedOutput/swagger-with-converter.json");
+    }
+
+    @Test
+    public void testCustomModelConverterJs() throws MojoFailureException, MojoExecutionException, IOException {
+        mojo.getApiSources().get(0).setModelConverters(ImmutableList.of(PetIdToStringModelConverter.class.getName()));
+
+        assertGeneratedSwaggerSpecJs("This is a sample.", "/expectedOutput/swagger-with-converter.js");
     }
 }
