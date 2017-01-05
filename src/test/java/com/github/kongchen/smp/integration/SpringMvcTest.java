@@ -251,7 +251,14 @@ public class SpringMvcTest extends AbstractMojoTestCase {
         String actualJs = FileUtils.readFileToString(new File(swaggerOutputDir, "swagger.js"));
         String expectJs = IOUtils.toString(this.getClass().getResourceAsStream("/expectedOutput/swagger-spring.js"));
 
-        expectJs = changeDescriptionJs(expectJs, description);
-        assertEquals(expectJs, actualJs);
+        String actualVarName = actualJs.substring(0, actualJs.indexOf("{"));
+        String expectVarName = expectJs.substring(0, expectJs.indexOf("{"));
+
+        JsonNode actualJson = getJsonFromJs(actualJs);
+        JsonNode expectJson = getJsonFromJs(expectJs);
+
+        changeDescription(expectJson, description);
+        assertEquals(expectVarName, actualVarName);
+        assertJsonEquals(expectJson, actualJson, Configuration.empty().when(IGNORING_ARRAY_ORDER));
     }
 }
