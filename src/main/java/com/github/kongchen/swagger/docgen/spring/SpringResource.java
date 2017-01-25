@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.github.kongchen.swagger.docgen.util.Utils;
 /**
  * 
  * @author tedleman

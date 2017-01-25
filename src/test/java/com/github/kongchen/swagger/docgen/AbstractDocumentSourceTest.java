@@ -1,5 +1,6 @@
 package com.github.kongchen.swagger.docgen;
 
+import com.github.kongchen.swagger.docgen.util.Log4jLogAdapter;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.testng.annotations.Test;
@@ -13,6 +14,7 @@ public class AbstractDocumentSourceTest {
 
     public static final String OUTPUT_PATH = "foo/bar.json";
     public static final String FLAT_OUTPUT_PATH = "foo_bar.json";
+    private static final Logger LOGGER = Logger.getLogger(AbstractDocumentSourceTest.class);
 
     @Test
     public void testResourcePathToFilename() throws Exception {
@@ -43,7 +45,7 @@ public class AbstractDocumentSourceTest {
     }
 
     private AbstractDocumentSource getAbstractDocumentSource(final boolean useOutputFlatStructure) {
-        return new AbstractDocumentSource(new LogAdapter((Logger) null), null, null, null, null, useOutputFlatStructure, null, null, null) {
+        return new AbstractDocumentSource(new Log4jLogAdapter(LOGGER), null, null, null, null, useOutputFlatStructure, null, null, null) {
             @Override
             public void loadDocuments() throws Exception, GenerateException {
 

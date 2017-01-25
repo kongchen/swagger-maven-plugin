@@ -1,22 +1,18 @@
 package com.github.kongchen.swagger.docgen.spring;
 
+import com.github.kongchen.swagger.docgen.util.LogAdapter;
 import com.github.kongchen.swagger.docgen.mavenplugin.ApiSource;
 import com.github.kongchen.swagger.docgen.util.Utils;
-import com.google.common.base.CharMatcher;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiModel;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
 import com.wordnik.swagger.annotations.ApiResponse;
 import com.wordnik.swagger.annotations.ApiResponses;
 import com.wordnik.swagger.config.SwaggerConfig;
 import com.wordnik.swagger.converter.OverrideConverter;
-import com.wordnik.swagger.core.ApiValues;
 import com.wordnik.swagger.core.SwaggerSpec;
 import com.wordnik.swagger.model.AllowableListValues;
-import com.wordnik.swagger.model.AllowableRangeValues;
-import com.wordnik.swagger.model.AllowableValues;
 import com.wordnik.swagger.model.ApiDescription;
 import com.wordnik.swagger.model.ApiListing;
 import com.wordnik.swagger.model.Authorization;
@@ -30,11 +26,7 @@ import com.wordnik.swagger.model.ResponseMessage;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.plexus.util.StringUtils;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import scala.Option;
@@ -57,8 +49,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author tedleman
@@ -74,6 +64,7 @@ import java.util.regex.Pattern;
  *         Models are generated as they are detected and ModelReferences are added for each
  */
 public class SpringMvcApiReader {
+    private final ParameterGenerator parameterGenerator;
     private ApiSource apiSource;
     private ApiListing apiListing;
     private String resourcePath;
@@ -83,17 +74,19 @@ public class SpringMvcApiReader {
 
     private static final Option<String> DEFAULT_OPTION = Option.empty(); //<--comply with scala option to prevent nulls
     private static final String[] RESERVED_PACKAGES = {"java", "org.springframework"};
+    private final LogAdapter logger;
     private OverrideConverter overriderConverter;
 
-
-    public SpringMvcApiReader(ApiSource aSource, OverrideConverter overrideConverter) {
+    public SpringMvcApiReader(ApiSource aSource, LogAdapter logger, OverrideConverter overrideConverter) {
         apiSource = aSource;
+        this.logger = logger;
         apiListing = null;
         resourcePath = "";
         models = new HashMap<String, Model>();
         produces = new ArrayList<String>();
         consumes = new ArrayList<String>();
         this.overriderConverter = overrideConverter;
+        this.parameterGenerator = new ParameterGenerator(logger);
     }
 
     /**
@@ -129,13 +122,7 @@ public class SpringMvcApiReader {
         Map<String, List<Method>> apiMethodMap = new HashMap<String, List<Method>>();
         for (Method m : methods) {
             if (m.isAnnotationPresent(RequestMapping.class)) {
-                RequestMapping requestMapping = m.getAnnotation(RequestMapping.class);
-                String path = "";
-                if (requestMapping.value() != null && requestMapping.value().length != 0) {
-                    path = generateFullPath(requestMapping.value()[0]);
-                } else {
-                    path = resourcePath;
-                }
+                String path = getMethodPath(m.getAnnotation(RequestMapping.class));
                 if (apiMethodMap.containsKey(path)) {
                     apiMethodMap.get(path).add(m);
                 } else {
@@ -174,6 +161,14 @@ public class SpringMvcApiReader {
         return apiListing;
     }
 
+    private String getMethodPath(RequestMapping requestMapping) {
+        if (requestMapping.value() != null && requestMapping.value().length != 0) {
+            return generateFullPath(requestMapping.value()[0]);
+        } else {
+            return resourcePath;
+        }
+    }
+
     private void addAuthorization(List<Authorization> authorizations, com.wordnik.swagger.annotations.Authorization[] annotations) {
         for (com.wordnik.swagger.annotations.Authorization authorization : annotations) {
             List<AuthorizationScope> scopes = new ArrayList<AuthorizationScope>();
@@ -185,32 +180,6 @@ public class SpringMvcApiReader {
     }
 
     //--------Swagger Resource Generators--------//
-
-
-    private String generateBasePath(String bPath, String rPath) {
-        String domain = "";
-
-        //check for two character domain at beginning of resourcePath
-        if (rPath.charAt(2) == '/') {
-            domain = rPath.substring(0, 2);
-            this.resourcePath = rPath.substring(2);
-        } else if (rPath.charAt(3) == '/') {
-            domain = rPath.substring(1, 3);
-            this.resourcePath = rPath.substring(3);
-        }
-
-        //check for first & trailing backslash
-        if (bPath.lastIndexOf('/') != (bPath.length() - 1) && StringUtils.isNotEmpty(domain)) {
-            bPath = bPath + '/';
-        }
-
-        //TODO this should be done elsewhere
-        if (this.resourcePath.charAt(0) != '/') {
-            this.resourcePath = '/' + this.resourcePath;
-        }
-
-        return bPath + domain;
-    }
 
     private String generateFullPath(String path) {
         if (StringUtils.isNotEmpty(path)) {
@@ -227,50 +196,25 @@ public class SpringMvcApiReader {
      * @return Operation
      */
     private Operation generateOperation(Method m) {
-        Class<?> clazz;
-        ApiOperation apiOperation;
-        RequestMapping requestMapping;
-        ResponseBody responseBody;
-        String responseBodyName = "";
         String method = null;
         String description = null;
         String notes = null;
-        List<String> opProduces = new ArrayList<String>();
-        List<String> opConsumes = new ArrayList<String>();
-        List<Parameter> parameters = new ArrayList<Parameter>();
-        List<ResponseMessage> responseMessages = new ArrayList<ResponseMessage>();
+
         List<Authorization> authorizations = new ArrayList<Authorization>();
 
-        apiOperation = m.getAnnotation(ApiOperation.class);
-        requestMapping = m.getAnnotation(RequestMapping.class);
-        responseBody = m.getAnnotation(ResponseBody.class);
+        RequestMapping requestMapping = m.getAnnotation(RequestMapping.class);
+        ResponseBody responseBody = m.getAnnotation(ResponseBody.class);
+
+        Class<?> containerClz = getReturnedType(m);
+        Class<?> clazz = getGenericSubtype(m.getReturnType(), m.getGenericReturnType());
+
+        List<String> opProduces = asListOrEmptyIfNull(requestMapping.produces());
+        addWithoutDuplicates(produces, opProduces);
+        List<String> opConsumes = asListOrEmptyIfNull(requestMapping.consumes());
+        addWithoutDuplicates(consumes, opConsumes);
 
 
-        if (m.getReturnType().equals(ResponseEntity.class)) {
-            clazz = getGenericSubtype(m.getReturnType(), m.getGenericReturnType());
-        } else {
-            clazz = m.getReturnType();
-        }
-        Class<?> containerClz = clazz;
-        clazz = getGenericSubtype(m.getReturnType(), m.getGenericReturnType());
-
-        if (requestMapping.produces() != null) {
-            opProduces = Arrays.asList(requestMapping.produces());
-            for (String str : opProduces) {
-                if (!produces.contains(str)) {
-                    produces.add(str);
-                }
-            }
-        }
-        if (requestMapping.consumes() != null) {
-            opConsumes = Arrays.asList(requestMapping.consumes());
-            for (String str : opConsumes) {
-                if (!consumes.contains(str)) {
-                    consumes.add(str);
-                }
-            }
-        }
-
+        ApiOperation apiOperation = m.getAnnotation(ApiOperation.class);
         if (apiOperation != null) {
             description = apiOperation.value();
             notes = apiOperation.notes();
@@ -279,8 +223,9 @@ public class SpringMvcApiReader {
             }
         }
 
-        responseMessages = generateResponseMessages(m);
+        List<ResponseMessage> responseMessages = generateResponseMessages(m);
 
+        String responseBodyName = "";
         if (responseBody != null) {
             if (!containerClz.equals(clazz)) {
                 responseBodyName = containerClz.getSimpleName() + "[" + clazz.getSimpleName() + "]";
@@ -292,6 +237,8 @@ public class SpringMvcApiReader {
         if (requestMapping.method() != null && requestMapping.method().length != 0) {
             method = requestMapping.method()[0].toString();
         }
+
+        List<Parameter> parameters = new ArrayList<Parameter>();
         if (m.getParameterTypes() != null) {
             parameters = generateParameters(m);
         }
@@ -307,6 +254,30 @@ public class SpringMvcApiReader {
                 DEFAULT_OPTION);
     }
 
+    private Class<?> getReturnedType(Method m) {
+        if (m.getReturnType().equals(ResponseEntity.class)) {
+            return getGenericSubtype(m.getReturnType(), m.getGenericReturnType());
+        } else {
+            return m.getReturnType();
+        }
+    }
+
+    private static <T> List<T> asListOrEmptyIfNull(T[] array) {
+        if (array == null) {
+            return Collections.emptyList();
+        } else {
+            return Arrays.asList(array);
+        }
+    }
+
+    private static <T> void addWithoutDuplicates(Collection<T> targetCollection, Collection<T> elements) {
+        for (T str : elements) {
+            if (!targetCollection.contains(str)) {
+                targetCollection.add(str);
+            }
+        }
+    }
+
     /**
      * Generates parameters for each Operation
      *
@@ -317,83 +288,13 @@ public class SpringMvcApiReader {
         Annotation[][] annotations = m.getParameterAnnotations();
         List<Parameter> params = new ArrayList<Parameter>();
         for (int i = 0; i < annotations.length; i++) { //loops through parameters
-            AllowableValues allowed = null;
-            String dataType = "";
-            String type = "";
-            String name = "";
-            boolean required = true;
-            Annotation[] anns = annotations[i];
-            Class<?> clazz = m.getParameterTypes()[i];
-            String description = "";
-            List<String> allowableValuesList;
-
-            for (int x = 0; x < anns.length; x++) { //loops through annotations for each parameter
-                if (anns[x].annotationType().equals(PathVariable.class)) {
-                    PathVariable pathVariable = (PathVariable) anns[x];
-                    name = pathVariable.value();
-                    type = ApiValues.TYPE_PATH();
-                } else if (anns[x].annotationType().equals(RequestBody.class)) {
-                    RequestBody requestBody = (RequestBody) anns[x];
-                    type = ApiValues.TYPE_BODY();
-                    required = requestBody.required();
-                } else if (anns[x].annotationType().equals(RequestParam.class)) {
-                    RequestParam requestParam = (RequestParam) anns[x];
-                    name = requestParam.value();
-                    type = ApiValues.TYPE_QUERY();
-                    required = requestParam.required();
-                } else if (anns[x].annotationType().equals(RequestHeader.class)) {
-                    RequestHeader requestHeader = (RequestHeader) anns[x];
-                    name = requestHeader.value();
-                    type = ApiValues.TYPE_HEADER();
-                    required = requestHeader.required();
-                } else if (anns[x].annotationType().equals(ApiParam.class)) {
-                    try {
-                        ApiParam apiParam = (ApiParam) anns[x];
-                        if (apiParam.value() != null)
-                            description = apiParam.value();
-                        if (apiParam.allowableValues() != null) {
-                            if (apiParam.allowableValues().startsWith("range")) {
-                                String range = apiParam.allowableValues().substring("range".length());
-                                String min, max;
-                                Pattern pattern = Pattern.compile("\\[(.+),(.+)\\]");
-                                Matcher matcher = pattern.matcher(range);
-                                if (matcher.matches()) {
-                                    min = matcher.group(1);
-                                    max = matcher.group(2);
-                                    allowed = new AllowableRangeValues(min, max);
-                                }
-                            } else {
-                                String allowableValues = CharMatcher.anyOf("[] ").removeFrom(apiParam.allowableValues());
-                                if (!(allowableValues.equals(""))) {
-                                    allowableValuesList = Arrays.asList(allowableValues.split(","));
-                                    allowed = new AllowableListValues(
-                                            scala.collection.immutable.List.fromIterator(JavaConversions.asScalaIterator(allowableValuesList.iterator())), "LIST");
-                                }
-                            }
-
-
-                        }
-                    } catch (Exception e) {
-                    }
-                }
-            }
-
-            if (clazz.isArray()) {
-                String clazzName = CharMatcher.anyOf("[]").removeFrom(clazz.getSimpleName());
-                clazzName = generateTypeString(clazzName);
-                dataType = "Array[" + clazzName + "]";
-                addToModels(clazz);
-            } else {
-                dataType = generateTypeString(clazz.getSimpleName());
-                addToModels(clazz);
-            }
-
-            params.add(new Parameter(name, Option.apply(description), DEFAULT_OPTION, required, false, dataType,
-                    allowed, type, DEFAULT_OPTION));
+            Class<?> parameterClass = m.getParameterTypes()[i];
+            addToModels(parameterClass);
+            Parameter parameter = parameterGenerator.generateParameter(new ParameterMetadata(parameterClass, annotations[i]));
+            params.add(parameter);
         }
         return params;
     }
-
 
     /**
      * Generates response messages for each Operation
@@ -465,7 +366,7 @@ public class SpringMvcApiReader {
                 }
                 if (field.getAnnotation(ApiModelProperty.class) != null) {
                     amp = field.getAnnotation(ApiModelProperty.class);
-                    if (required != true) { //if required has already been changed to true, it was noted in XmlElement
+                    if (!required) { //if required has already been changed to true, it was noted in XmlElement
                         required = amp.required();
                     }
                     description = amp.value();
@@ -484,7 +385,7 @@ public class SpringMvcApiReader {
 
         //<--Model properties from methods-->
         int i = 0;
-        for (Method m : sortMethods(clazz)) {
+        for (Method m : sortMethodsGettersFirst(clazz)) {
             boolean required = false;
             String description = "";
             ApiModelProperty amp;
@@ -509,16 +410,14 @@ public class SpringMvcApiReader {
             }
 
             //get model properties from methods
-            String name = getModelNameFromGetterMethodName(m);
-            if (name != null) {
-
+            if (isGetterMethod(m)) {
+                String name = getPropertyNameFromMethodName(m);
                 if (!(m.getReturnType().equals(clazz))) {
                     addToModels(m.getReturnType()); //recursive
                 }
                 if (!modelProps.contains(name)) {
                     modelProps.put(name, generateModelProperty(m.getReturnType(), i, required, modelRef, description));
                 }
-
             }
             i++;
         }
@@ -528,7 +427,7 @@ public class SpringMvcApiReader {
                 scala.collection.immutable.List.fromIterator(JavaConversions.asScalaIterator(subTypes.iterator())));
     }
 
-    private Field[] sortFields(Class<?> clazz) {
+    private static Field[] sortFields(Class<?> clazz) {
         Field[] sortedFields = clazz.getDeclaredFields();
         Arrays.sort(sortedFields, new Comparator<Field>() {
             @Override
@@ -539,22 +438,22 @@ public class SpringMvcApiReader {
         return sortedFields;
     }
 
-    private Method[] sortMethods(Class<?> clazz) {
+    private static Method[] sortMethodsGettersFirst(Class<?> clazz) {
         Method[] ms = clazz.getMethods();
         Arrays.sort(ms, new Comparator<Method>() {
             @Override
-            public int compare(Method o1, Method o2) {
-                String m1 = getModelNameFromGetterMethodName(o1);
-                String m2 = getModelNameFromGetterMethodName(o2);
-                if (m1 != null) {
-                    if (m2 != null) {
-                        return m1.compareTo(m2);
+            public int compare(Method m1, Method m2) {
+                boolean m1IsGetter = isGetterMethod(m1);
+                boolean m2IsGetter = isGetterMethod(m2);
+                if (m1IsGetter) {
+                    if (m2IsGetter) {
+                        return getPropertyNameFromMethodName(m1).compareTo(getPropertyNameFromMethodName(m2));
                     } else {
                         return 1;
                     }
                 } else {
-                    if (m2 == null) {
-                        return o1.getName().compareTo(o2.getName());
+                    if (!m2IsGetter) {
+                        return m1.getName().compareTo(m2.getName());
                     } else {
                         return -1;
                     }
@@ -564,22 +463,34 @@ public class SpringMvcApiReader {
         return ms;
     }
 
-    private String getModelNameFromGetterMethodName(Method m) {
-        String name = null;
-        if ((m.getName().startsWith("get") || m.getName().startsWith("is"))
-                && !(m.getName().equals("getClass"))) {
-            try {
-                if (m.getName().startsWith("get")) {
-                    name = m.getName().substring(3);
-                } else {
-                    name = m.getName().substring(2);
-                }
-                String firstLetter = name.substring(0, 1).toLowerCase(); //convert to camel case
-                name = firstLetter + name.substring(1);
-            } catch (Exception e) {
-            }
+    private static String getPropertyNameFromMethodName(Method method) {
+        String stripPrefix;
+        String methodName = method.getName();
+        if (methodName.startsWith("get") && methodName.length() > 3) {
+            stripPrefix = methodName.substring(3);
+        } else if (methodName.startsWith("is") && methodName.length() > 2) {
+            stripPrefix = methodName.substring(2);
+        } else {
+            stripPrefix = methodName;
         }
-        return name;
+        return lowerCamelCase(stripPrefix);
+    }
+
+    private static String lowerCamelCase(String name) {
+        if (name.isEmpty()) {
+            return name;
+        }
+        String lowerFirstLetter = name.substring(0, 1).toLowerCase(); //convert to camel case
+        if (name.length() > 1) {
+            return lowerFirstLetter + name.substring(1);
+        } else {
+            return lowerFirstLetter;
+        }
+    }
+
+    private static boolean isGetterMethod(Method m) {
+        String name = m.getName();
+        return (name.startsWith("get") || name.startsWith("is")) && !(name.equals("getClass"));
     }
 
     /**
@@ -592,7 +503,7 @@ public class SpringMvcApiReader {
      * @param String   description
      * @return ModelProperty
      */
-    private ModelProperty generateModelProperty(Class<?> clazz, int position, boolean required, ModelRef modelRef,
+    private static ModelProperty generateModelProperty(Class<?> clazz, int position, boolean required, ModelRef modelRef,
                                                 String description) {
         AllowableListValues allowed = null;
         String name = clazz.getSimpleName();
@@ -664,14 +575,13 @@ public class SpringMvcApiReader {
 
     //-------------Helper Methods------------//
 
-    private Class<?> getGenericSubtype(Class<?> clazz, Type t) {
+    private static Class<?> getGenericSubtype(Class<?> clazz, Type t) {
         if (!(clazz.getName().equals("void") || t.toString().equals("void"))) {
             try {
                 ParameterizedType paramType = (ParameterizedType) t;
                 Type[] argTypes = paramType.getActualTypeArguments();
                 if (argTypes.length > 0) {
-                    Class<?> c = (Class<?>) argTypes[0];
-                    return c;
+                    return (Class<?>) argTypes[0];
                 }
             } catch (ClassCastException e) {
                 //FIXME: find out why this happens to only certain types
@@ -694,34 +604,21 @@ public class SpringMvcApiReader {
         }
     }
 
-    private boolean isModel(Class<?> clazz) {
+    private static boolean isModel(Class<?> clazz) {
         try {
             for (String str : RESERVED_PACKAGES) {
                 if (clazz.getPackage().getName().contains(str)) {
                     return false;
                 }
             }
-            if (SwaggerSpec.baseTypes().contains(clazz.getSimpleName().toLowerCase())) {
-                return false;
-            } else {
-                return true;
-            }
+            return !SwaggerSpec.baseTypes().contains(clazz.getSimpleName().toLowerCase());
         } catch (NullPointerException e) { //null pointer for package names - wouldn't model something without a package. skip
             return false;
         }
     }
 
-    private String generateTypeString(String clazzName) {
-        String typeString = clazzName;
-        if (SwaggerSpec.baseTypes().contains(clazzName.toLowerCase())) {
-            typeString = clazzName.toLowerCase();
-        }
-        return typeString;
-    }
-
     private Option<scala.collection.immutable.Map<String, Model>> generateModels(HashMap<String, Model> javaModelMap) {
-        Option<scala.collection.immutable.Map<String, Model>> models = Option.apply(Utils.toScalaImmutableMap(javaModelMap));
-        return models;
+        return Option.apply(Utils.toScalaImmutableMap(javaModelMap));
     }
 
 

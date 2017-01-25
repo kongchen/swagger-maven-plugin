@@ -12,14 +12,7 @@ import java.util.regex.Pattern;
  * 05/13/2013
  */
 public class TypeUtils {
-    private static final List<String> basicTypes;
-
-    static {
-        String[] a = {
-                "string", "boolean", "Date", "int", "Array", "long", "List", "void", "float", "double"
-        };
-        basicTypes = Arrays.asList(a);
-    }
+    private static final List<String> basicTypes = Arrays.asList("string", "boolean", "Date", "int", "Array", "long", "List", "void", "float", "double");
 
     private static final Pattern pattern = Pattern.compile("^(Array|List)\\[(\\w+)]$");
 

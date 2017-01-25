@@ -7,9 +7,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.kongchen.swagger.docgen.mavenplugin.ApiSourceInfo;
 import com.github.kongchen.swagger.docgen.mustache.MustacheApi;
 import com.github.kongchen.swagger.docgen.mustache.OutputTemplate;
+import com.github.kongchen.swagger.docgen.util.LogAdapter;
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
-import com.wordnik.swagger.converter.ModelConverter;
 import com.wordnik.swagger.converter.ModelConverters;
 import com.wordnik.swagger.converter.OverrideConverter;
 import com.wordnik.swagger.converter.SwaggerSchemaConverter;
@@ -22,7 +22,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import scala.collection.Iterator;
 import scala.collection.JavaConversions;
-import scala.collection.mutable.ListBuffer;
 
 import java.io.*;
 import java.lang.reflect.Method;

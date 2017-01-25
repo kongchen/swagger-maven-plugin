@@ -1,10 +1,8 @@
 package com.github.kongchen.swagger.docgen.remote;
 
-import static org.testng.Assert.*;
-
 import java.net.URI;
 
-import com.github.kongchen.swagger.docgen.LogAdapter;
+import com.github.kongchen.swagger.docgen.util.Log4jLogAdapter;
 import org.apache.log4j.Logger;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -25,7 +23,7 @@ public class RemoteDocumentSourceTest {
     @Test(enabled = false)
     public void testLoadDocuments() throws Exception {
         RemoteDocumentSource remoteDocumentSource = new RemoteDocumentSource(
-                new LogAdapter(Logger.getLogger("test")),
+                new Log4jLogAdapter(Logger.getLogger("test")),
                 URI.create("http://petstore.swagger.wordnik.com/api/api-docs"),
 //                "/home/chekong/workspace/kongchen/swagger-maven-example/templates/strapdown.html.mustache",
                 "/Users/kongchen/workspace/swagger-maven-example/templates/strapdown.html.mustache",
