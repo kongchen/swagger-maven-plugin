@@ -1,5 +1,7 @@
 package com.github.kongchen.swagger.docgen.spring;
 
+import org.springframework.core.style.ToStringCreator;
+
 import java.lang.annotation.Annotation;
 
 final class ParameterMetadata {
@@ -19,5 +21,9 @@ final class ParameterMetadata {
 
     public Class<?> getType() {
         return type;
+    }
+
+    public String toString() {
+        return new ToStringCreator(this).append("type", type).toString();
     }
 }

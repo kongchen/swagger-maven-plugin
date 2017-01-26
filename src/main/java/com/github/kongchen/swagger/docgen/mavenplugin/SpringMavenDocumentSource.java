@@ -214,7 +214,7 @@ public class SpringMavenDocumentSource extends AbstractDocumentSource {
     }
 
     private ApiListing getDocFromSpringResource(SpringResource res, SwaggerConfig swaggerConfig) throws Exception {
-        SpringMvcApiReader reader = new SpringMvcApiReader(apiSource, LOG, this.overriderConverter);
+        SpringMvcApiReader reader = new SpringMvcApiReader(apiSource, this.overriderConverter, LOG);
         ApiListing apiListing = reader.read(res, swaggerConfig);
         if (None.canEqual(apiListing)) return null;
         return apiListing;
