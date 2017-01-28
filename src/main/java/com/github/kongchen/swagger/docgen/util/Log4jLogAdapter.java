@@ -29,4 +29,9 @@ public class Log4jLogAdapter implements LogAdapter {
     public void warn(String s) {
         logger.warn(s);
     }
+
+    @Override
+    public void debug(String message) {
+        logger.debug(message);
+    }
 }

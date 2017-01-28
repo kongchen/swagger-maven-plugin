@@ -30,4 +30,9 @@ public class MavenLogAdapter implements LogAdapter {
     public void warn(String s) {
         log.warn(s);
     }
+
+    @Override
+    public void debug(String message) {
+        log.debug(message);
+    }
 }

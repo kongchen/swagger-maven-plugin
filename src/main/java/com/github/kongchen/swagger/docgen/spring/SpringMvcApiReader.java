@@ -78,7 +78,7 @@ public class SpringMvcApiReader {
         this.logger = logger;
         this.parameterGenerator = new ParameterGenerator(logger);
         this.parameterFilter = parameterFilter;
-        this.modelCollector = new ModelCollector(overrideConverter);
+        this.modelCollector = new ModelCollector(overrideConverter, logger);
     }
 
     /**

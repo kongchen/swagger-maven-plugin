@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.kongchen.swagger.docgen.mavenplugin.ApiSourceInfo;
+import com.github.kongchen.swagger.docgen.mavenplugin.ModelConverterRegistry;
 import com.github.kongchen.swagger.docgen.mustache.MustacheApi;
 import com.github.kongchen.swagger.docgen.mustache.OutputTemplate;
 import com.github.kongchen.swagger.docgen.util.LogAdapter;
@@ -221,12 +222,8 @@ public abstract class AbstractDocumentSource {
     }
 
     if (swaggerSchemaConverter != null) {
-      try {
         LOG.info("Setting converter configuration: " + swaggerSchemaConverter);
-        ModelConverters.addConverter((SwaggerSchemaConverter) Class.forName(swaggerSchemaConverter).newInstance(), true);
-      } catch (Exception e) {
-        throw new GenerateException("Cannot load: " + swaggerSchemaConverter, e);
-      }
+        ModelConverterRegistry.registerConverter(swaggerSchemaConverter);
     }
 
   }

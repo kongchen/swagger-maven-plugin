@@ -34,12 +34,15 @@ import java.util.*;
  */
 public class SpringMavenDocumentSource extends AbstractDocumentSource {
     private final ApiSource apiSource;
+    private SpringMvcApiReader reader;
 
     public OverrideConverter getOverriderConverter() {
         return overriderConverter;
     }
 
     private OverrideConverter overriderConverter;
+
+
 
     public SpringMavenDocumentSource(ApiSource apiSource, Log log) {
         super(new MavenLogAdapter(log), apiSource.getOutputPath(), apiSource.getOutputTemplate(),
@@ -85,6 +88,7 @@ public class SpringMavenDocumentSource extends AbstractDocumentSource {
 
     @Override
     public void loadDocuments() throws GenerateException {
+        reader = new SpringMvcApiReader(apiSource, this.overriderConverter, LOG);
         Map<String, SpringResource> resourceMap = new HashMap<String, SpringResource>();
         SwaggerConfig swaggerConfig = new SwaggerConfig();
         swaggerConfig.setApiVersion(apiSource.getApiVersion());
@@ -94,12 +98,7 @@ public class SpringMavenDocumentSource extends AbstractDocumentSource {
         List<AuthorizationType> authorizationTypes = new ArrayList<AuthorizationType>();
 
         if (apiSource.getSwaggerSchemaConverter() != null) {
-            try {
-                LOG.info("Setting converter configuration: " + apiSource.getSwaggerSchemaConverter());
-                ModelConverters.addConverter((SwaggerSchemaConverter) Class.forName(apiSource.getSwaggerSchemaConverter()).newInstance(), true);
-            } catch (Exception e) {
-                throw new GenerateException("Cannot load: " + apiSource.getSwaggerSchemaConverter(), e);
-            }
+            ModelConverterRegistry.registerConverter(apiSource.getSwaggerSchemaConverter());
         }
 
         //relate all methods to one base request mapping if multiple controllers exist for that mapping
@@ -214,7 +213,6 @@ public class SpringMavenDocumentSource extends AbstractDocumentSource {
     }
 
     private ApiListing getDocFromSpringResource(SpringResource res, SwaggerConfig swaggerConfig) throws Exception {
-        SpringMvcApiReader reader = new SpringMvcApiReader(apiSource, this.overriderConverter, LOG);
         ApiListing apiListing = reader.read(res, swaggerConfig);
         if (None.canEqual(apiListing)) return null;
         return apiListing;

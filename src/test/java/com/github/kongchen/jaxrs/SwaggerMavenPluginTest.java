@@ -22,6 +22,9 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import static com.github.kongchen.TestUtil.deleteDirectory;
+import static com.github.kongchen.TestUtil.deleteFile;
+
 /**
  * @author chekong
  */
@@ -35,12 +38,8 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
     @BeforeMethod
     protected void setUp() throws Exception {
         super.setUp();
-        try {
-            FileUtils.deleteDirectory(swaggerOutputDir);
-            FileUtils.forceDelete(docOutput);
-        } catch (Exception e) {
-            //ignore
-        }
+        deleteDirectory(swaggerOutputDir);
+        deleteFile(docOutput);
 
         File testPom = new File(getBasedir(), "target/test-classes/plugin-config.xml");
         mojo = (ApiDocumentMojo) lookupMojo("generate", testPom);
@@ -54,9 +53,9 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
         final List<String> expect = IOUtils.readLines(resource);
         final List<String> testOutput = FileUtils.readLines(docOutput);
 
-        Assert.assertEquals(expect.size(), testOutput.size());
+        Assert.assertEquals(testOutput.size(), expect.size());
         for (int i = 0; i < expect.size(); i++) {
-            Assert.assertEquals(expect.get(i), testOutput.get(i));
+            Assert.assertEquals(testOutput.get(i), expect.get(i));
         }
     }
 
@@ -72,9 +71,9 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
         final List<String> expect = IOUtils.readLines(resource);
         final List<String> testOutput = FileUtils.readLines(docOutput);
 
-        Assert.assertEquals(expect.size(), testOutput.size());
+        Assert.assertEquals(testOutput.size(), expect.size());
         for (int i = 0; i < expect.size(); i++) {
-            Assert.assertEquals(expect.get(i), testOutput.get(i));
+            Assert.assertEquals(testOutput.get(i), expect.get(i));
         }
     }
 

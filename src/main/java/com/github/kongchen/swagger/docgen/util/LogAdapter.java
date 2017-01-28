@@ -15,4 +15,6 @@ public interface LogAdapter {
     void error(String message, Throwable e);
 
     void warn(String s);
+
+    void debug(String message);
 }

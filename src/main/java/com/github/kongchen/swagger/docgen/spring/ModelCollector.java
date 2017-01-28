@@ -1,5 +1,6 @@
 package com.github.kongchen.swagger.docgen.spring;
 
+import com.github.kongchen.swagger.docgen.util.LogAdapter;
 import com.google.common.collect.ImmutableSet;
 import com.wordnik.swagger.annotations.ApiModel;
 import com.wordnik.swagger.annotations.ApiModelProperty;
@@ -36,34 +37,36 @@ public class ModelCollector {
 
     private static final Option<String> DEFAULT_OPTION = Option.empty();
     private static final Set<String> RESERVED_PACKAGES = ImmutableSet.of("java", "org.springframework");
+    private final LogAdapter logger;
 
-    public ModelCollector(OverrideConverter overriderConverter) {
+    public ModelCollector(OverrideConverter overriderConverter, LogAdapter logger) {
         this.overriderConverter = overriderConverter;
+        this.logger = logger;
     }
 
     public void addModel(Class<?> clazz) {
-        if (isModel(clazz) && !(models.containsKey(clazz.getSimpleName()))) {
+        String modelName = clazz.getSimpleName();
+        if (isModel(clazz) && !(models.containsKey(modelName))) {
             //put the key first in models to avoid stackoverflow
-            models.put(clazz.getSimpleName(), new Model(null, null, null, null, null, null, null, null));
+            models.put(modelName, new Model(null, null, null, null, null, null, null, null));
             scala.collection.mutable.HashMap<String, Option<Model>> overriderMap = this.overriderConverter.overrides();
             if (overriderMap.contains(clazz.getCanonicalName())) {
                 Option<Option<Model>> m = overriderMap.get(clazz.getCanonicalName());
-                models.put(clazz.getSimpleName(), m.get().get());
+                models.put(modelName, m.get().get());
             } else {
-                models.put(clazz.getSimpleName(), generateModel(clazz));
+                models.put(modelName, generateModel(clazz));
             }
         }
     }
 
     private Model generateModel(Class<?> clazz) {
-        ApiModel apiModel;
-        ModelRef modelRef = null;
+        logger.debug("generating model " + clazz);
         String modelDescription = "";
         LinkedHashMap<String, ModelProperty> modelProps = new LinkedHashMap<String, ModelProperty>();
         List<String> subTypes = new ArrayList<String>();
 
         if (clazz.isAnnotationPresent(ApiModel.class)) {
-            apiModel = clazz.getAnnotation(ApiModel.class);
+            ApiModel apiModel = clazz.getAnnotation(ApiModel.class);
             if (apiModel.description() != null) {
                 modelDescription = apiModel.description();
             }
@@ -74,36 +77,34 @@ public class ModelCollector {
 
         for (Field field : sortFields(clazz)) {
             //Only use fields if they are annotated - otherwise use methods
-            XmlElement xmlElement;
-            ApiModelProperty amp;
-            Class<?> c;
-            String name;
             boolean required = false;
             String description = "";
-            if (!(field.getType().equals(clazz))) {
+            ModelRef modelRef = null;
+            Class<?> fieldType = field.getType();
+            if (!(fieldType.equals(clazz))) {
                 //if the types are the same, model will already be generated
                 modelRef = generateModelRef(clazz, field); //recursive IFF there is a generic sub-type to be modeled
             }
             if (field.isAnnotationPresent(XmlElement.class) ||
                     field.isAnnotationPresent(ApiModelProperty.class)) {
                 if (field.getAnnotation(XmlElement.class) != null) {
-                    xmlElement = field.getAnnotation(XmlElement.class);
+                    XmlElement xmlElement = field.getAnnotation(XmlElement.class);
                     required = xmlElement.required();
                 }
                 if (field.getAnnotation(ApiModelProperty.class) != null) {
-                    amp = field.getAnnotation(ApiModelProperty.class);
+                    ApiModelProperty amp = field.getAnnotation(ApiModelProperty.class);
                     if (!required) { //if required has already been changed to true, it was noted in XmlElement
                         required = amp.required();
                     }
                     description = amp.value();
                 }
 
-                if (!(field.getType().equals(clazz))) {
-                    c = field.getType();
-                    name = field.getName();
-                    addModel(c);
-                    subTypes.add(c.getSimpleName());
-                    modelProps.put(name, generateModelProperty(c, x, required, modelRef, description));
+                if (!(fieldType.equals(clazz))) {
+                    String name = field.getName();
+                    addModel(fieldType);
+                    subTypes.add(fieldType.getSimpleName());
+                    logger.debug("adding model property from field " + name);
+                    modelProps.put(name, generateModelProperty(fieldType, x, required, modelRef, description));
                     x++;
                 }
             }
@@ -116,7 +117,7 @@ public class ModelCollector {
             String description = "";
             ApiModelProperty amp;
             //look for required field in XmlElement annotation
-
+            ModelRef modelRef = null;
             if (!(m.getReturnType().equals(clazz))) {
                 modelRef = generateModelRef(clazz, m); //recursive IFF there is a generic sub-type to be modeled
             }
@@ -142,6 +143,7 @@ public class ModelCollector {
                     addModel(m.getReturnType()); //recursive
                 }
                 if (!modelProps.contains(name)) {
+                    logger.debug("adding model property " + name + " from method " + m);
                     modelProps.put(name, generateModelProperty(m.getReturnType(), i, required, modelRef, description));
                 }
             }
@@ -162,9 +164,9 @@ public class ModelCollector {
         return aPackage != null && isReservedPackageName(aPackage.getName());
     }
 
-    private static boolean isReservedPackageName(String aPackageName) {
+    private static boolean isReservedPackageName(String packageName) {
         for (String str : RESERVED_PACKAGES) {
-            if (aPackageName.contains(str)) {
+            if (packageName.contains(str)) {
                 return true;
             }
         }

@@ -1,26 +1,22 @@
 package com.github.kongchen.jaxrs;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.kongchen.swagger.docgen.mavenplugin.ApiDocumentMojo;
-import com.github.kongchen.swagger.docgen.mavenplugin.ApiSource;
+import com.github.kongchen.swagger.docgen.mavenplugin.ModelConverterRegistry;
+import com.wordnik.swagger.converter.ModelConverters;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
+
+import static com.github.kongchen.TestUtil.deleteDirectory;
+import static com.github.kongchen.TestUtil.deleteFile;
 
 /**
  * @author chekong
@@ -35,15 +31,16 @@ public class SwaggerMavenPluginConverterTest extends AbstractMojoTestCase {
     @BeforeMethod
     protected void setUp() throws Exception {
         super.setUp();
-        try {
-            FileUtils.deleteDirectory(swaggerOutputDir);
-            FileUtils.forceDelete(docOutput);
-        } catch (Exception e) {
-            //ignore
-        }
+        deleteDirectory(swaggerOutputDir);
+        deleteFile(docOutput);
 
         File testPom = new File(getBasedir(), "target/test-classes/plugin-config-converter.xml");
         mojo = (ApiDocumentMojo) lookupMojo("generate", testPom);
+    }
+
+    @AfterMethod
+    public void tearDown() {
+        ModelConverterRegistry.clear();
     }
 
     @Test
