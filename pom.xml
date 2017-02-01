@@ -126,11 +126,6 @@
             <artifactId>commons-lang3</artifactId>
             <version>${commons-lang3.version}</version>
         </dependency>
-        <dependency>
-            <groupId>junit-addons</groupId>
-            <artifactId>junit-addons</artifactId>
-            <version>${junit-addons.version}</version>
-        </dependency>
 
         <dependency>
             <groupId>javax.ws.rs</groupId>
@@ -209,6 +204,12 @@
             <artifactId>jettison</artifactId>
             <version>${jettison.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+           <groupId>junit-addons</groupId>
+            <artifactId>junit-addons</artifactId>
+            <version>${junit-addons.version}</version>
+	    <scope>test</scope>
         </dependency>
     </dependencies>
 
