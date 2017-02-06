@@ -2,6 +2,7 @@ package com.github.kongchen.springmvc;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.kongchen.TestUtil;
 import com.github.kongchen.swagger.docgen.mavenplugin.ApiDocumentMojo;
 import com.github.kongchen.swagger.docgen.mavenplugin.ApiSource;
 import org.apache.commons.io.FileUtils;
@@ -22,6 +23,9 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import static com.github.kongchen.TestUtil.deleteDirectory;
+import static com.github.kongchen.TestUtil.deleteFile;
+
 /**
  * @author chekong
  */
@@ -36,12 +40,8 @@ public class SwaggerMavenPluginSpringMvcTest extends AbstractMojoTestCase {
     @BeforeMethod
     protected void setUp() throws Exception {
         super.setUp();
-        try {
-            FileUtils.deleteDirectory(swaggerOutputDir);
-            FileUtils.forceDelete(docOutput);
-        } catch (Exception e) {
-            //ignore
-        }
+        deleteDirectory(swaggerOutputDir);
+        deleteFile(docOutput);
 
         File testPom = new File(getBasedir(), "target/test-classes/plugin-config-springmvc.xml");
         mojo = (ApiDocumentMojo) lookupMojo("generate", testPom);
@@ -52,12 +52,12 @@ public class SwaggerMavenPluginSpringMvcTest extends AbstractMojoTestCase {
         mojo.execute();
 
         final InputStream resource = getClass().getResourceAsStream("/sample-springmvc.html");
-        final List<String> expect = IOUtils.readLines(resource);
-        final List<String> testOutput = FileUtils.readLines(docOutput);
+        final List<String> expect = IOUtils.readLines(resource, "UTF-8");
+        final List<String> testOutput = FileUtils.readLines(docOutput, "UTF-8");
 
-        Assert.assertEquals(expect.size(), testOutput.size());
+        Assert.assertEquals(testOutput.size(), expect.size());
         for (int i = 0; i < expect.size(); i++) {
-            Assert.assertEquals(expect.get(i), testOutput.get(i));
+            Assert.assertEquals(testOutput.get(i), expect.get(i));
         }
     }
 

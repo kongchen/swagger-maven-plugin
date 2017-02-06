@@ -2,13 +2,11 @@ package com.github.kongchen.swagger.docgen.mavenplugin;
 
 import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
 import com.github.kongchen.swagger.docgen.GenerateException;
-import com.github.kongchen.swagger.docgen.LogAdapter;
+import com.github.kongchen.swagger.docgen.util.MavenLogAdapter;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.config.FilterFactory;
 import com.wordnik.swagger.config.FilterFactory$;
 import com.wordnik.swagger.config.SwaggerConfig;
-import com.wordnik.swagger.converter.ModelConverters;
-import com.wordnik.swagger.converter.SwaggerSchemaConverter;
 import com.wordnik.swagger.core.SwaggerSpec;
 import com.wordnik.swagger.core.filter.SpecFilter;
 import com.wordnik.swagger.core.filter.SwaggerSpecFilter;
@@ -24,13 +22,12 @@ import scala.collection.mutable.Buffer;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
  *
- * @author: chekong
+ * @author chekong
  * 05/13/2013
  */
 public class MavenDocumentSource extends AbstractDocumentSource {
@@ -39,7 +36,7 @@ public class MavenDocumentSource extends AbstractDocumentSource {
   private final SpecFilter specFilter = new SpecFilter();
 
   public MavenDocumentSource(ApiSource apiSource, Log log) {
-    super(new LogAdapter(log), apiSource.getOutputPath(), apiSource.getOutputTemplate(),
+    super(new MavenLogAdapter(log), apiSource.getOutputPath(), apiSource.getOutputTemplate(),
         apiSource.getSwaggerDirectory(), apiSource.mustacheFileRoot, apiSource.isUseOutputFlatStructure(),
         apiSource.getOverridingModels(), apiSource.getApiSortComparator(), apiSource.getSwaggerSchemaConverter());
 
@@ -84,15 +81,7 @@ public class MavenDocumentSource extends AbstractDocumentSource {
       acceptDocument(doc);
     }
     // sort apiListingReference by position
-    Collections.sort(apiListingReferences, new Comparator<ApiListingReference>() {
-      @Override
-      public int compare(ApiListingReference o1, ApiListingReference o2) {
-        if (o1 == null && o2 == null) return 0;
-        if (o1 == null && o2 != null) return -1;
-        if (o1 != null && o2 == null) return 1;
-        return o1.position() - o2.position();
-      }
-    });
+    Collections.sort(apiListingReferences, new ApiListingReferenceComparator());
     serviceDocument = new ResourceListing(swaggerConfig.apiVersion(), swaggerConfig.swaggerVersion(),
         scala.collection.immutable.List.fromIterator(JavaConversions.asScalaIterator(apiListingReferences.iterator())),
         scala.collection.immutable.List.fromIterator(JavaConversions.asScalaIterator(authorizationTypes.iterator())),
@@ -131,4 +120,5 @@ public class MavenDocumentSource extends AbstractDocumentSource {
           + apiSource.getSwaggerApiReader(), e);
     }
   }
+
 }

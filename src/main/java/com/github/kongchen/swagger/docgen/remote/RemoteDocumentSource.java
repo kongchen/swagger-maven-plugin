@@ -5,7 +5,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
-import com.github.kongchen.swagger.docgen.LogAdapter;
+import com.github.kongchen.swagger.docgen.util.Log4jLogAdapter;
+import com.github.kongchen.swagger.docgen.util.LogAdapter;
 import com.github.kongchen.swagger.docgen.remote.model.*;
 import com.github.kongchen.swagger.docgen.util.Utils;
 import com.wordnik.swagger.model.ApiListing;
@@ -42,7 +43,7 @@ public class RemoteDocumentSource extends AbstractDocumentSource {
                                 String swaggerOutput, String mustacheFileRoot, boolean useOutputFlatStructure,
                                 String overridingModels, String apiComparator) {
         super(logAdapter, outputPath, outputTpl, swaggerOutput, mustacheFileRoot, useOutputFlatStructure, overridingModels, apiComparator, null);
-        LOG = new LogAdapter(Logger.getLogger(RemoteDocumentSource.class));
+        LOG = new Log4jLogAdapter(Logger.getLogger(RemoteDocumentSource.class));
         this.requestURI = requestURI;
         mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);

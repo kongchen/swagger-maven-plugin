@@ -65,7 +65,7 @@ public class Utils {
         return values;
     }
 
-    public static <A, B> Map<A, B> toScalaImmutableMap(HashMap<A, B> m) {
+    public static <A, B> Map<A, B> toScalaImmutableMap(java.util.Map<A, B> m) {
         return JavaConverters.mapAsScalaMapConverter(m).asScala().toMap(
                 Predef.<Tuple2<A, B>>conforms()
         );

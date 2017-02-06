@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
@@ -44,7 +45,8 @@ public class CarControllerV1 {
             @ApiParam(allowableValues = "application/json, application/*")
             @RequestHeader(value="Accept", required = false) MediaType accept,
             @ApiParam(name = "e")
-            @RequestParam("e") String e) {
+            @RequestParam("e") String e,
+            ModelAndView modelAndView) {
         return new Car();
     }
 
