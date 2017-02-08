@@ -399,7 +399,6 @@ public abstract class AbstractReader {
         if (!parameters.isEmpty()) {
             for (Parameter parameter : parameters) {
                 ParameterProcessor.applyAnnotations(swagger, parameter, type, annotations);
-                parameter = fixCollectionFormatForArrayTypes(cls, parameter);
             }
         } else {
             LOG.debug("Looking for body params in " + cls);
@@ -411,38 +410,6 @@ public abstract class AbstractReader {
             }
         }
         return parameters;
-    }
-
-    private Parameter fixCollectionFormatForArrayTypes(Class<?> cls, Parameter parameter) {
-
-        // This is a workaround until the following swagger-core bug is fixed:
-        // https://github.com/swagger-api/swagger-core/issues/1160
-        // The collectionFormat for array-typed items is returning as "csv", even
-        // in cases where a csv string does not apply. In these cases, we need to
-        // re-set the type back to "multi".
-
-        if (!(parameter instanceof AbstractSerializableParameter)) {
-            return parameter;
-        }
-
-        final AbstractSerializableParameter<?> p = (AbstractSerializableParameter<?>) parameter;
-
-        final String in = p.getIn();
-        if (!"query".equals(in) && !"formData".equals(in)) {
-            // collectionFormat=multi is allowed for in=query and in=formData only - see the spec
-            return parameter;
-        }
-
-        // Check to see if the if the parameter has items. If it does, it's an array type.
-        // If the collectionFormat is "csv", and the java type is Collection or Array, we need to change it to
-        // "multi" and re-define the parameter.
-        if (p.getItems() != null && "csv".equals(p.getCollectionFormat())
-                && (Collection.class.isAssignableFrom(cls) || cls.isArray())) {
-            p.collectionFormat("multi");
-            parameter = p;
-        }
-
-        return parameter;
     }
 
     protected void updateApiResponse(Operation operation, ApiResponses responseAnnotation) {
