@@ -123,7 +123,7 @@ public abstract class AbstractDocumentSource {
                 throw new GenerateException(String.format("Create Swagger-outputDirectory[%s] failed.", swaggerPath));
             }
         }
-        cleanupOlds(dir, outputFormats);
+
         if (fileName == null || "".equals(fileName.trim())) {
             fileName = "swagger";
         }
@@ -231,19 +231,6 @@ public abstract class AbstractDocumentSource {
                 this.typesToSkip.add(type);
             } catch (ClassNotFoundException e) {
                 throw new GenerateException(e);
-            }
-        }
-    }
-
-
-    private void cleanupOlds(File dir, String outputFormats) {
-        if (dir.listFiles() != null && outputFormats != null) {
-            for (String format : outputFormats.split(",")) {
-                for (File f : dir.listFiles()) {
-                    if (f.getName().endsWith(format.toLowerCase())) {
-                        f.delete();
-                    }
-                }
             }
         }
     }
