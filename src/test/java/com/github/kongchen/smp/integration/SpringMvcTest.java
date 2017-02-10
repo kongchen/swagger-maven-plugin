@@ -2,10 +2,6 @@ package com.github.kongchen.smp.integration;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import static com.github.kongchen.smp.integration.utils.TestUtils.YamlToJson;
-import static com.github.kongchen.smp.integration.utils.TestUtils.changeDescription;
-import static com.github.kongchen.smp.integration.utils.TestUtils.createTempDirPath;
-import static com.github.kongchen.smp.integration.utils.TestUtils.setCustomReader;
 import com.github.kongchen.swagger.docgen.mavenplugin.ApiDocumentMojo;
 import com.github.kongchen.swagger.docgen.mavenplugin.ApiSource;
 import java.io.BufferedReader;
@@ -18,10 +14,13 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import junitx.framework.FileAssert;
+
+import static com.github.kongchen.smp.integration.utils.TestUtils.*;
 import static net.javacrumbs.jsonunit.JsonAssert.assertJsonEquals;
 import net.javacrumbs.jsonunit.core.Configuration;
 import static net.javacrumbs.jsonunit.core.Option.IGNORING_ARRAY_ORDER;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
@@ -65,6 +64,11 @@ public class SpringMvcTest extends AbstractMojoTestCase {
     }
 
     @Test
+    public void testGeneratedSwaggerSpecJs() throws Exception {
+        assertGeneratedSwaggerSpecJs("This is a sample.");
+    }
+
+    @Test
     public void testSwaggerCustomReaderJson() throws Exception {
         setCustomReader(mojo, "com.wordnik.springmvc.CustomSpringMvcReader");
         assertGeneratedSwaggerSpecJson("Processed with CustomSpringMvcReader");
@@ -74,6 +78,12 @@ public class SpringMvcTest extends AbstractMojoTestCase {
     public void testSwaggerCustomReaderYaml() throws Exception {
         setCustomReader(mojo, "com.wordnik.springmvc.CustomSpringMvcReader");
         assertGeneratedSwaggerSpecYaml("Processed with CustomSpringMvcReader");
+    }
+
+    @Test
+    public void testSwaggerCustomReaderJs() throws Exception {
+        setCustomReader(mojo, "com.wordnik.springmvc.CustomSpringMvcReader");
+        assertGeneratedSwaggerSpecJs("Processed with CustomSpringMvcReader");
     }
 
     @Test
@@ -234,4 +244,21 @@ public class SpringMvcTest extends AbstractMojoTestCase {
         assertJsonEquals(expectJson, actualJson, Configuration.empty().when(IGNORING_ARRAY_ORDER));
     }
 
+    private void assertGeneratedSwaggerSpecJs(String description) throws MojoExecutionException, MojoFailureException, IOException {
+        mojo.getApiSources().get(0).setOutputFormats("js");
+        mojo.execute();
+
+        String actualJs = FileUtils.readFileToString(new File(swaggerOutputDir, "swagger.js"));
+        String expectJs = IOUtils.toString(this.getClass().getResourceAsStream("/expectedOutput/swagger-spring.js"));
+
+        String actualVarName = actualJs.substring(0, actualJs.indexOf("{"));
+        String expectVarName = expectJs.substring(0, expectJs.indexOf("{"));
+
+        JsonNode actualJson = getJsonFromJs(actualJs);
+        JsonNode expectJson = getJsonFromJs(expectJs);
+
+        changeDescription(expectJson, description);
+        assertEquals(expectVarName, actualVarName);
+        assertJsonEquals(expectJson, actualJson, Configuration.empty().when(IGNORING_ARRAY_ORDER));
+    }
 }

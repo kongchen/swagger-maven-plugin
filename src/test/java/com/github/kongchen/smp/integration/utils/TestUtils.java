@@ -1,6 +1,7 @@
 package com.github.kongchen.smp.integration.utils;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.kongchen.swagger.docgen.mavenplugin.ApiDocumentMojo;
 import com.github.kongchen.swagger.docgen.mavenplugin.ApiSource;
@@ -8,6 +9,7 @@ import org.codehaus.jettison.json.JSONObject;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -38,5 +40,10 @@ public class TestUtils {
     public static void changeDescription(JsonNode root, String text) {
         JsonNode node = root.path("info");
         ((ObjectNode) node).put("description", text);
+    }
+
+    public static JsonNode getJsonFromJs(String javaScript) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.readTree(javaScript.substring(javaScript.indexOf("{")));
     }
 }
