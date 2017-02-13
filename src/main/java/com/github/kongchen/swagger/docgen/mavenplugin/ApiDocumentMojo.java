@@ -118,7 +118,7 @@ public class ApiDocumentMojo extends AbstractMojo {
                     String outputFormats = apiSource.getOutputFormats();
                     if (outputFormats != null) {
                         for (String format : outputFormats.split(",")) {
-                            String classifier = (swaggerFileName.equals("swagger"))
+                            String classifier = swaggerFileName.equals("swagger")
                                     ? getSwaggerDirectoryName(apiSource.getSwaggerDirectory())
                                     : swaggerFileName;
                             File swaggerFile = new File(apiSource.getSwaggerDirectory(), swaggerFileName + "." + format.toLowerCase());
