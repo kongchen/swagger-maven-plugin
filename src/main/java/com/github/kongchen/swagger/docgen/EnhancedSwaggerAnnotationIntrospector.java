@@ -13,7 +13,7 @@ import io.swagger.jackson.SwaggerAnnotationIntrospector;
  * @author Tomasz Juchniewicz
  *
  */
-public class SwaggerAnnotationIntrospector2 extends SwaggerAnnotationIntrospector {
+public class EnhancedSwaggerAnnotationIntrospector extends SwaggerAnnotationIntrospector {
 
     @Override
     public PropertyName findRootName(AnnotatedClass ac) {

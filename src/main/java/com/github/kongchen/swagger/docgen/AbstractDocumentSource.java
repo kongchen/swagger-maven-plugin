@@ -170,7 +170,7 @@ public abstract class AbstractDocumentSource {
             
             // to support @ApiModel on class level.
             // must be registered only if we use JaxbAnnotationModule before. Why?
-            objectMapper.registerModule(new SwaggerModule2());
+            objectMapper.registerModule(new EnhancedSwaggerModule());
         }
         ModelModifier modelModifier = new ModelModifier(objectMapper);
 
