@@ -1,19 +1,26 @@
 package com.github.kongchen.swagger.docgen.mavenplugin;
 
-import io.swagger.annotations.SwaggerDefinition;
-import io.swagger.models.Contact;
-import io.swagger.models.Info;
-import io.swagger.models.License;
-import org.apache.maven.plugins.annotations.Parameter;
-import org.reflections.Reflections;
-import org.springframework.core.annotation.AnnotationUtils;
-
 import java.io.File;
 import java.lang.annotation.Annotation;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+
+import com.google.common.collect.Lists;
+import io.swagger.annotations.SwaggerDefinition;
+import io.swagger.models.Contact;
+import io.swagger.models.Info;
+import io.swagger.models.License;
+import org.apache.maven.artifact.DependencyResolutionRequiredException;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.project.MavenProject;
+import org.reflections.Configuration;
+import org.reflections.Reflections;
+import org.reflections.util.ConfigurationBuilder;
+import org.springframework.core.annotation.AnnotationUtils;
 
 /**
  * User: kongchen
@@ -123,20 +130,42 @@ public class ApiSource {
     @Parameter
     private List<String> modelConverters;
 
+    private Configuration compileClassLoader(MavenProject project, String location) {
+        if (project == null) {
+            return ConfigurationBuilder.build(location);
+        } else {
+            try {
+                List<URL> urls = Lists.newArrayList();
+                for (Object o : project.getCompileClasspathElements()) {
+                    urls.add(new URL("file://" + o));
+                }
+                return ConfigurationBuilder.build(urls);
+            } catch (DependencyResolutionRequiredException ignored) {
+                return ConfigurationBuilder.build(location);
+            } catch (MalformedURLException ignored) {
+                return ConfigurationBuilder.build(location);
+            }
+        }
+    }
+
     public Set<Class<?>> getValidClasses(Class<? extends Annotation> clazz) {
+        return getValidClasses(null, clazz);
+    }
+
+    public Set<Class<?>> getValidClasses(MavenProject project, Class<? extends Annotation> clazz) {
         Set<Class<?>> classes = new LinkedHashSet<Class<?>>();
         if (getLocations() == null) {
-            Set<Class<?>> c = new Reflections("").getTypesAnnotatedWith(clazz, true);
+            Set<Class<?>> c = new Reflections(compileClassLoader(project, "")).getTypesAnnotatedWith(clazz, true);
             classes.addAll(c);
 
-            Set<Class<?>> inherited = new Reflections("").getTypesAnnotatedWith(clazz);
+            Set<Class<?>> inherited = new Reflections(compileClassLoader(project, "")).getTypesAnnotatedWith(clazz);
             classes.addAll(inherited);
         } else {
             for (String location : locations) {
-                Set<Class<?>> c = new Reflections(location).getTypesAnnotatedWith(clazz, true);
+                Set<Class<?>> c = new Reflections(compileClassLoader(project, location)).getTypesAnnotatedWith(clazz, true);
                 classes.addAll(c);
 
-                Set<Class<?>> inherited = new Reflections(location).getTypesAnnotatedWith(clazz);
+                Set<Class<?>> inherited = new Reflections(compileClassLoader(project, location)).getTypesAnnotatedWith(clazz);
                 classes.addAll(inherited);
             }
         }

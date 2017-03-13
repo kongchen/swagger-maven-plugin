@@ -11,6 +11,7 @@ import io.swagger.core.filter.SwaggerSpecFilter;
 import io.swagger.models.auth.SecuritySchemeDefinition;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.project.MavenProject;
 
 import java.util.HashMap;
 import java.util.List;
@@ -34,7 +35,7 @@ public class SpringMavenDocumentSource extends AbstractDocumentSource {
     }
 
     @Override
-    public void loadDocuments() throws GenerateException {
+    public void loadDocuments(MavenProject project) throws GenerateException {
         if (apiSource.getSwaggerInternalFilter() != null) {
             try {
                 LOG.info("Setting filter configuration: " + apiSource.getSwaggerInternalFilter());
@@ -44,8 +45,8 @@ public class SpringMavenDocumentSource extends AbstractDocumentSource {
             }
         }
 
-        swagger = resolveApiReader().read(apiSource.getValidClasses(Api.class));
-        
+        swagger = resolveApiReader().read(apiSource.getValidClasses(project, Api.class));
+
         if(apiSource.getSecurityDefinitions() != null) {
             for (SecurityDefinition sd : apiSource.getSecurityDefinitions()) {
                 for (Map.Entry<String, SecuritySchemeDefinition> entry : sd.getDefinitions().entrySet()) {
