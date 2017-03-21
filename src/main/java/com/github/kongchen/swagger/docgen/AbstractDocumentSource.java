@@ -28,6 +28,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.project.MavenProject;
 
 import java.io.*;
 import java.lang.reflect.Constructor;
@@ -90,7 +91,7 @@ public abstract class AbstractDocumentSource {
     }
 
 
-    public abstract void loadDocuments() throws GenerateException;
+    public abstract void loadDocuments(MavenProject project) throws GenerateException;
 
     public void toSwaggerDocuments(String uiDocBasePath, String outputFormats, String encoding) throws GenerateException {
         toSwaggerDocuments(uiDocBasePath, outputFormats, null, encoding);

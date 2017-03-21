@@ -93,7 +93,7 @@ public class ApiDocumentMojo extends AbstractMojo {
                 documentSource.loadTypesToSkip();
                 documentSource.loadModelModifier();
                 documentSource.loadModelConverters();
-                documentSource.loadDocuments();
+                documentSource.loadDocuments(project);
                 if (apiSource.getOutputPath() != null) {
                     File outputDirectory = new File(apiSource.getOutputPath()).getParentFile();
                     if (outputDirectory != null && !outputDirectory.exists()) {
