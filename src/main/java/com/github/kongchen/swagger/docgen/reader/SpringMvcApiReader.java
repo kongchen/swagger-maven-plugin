@@ -23,6 +23,10 @@ import org.apache.maven.plugin.logging.Log;
 import org.codehaus.plexus.util.StringUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -58,6 +62,61 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         }
 
         return swagger;
+    }
+
+    private static class MappingAware {
+
+        private final String[]        value;
+        private final RequestMethod[] methods;
+        private final String[]        produces;
+        private final String[]        consumes;
+
+        MappingAware(String[] value, RequestMethod[] methods, String[] produces, String[] consumes) {
+            this.value = value;
+            this.methods = methods;
+            this.produces = produces;
+            this.consumes = consumes;
+        }
+
+        public String[] value() {
+            return value;
+        }
+
+        RequestMethod[] method() {
+            return methods;
+        }
+
+        String[] produces() {
+            return produces;
+        }
+
+        String[] consumes() {
+            return consumes;
+        }
+    }
+
+    private MappingAware findSpringMapping(Method method) {
+        RequestMapping requestMapping = AnnotationUtils.findAnnotation(method, RequestMapping.class);
+        if (requestMapping != null) {
+            return new MappingAware(requestMapping.value(), requestMapping.method(), requestMapping.produces(), requestMapping.consumes());
+        }
+        GetMapping getMapping = AnnotationUtils.findAnnotation(method, GetMapping.class);
+        if (getMapping != null) {
+            return new MappingAware(getMapping.value(), new RequestMethod[]{RequestMethod.GET}, getMapping.produces(), new String[0]);
+        }
+        PutMapping putMapping = AnnotationUtils.findAnnotation(method, PutMapping.class);
+        if (putMapping != null) {
+            return new MappingAware(putMapping.value(), new RequestMethod[]{RequestMethod.PUT}, putMapping.produces(), putMapping.consumes());
+        }
+        PostMapping postMapping = AnnotationUtils.findAnnotation(method, PostMapping.class);
+        if (postMapping != null) {
+            return new MappingAware(postMapping.value(), new RequestMethod[]{RequestMethod.POST}, postMapping.produces(), postMapping.consumes());
+        }
+        DeleteMapping deleteMapping = AnnotationUtils.findAnnotation(method, DeleteMapping.class);
+        if (deleteMapping != null) {
+            return new MappingAware(deleteMapping.value(), new RequestMethod[]{RequestMethod.DELETE}, deleteMapping.produces(), deleteMapping.consumes());
+        }
+        return null;
     }
 
     public Swagger read(SpringResource resource) {
@@ -96,7 +155,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
 
         for (String path : apiMethodMap.keySet()) {
             for (Method method : apiMethodMap.get(path)) {
-                RequestMapping requestMapping = AnnotationUtils.findAnnotation(method, RequestMapping.class);
+                MappingAware requestMapping = findSpringMapping(method);
                 if (requestMapping == null) {
                     continue;
                 }
@@ -310,12 +369,11 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
     }
 
 
-
     private Map<String, List<Method>> collectApisByRequestMapping(List<Method> methods) {
         Map<String, List<Method>> apiMethodMap = new HashMap<String, List<Method>>();
         for (Method method : methods) {
-            if (method.isAnnotationPresent(RequestMapping.class)) {
-                RequestMapping requestMapping = AnnotationUtils.findAnnotation(method, RequestMapping.class);
+            if (findSpringMapping(method) != null) {
+                MappingAware requestMapping = findSpringMapping(method);
                 String path;
                 if (requestMapping.value().length != 0) {
                     path = generateFullPath(requestMapping.value()[0]);
@@ -366,7 +424,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         // Iterate over all value attributes of the class-level RequestMapping annotation
         for (String controllerRequestMappingValue : controllerRequestMappingValues) {
             for (Method method : controllerClazz.getMethods()) {
-                RequestMapping methodRequestMapping = AnnotationUtils.findAnnotation(method, RequestMapping.class);
+                MappingAware methodRequestMapping = findSpringMapping(method);
 
                 // Look for method-level @RequestMapping annotation
                 if (methodRequestMapping != null) {
