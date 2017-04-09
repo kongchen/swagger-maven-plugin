@@ -22,7 +22,7 @@ import java.util.List;
  * Date: 3/7/13
  */
 @Mojo(name = "generate", defaultPhase = LifecyclePhase.COMPILE, configurator = "include-project-dependencies",
-        requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME)
+        requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME, threadSafe = true)
 public class ApiDocumentMojo extends AbstractMojo {
 
     /**
