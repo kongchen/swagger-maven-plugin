@@ -105,14 +105,13 @@ public class ModelModifier extends ModelResolver {
         for (Method method : cls.getDeclaredMethods()) {
             ApiModelProperty apiModelPropertyAnnotation = AnnotationUtils.findAnnotation(method, ApiModelProperty.class);
 
-            processAProperty(apiModelPropertyAnnotation, model);
+            processProperty(apiModelPropertyAnnotation, model);
         }
 
         for (Field field : FieldUtils.getAllFields(cls)) {
             ApiModelProperty apiModelPropertyAnnotation = AnnotationUtils.getAnnotation(field, ApiModelProperty.class);
 
-
-            processAProperty(apiModelPropertyAnnotation, model);
+            processProperty(apiModelPropertyAnnotation, model);
         }
 
         return model;
@@ -124,7 +123,7 @@ public class ModelModifier extends ModelResolver {
      * @param apiModelPropertyAnnotation annotation
      * @param model model with properties
      */
-    private void processAProperty(ApiModelProperty apiModelPropertyAnnotation, Model model) {
+    private void processProperty(ApiModelProperty apiModelPropertyAnnotation, Model model) {
         if (apiModelPropertyAnnotation == null) {
             return;
         }
