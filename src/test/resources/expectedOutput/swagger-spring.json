@@ -510,6 +510,26 @@
         } ]
       }
     },
+    "/pet/testingMergedAnnotations" : {
+      "get" : {
+        "tags" : [ "pet" ],
+        "summary" : "testingMergedAnnotations",
+        "description" : "",
+        "operationId" : "testingMergedAnnotations",
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "string"
+            }
+          }
+        },
+        "security" : [ {
+          "petstore_auth" : [ "write:pets", "read:pets" ]
+        } ]
+      }
+    },
     "/pet/testingVendorExtensions" : {
       "get" : {
         "tags" : [ "pet" ],
