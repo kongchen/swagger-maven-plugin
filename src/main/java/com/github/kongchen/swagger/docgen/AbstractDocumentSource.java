@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
+import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule.Priority;
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Helper;
 import com.github.jknack.handlebars.Options;
@@ -159,7 +160,17 @@ public abstract class AbstractDocumentSource {
     public void loadModelModifier() throws GenerateException, IOException {
         ObjectMapper objectMapper = Json.mapper();
         if (apiSource.isUseJAXBAnnotationProcessor()) {
-            objectMapper.registerModule(new JaxbAnnotationModule());
+            JaxbAnnotationModule jaxbAnnotationModule = new JaxbAnnotationModule();
+            if (apiSource.isUseJAXBAnnotationProcessorAsPrimary()) {
+                jaxbAnnotationModule.setPriority(Priority.PRIMARY);    
+            } else {
+                jaxbAnnotationModule.setPriority(Priority.SECONDARY);
+            }
+            objectMapper.registerModule(jaxbAnnotationModule);
+            
+            // to support @ApiModel on class level.
+            // must be registered only if we use JaxbAnnotationModule before. Why?
+            objectMapper.registerModule(new EnhancedSwaggerModule());
         }
         ModelModifier modelModifier = new ModelModifier(objectMapper);
 
