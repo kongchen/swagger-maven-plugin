@@ -5,11 +5,13 @@ import com.sun.jersey.core.header.FormDataContentDisposition;
 import io.swagger.annotations.ApiParam;
 import io.swagger.jaxrs.ext.AbstractSwaggerExtension;
 import io.swagger.jaxrs.ext.SwaggerExtension;
+import io.swagger.models.parameters.AbstractSerializableParameter;
 import io.swagger.models.parameters.Parameter;
 import io.swagger.models.parameters.SerializableParameter;
 import io.swagger.models.properties.PropertyBuilder;
 import io.swagger.util.AllowableValues;
 import io.swagger.util.AllowableValuesUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.TypeUtils;
 
 import javax.ws.rs.BeanParam;
@@ -82,6 +84,10 @@ public class BeanParamInjectParamExtention extends AbstractSwaggerExtension {
                     parameter.setRequired(param.required());
                     parameter.setAccess(param.access());
 
+                    if (parameter instanceof AbstractSerializableParameter && StringUtils.isNotEmpty(param.defaultValue())) {
+                        ((AbstractSerializableParameter)parameter).setDefaultValue(param.defaultValue());
+                    }
+
                     AllowableValues allowableValues = AllowableValuesUtils.create(param.allowableValues());
                     if (allowableValues != null) {
                         Map<PropertyBuilder.PropertyId, Object> args = allowableValues.asPropertyArguments();
@@ -133,7 +139,7 @@ public class BeanParamInjectParamExtention extends AbstractSwaggerExtension {
 
     private Type extractType(AccessibleObject accessibleObject, Type defaulType) {
         if (accessibleObject instanceof Field) {
-            return ((Field) accessibleObject).getType();
+            return ((Field) accessibleObject).getGenericType();
         } else if (accessibleObject instanceof Method) {
             Method method = (Method) accessibleObject;
             if (method.getParameterTypes().length == 1) {

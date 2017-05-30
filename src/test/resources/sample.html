@@ -173,6 +173,98 @@ This is a sample.
 
 
 
+## /myResourceImpl
+
+
+### GET
+
+<a id="getPetsById">Find pet(s) by ID</a>
+
+This is a contrived example
+
+
+
+
+
+
+
+#### Request
+
+
+
+##### Parameters
+
+<table border="1">
+    <tr>
+        <th>Name</th>
+        <th>Located in</th>
+        <th>Required</th>
+        <th>Description</th>
+        <th>Default</th>
+        <th>Schema</th>
+    </tr>
+
+
+
+<tr>
+    <th>startId</th>
+    <td>query</td>
+    <td>yes</td>
+    <td>start ID of pets that need to be fetched</td>
+    <td> - </td>
+
+
+            <td>integer (int64)</td>
+
+
+</tr>
+
+<tr>
+    <th>endId</th>
+    <td>query</td>
+    <td>yes</td>
+    <td>end ID of pets that need to be fetched</td>
+    <td> - </td>
+
+
+            <td>integer (int64)</td>
+
+
+</tr>
+
+
+</table>
+
+
+
+#### Response
+
+**Content-Type: ** application/json, application/xml
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 200    | successful operation | <a href="#/definitions/Pet">Pet</a>|
+| 400    | Invalid ID supplied |  - |
+| 404    | Pet not found |  - |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## /pet
 
 
@@ -269,8 +361,8 @@ This is a sample.
     <td> - </td>
 
     <td>
-    
-    <a href="#/definitions/Pet">Pet</a> 
+
+    <a href="#/definitions/Pet">Pet</a>
     </td>
 
 </tr>
@@ -282,7 +374,7 @@ This is a sample.
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 
 | Status Code | Reason      | Response Model |
@@ -344,8 +436,8 @@ This is a sample.
     <td> - </td>
 
     <td>
-    
-    <a href="#/definitions/Pet">Pet</a> 
+
+    <a href="#/definitions/Pet">Pet</a>
     </td>
 
 </tr>
@@ -357,7 +449,7 @@ This is a sample.
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 
 | Status Code | Reason      | Response Model |
@@ -427,9 +519,9 @@ Multiple status values can be provided with comma seperated strings
     <td>Status values that need to be considered for filter</td>
     <td> - </td>
 
-    
+
             <td>Array[string] (multi)</td>
-    
+
 
 </tr>
 
@@ -440,7 +532,7 @@ Multiple status values can be provided with comma seperated strings
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 
 | Status Code | Reason      | Response Model |
@@ -514,9 +606,9 @@ Muliple tags can be provided with comma seperated strings. Use tag1, tag2, tag3 
     <td>Tags to filter by</td>
     <td> - </td>
 
-    
+
             <td>Array[string] (multi)</td>
-    
+
 
 </tr>
 
@@ -527,7 +619,7 @@ Muliple tags can be provided with comma seperated strings. Use tag1, tag2, tag3 
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 
 | Status Code | Reason      | Response Model |
@@ -601,9 +693,9 @@ Muliple tags can be provided with comma seperated strings. Use tag1, tag2, tag3 
     <td>petName (**Pattern**: `[^/]*`)</td>
     <td> - </td>
 
-    
+
             <td>string </td>
-    
+
 
 </tr>
 
@@ -614,7 +706,7 @@ Muliple tags can be provided with comma seperated strings. Use tag1, tag2, tag3 
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 
 | Status Code | Reason      | Response Model |
@@ -688,9 +780,9 @@ Muliple tags can be provided with comma seperated strings. Use tag1, tag2, tag3 
     <td>describe Pet in json here</td>
     <td> - </td>
 
-    
+
             <td>string </td>
-    
+
 
 </tr>
 
@@ -774,9 +866,9 @@ Muliple tags can be provided with comma seperated strings. Use tag1, tag2, tag3 
     <td>header-test-value</td>
     <td> - </td>
 
-    
+
             <td>string </td>
-    
+
 
 </tr>
 
@@ -787,9 +879,9 @@ Muliple tags can be provided with comma seperated strings. Use tag1, tag2, tag3 
     <td>path-test-value</td>
     <td> - </td>
 
-    
+
             <td>string </td>
-    
+
 
 </tr>
 
@@ -801,8 +893,8 @@ Muliple tags can be provided with comma seperated strings. Use tag1, tag2, tag3 
     <td> - </td>
 
     <td>
-    
-    <a href="#/definitions/Pet">Pet</a> 
+
+    <a href="#/definitions/Pet">Pet</a>
     </td>
 
 </tr>
@@ -948,9 +1040,9 @@ Muliple tags can be provided with comma seperated strings. Use tag1, tag2, tag3 
     <td>form-test-value</td>
     <td> - </td>
 
-    
+
             <td>Array[string] (multi)</td>
-    
+
 
 </tr>
 
@@ -1022,7 +1114,7 @@ Muliple tags can be provided with comma seperated strings. Use tag1, tag2, tag3 
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 
 | Status Code | Reason      | Response Model |
@@ -1088,12 +1180,74 @@ Muliple tags can be provided with comma seperated strings. Use tag1, tag2, tag3 
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 
 | Status Code | Reason      | Response Model |
 |-------------|-------------|----------------|
 | 200    | successful operation | string|
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## /pet/test/testingVendorExtensions
+
+
+### GET
+
+<a id="testingVendorExtensions">testingVendorExtensions</a>
+
+
+
+
+
+
+#### Security
+
+
+
+
+* petstore_auth
+   * write:pets
+   * read:pets
+
+
+
+
+#### Request
+
+
+
+##### Parameters
+
+
+
+
+
+
+#### Response
+
+**Content-Type: ** application/json, application/xml
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 401    | Some vendor error description |  - |
+| default    | successful operation |  - |
 
 
 
@@ -1166,9 +1320,9 @@ Returns a pet when ID &lt; 10.  ID &gt; 10 or nonintegers will simulate API erro
     <td>ID of pet that needs to be fetched (**Pattern**: `[0-9]`)</td>
     <td> - </td>
 
-    
+
             <td>integer (int64)</td>
-    
+
 
 </tr>
 
@@ -1179,7 +1333,7 @@ Returns a pet when ID &lt; 10.  ID &gt; 10 or nonintegers will simulate API erro
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 
 | Status Code | Reason      | Response Model |
@@ -1242,9 +1396,9 @@ Returns a pet when ID &lt; 10.  ID &gt; 10 or nonintegers will simulate API erro
     <td>ID of pet that needs to be updated</td>
     <td> - </td>
 
-    
+
             <td>string </td>
-    
+
 
 </tr>
 
@@ -1255,9 +1409,9 @@ Returns a pet when ID &lt; 10.  ID &gt; 10 or nonintegers will simulate API erro
     <td>Updated name of the pet</td>
     <td> - </td>
 
-    
+
             <td>string </td>
-    
+
 
 </tr>
 
@@ -1268,9 +1422,9 @@ Returns a pet when ID &lt; 10.  ID &gt; 10 or nonintegers will simulate API erro
     <td>Updated status of the pet</td>
     <td> - </td>
 
-    
+
             <td>string </td>
-    
+
 
 </tr>
 
@@ -1281,9 +1435,9 @@ Returns a pet when ID &lt; 10.  ID &gt; 10 or nonintegers will simulate API erro
     <td></td>
     <td> - </td>
 
-    
+
             <td>string </td>
-    
+
 
 </tr>
 
@@ -1301,40 +1455,40 @@ Returns a pet when ID &lt; 10.  ID &gt; 10 or nonintegers will simulate API erro
 </tr>
 
 <tr>
+    <th>listValue</th>
+    <td>query</td>
+    <td>no</td>
+    <td></td>
+    <td> - </td>
+
+
+            <td>Array[string] (multi)</td>
+
+
+</tr>
+
+<tr>
+    <th>testIntegerAllowableValues</th>
+    <td>query</td>
+    <td>no</td>
+    <td>testIntegerAllowableValues</td>
+    <td> - </td>
+
+    
+            <td>integer (int32)</td>
+    
+
+</tr>
+
+<tr>
     <th>myParentHeader</th>
     <td>header</td>
     <td>no</td>
     <td>Header from parent</td>
     <td> - </td>
 
-    
-            <td>string </td>
-    
-
-</tr>
-
-<tr>
-    <th>myHeaderOnMethod</th>
-    <td>header</td>
-    <td>no</td>
-    <td>Header annotated on method</td>
-    <td> - </td>
-
 
             <td>string </td>
-
-
-</tr>
-
-<tr>
-    <th>myLongHeaderOnMethod</th>
-    <td>header</td>
-    <td>no</td>
-    <td>Long header annotated on method</td>
-    <td> - </td>
-
-
-    <td>integer (int64)</td>
 
 
 </tr>
@@ -1346,7 +1500,7 @@ Returns a pet when ID &lt; 10.  ID &gt; 10 or nonintegers will simulate API erro
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 
 | Status Code | Reason      | Response Model |
@@ -1404,9 +1558,9 @@ Returns a pet when ID &lt; 10.  ID &gt; 10 or nonintegers will simulate API erro
     <td></td>
     <td> - </td>
 
-    
+
             <td>string </td>
-    
+
 
 </tr>
 
@@ -1417,9 +1571,9 @@ Returns a pet when ID &lt; 10.  ID &gt; 10 or nonintegers will simulate API erro
     <td>Pet id to delete</td>
     <td> - </td>
 
-    
+
             <td>integer (int64)</td>
-    
+
 
 </tr>
 
@@ -1430,7 +1584,7 @@ Returns a pet when ID &lt; 10.  ID &gt; 10 or nonintegers will simulate API erro
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 
 | Status Code | Reason      | Response Model |
@@ -1503,9 +1657,9 @@ Returns a pet when ID &lt; 10.  ID &gt; 10 or nonintegers will simulate API erro
     <td>ID of pet that needs to be updated</td>
     <td> - </td>
 
-    
+
             <td>string </td>
-    
+
 
 </tr>
 
@@ -1516,9 +1670,9 @@ Returns a pet when ID &lt; 10.  ID &gt; 10 or nonintegers will simulate API erro
     <td>Updated name of the pet</td>
     <td> - </td>
 
-    
+
             <td>string </td>
-    
+
 
 </tr>
 
@@ -1529,9 +1683,9 @@ Returns a pet when ID &lt; 10.  ID &gt; 10 or nonintegers will simulate API erro
     <td>Updated status of the pet</td>
     <td> - </td>
 
-    
+
             <td>string </td>
-    
+
 
 </tr>
 
@@ -1542,9 +1696,9 @@ Returns a pet when ID &lt; 10.  ID &gt; 10 or nonintegers will simulate API erro
     <td></td>
     <td> - </td>
 
-    
+
             <td>string </td>
-    
+
 
 </tr>
 
@@ -1562,40 +1716,40 @@ Returns a pet when ID &lt; 10.  ID &gt; 10 or nonintegers will simulate API erro
 </tr>
 
 <tr>
+    <th>listValue</th>
+    <td>query</td>
+    <td>no</td>
+    <td></td>
+    <td> - </td>
+
+
+             <td>Array[string] (multi)</td>
+
+
+</tr>
+
+<tr>
+    <th>testIntegerAllowableValues</th>
+    <td>query</td>
+    <td>no</td>
+    <td>testIntegerAllowableValues</td>
+    <td> - </td>
+
+    
+            <td>integer (int32)</td>
+    
+
+</tr>
+
+<tr>
     <th>myParentHeader</th>
     <td>header</td>
     <td>no</td>
     <td>Header from parent</td>
     <td> - </td>
 
-    
-            <td>string </td>
-    
-
-</tr>
-
-<tr>
-    <th>myHeaderOnMethod</th>
-    <td>header</td>
-    <td>no</td>
-    <td>Header annotated on method</td>
-    <td> - </td>
-
 
             <td>string </td>
-
-
-</tr>
-
-<tr>
-    <th>myLongHeaderOnMethod</th>
-    <td>header</td>
-    <td>no</td>
-    <td>Long header annotated on method</td>
-    <td> - </td>
-
-
-    <td>integer (int64)</td>
 
 
 </tr>
@@ -1607,7 +1761,7 @@ Returns a pet when ID &lt; 10.  ID &gt; 10 or nonintegers will simulate API erro
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 
 | Status Code | Reason      | Response Model |
@@ -1682,9 +1836,9 @@ This is a contrived example of a path segment containing multiple path parameter
     <td>start ID of pets that need to be fetched (**Pattern**: `[0-9]{1,2}`)</td>
     <td> - </td>
 
-    
+
             <td>integer (int64)</td>
-    
+
 
 </tr>
 
@@ -1695,9 +1849,9 @@ This is a contrived example of a path segment containing multiple path parameter
     <td>end ID of pets that need to be fetched (**Pattern**: `[0-9]{1,2}`)</td>
     <td> - </td>
 
-    
+
             <td>integer (int64)</td>
-    
+
 
 </tr>
 
@@ -1708,7 +1862,7 @@ This is a contrived example of a path segment containing multiple path parameter
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 
 | Status Code | Reason      | Response Model |
@@ -1780,8 +1934,8 @@ This is a contrived example of a path segment containing multiple path parameter
     <td> - </td>
 
     <td>
-    
-    <a href="#/definitions/Order">Order</a> 
+
+    <a href="#/definitions/Order">Order</a>
     </td>
 
 </tr>
@@ -1793,7 +1947,7 @@ This is a contrived example of a path segment containing multiple path parameter
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 
 | Status Code | Reason      | Response Model |
@@ -1855,9 +2009,9 @@ For valid response try integer IDs with value &lt;= 5 or &gt; 10. Other values w
     <td>ID of pet that needs to be fetched</td>
     <td> - </td>
 
-    
+
             <td>string </td>
-    
+
 
 </tr>
 
@@ -1868,7 +2022,7 @@ For valid response try integer IDs with value &lt;= 5 or &gt; 10. Other values w
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 
 | Status Code | Reason      | Response Model |
@@ -1922,9 +2076,9 @@ For valid response try integer IDs with value &lt; 1000. Anything above 1000 or 
     <td>ID of the order that needs to be deleted</td>
     <td> - </td>
 
-    
+
             <td>string </td>
-    
+
 
 </tr>
 
@@ -1935,13 +2089,92 @@ For valid response try integer IDs with value &lt; 1000. Anything above 1000 or 
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 
 | Status Code | Reason      | Response Model |
 |-------------|-------------|----------------|
 | 400    | Invalid ID supplied |  - |
 | 404    | Order not found |  - |
+
+
+
+
+
+
+
+
+
+
+
+
+## /store/orders/{orderIds}
+
+
+### GET
+
+<a id="getOrdersById">Find multiple purchase orders by IDs</a>
+
+For valid response try integer IDs with value &lt;= 5 or &gt; 10. Other values will generated exceptions
+
+
+
+
+
+
+
+#### Request
+
+
+
+##### Parameters
+
+<table border="1">
+    <tr>
+        <th>Name</th>
+        <th>Located in</th>
+        <th>Required</th>
+        <th>Description</th>
+        <th>Default</th>
+        <th>Schema</th>
+    </tr>
+
+
+
+<tr>
+    <th>orderIds</th>
+    <td>path</td>
+    <td>yes</td>
+    <td>IDs of pets that needs to be fetched</td>
+    <td> - </td>
+
+
+            <td>Array[string] (csv)</td>
+
+
+</tr>
+
+
+</table>
+
+
+
+#### Response
+
+**Content-Type: ** application/json, application/xml
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 200    | successful operation | Array[<a href="#/definitions/Order">Order</a>]|
+| 400    | Invalid ID supplied |  - |
+| 404    | Order not found |  - |
+
+
+
+
+
+
 
 
 
@@ -1982,7 +2215,7 @@ For valid response try integer IDs with value &lt; 1000. Anything above 1000 or 
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 
 | Status Code | Reason      | Response Model |
@@ -2039,7 +2272,7 @@ For valid response try integer IDs with value &lt; 1000. Anything above 1000 or 
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 
 | Status Code | Reason      | Response Model |
@@ -2090,7 +2323,7 @@ For valid response try integer IDs with value &lt; 1000. Anything above 1000 or 
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 
 | Status Code | Reason      | Response Model |
@@ -2158,8 +2391,8 @@ This can only be done by the logged in user.
     <td> - </td>
 
     <td>
-    
-    <a href="#/definitions/User">User</a> 
+
+    <a href="#/definitions/User">User</a>
     </td>
 
 </tr>
@@ -2171,7 +2404,7 @@ This can only be done by the logged in user.
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 
 | Status Code | Reason      | Response Model |
@@ -2239,7 +2472,7 @@ This can only be done by the logged in user.
 
     <td>
     Array[<a href="#/definitions/User">User</a>]
-    
+
     </td>
 
 </tr>
@@ -2251,7 +2484,7 @@ This can only be done by the logged in user.
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 
 | Status Code | Reason      | Response Model |
@@ -2319,7 +2552,7 @@ This can only be done by the logged in user.
 
     <td>
     Array[<a href="#/definitions/User">User</a>]
-    
+
     </td>
 
 </tr>
@@ -2331,7 +2564,7 @@ This can only be done by the logged in user.
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 
 | Status Code | Reason      | Response Model |
@@ -2392,9 +2625,9 @@ This can only be done by the logged in user.
     <td>The user name for login</td>
     <td> - </td>
 
-    
+
             <td>string </td>
-    
+
 
 </tr>
 
@@ -2405,9 +2638,9 @@ This can only be done by the logged in user.
     <td>The password for login in clear text</td>
     <td> - </td>
 
-    
+
             <td>string </td>
-    
+
 
 </tr>
 
@@ -2418,7 +2651,7 @@ This can only be done by the logged in user.
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 
 | Status Code | Reason      | Response Model |
@@ -2471,7 +2704,7 @@ This can only be done by the logged in user.
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 
 | Status Code | Reason      | Response Model |
@@ -2535,9 +2768,9 @@ This can only be done by the logged in user.
     <td>The name that needs to be fetched. Use user1 for testing. </td>
     <td> - </td>
 
-    
+
             <td>string </td>
-    
+
 
 </tr>
 
@@ -2548,7 +2781,7 @@ This can only be done by the logged in user.
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 
 | Status Code | Reason      | Response Model |
@@ -2598,9 +2831,9 @@ This can only be done by the logged in user.
     <td>name that need to be deleted</td>
     <td> - </td>
 
-    
+
             <td>string </td>
-    
+
 
 </tr>
 
@@ -2612,8 +2845,8 @@ This can only be done by the logged in user.
     <td> - </td>
 
     <td>
-    
-    <a href="#/definitions/User">User</a> 
+
+    <a href="#/definitions/User">User</a>
     </td>
 
 </tr>
@@ -2625,7 +2858,7 @@ This can only be done by the logged in user.
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 
 | Status Code | Reason      | Response Model |
@@ -2676,9 +2909,9 @@ This can only be done by the logged in user.
     <td>The name that needs to be deleted</td>
     <td> - </td>
 
-    
+
             <td>string </td>
-    
+
 
 </tr>
 
@@ -2689,7 +2922,7 @@ This can only be done by the logged in user.
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 
 | Status Code | Reason      | Response Model |
@@ -2721,33 +2954,33 @@ This can only be done by the logged in user.
         <th>description</th>
         <th>example</th>
     </tr>
-    
+
         <tr>
             <td>id</td>
             <td>
-                
-                    
+
+
                     integer (int64)
-                
+
             </td>
             <td>optional</td>
             <td>-</td>
             <td></td>
         </tr>
-    
+
         <tr>
             <td>name</td>
             <td>
-                
-                    
+
+
                     string
-                
+
             </td>
             <td>optional</td>
             <td>-</td>
             <td></td>
         </tr>
-    
+
 </table>
 
 ## <a name="/definitions/Order">Order</a>
@@ -2760,85 +2993,98 @@ This can only be done by the logged in user.
         <th>description</th>
         <th>example</th>
     </tr>
-    
+
         <tr>
             <td>id</td>
             <td>
-                
-                    
+
+
                     integer (int64)
-                
+
             </td>
             <td>optional</td>
             <td>-</td>
             <td></td>
         </tr>
-    
+
         <tr>
             <td>petId</td>
             <td>
-                
-                    
+
+
                     integer (int64)
-                
+
             </td>
             <td>optional</td>
             <td>-</td>
             <td></td>
         </tr>
-    
+
         <tr>
             <td>quantity</td>
             <td>
-                
-                    
+
+
                     integer (int32)
-                
+
             </td>
             <td>optional</td>
             <td>-</td>
             <td></td>
         </tr>
-    
+
         <tr>
             <td>shipDate</td>
             <td>
-                
-                    
+
+
                     string (date-time)
-                
+
             </td>
             <td>optional</td>
             <td>-</td>
             <td></td>
         </tr>
-    
+
         <tr>
             <td>status</td>
             <td>
-                
-                    
+
+
                     string
-                
+
             </td>
             <td>optional</td>
             <td>Order Status</td>
             <td></td>
         </tr>
-    
+
         <tr>
             <td>complete</td>
             <td>
-                
-                    
+
+
                     boolean
-                
+
             </td>
             <td>optional</td>
             <td>-</td>
             <td></td>
         </tr>
-    
+
+        <tr>
+            <td>optionalStatus</td>
+            <td>
+
+
+                string
+
+            </td>
+            <td>optional</td>
+            <td>-</td>
+            <td></td>
+        </tr>
+
 </table>
 
 ## <a name="/definitions/Pet">Pet</a>
@@ -2851,87 +3097,87 @@ This can only be done by the logged in user.
         <th>description</th>
         <th>example</th>
     </tr>
-    
+
         <tr>
             <td>id</td>
             <td>
-                
-                    
+
+
                     integer
-                
+
             </td>
             <td>optional</td>
             <td>-</td>
             <td></td>
         </tr>
-    
+
         <tr>
             <td>category</td>
             <td>
-                
+
                     <a href="#/definitions/Category">Category</a>
-                    
-                
+
+
             </td>
             <td>optional</td>
             <td>-</td>
             <td></td>
         </tr>
-    
+
         <tr>
             <td>name</td>
             <td>
-                
-                    
+
+
                     string
-                
+
             </td>
             <td>required</td>
             <td>-</td>
             <td>doggie</td>
         </tr>
-    
+
         <tr>
             <td>photoUrls</td>
             <td>
-                
-                
+
+
                 array[string]
-                
+
             </td>
             <td>required</td>
             <td>-</td>
             <td></td>
         </tr>
-    
+
         <tr>
             <td>tags</td>
             <td>
-                
-                
+
+
                     array[<a href="#/definitions/Tag">Tag</a>]
-                
-                
-                
+
+
+
             </td>
             <td>optional</td>
             <td>-</td>
             <td></td>
         </tr>
-    
+
         <tr>
             <td>status</td>
             <td>
-                
-                    
+
+
                     string
-                
+
             </td>
             <td>optional</td>
             <td>pet status in the store</td>
             <td></td>
         </tr>
-    
+
 </table>
 
 ## <a name="/definitions/Tag">Tag</a>
@@ -2944,33 +3190,33 @@ This can only be done by the logged in user.
         <th>description</th>
         <th>example</th>
     </tr>
-    
+
         <tr>
             <td>id</td>
             <td>
-                
-                    
+
+
                     integer (int64)
-                
+
             </td>
             <td>optional</td>
             <td>-</td>
             <td></td>
         </tr>
-    
+
         <tr>
             <td>name</td>
             <td>
-                
-                    
+
+
                     string
-                
+
             </td>
             <td>optional</td>
             <td>-</td>
             <td></td>
         </tr>
-    
+
 </table>
 
 ## <a name="/definitions/User">User</a>
@@ -2983,111 +3229,111 @@ This can only be done by the logged in user.
         <th>description</th>
         <th>example</th>
     </tr>
-    
+
         <tr>
             <td>id</td>
             <td>
-                
-                    
+
+
                     integer (int64)
-                
+
             </td>
             <td>optional</td>
             <td>-</td>
             <td></td>
         </tr>
-    
+
         <tr>
             <td>username</td>
             <td>
-                
-                    
+
+
                     string
-                
+
             </td>
             <td>optional</td>
             <td>-</td>
             <td></td>
         </tr>
-    
+
         <tr>
             <td>firstName</td>
             <td>
-                
-                    
+
+
                     string
-                
+
             </td>
             <td>optional</td>
             <td>-</td>
             <td></td>
         </tr>
-    
+
         <tr>
             <td>lastName</td>
             <td>
-                
-                    
+
+
                     string
-                
+
             </td>
             <td>optional</td>
             <td>-</td>
             <td></td>
         </tr>
-    
+
         <tr>
             <td>email</td>
             <td>
-                
-                    
+
+
                     string
-                
+
             </td>
             <td>optional</td>
             <td>-</td>
             <td></td>
         </tr>
-    
+
         <tr>
             <td>password</td>
             <td>
-                
-                    
+
+
                     string
-                
+
             </td>
             <td>optional</td>
             <td>-</td>
             <td></td>
         </tr>
-    
+
         <tr>
             <td>phone</td>
             <td>
-                
-                    
+
+
                     string
-                
+
             </td>
             <td>optional</td>
             <td>-</td>
             <td></td>
         </tr>
-    
+
         <tr>
             <td>userStatus</td>
             <td>
-                
-                    
+
+
                     integer (int32)
-                
+
             </td>
             <td>optional</td>
             <td>User Status</td>
             <td>2</td>
         </tr>
-    
+
 </table>
 
 

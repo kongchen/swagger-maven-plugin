@@ -1,6 +1,5 @@
 package com.github.kongchen.swagger.docgen.reader;
 
-import com.github.kongchen.swagger.docgen.LogAdapter;
 import com.github.kongchen.swagger.docgen.jaxrs.BeanParamInjectParamExtention;
 import com.github.kongchen.swagger.docgen.jaxrs.JaxrsParameterExtension;
 import com.github.kongchen.swagger.docgen.spring.SpringSwaggerExtension;
@@ -43,12 +42,14 @@ import io.swagger.models.properties.RefProperty;
 import io.swagger.util.ParameterProcessor;
 import io.swagger.util.PathUtils;
 import org.apache.commons.lang3.reflect.TypeUtils;
+import org.apache.maven.plugin.logging.Log;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 
 import javax.ws.rs.BeanParam;
 import javax.ws.rs.FormParam;
@@ -74,7 +75,7 @@ import java.util.Set;
  * @author chekong on 15/4/28.
  */
 public abstract class AbstractReader {
-    protected final LogAdapter LOG;
+    protected final Log LOG;
     protected Swagger swagger;
     private Set<Type> typesToSkip = new HashSet<Type>();
 
@@ -94,7 +95,7 @@ public abstract class AbstractReader {
         this.typesToSkip.add(type);
     }
 
-    public AbstractReader(Swagger swagger, LogAdapter LOG) {
+    public AbstractReader(Swagger swagger, Log LOG) {
         this.swagger = swagger;
         this.LOG = LOG;
         updateExtensionChain();
@@ -346,11 +347,11 @@ public abstract class AbstractReader {
     }
 
     private boolean hasValidAnnotations(List<Annotation> parameterAnnotations) {
-        // Because method parameters can contain parameters that are valid, but 
-        // not part of the API contract, first check to make sure the parameter 
-        // has at lease one annotation before processing it.  Also, check a 
-        // whitelist to make sure that the annotation of the parameter is 
-        // compatible with spring-maven-plugin 
+        // Because method parameters can contain parameters that are valid, but
+        // not part of the API contract, first check to make sure the parameter
+        // has at lease one annotation before processing it.  Also, check a
+        // whitelist to make sure that the annotation of the parameter is
+        // compatible with spring-maven-plugin
 
         List<Type> validParameterAnnotations = new ArrayList<Type>();
         validParameterAnnotations.add(ModelAttribute.class);
@@ -365,6 +366,7 @@ public abstract class AbstractReader {
         validParameterAnnotations.add(RequestBody.class);
         validParameterAnnotations.add(PathVariable.class);
         validParameterAnnotations.add(RequestHeader.class);
+        validParameterAnnotations.add(RequestPart.class);
 
 
         boolean hasValidAnnotation = false;
@@ -386,21 +388,20 @@ public abstract class AbstractReader {
         Iterator<SwaggerExtension> chain = SwaggerExtensions.chain();
         List<Parameter> parameters = new ArrayList<Parameter>();
         Class<?> cls = TypeUtils.getRawType(type, type);
-        LOG.info("Looking for path/query/header/form/cookie params in " + cls);
+        LOG.debug("Looking for path/query/header/form/cookie params in " + cls);
 
         if (chain.hasNext()) {
             SwaggerExtension extension = chain.next();
-            LOG.info("trying extension " + extension);
+            LOG.debug("trying extension " + extension);
             parameters = extension.extractParameters(annotations, type, typesToSkip, chain);
         }
 
         if (!parameters.isEmpty()) {
             for (Parameter parameter : parameters) {
                 ParameterProcessor.applyAnnotations(swagger, parameter, type, annotations);
-                parameter = fixCollectionFormatForArrayTypes(cls, parameter);
             }
         } else {
-            LOG.info("Looking for body params in " + cls);
+            LOG.debug("Looking for body params in " + cls);
             if (!typesToSkip.contains(type)) {
                 Parameter param = ParameterProcessor.applyAnnotations(swagger, null, type, annotations);
                 if (param != null) {
@@ -409,28 +410,6 @@ public abstract class AbstractReader {
             }
         }
         return parameters;
-    }
-
-    private Parameter fixCollectionFormatForArrayTypes(Class<?> cls, Parameter parameter) {
-
-        // This is a workaround until the following swagger-core bug is fixed:
-        // https://github.com/swagger-api/swagger-core/issues/1160
-        // The collectionFormat for array-typed items is returning as "csv", even
-        // in cases where a csv string does not apply. In these cases, we need to
-        // re-set the type back to "multi".
-
-        if (parameter instanceof AbstractSerializableParameter) {
-            final AbstractSerializableParameter<?> p = (AbstractSerializableParameter<?>) parameter;
-
-            // Check to see if the if the parameter has items. If it does, it's an array type.
-            // If the collectionFormat is "csv", and the java type is Collection or Array, we need to change it to "multi" and re-define the parameter.
-            if (p.getItems() != null && p.getCollectionFormat().equals("csv") && (Collection.class.isAssignableFrom(cls) || cls.isArray())) {
-                p.collectionFormat("multi");
-                parameter = p;
-            }
-        }
-
-        return parameter;
     }
 
     protected void updateApiResponse(Operation operation, ApiResponses responseAnnotation) {
@@ -485,10 +464,10 @@ public abstract class AbstractReader {
 
     protected String[] updateOperationProduces(String[] parentProduces, String[] apiProduces, Operation operation) {
         if (parentProduces != null) {
-            Set<String> both = new HashSet<String>(Arrays.asList(apiProduces));
+            Set<String> both = new LinkedHashSet<String>(Arrays.asList(apiProduces));
             both.addAll(Arrays.asList(parentProduces));
             if (operation.getProduces() != null) {
-                both.addAll(new HashSet<String>(operation.getProduces()));
+                both.addAll(operation.getProduces());
             }
             apiProduces = both.toArray(new String[both.size()]);
         }
@@ -497,7 +476,7 @@ public abstract class AbstractReader {
 
     protected String[] updateOperationConsumes(String[] parentConsumes, String[] apiConsumes, Operation operation) {
         if (parentConsumes != null) {
-            Set<String> both = new HashSet<String>(Arrays.asList(apiConsumes));
+            Set<String> both = new LinkedHashSet<String>(Arrays.asList(apiConsumes));
             both.addAll(Arrays.asList(parentConsumes));
             if (operation.getConsumes() != null) {
                 both.addAll(operation.getConsumes());
@@ -544,6 +523,14 @@ public abstract class AbstractReader {
         }
 
         return ParameterProcessor.applyAnnotations(swagger, parameter, apiClass, Arrays.asList(new Annotation[]{param}));
+    }
+
+    void processOperationDecorator(Operation operation, Method method) {
+        final Iterator<SwaggerExtension> chain = SwaggerExtensions.chain();
+        if (chain.hasNext()) {
+            SwaggerExtension extension = chain.next();
+            extension.decorateOperation(operation, method, chain);
+        }
     }
 
 }

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
+import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule.Priority;
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Helper;
 import com.github.jknack.handlebars.Options;
@@ -27,15 +28,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugin.logging.Log;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
@@ -49,7 +44,7 @@ import java.util.List;
  */
 public abstract class AbstractDocumentSource {
     protected final ApiSource apiSource;
-    protected final LogAdapter LOG;
+    protected final Log LOG;
     protected final List<Type> typesToSkip = new ArrayList<Type>();
     protected Swagger swagger;
     protected String swaggerSchemaConverter;
@@ -60,8 +55,9 @@ public abstract class AbstractDocumentSource {
     private final boolean jsonExampleValues;
     private ObjectMapper mapper = new ObjectMapper();
     private boolean isSorted = false;
+    protected String encoding = "UTF-8";
 
-    public AbstractDocumentSource(LogAdapter log, ApiSource apiSource) throws MojoFailureException {
+    public AbstractDocumentSource(Log log, ApiSource apiSource) throws MojoFailureException {
         LOG = log;
         this.outputPath = apiSource.getOutputPath();
         this.templatePath = apiSource.getTemplatePath();
@@ -96,12 +92,12 @@ public abstract class AbstractDocumentSource {
 
 
     public abstract void loadDocuments() throws GenerateException;
-    
-    public void toSwaggerDocuments(String uiDocBasePath, String outputFormats) throws GenerateException {
-        toSwaggerDocuments(uiDocBasePath, outputFormats, null);
+
+    public void toSwaggerDocuments(String uiDocBasePath, String outputFormats, String encoding) throws GenerateException {
+        toSwaggerDocuments(uiDocBasePath, outputFormats, null, encoding);
     }
 
-    public void toSwaggerDocuments(String uiDocBasePath, String outputFormats, String fileName) throws GenerateException {
+    public void toSwaggerDocuments(String uiDocBasePath, String outputFormats, String fileName, String encoding) throws GenerateException {
         mapper.configure(SerializationFeature.WRITE_EMPTY_JSON_ARRAYS, false);
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
@@ -128,7 +124,7 @@ public abstract class AbstractDocumentSource {
                 throw new GenerateException(String.format("Create Swagger-outputDirectory[%s] failed.", swaggerPath));
             }
         }
-        cleanupOlds(dir, outputFormats);
+
         if (fileName == null || "".equals(fileName.trim())) {
             fileName = "swagger";
         }
@@ -140,10 +136,11 @@ public abstract class AbstractDocumentSource {
                         switch (output) {
                             case json:
                                 ObjectWriter jsonWriter = mapper.writer(new DefaultPrettyPrinter());
-                                FileUtils.write(new File(dir, fileName + ".json"), jsonWriter.writeValueAsString(swagger));
+                                LOG.info(jsonWriter.writeValueAsString(swagger));
+                                FileUtils.write(new File(dir, fileName + ".json"), jsonWriter.writeValueAsString(swagger), encoding);
                                 break;
                             case yaml:
-                                FileUtils.write(new File(dir, fileName + ".yaml"), Yaml.pretty().writeValueAsString(swagger));
+                                FileUtils.write(new File(dir, fileName + ".yaml"), Yaml.pretty().writeValueAsString(swagger), encoding);
                                 break;
                         }
                     } catch (Exception e) {
@@ -153,7 +150,7 @@ public abstract class AbstractDocumentSource {
             } else {
                 // Default to json
                 ObjectWriter jsonWriter = mapper.writer(new DefaultPrettyPrinter());
-                FileUtils.write(new File(dir, fileName + ".json"), jsonWriter.writeValueAsString(swagger));
+                FileUtils.write(new File(dir, fileName + ".json"), jsonWriter.writeValueAsString(swagger), encoding);
             }
         } catch (IOException e) {
             throw new GenerateException(e);
@@ -163,8 +160,17 @@ public abstract class AbstractDocumentSource {
     public void loadModelModifier() throws GenerateException, IOException {
         ObjectMapper objectMapper = Json.mapper();
         if (apiSource.isUseJAXBAnnotationProcessor()) {
-            objectMapper.registerModule(new JaxbAnnotationModule());
-            objectMapper.registerModule(new JaxbAnnotationModule());
+            JaxbAnnotationModule jaxbAnnotationModule = new JaxbAnnotationModule();
+            if (apiSource.isUseJAXBAnnotationProcessorAsPrimary()) {
+                jaxbAnnotationModule.setPriority(Priority.PRIMARY);    
+            } else {
+                jaxbAnnotationModule.setPriority(Priority.SECONDARY);
+            }
+            objectMapper.registerModule(jaxbAnnotationModule);
+            
+            // to support @ApiModel on class level.
+            // must be registered only if we use JaxbAnnotationModule before. Why?
+            objectMapper.registerModule(new EnhancedSwaggerModule());
         }
         ModelModifier modelModifier = new ModelModifier(objectMapper);
 
@@ -236,19 +242,6 @@ public abstract class AbstractDocumentSource {
                 this.typesToSkip.add(type);
             } catch (ClassNotFoundException e) {
                 throw new GenerateException(e);
-            }
-        }
-    }
-
-
-    private void cleanupOlds(File dir, String outputFormats) {
-        if (dir.listFiles() != null && outputFormats != null) {
-            for (String format : outputFormats.split(",")) {
-                for (File f : dir.listFiles()) {
-                    if (f.getName().endsWith(format.toLowerCase())) {
-                        f.delete();
-                    }
-                }
             }
         }
     }
@@ -369,7 +362,7 @@ public abstract class AbstractDocumentSource {
             LOG.info("Reading custom API reader: " + customReaderClassName);
             Class<?> clazz = Class.forName(customReaderClassName);
             if (AbstractReader.class.isAssignableFrom(clazz)) {
-                Constructor<?> constructor = clazz.getConstructor(Swagger.class, LogAdapter.class);
+                Constructor<?> constructor = clazz.getConstructor(Swagger.class, Log.class);
                 return (ClassSwaggerReader) constructor.newInstance(swagger, LOG);
             } else {
                 return (ClassSwaggerReader) clazz.newInstance();

@@ -60,7 +60,7 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
 
     @Test
     public void testGeneratedSwaggerSpecJson() throws Exception {
-        assertGeneratedSwaggerSpecJson("This is a sample.", "/expectedOutput/swagger.json");
+        executeAndAssertGeneratedSwaggerSpecJson("This is a sample.", "/expectedOutput/swagger.json");
     }
 
     @Test
@@ -71,7 +71,7 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
     @Test
     public void testSwaggerCustomReaderJson() throws Exception {
         setCustomReader(mojo, "com.wordnik.jaxrs.CustomJaxrsReader");
-        assertGeneratedSwaggerSpecJson("Processed with CustomJaxrsReader", "/expectedOutput/swagger.json");
+        executeAndAssertGeneratedSwaggerSpecJson("Processed with CustomJaxrsReader", "/expectedOutput/swagger.json");
     }
 
     @Test
@@ -222,14 +222,46 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
         }
     }
 
-    private void assertGeneratedSwaggerSpecJson(String description, String expectedOutput) throws MojoExecutionException, MojoFailureException, IOException {
+    @Test
+    public void testCustomModelConverterYaml() throws MojoFailureException, MojoExecutionException, IOException {
+        mojo.getApiSources().get(0).setModelConverters(ImmutableList.of(PetIdToStringModelConverter.class.getName()));
+
+        assertGeneratedSwaggerSpecYaml("This is a sample.", "/expectedOutput/swagger-with-converter.yaml");
+    }
+
+    @Test
+    public void testCustomModelConverterJson() throws MojoFailureException, MojoExecutionException, IOException {
+        mojo.getApiSources().get(0).setModelConverters(ImmutableList.of(PetIdToStringModelConverter.class.getName()));
+
+        executeAndAssertGeneratedSwaggerSpecJson("This is a sample.", "/expectedOutput/swagger-with-converter.json");
+    }
+
+    @Test
+    public void testMultipleApiSourcesWithDifferentArtifactName() throws Exception {
+        File testPom = new File(getBasedir(), "src/test/resources/plugin-config-multiple-api-sources.xml");
+        mojo = (ApiDocumentMojo) lookupMojo("generate", testPom);
         mojo.execute();
 
-        JsonNode actualJson = mapper.readTree(new File(swaggerOutputDir, "swagger.json"));
+        assertTrue(new File(swaggerOutputDir, "custom-file-name-one.json").exists());
+        assertGeneratedSwaggerSpecJson("This is a sample.", "/expectedOutput/swagger.json", "custom-file-name-one.json");
+        assertTrue(new File(swaggerOutputDir, "custom-file-name-two.json").exists());
+        assertGeneratedSwaggerSpecJson("This is a sample.", "/expectedOutput/swagger.json", "custom-file-name-two.json");
+        assertTrue(new File(swaggerOutputDir, "swagger.json").exists());
+        assertGeneratedSwaggerSpecJson("This is a sample.", "/expectedOutput/swagger.json", "swagger.json");
+    }
+
+    private void assertGeneratedSwaggerSpecJson(String description, String expectedOutput, String generatedFileName) throws IOException {
+        JsonNode actualJson = mapper.readTree(new File(swaggerOutputDir, generatedFileName));
         JsonNode expectJson = mapper.readTree(this.getClass().getResourceAsStream(expectedOutput));
 
         changeDescription(expectJson, description);
         assertJsonEquals(expectJson, actualJson, Configuration.empty().when(IGNORING_ARRAY_ORDER));
+    }
+
+
+    private void executeAndAssertGeneratedSwaggerSpecJson(String description, String expectedOutput) throws MojoExecutionException, MojoFailureException, IOException {
+        mojo.execute();
+        assertGeneratedSwaggerSpecJson(description, expectedOutput, "swagger.json");
     }
 
     private void assertGeneratedSwaggerSpecYaml(String description, String expectedOutput) throws MojoExecutionException, MojoFailureException, IOException {
@@ -246,20 +278,6 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
 
         changeDescription(expectJson, description);
         assertJsonEquals(expectJson, actualJson, Configuration.empty().when(IGNORING_ARRAY_ORDER));
-    }
-
-    @Test
-    public void testCustomModelConverterYaml() throws MojoFailureException, MojoExecutionException, IOException {
-        mojo.getApiSources().get(0).setModelConverters(ImmutableList.of(PetIdToStringModelConverter.class.getName()));
-
-        assertGeneratedSwaggerSpecYaml("This is a sample.", "/expectedOutput/swagger-with-converter.yaml");
-    }
-
-    @Test
-    public void testCustomModelConverterJson() throws MojoFailureException, MojoExecutionException, IOException {
-        mojo.getApiSources().get(0).setModelConverters(ImmutableList.of(PetIdToStringModelConverter.class.getName()));
-
-        assertGeneratedSwaggerSpecJson("This is a sample.", "/expectedOutput/swagger-with-converter.json");
     }
 
 }

@@ -16,6 +16,7 @@
 
 package com.wordnik.springmvc;
 
+import com.google.common.collect.Lists;
 import com.wordnik.sample.JavaRestResourceUtil;
 import com.wordnik.sample.data.StoreData;
 import com.wordnik.sample.exception.NotFoundException;
@@ -25,13 +26,14 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-@RequestMapping(value = "/store", produces = {"application/json", "application/xml"})
+@RequestMapping(value = "/store", produces = { "application/json", "application/xml" })
 @Api(value = "/store", description = "Operations about store")
 public class PetStoreResource {
     static StoreData storeData = new StoreData();
@@ -55,9 +57,32 @@ public class PetStoreResource {
         }
     }
 
+    @RequestMapping(value = "/orders/{orderIds}", method = RequestMethod.GET)
+    @ApiOperation(value = "Find multiple purchase orders by IDs",
+            notes = "For valid response try integer IDs with value <= 5 or > 10. Other values will generated exceptions",
+        responseContainer = "List", response = Order.class)
+    @ApiResponses(value = { @ApiResponse(code = 400, message = "Invalid ID supplied"),
+        @ApiResponse(code = 404, message = "Order not found") })
+    public ResponseEntity<List<Order>> getOrdersById(
+            @ApiParam(value = "IDs of pets that needs to be fetched",
+                    required = true) @PathVariable("orderIds") List<String> orderIds)
+            throws com.wordnik.sample.exception.NotFoundException {
+        List<Order> orders = Lists.newArrayList();
+        for (String orderId : orderIds) {
+            Order order = storeData.findOrderById(ru.getLong(0, 10000, 0, orderId));
+            if (order != null) {
+                orders.add(order);
+            } else {
+                throw new NotFoundException(404, "Order #" + orderId + " not found");
+            }
+
+        }
+        return new ResponseEntity<List<Order>>(orders, HttpStatus.OK);
+    }
+
     @RequestMapping(value = "/order", method = RequestMethod.POST)
     @ApiOperation(value = "Place an order for a pet")
-    @ApiResponses({@ApiResponse(code = 400, message = "Invalid Order")})
+    @ApiResponses({ @ApiResponse(code = 400, message = "Invalid Order") })
     public Order placeOrder(
             @ApiParam(value = "order placed for purchasing the pet",
                     required = true) Order order) {
@@ -68,10 +93,11 @@ public class PetStoreResource {
     @RequestMapping(value = "/order/{orderId}", method = RequestMethod.DELETE)
     @ApiOperation(value = "Delete purchase order by ID",
             notes = "For valid response try integer IDs with value < 1000. Anything above 1000 or nonintegers will generate API errors")
-    @ApiResponses(value = {@ApiResponse(code = 400, message = "Invalid ID supplied"),
-            @ApiResponse(code = 404, message = "Order not found")})
+    @ApiResponses(value = { @ApiResponse(code = 400, message = "Invalid ID supplied"),
+        @ApiResponse(code = 404, message = "Order not found") })
     public ResponseEntity deleteOrder(
-            @ApiParam(value = "ID of the order that needs to be deleted", allowableValues = "range[1,infinity]", required = true) @PathVariable("orderId") String orderId) {
+            @ApiParam(value = "ID of the order that needs to be deleted", allowableValues = "range[1,infinity]",
+                    required = true) @PathVariable("orderId") String orderId) {
         storeData.deleteOrder(ru.getLong(0, 10000, 0, orderId));
         return new ResponseEntity(HttpStatus.OK);
     }

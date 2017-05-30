@@ -22,7 +22,7 @@ import java.util.List;
  * Date: 3/7/13
  */
 @Mojo(name = "generate", defaultPhase = LifecyclePhase.COMPILE, configurator = "include-project-dependencies",
-        requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME)
+        requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME, threadSafe = true)
 public class ApiDocumentMojo extends AbstractMojo {
 
     /**
@@ -36,6 +36,8 @@ public class ApiDocumentMojo extends AbstractMojo {
     @Parameter(defaultValue = "${project}", readonly = true)
     private MavenProject project;
 
+    private String projectEncoding;
+
     @Component
     private MavenProjectHelper projectHelper;
 
@@ -44,6 +46,9 @@ public class ApiDocumentMojo extends AbstractMojo {
      */
     @Parameter(defaultValue = "false")
     private boolean skipSwaggerGeneration;
+    
+    @Parameter(property="file.encoding")
+    private String encoding;
 
     public List<ApiSource> getApiSources() {
         return apiSources;
@@ -55,6 +60,10 @@ public class ApiDocumentMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+        if(project !=null) {
+            projectEncoding = project.getProperties().getProperty("project.build.sourceEncoding");
+        }
+
         if (skipSwaggerGeneration) {
             getLog().info("Swagger generation is skipped.");
             return;
@@ -78,8 +87,8 @@ public class ApiDocumentMojo extends AbstractMojo {
             for (ApiSource apiSource : apiSources) {
                 validateConfiguration(apiSource);
                 AbstractDocumentSource documentSource = apiSource.isSpringmvc()
-                        ? new SpringMavenDocumentSource(apiSource, getLog())
-                        : new MavenDocumentSource(apiSource, getLog());
+                        ? new SpringMavenDocumentSource(apiSource, getLog(), projectEncoding)
+                        : new MavenDocumentSource(apiSource, getLog(), projectEncoding);
 
                 documentSource.loadTypesToSkip();
                 documentSource.loadModelModifier();
@@ -102,14 +111,16 @@ public class ApiDocumentMojo extends AbstractMojo {
                         apiSource.getSwaggerUIDocBasePath() == null
                                 ? apiSource.getBasePath()
                                 : apiSource.getSwaggerUIDocBasePath(),
-                        apiSource.getOutputFormats(), swaggerFileName);
+                        apiSource.getOutputFormats(), swaggerFileName, encoding);
 
 
                 if (apiSource.isAttachSwaggerArtifact() && apiSource.getSwaggerDirectory() != null && project != null) {
                     String outputFormats = apiSource.getOutputFormats();
                     if (outputFormats != null) {
                         for (String format : outputFormats.split(",")) {
-                            String classifier = new File(apiSource.getSwaggerDirectory()).getName();
+                            String classifier = swaggerFileName.equals("swagger")
+                                    ? getSwaggerDirectoryName(apiSource.getSwaggerDirectory())
+                                    : swaggerFileName;
                             File swaggerFile = new File(apiSource.getSwaggerDirectory(), swaggerFileName + "." + format.toLowerCase());
                             projectHelper.attachArtifact(project, format.toLowerCase(), classifier, swaggerFile);
                         }
@@ -174,4 +185,9 @@ public class ApiDocumentMojo extends AbstractMojo {
     private String getSwaggerFileName(String swaggerFileName) {
         return swaggerFileName == null || "".equals(swaggerFileName.trim()) ? "swagger" : swaggerFileName;
     }
+
+    private String getSwaggerDirectoryName(String swaggerDirectory) {
+        return new File(swaggerDirectory).getName();
+    }
+
 }

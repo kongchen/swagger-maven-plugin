@@ -57,6 +57,7 @@
                             <outputPath>${basedir}/generated/document-spring.html</outputPath>
                             <outputFormats>json</outputFormats>
                             <swaggerDirectory>${basedir}/generated/swagger-ui-spring</swaggerDirectory>
+                            <swaggerApiReader>com.wordnik.springmvc.VendorExtensionsSpringMvcReader</swaggerApiReader>
                             <swaggerUIDocBasePath>http://www.example.com/restapi/doc</swaggerUIDocBasePath>
                             <modelSubstitute>/override.map</modelSubstitute>
                             <apiModelPropertyAccessExclusions>

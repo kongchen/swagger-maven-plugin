@@ -11,7 +11,7 @@ import org.springframework.core.annotation.AnnotationUtils;
 import java.io.File;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -101,7 +101,10 @@ public class ApiSource {
 
     @Parameter
     private boolean useJAXBAnnotationProcessor;
-
+    
+    @Parameter
+    private boolean useJAXBAnnotationProcessorAsPrimary = true;
+    
     @Parameter
     private String swaggerSchemaConverter;
 
@@ -124,14 +127,20 @@ public class ApiSource {
     private List<String> modelConverters;
 
     public Set<Class<?>> getValidClasses(Class<? extends Annotation> clazz) {
-        Set<Class<?>> classes = new HashSet<Class<?>>();
+        Set<Class<?>> classes = new LinkedHashSet<Class<?>>();
         if (getLocations() == null) {
-            Set<Class<?>> c = new Reflections("").getTypesAnnotatedWith(clazz);
+            Set<Class<?>> c = new Reflections("").getTypesAnnotatedWith(clazz, true);
             classes.addAll(c);
+
+            Set<Class<?>> inherited = new Reflections("").getTypesAnnotatedWith(clazz);
+            classes.addAll(inherited);
         } else {
             for (String location : locations) {
-                Set<Class<?>> c = new Reflections(location).getTypesAnnotatedWith(clazz);
+                Set<Class<?>> c = new Reflections(location).getTypesAnnotatedWith(clazz, true);
                 classes.addAll(c);
+
+                Set<Class<?>> inherited = new Reflections(location).getTypesAnnotatedWith(clazz);
+                classes.addAll(inherited);
             }
         }
 
@@ -372,6 +381,14 @@ public class ApiSource {
 
     public void setUseJAXBAnnotationProcessor(boolean useJAXBAnnotationProcessor) {
         this.useJAXBAnnotationProcessor = useJAXBAnnotationProcessor;
+    }
+
+    public boolean isUseJAXBAnnotationProcessorAsPrimary() {
+        return useJAXBAnnotationProcessorAsPrimary;
+    }
+
+    public void setUseJAXBAnnotationProcessorAsPrimary(boolean useJAXBAnnotationProcessorAsPrimary) {
+        this.useJAXBAnnotationProcessorAsPrimary = useJAXBAnnotationProcessorAsPrimary;
     }
 
     public File getDescriptionFile() {

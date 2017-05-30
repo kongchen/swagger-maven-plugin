@@ -2,7 +2,6 @@ package com.github.kongchen.swagger.docgen.mavenplugin;
 
 import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
 import com.github.kongchen.swagger.docgen.GenerateException;
-import com.github.kongchen.swagger.docgen.LogAdapter;
 import com.github.kongchen.swagger.docgen.reader.ClassSwaggerReader;
 import com.github.kongchen.swagger.docgen.reader.SpringMvcApiReader;
 import io.swagger.annotations.Api;
@@ -27,8 +26,11 @@ import java.util.TreeMap;
 public class SpringMavenDocumentSource extends AbstractDocumentSource {
     private final SpecFilter specFilter = new SpecFilter();
 
-    public SpringMavenDocumentSource(ApiSource apiSource, Log log) throws MojoFailureException {
-        super(new LogAdapter(log), apiSource);
+    public SpringMavenDocumentSource(ApiSource apiSource, Log log, String encoding) throws MojoFailureException {
+        super(log, apiSource);
+        if(encoding !=null) {
+            this.encoding = encoding;
+        }
     }
 
     @Override

@@ -1,11 +1,10 @@
 package com.wordnik.jaxrs;
 
-import javax.ws.rs.FormParam;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-
 import io.swagger.annotations.ApiParam;
+
+import javax.validation.constraints.Min;
+import javax.ws.rs.*;
+import java.util.List;
 
 /**
  * @author chekong on 15/5/9.
@@ -16,7 +15,7 @@ public class MyBean extends MyParentBean {
     @PathParam("petId")
     private String petId;
 
-    @ApiParam(value = "Updated name of the pet", required = false)
+    @ApiParam(value = "Updated name of the pet", required = false, defaultValue = "defaultValue")
     @FormParam("name")
     private String name;
 
@@ -33,6 +32,14 @@ public class MyBean extends MyParentBean {
     @ApiParam(value = "hidden", hidden = true)
     @QueryParam(value = "hiddenValue")
     private String hiddenValue;
+
+    @QueryParam(value = "listValue")
+    private List<String> listValue;
+
+    @ApiParam(value = "testIntegerAllowableValues", defaultValue = "25", allowableValues = "25, 50, 100")
+    @QueryParam("testIntegerAllowableValues")
+    @DefaultValue("25")
+    public Integer testIntegerAllowableValues;
 
     public String getMyheader() {
         return myHeader;
@@ -74,13 +81,12 @@ public class MyBean extends MyParentBean {
         this.intValue = intValue;
     }
 
-    @HeaderParam("myHeaderOnMethod")
-    @ApiParam(value = "Header annotated on method", required = false)
-    public void setMyheadronmethod(String myheadronmethod) {
+    public List<String> getListValue() {
+        return listValue;
     }
 
-    @HeaderParam("myLongHeaderOnMethod")
-    @ApiParam(value = "Long header annotated on method", required = false)
-    public void setMyintheaderonmethod(long mylongheaderonmethod) {
+    public void setListValue(List<String> listValue) {
+        this.listValue = listValue;
     }
+
 }

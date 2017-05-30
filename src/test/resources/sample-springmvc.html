@@ -245,7 +245,7 @@ This is a sample.
 #### Request
 
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 ##### Parameters
 
@@ -282,7 +282,7 @@ This is a sample.
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 
 | Status Code | Reason      | Response Model |
@@ -321,7 +321,7 @@ This is a sample.
 #### Request
 
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 ##### Parameters
 
@@ -358,7 +358,7 @@ This is a sample.
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 
 | Status Code | Reason      | Response Model |
@@ -442,7 +442,7 @@ Multiple status values can be provided with comma seperated strings
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 
 | Status Code | Reason      | Response Model |
@@ -529,7 +529,7 @@ Multiple status values can be provided with multiple query parameters. Example: 
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 
 | Status Code | Reason      | Response Model |
@@ -616,7 +616,7 @@ Muliple tags can be provided with comma seperated strings. Use tags=tag1,tag2,ta
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 
 | Status Code | Reason      | Response Model |
@@ -678,7 +678,7 @@ Muliple tags can be provided with comma seperated strings. Use tags=tag1,tag2,ta
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 
 | Status Code | Reason      | Response Model |
@@ -777,7 +777,7 @@ If you wish to paginate the results of this API, supply offset and limit query p
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 
 | Status Code | Reason      | Response Model |
@@ -815,7 +815,7 @@ If you wish to paginate the results of this API, supply offset and limit query p
 #### Request
 
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 ##### Parameters
 
@@ -852,7 +852,7 @@ If you wish to paginate the results of this API, supply offset and limit query p
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 
 | Status Code | Reason      | Response Model |
@@ -911,7 +911,7 @@ If you wish to paginate the results of this API, supply offset and limit query p
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 
 | Status Code | Reason      | Response Model |
@@ -997,7 +997,7 @@ If you wish to paginate the results of this API, supply offset and limit query p
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 
 | Status Code | Reason      | Response Model |
@@ -1286,6 +1286,129 @@ If you wish to paginate the results of this API, supply offset and limit query p
 
 
 
+## /pet/testingMergedAnnotations
+
+
+### GET
+
+<a id="testingMergedAnnotations">testingMergedAnnotations</a>
+
+
+
+
+
+
+#### Security
+
+
+
+
+* petstore_auth
+   * write:pets
+   * read:pets
+
+
+
+
+#### Request
+
+
+
+##### Parameters
+
+
+
+
+
+
+#### Response
+
+**Content-Type: ** application/json
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 200    | successful operation | string|
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## /pet/testingVendorExtensions
+
+
+### GET
+
+<a id="testingVendorExtensions">testingVendorExtensions</a>
+
+
+
+
+
+
+#### Security
+
+
+
+
+* petstore_auth
+   * write:pets
+   * read:pets
+
+
+
+
+#### Request
+
+
+
+##### Parameters
+
+
+
+
+
+
+#### Response
+
+**Content-Type: ** application/json
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 200    | successful operation | string|
+| 401    | Some vendor error description |  - |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## /pet/{petId}
 
 
@@ -1353,7 +1476,7 @@ Returns a pet when ID &lt; 10.  ID &gt; 10 or nonintegers will simulate API erro
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 
 | Status Code | Reason      | Response Model |
@@ -1455,7 +1578,7 @@ Returns a pet when ID &lt; 10.  ID &gt; 10 or nonintegers will simulate API erro
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 
 | Status Code | Reason      | Response Model |
@@ -1540,7 +1663,7 @@ Returns a pet when ID &lt; 10.  ID &gt; 10 or nonintegers will simulate API erro
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 
 | Status Code | Reason      | Response Model |
@@ -1617,7 +1740,7 @@ Returns a pet when ID &lt; 10.  ID &gt; 10 or nonintegers will simulate API erro
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 
 | Status Code | Reason      | Response Model |
@@ -1692,7 +1815,7 @@ For valid response try integer IDs with value &lt;= 5 or &gt; 10. Other values w
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 
 | Status Code | Reason      | Response Model |
@@ -1759,13 +1882,92 @@ For valid response try integer IDs with value &lt; 1000. Anything above 1000 or 
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 
 | Status Code | Reason      | Response Model |
 |-------------|-------------|----------------|
 | 400    | Invalid ID supplied |  - |
 | 404    | Order not found |  - |
+
+
+
+
+
+
+
+
+
+
+
+
+## /store/orders/{orderIds}
+
+
+### GET
+
+<a id="getOrdersById">Find multiple purchase orders by IDs</a>
+
+For valid response try integer IDs with value &lt;= 5 or &gt; 10. Other values will generated exceptions
+
+
+
+
+
+
+
+#### Request
+
+
+
+##### Parameters
+
+<table border="1">
+    <tr>
+        <th>Name</th>
+        <th>Located in</th>
+        <th>Required</th>
+        <th>Description</th>
+        <th>Default</th>
+        <th>Schema</th>
+    </tr>
+
+
+
+<tr>
+    <th>orderIds</th>
+    <td>path</td>
+    <td>yes</td>
+    <td>IDs of pets that needs to be fetched</td>
+    <td> - </td>
+
+    
+            <td>Array[string] (csv)</td>
+    
+
+</tr>
+
+
+</table>
+
+
+
+#### Response
+
+**Content-Type: ** application/json, application/xml
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 200    | successful operation | Array[<a href="#/definitions/Order">Order</a>]|
+| 400    | Invalid ID supplied |  - |
+| 404    | Order not found |  - |
+
+
+
+
+
+
 
 
 
@@ -1806,7 +2008,59 @@ For valid response try integer IDs with value &lt; 1000. Anything above 1000 or 
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 200    | successful operation | string|
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## /testingEmptyRootPathResource
+
+
+### GET
+
+<a id="testingEmptyRootPathResource">testingEmptyRootPathResource</a>
+
+
+
+
+
+
+
+
+
+#### Request
+
+
+
+##### Parameters
+
+
+
+
+
+
+#### Response
+
+
 
 
 | Status Code | Reason      | Response Model |
@@ -1889,7 +2143,7 @@ This can only be done by the logged in user.
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 
 | Status Code | Reason      | Response Model |
@@ -1969,7 +2223,7 @@ This can only be done by the logged in user.
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 
 | Status Code | Reason      | Response Model |
@@ -2049,7 +2303,7 @@ This can only be done by the logged in user.
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 
 | Status Code | Reason      | Response Model |
@@ -2136,7 +2390,7 @@ This can only be done by the logged in user.
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 
 | Status Code | Reason      | Response Model |
@@ -2189,7 +2443,7 @@ This can only be done by the logged in user.
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 
 | Status Code | Reason      | Response Model |
@@ -2266,7 +2520,7 @@ This can only be done by the logged in user.
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 
 | Status Code | Reason      | Response Model |
@@ -2343,7 +2597,7 @@ This can only be done by the logged in user.
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 
 | Status Code | Reason      | Response Model |
@@ -2407,7 +2661,7 @@ This can only be done by the logged in user.
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 
 | Status Code | Reason      | Response Model |
@@ -2485,7 +2739,7 @@ This can only be done by the logged in user.
 
 #### Response
 
-**Content-Type: ** application/xml, application/json
+**Content-Type: ** application/json, application/xml
 
 
 | Status Code | Reason      | Response Model |
@@ -2676,6 +2930,19 @@ This can only be done by the logged in user.
                 
                     
                     boolean
+                
+            </td>
+            <td>optional</td>
+            <td>-</td>
+            <td></td>
+        </tr>
+    
+        <tr>
+            <td>optionalStatus</td>
+            <td>
+                
+                    
+                    string
                 
             </td>
             <td>optional</td>

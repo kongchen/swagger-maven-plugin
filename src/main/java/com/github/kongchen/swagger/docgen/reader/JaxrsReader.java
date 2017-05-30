@@ -1,11 +1,6 @@
 package com.github.kongchen.swagger.docgen.reader;
 
-import com.github.kongchen.swagger.docgen.LogAdapter;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.Authorization;
-import io.swagger.annotations.AuthorizationScope;
+import io.swagger.annotations.*;
 import io.swagger.converter.ModelConverters;
 import io.swagger.jaxrs.ext.SwaggerExtension;
 import io.swagger.jaxrs.ext.SwaggerExtensions;
@@ -16,10 +11,12 @@ import io.swagger.models.SecurityRequirement;
 import io.swagger.models.Swagger;
 import io.swagger.models.Tag;
 import io.swagger.models.parameters.Parameter;
-import io.swagger.models.properties.ArrayProperty;
-import io.swagger.models.properties.MapProperty;
 import io.swagger.models.properties.Property;
 import io.swagger.models.properties.RefProperty;
+import io.swagger.util.ReflectionUtils;
+
+import org.apache.maven.plugin.logging.Log;
+import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -34,12 +31,14 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -47,8 +46,9 @@ import java.util.Set;
 
 public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
     private static final Logger LOGGER = LoggerFactory.getLogger(JaxrsReader.class);
+    private static final ResponseContainerConverter RESPONSE_CONTAINER_CONVERTER = new ResponseContainerConverter();
 
-    public JaxrsReader(Swagger swagger, LogAdapter LOG) {
+    public JaxrsReader(Swagger swagger, Log LOG) {
         super(swagger, LOG);
     }
 
@@ -111,11 +111,11 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
                 String[] apiConsumes = new String[0];
                 String[] apiProduces = new String[0];
 
-                Consumes consumes = AnnotationUtils.getAnnotation(cls, Consumes.class);
+                Consumes consumes = AnnotationUtils.findAnnotation(cls, Consumes.class);
                 if (consumes != null) {
                     apiConsumes = consumes.value();
                 }
-                Produces produces = AnnotationUtils.getAnnotation(cls, Produces.class);
+                Produces produces = AnnotationUtils.findAnnotation(cls, Produces.class);
                 if (produces != null) {
                     apiProduces = produces.value();
                 }
@@ -131,9 +131,33 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
                 updateOperation(apiConsumes, apiProduces, tags, securities, operation);
                 updatePath(operationPath, httpMethod, operation);
             }
+            updateTagDescriptions();
         }
 
         return swagger;
+    }
+
+    private void updateTagDescriptions() {
+        HashMap<String, Tag> tags = new HashMap<String, Tag>();
+        for (Class<?> aClass: new Reflections("").getTypesAnnotatedWith(SwaggerDefinition.class)) {
+            SwaggerDefinition swaggerDefinition = AnnotationUtils.findAnnotation(aClass, SwaggerDefinition.class);
+
+            for (io.swagger.annotations.Tag tag : swaggerDefinition.tags()) {
+
+                String tagName = tag.name();
+                if (!tagName.isEmpty()) {
+                    tags.put(tag.name(), new Tag().name(tag.name()).description(tag.description()));
+                }
+            }
+        }
+        if (swagger.getTags() != null) {
+            for (Tag tag : swagger.getTags()) {
+                Tag rightTag = tags.get(tag.getName());
+                if (rightTag != null && rightTag.getDescription() != null) {
+                    tag.setDescription(rightTag.getDescription());
+                }
+            }
+        }
     }
 
     private void handleSubResource(String[] apiConsumes, String httpMethod, String[] apiProduces, Map<String, Tag> tags, Method method, String operationPath, Operation operation) {
@@ -263,16 +287,10 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
                 && !responseClass.equals(javax.ws.rs.core.Response.class)
                 && (AnnotationUtils.findAnnotation(responseClass, Api.class) == null)) {
             if (isPrimitive(responseClass)) {
-                Property responseProperty;
                 Property property = ModelConverters.getInstance().readAsProperty(responseClass);
                 if (property != null) {
-                    if ("list".equalsIgnoreCase(responseContainer)) {
-                        responseProperty = new ArrayProperty(property);
-                    } else if ("map".equalsIgnoreCase(responseContainer)) {
-                        responseProperty = new MapProperty(property);
-                    } else {
-                        responseProperty = property;
-                    }
+                    Property responseProperty = RESPONSE_CONTAINER_CONVERTER.withResponseContainer(responseContainer, property);
+
                     operation.response(apiOperation.code(), new Response()
                             .description("successful operation")
                             .schema(responseProperty)
@@ -288,15 +306,9 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
                             .headers(defaultResponseHeaders));
                 }
                 for (String key : models.keySet()) {
-                    Property responseProperty;
+                    Property responseProperty = RESPONSE_CONTAINER_CONVERTER.withResponseContainer(responseContainer, new RefProperty().asDefault(key));
 
-                    if ("list".equalsIgnoreCase(responseContainer)) {
-                        responseProperty = new ArrayProperty(new RefProperty().asDefault(key));
-                    } else if ("map".equalsIgnoreCase(responseContainer)) {
-                        responseProperty = new MapProperty(new RefProperty().asDefault(key));
-                    } else {
-                        responseProperty = new RefProperty().asDefault(key);
-                    }
+
                     operation.response(apiOperation.code(), new Response()
                             .description("successful operation")
                             .schema(responseProperty)
@@ -342,7 +354,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         // process parameters
         Class[] parameterTypes = method.getParameterTypes();
         Type[] genericParameterTypes = method.getGenericParameterTypes();
-        Annotation[][] paramAnnotations = method.getParameterAnnotations();
+        Annotation[][] paramAnnotations = findParamAnnotations(method);
 
         // paramTypes = method.getParameterTypes
         // genericParamTypes = method.getGenericParameterTypes
@@ -362,11 +374,42 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         // Process @ApiImplicitParams
         this.readImplicitParameters(method, operation);
 
+        processOperationDecorator(operation, method);
+
         return operation;
     }
 
+	private Annotation[][] findParamAnnotations(Method method) {
+		Annotation[][] paramAnnotation = method.getParameterAnnotations();
+		
+		method = ReflectionUtils.getOverriddenMethod(method);
+		while(method != null) {
+			paramAnnotation = merge(paramAnnotation, method.getParameterAnnotations());
+			method = ReflectionUtils.getOverriddenMethod(method);
+		}
+		return paramAnnotation;
+	}
 
-    public String extractOperationMethod(ApiOperation apiOperation, Method method, Iterator<SwaggerExtension> chain) {
+
+    private Annotation[][] merge(Annotation[][] paramAnnotation,
+			Annotation[][] superMethodParamAnnotations) {
+    	Annotation[][] mergedAnnotations = new Annotation[paramAnnotation.length][];
+    	
+    	for(int i=0; i<paramAnnotation.length; i++) {
+    		mergedAnnotations[i] = merge(paramAnnotation[i], superMethodParamAnnotations[i]);
+    	}
+		return mergedAnnotations;
+	}
+
+	private Annotation[] merge(Annotation[] annotations,
+			Annotation[] annotations2) {
+		Set<Annotation> mergedAnnotations = new HashSet<Annotation>();
+		mergedAnnotations.addAll(Arrays.asList(annotations));
+		mergedAnnotations.addAll(Arrays.asList(annotations2));
+		return mergedAnnotations.toArray(new Annotation[0]);
+	}
+
+	public String extractOperationMethod(ApiOperation apiOperation, Method method, Iterator<SwaggerExtension> chain) {
         if (!apiOperation.httpMethod().isEmpty()) {
             return apiOperation.httpMethod().toLowerCase();
         } else if (AnnotationUtils.findAnnotation(method, GET.class) != null) {

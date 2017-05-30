@@ -1,4 +1,6 @@
-# Swagger Maven Plugin [![Build Status](https://travis-ci.org/kongchen/swagger-maven-plugin.png)](https://travis-ci.org/kongchen/swagger-maven-plugin)
+# Swagger Maven Plugin 
+[![Build Status](https://travis-ci.org/kongchen/swagger-maven-plugin.png)](https://travis-ci.org/kongchen/swagger-maven-plugin)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.kongchen/swagger-maven-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.kongchen/swagger-maven-plugin)
 
 This plugin enables your Swagger-annotated project to generate **Swagger specs** and **customizable, templated static documents** during the maven build phase. Unlike swagger-core, swagger-maven-plugin does not actively serve the spec with the rest of the application; it generates the spec as a build artifact to be used in downstream Swagger tooling.
 
@@ -42,18 +44,21 @@ Import the plugin in your project by adding following configuration in your `plu
 	</plugins>
 </build>
 ```
-One `apiSource` can be considered as a version of APIs of your service.
 
-You can specify several `apiSource`s. Generally, one is enough.
+# Configuration for `configuration`
 
+| **name** | **description** |
+|------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `skipSwaggerGeneration` | If `true`, swagger generation will be skipped. Default is `false`. |
+| `apiSources` | List of `apiSource` elements. One `apiSource` can be considered as a version of APIs of your service. You can specify several `apiSource` elements, though generally one is enough. |
 
 # Configuration for `apiSource`
 
 | **name** | **description** |
 |------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `springmvc` | Tell the plugin your project is a JAX-RS(`false`) or a SpringMvc(`true`) project |
-| `locations` **required**| Classes containing Swagger's annotation ```@Api```, or packages containing those classes can be configured here. Each item must be located inside \<location> tag. |
-| `schemes` | The transfer protocol of the API. Values MUST be from the list: `"http"`, `"https"`, `"ws"`, `"wss"`. Each value must be located inside its own `<scheme>` tag. Example: `<schemes><scheme>http</scheme><scheme>https</scheme></schemes>` |
+| `locations` **required**| Classes containing Swagger's annotation ```@Api```, or packages containing those classes can be configured here. Multiple values must be separated by commas. Example: `<locations>com.github.kongchen.swagger.sample.wordnik.resource,com.github.kongchen.swagger.sample.wordnik.resource2</locations>` |
+| `schemes` | The transfer protocol of the API. Values MUST be from the list: `"http"`, `"https"`, `"ws"`, `"wss"`. Multiple values must be separated by commas. Example: `<schemes>http,https</schemes>` |
 | `host` | The host (name or ip) serving the API. This MUST be the host only and does not include the scheme nor sub-paths. It MAY include a port.  The host does not support [path templating](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#pathTemplating).|
 | `basePath` | The base path on which the API is served, which is relative to the host. The value MUST start with a leading slash (/). The basePath does not support [path templating](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#pathTemplating). |
 | `descriptionFile` | A Path to file with description to be set to Swagger Spec 2.0's [info Object](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#infoObject) |
@@ -70,7 +75,6 @@ You can specify several `apiSource`s. Generally, one is enough.
 | `typesToSkip` | Nodes of class names to explicitly skip during parameter processing. More details [below](#typesToSkip)|
 | `apiModelPropertyAccessExclusions` | Allows the exclusion of specified `@ApiModelProperty` fields. This can be used to hide certain model properties from the swagger spec. More details [below](#apiModelPropertyAccessExclusions)|
 | `jsonExampleValues` | If `true`, all example values in `@ApiModelProperty` will be handled as json raw values. This is useful for creating valid examples in the generated json for all property types, including non-string ones. |
-| `skipSwaggerGeneration` | If `true`, swagger generation will be skipped. Default is `false`. |
 | `modelConverters` | List of custom implementations of `io.swagger.converter.ModelConverter` that should be used when generating the swagger files. | 
 
 # <a id="templatefile">Template File</a>

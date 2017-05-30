@@ -34,6 +34,40 @@ paths:
           description: "successful operation"
           schema:
             type: "string"
+  /myResourceImpl:
+    get:
+      summary: "Find pet(s) by ID"
+      description: "This is a contrived example"
+      operationId: "getPetsById"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "startId"
+        in: "query"
+        description: "start ID of pets that need to be fetched"
+        required: true
+        type: "integer"
+        maximum: 99.0
+        minimum: 1.0
+        format: "int64"
+      - name: "endId"
+        in: "query"
+        description: "end ID of pets that need to be fetched"
+        required: true
+        type: "integer"
+        maximum: 99.0
+        minimum: 1.0
+        format: "int64"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Pet"
+        400:
+          description: "Invalid ID supplied"
+        404:
+          description: "Pet not found"
   /pet:
     get:
       tags:
@@ -365,6 +399,26 @@ paths:
       - petstore_auth:
         - "write:pets"
         - "read:pets"
+  /pet/test/testingVendorExtensions:
+    get:
+      tags:
+      - "pet"
+      summary: "testingVendorExtensions"
+      description: ""
+      operationId: "testingVendorExtensions"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters: []
+      responses:
+        401:
+          description: "Some vendor error description"
+        default:
+          description: "successful operation"
+      security:
+      - petstore_auth:
+        - "write:pets"
+        - "read:pets"
   /pet/{startId}:{endId}:
     get:
       tags:
@@ -465,6 +519,7 @@ paths:
         description: "Updated name of the pet"
         required: false
         type: "string"
+        default: "defaultValue"
       - name: "status"
         in: "formData"
         description: "Updated status of the pet"
@@ -477,32 +532,34 @@ paths:
         in: "header"
         required: false
         type: "string"
-        default: ""
       - name: "intValue"
         in: "header"
         required: false
         type: "integer"
-        default: ""
         format: "int32"
+      - name: "listValue"
+        in: "query"
+        required: false
+        type: "array"
+        items:
+          type: "string"
+        collectionFormat: "multi"
+      - name: "testIntegerAllowableValues"
+        in: "query"
+        description: "testIntegerAllowableValues"
+        required: false
+        type: "integer"
+        default: 25
+        format: "int32"
+        enum:
+        - 25
+        - 50
+        - 100
       - name: "myParentHeader"
         in: "header"
         description: "Header from parent"
         required: false
         type: "string"
-        default: ""
-      - name: "myHeaderOnMethod"
-        in: "header"
-        description: "Header annotated on method"
-        required: false
-        type: "string"
-        default: ""
-      - name: "myLongHeaderOnMethod"
-        in: "header"
-        description: "Long header annotated on method"
-        required: false
-        type: "integer"
-        default: ""
-        format: "int64"
       responses:
         405:
           description: "Invalid input"
@@ -524,7 +581,6 @@ paths:
         in: "header"
         required: false
         type: "string"
-        default: ""
       - name: "petId"
         in: "path"
         description: "Pet id to delete"
@@ -561,6 +617,7 @@ paths:
         description: "Updated name of the pet"
         required: false
         type: "string"
+        default: "defaultValue"
       - name: "status"
         in: "formData"
         description: "Updated status of the pet"
@@ -573,32 +630,34 @@ paths:
         in: "header"
         required: false
         type: "string"
-        default: ""
       - name: "intValue"
         in: "header"
         required: false
         type: "integer"
-        default: ""
         format: "int32"
+      - name: "listValue"
+        in: "query"
+        required: false
+        type: "array"
+        items:
+          type: "string"
+        collectionFormat: "multi"
+      - name: "testIntegerAllowableValues"
+        in: "query"
+        description: "testIntegerAllowableValues"
+        required: false
+        type: "integer"
+        default: 25
+        format: "int32"
+        enum:
+        - 25
+        - 50
+        - 100
       - name: "myParentHeader"
         in: "header"
         description: "Header from parent"
         required: false
         type: "string"
-        default: ""
-      - name: "myHeaderOnMethod"
-        in: "header"
-        description: "Header annotated on method"
-        required: false
-        type: "string"
-        default: ""
-      - name: "myLongHeaderOnMethod"
-        in: "header"
-        description: "Long header annotated on method"
-        required: false
-        type: "integer"
-        default: ""
-        format: "int64"
       responses:
         405:
           description: "Invalid input"
@@ -676,6 +735,37 @@ paths:
         type: "string"
         minimum: 1.0
       responses:
+        400:
+          description: "Invalid ID supplied"
+        404:
+          description: "Order not found"
+  /store/orders/{orderIds}:
+    get:
+      tags:
+      - "store"
+      summary: "Find multiple purchase orders by IDs"
+      description: "For valid response try integer IDs with value <= 5 or > 10. Other\
+        \ values will generated exceptions"
+      operationId: "getOrdersById"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "orderIds"
+        in: "path"
+        description: "IDs of pets that needs to be fetched"
+        required: true
+        type: "array"
+        items:
+          type: "string"
+        collectionFormat: "csv"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Order"
         400:
           description: "Invalid ID supplied"
         404:
@@ -954,7 +1044,8 @@ definitions:
         - "delivered"
       complete:
         type: "boolean"
-        default: false
+      optionalStatus:
+        type: "string"
     xml:
       name: "Order"
   Pet:
@@ -973,16 +1064,18 @@ definitions:
       photoUrls:
         type: "array"
         xml:
-          name: "photoUrl"
           wrapped: true
         items:
           type: "string"
+          xml:
+            name: "photoUrl"
       tags:
         type: "array"
         xml:
-          name: "tag"
           wrapped: true
         items:
+          xml:
+            name: "tag"
           $ref: "#/definitions/Tag"
       status:
         type: "string"
@@ -1024,7 +1117,7 @@ definitions:
       userStatus:
         type: "integer"
         format: "int32"
-        example: "2"
+        example: 2
         description: "User Status"
     xml:
       name: "User"

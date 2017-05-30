@@ -9,9 +9,14 @@ import io.swagger.converter.ModelConverterContext;
 import io.swagger.jackson.ModelResolver;
 import io.swagger.models.Model;
 import io.swagger.models.properties.Property;
+
+import org.apache.commons.lang3.reflect.FieldUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.AnnotationUtils;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -24,22 +29,32 @@ import java.util.Map;
  * @author chekong on 15/5/19.
  */
 public class ModelModifier extends ModelResolver {
-    private Map<Type, Type> modelSubtitutes = new HashMap<Type, Type>();
+    private Map<JavaType, JavaType> modelSubtitutes = new HashMap<JavaType, JavaType>();
     private List<String> apiModelPropertyAccessExclusions = new ArrayList<String>();
+
+    private static Logger LOGGER = LoggerFactory.getLogger(ModelModifier.class);
 
     public ModelModifier(ObjectMapper mapper) {
         super(mapper);
     }
 
     public void addModelSubstitute(String fromClass, String toClass) throws GenerateException {
+        JavaType type = null;
+        JavaType toType = null;
         try {
-            Type type = _mapper.constructType(Class.forName(fromClass));
-            Type toType = _mapper.constructType(Class.forName(toClass));
-
-            modelSubtitutes.put(type, toType);
-
+            type = _mapper.constructType(Class.forName(fromClass));
         } catch (ClassNotFoundException e) {
-            throw new GenerateException(e);
+            LOGGER.warn(String.format("Problem with loading class: %s. Mapping from: %s to: %s will be ignored.",
+                    fromClass, fromClass, toClass));
+        }
+        try {
+            toType = _mapper.constructType(Class.forName(toClass));
+        } catch (ClassNotFoundException e) {
+            LOGGER.warn(String.format("Problem with loading class: %s. Mapping from: %s to: %s will be ignored.",
+                    toClass, fromClass, toClass));
+        }
+        if(type != null && toType != null) {
+            modelSubtitutes.put(type, toType);
         }
     }
 
@@ -53,8 +68,10 @@ public class ModelModifier extends ModelResolver {
 
     @Override
     public Property resolveProperty(Type type, ModelConverterContext context, Annotation[] annotations, Iterator<ModelConverter> chain) {
-        if (modelSubtitutes.containsKey(type)) {
-            return super.resolveProperty(modelSubtitutes.get(type), context, annotations, chain);
+    	// for method parameter types we get here Type but we need JavaType
+    	JavaType javaType = toJavaType(type);
+        if (modelSubtitutes.containsKey(javaType)) {
+            return super.resolveProperty(modelSubtitutes.get(javaType), context, annotations, chain);
         } else if (chain.hasNext()) {
             return chain.next().resolveProperty(type, context, annotations, chain);
         } else {
@@ -65,8 +82,10 @@ public class ModelModifier extends ModelResolver {
 
     @Override
     public Model resolve(Type type, ModelConverterContext context, Iterator<ModelConverter> chain) {
-        if (modelSubtitutes.containsKey(type)) {
-            return super.resolve(modelSubtitutes.get(type), context, chain);
+    	// for method parameter types we get here Type but we need JavaType
+    	JavaType javaType = toJavaType(type);
+        if (modelSubtitutes.containsKey(javaType)) {
+            return super.resolve(modelSubtitutes.get(javaType), context, chain);
         } else {
             return super.resolve(type, context, chain);
         }
@@ -86,25 +105,56 @@ public class ModelModifier extends ModelResolver {
         for (Method method : cls.getDeclaredMethods()) {
             ApiModelProperty apiModelPropertyAnnotation = AnnotationUtils.findAnnotation(method, ApiModelProperty.class);
 
-            if (apiModelPropertyAnnotation == null) {
-                continue;
-            }
+            processProperty(apiModelPropertyAnnotation, model);
+        }
 
-            String apiModelPropertyAccess = apiModelPropertyAnnotation.access();
-            String apiModelPropertyName = apiModelPropertyAnnotation.name();
+        for (Field field : FieldUtils.getAllFields(cls)) {
+            ApiModelProperty apiModelPropertyAnnotation = AnnotationUtils.getAnnotation(field, ApiModelProperty.class);
 
-            // If the @ApiModelProperty is not populated with both #name and #access, skip it
-            if (apiModelPropertyAccess.isEmpty() || apiModelPropertyName.isEmpty()) {
-                continue;
-            }
-
-            // Check to see if the value of @ApiModelProperty#access is one to exclude.
-            // If so, remove it from the previously-calculated model.
-            if (apiModelPropertyAccessExclusions.contains(apiModelPropertyAccess)) {
-                model.getProperties().remove(apiModelPropertyName);
-            }
+            processProperty(apiModelPropertyAnnotation, model);
         }
 
         return model;
     }
+
+
+    /**
+     * Remove property from {@link Model} for provided {@link ApiModelProperty}.
+     * @param apiModelPropertyAnnotation annotation
+     * @param model model with properties
+     */
+    private void processProperty(ApiModelProperty apiModelPropertyAnnotation, Model model) {
+        if (apiModelPropertyAnnotation == null) {
+            return;
+        }
+
+        String apiModelPropertyAccess = apiModelPropertyAnnotation.access();
+        String apiModelPropertyName = apiModelPropertyAnnotation.name();
+
+        // If the @ApiModelProperty is not populated with both #name and #access, skip it
+        if (apiModelPropertyAccess.isEmpty() || apiModelPropertyName.isEmpty()) {
+            return;
+        }
+
+        // Check to see if the value of @ApiModelProperty#access is one to exclude.
+        // If so, remove it from the previously-calculated model.
+        if (apiModelPropertyAccessExclusions.contains(apiModelPropertyAccess)) {
+            model.getProperties().remove(apiModelPropertyName);
+        }
+    }
+
+    /**
+     * Converts {@link Type} to {@link JavaType}.
+     * @param type object to convert
+     * @return object converted to {@link JavaType}
+     */
+    private JavaType toJavaType(Type type) {
+		JavaType typeToFind;
+    	if (type instanceof JavaType) {
+    		typeToFind = (JavaType) type;
+    	} else {
+    		typeToFind = _mapper.constructType(type);
+    	}
+		return typeToFind;
+	}
 }

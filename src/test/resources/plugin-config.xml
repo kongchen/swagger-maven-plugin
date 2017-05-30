@@ -33,6 +33,7 @@
                             <outputPath>${basedir}/generated/document.html</outputPath>
                             <outputFormats>json</outputFormats>
                             <swaggerDirectory>${basedir}/generated/swagger-ui</swaggerDirectory>
+                            <swaggerApiReader>com.wordnik.jaxrs.VendorExtensionsJaxrsReader</swaggerApiReader>
                             <attachSwaggerArtifact>true</attachSwaggerArtifact>
                             <swaggerUIDocBasePath>http://www.example.com/restapi/doc</swaggerUIDocBasePath>
                             <modelSubstitute>/override.map</modelSubstitute>
