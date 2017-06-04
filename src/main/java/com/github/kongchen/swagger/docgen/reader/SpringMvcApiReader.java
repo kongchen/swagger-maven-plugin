@@ -318,7 +318,9 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
             RequestMapping requestMapping = AnnotatedElementUtils.findMergedAnnotation(method, RequestMapping.class);
             if (requestMapping != null) {
                 String path;
-                if (requestMapping.value().length != 0) {
+                if (requestMapping.path().length != 0) {
+                    path = generateFullPath(requestMapping.path()[0]);
+                } else if (requestMapping.value().length != 0) {
                     path = generateFullPath(requestMapping.value()[0]);
                 } else {
                     path = resourcePath;
