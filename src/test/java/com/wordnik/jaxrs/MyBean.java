@@ -29,6 +29,10 @@ public class MyBean extends MyParentBean {
     @HeaderParam("intValue")
     private int intValue;
 
+    @ApiParam(value = "hidden", hidden = true)
+    @QueryParam(value = "hiddenValue")
+    private String hiddenValue;
+
     @QueryParam(value = "listValue")
     private List<String> listValue;
 
