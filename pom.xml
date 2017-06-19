@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>org.sonatype.oss</groupId>
         <artifactId>oss-parent</artifactId>
@@ -10,7 +9,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.kongchen</groupId>
     <artifactId>swagger-maven-plugin</artifactId>
-    <version>3.1.5-SNAPSHOT</version>
+    <version>3.1.5</version>
     <packaging>maven-plugin</packaging>
     <name>Swagger Maven Plugin</name>
     <description>
@@ -28,7 +27,7 @@
         <connection>scm:git:git@github.com:kongchen/swagger-maven-plugin.git</connection>
         <url>scm:git:git@github.com:kongchen/swagger-maven-plugin.git</url>
         <developerConnection>scm:git:git@github.com:kongchen/swagger-maven-plugin.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>swagger-maven-plugin-3.1.5</tag>
     </scm>
 
     <developers>
