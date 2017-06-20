@@ -136,7 +136,6 @@ public abstract class AbstractDocumentSource {
                         switch (output) {
                             case json:
                                 ObjectWriter jsonWriter = mapper.writer(new DefaultPrettyPrinter());
-                                LOG.info(jsonWriter.writeValueAsString(swagger));
                                 FileUtils.write(new File(dir, fileName + ".json"), jsonWriter.writeValueAsString(swagger), encoding);
                                 break;
                             case yaml:
