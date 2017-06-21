@@ -44,7 +44,7 @@ public class ApiDocumentMojo extends AbstractMojo {
     /**
      * A flag indicating if the generation should be skipped.
      */
-    @Parameter(defaultValue = "false")
+    @Parameter(property = "swagger.skip", defaultValue = "false")
     private boolean skipSwaggerGeneration;
     
     @Parameter(property="file.encoding")
