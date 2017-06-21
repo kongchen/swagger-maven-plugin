@@ -12,10 +12,8 @@ This plugin enables your Swagger-annotated project to generate **Swagger specs**
 * Use [Handlebars](http://handlebarsjs.com/) as template to customize the static document.
 
 # Versions
-- [3.1.0](https://github.com/kongchen/swagger-maven-plugin/) supports Swagger Spec [2.0](https://github
-.com/swagger-api/swagger-spec/blob/master/versions/2.0.md), support JAX-RS & SpingMVC. (**ACTIVE!**)
-- [3.0.1](https://github.com/kongchen/swagger-maven-plugin/tree/swagger-core_com.wordnik_namespaces/) supports Swagger Spec [2.0](https://github
-.com/swagger-api/swagger-spec/blob/master/versions/2.0.md), support JAX-RS & SpingMVC. (**ACTIVE!**)
+- [3.1.0](https://github.com/kongchen/swagger-maven-plugin/) supports Swagger Spec [2.0](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md), support JAX-RS & SpingMVC. (**ACTIVE!**)
+- [3.0.1](https://github.com/kongchen/swagger-maven-plugin/tree/swagger-core_com.wordnik_namespaces/) supports Swagger Spec [2.0](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md), support JAX-RS & SpingMVC. (**ACTIVE!**)
 - [2.3.4](https://github.com/kongchen/swagger-maven-plugin/tree/spec1.2) supports Swagger Spec [1.2](https://github.com/swagger-api/swagger-spec/blob/master/versions/1.2.md), support JAX-RS & SpringMVC. (**Lazily maintained**)
 - [1.1.1](https://github.com/kongchen/swagger-maven-plugin/tree/1.1.1) supports Swagger Spec 1.1. (**No longer maintained**)
 
