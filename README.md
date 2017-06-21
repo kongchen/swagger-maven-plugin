@@ -49,7 +49,7 @@ Import the plugin in your project by adding following configuration in your `plu
 
 | **name** | **description** |
 |------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `skipSwaggerGeneration` | If `true`, swagger generation will be skipped. Default is `false`. |
+| `skipSwaggerGeneration` | If `true`, swagger generation will be skipped. Default is `false`. User property is `swagger.skip`. |
 | `apiSources` | List of `apiSource` elements. One `apiSource` can be considered as a version of APIs of your service. You can specify several `apiSource` elements, though generally one is enough. |
 
 # Configuration for `apiSource`
