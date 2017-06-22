@@ -97,7 +97,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
 
         for (String path : apiMethodMap.keySet()) {
             for (Method method : apiMethodMap.get(path)) {
-                RequestMapping requestMapping = AnnotatedElementUtils.findMergedAnnotation(method, RequestMapping.class);
+                RequestMapping requestMapping = SpringUtils.getMethodRequestMapping(method);
                 if (requestMapping == null) {
                     continue;
                 }
@@ -139,7 +139,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
     private Operation parseMethod(Method method) {
         Operation operation = new Operation();
 
-        RequestMapping requestMapping = AnnotatedElementUtils.findMergedAnnotation(method, RequestMapping.class);
+        RequestMapping requestMapping = SpringUtils.getMethodRequestMapping(method);
         Type responseClass = null;
         List<String> produces = new ArrayList<String>();
         List<String> consumes = new ArrayList<String>();
@@ -315,7 +315,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
     private Map<String, List<Method>> collectApisByRequestMapping(List<Method> methods) {
         Map<String, List<Method>> apiMethodMap = new HashMap<String, List<Method>>();
         for (Method method : methods) {
-            RequestMapping requestMapping = AnnotatedElementUtils.findMergedAnnotation(method, RequestMapping.class);
+        	RequestMapping requestMapping = SpringUtils.getMethodRequestMapping(method);
             if (requestMapping != null) {
                 String path;
                 if (requestMapping.value().length != 0) {
@@ -362,12 +362,12 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
 
     //Helper method for loadDocuments()
     private Map<String, SpringResource> analyzeController(Class<?> controllerClazz, Map<String, SpringResource> resourceMap, String description) {
-	String[] controllerRequestMappingValues = SpringUtils.getControllerResquestMapping(controllerClazz);
+	String[] controllerRequestMappingValues = SpringUtils.getControllerRequestMapping(controllerClazz);
 
         // Iterate over all value attributes of the class-level RequestMapping annotation
         for (String controllerRequestMappingValue : controllerRequestMappingValues) {
             for (Method method : controllerClazz.getMethods()) {
-                RequestMapping methodRequestMapping = AnnotatedElementUtils.findMergedAnnotation(method, RequestMapping.class);
+            	RequestMapping methodRequestMapping = SpringUtils.getMethodRequestMapping(method);
 
                 // Look for method-level @RequestMapping annotation
                 if (methodRequestMapping != null) {

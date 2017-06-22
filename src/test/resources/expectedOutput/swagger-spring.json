@@ -18,11 +18,11 @@
   "host" : "www.example.com:8080",
   "basePath" : "/api",
   "tags" : [ {
-    "name" : "store",
-    "description" : "Operations about store"
-  }, {
     "name" : "pet",
     "description" : "Operations about pets"
+  }, {
+    "name" : "store",
+    "description" : "Operations about store"
   }, {
     "name" : "user",
     "description" : "Operations about user"
@@ -34,21 +34,6 @@
         "summary" : "testingRootPathResource",
         "description" : "",
         "operationId" : "testingRootPathResource",
-        "responses" : {
-          "200" : {
-            "description" : "successful operation",
-            "schema" : {
-              "type" : "string"
-            }
-          }
-        }
-      }
-    },
-    "/testingEmptyRootPathResource" : {
-      "get" : {
-        "summary" : "testingEmptyRootPathResource",
-        "description" : "",
-        "operationId" : "testingEmptyRootPathResource",
         "responses" : {
           "200" : {
             "description" : "successful operation",
@@ -83,8 +68,8 @@
         "summary" : "Add a new pet to the store",
         "description" : "",
         "operationId" : "addPet",
-        "consumes" : [ "application/xml", "application/json" ],
-        "produces" : [ "application/xml", "application/json" ],
+        "consumes" : [ "application/json", "application/xml" ],
+        "produces" : [ "application/json", "application/xml" ],
         "parameters" : [ {
           "in" : "body",
           "name" : "body",
@@ -114,8 +99,8 @@
         "summary" : "Update an existing pet",
         "description" : "",
         "operationId" : "updatePet",
-        "consumes" : [ "application/xml", "application/json" ],
-        "produces" : [ "application/xml", "application/json" ],
+        "consumes" : [ "application/json", "application/xml" ],
+        "produces" : [ "application/json", "application/xml" ],
         "parameters" : [ {
           "in" : "body",
           "name" : "body",
@@ -153,7 +138,7 @@
         "summary" : "Finds Pets by status",
         "description" : "Multiple status values can be provided with comma seperated strings",
         "operationId" : "findPetsByStatus",
-        "produces" : [ "application/xml", "application/json" ],
+        "produces" : [ "application/json", "application/xml" ],
         "parameters" : [ {
           "name" : "status",
           "in" : "query",
@@ -192,7 +177,7 @@
         "summary" : "Finds Pets by status",
         "description" : "Multiple status values can be provided with multiple query parameters. Example: ?status=sold&status=pending",
         "operationId" : "findPetsByStatuses",
-        "produces" : [ "application/xml", "application/json" ],
+        "produces" : [ "application/json", "application/xml" ],
         "parameters" : [ {
           "name" : "status",
           "in" : "query",
@@ -231,7 +216,7 @@
         "summary" : "Finds Pets by tags",
         "description" : "Muliple tags can be provided with comma seperated strings. Use tags=tag1,tag2,tag3 for testing.",
         "operationId" : "findPetsByTags",
-        "produces" : [ "application/xml", "application/json" ],
+        "produces" : [ "application/json", "application/xml" ],
         "parameters" : [ {
           "name" : "tags",
           "in" : "query",
@@ -260,7 +245,7 @@
         "security" : [ {
           "petstore_auth" : [ "write:pets", "read:pets" ]
         } ],
-        "deprecated":true
+        "deprecated" : true
       }
     },
     "/pet/petPing" : {
@@ -269,7 +254,7 @@
         "summary" : "ping the service",
         "description" : "",
         "operationId" : "petPing",
-        "produces" : [ "application/xml", "application/json" ],
+        "produces" : [ "application/json", "application/xml" ],
         "responses" : {
           "200" : {
             "description" : "successful operation",
@@ -289,7 +274,7 @@
         "summary" : "Retrieve all pets. Pagination supported",
         "description" : "If you wish to paginate the results of this API, supply offset and limit query parameters.",
         "operationId" : "getAllPetsPaginated",
-        "produces" : [ "application/xml", "application/json" ],
+        "produces" : [ "application/json", "application/xml" ],
         "parameters" : [ {
           "name" : "limit",
           "in" : "query",
@@ -325,8 +310,8 @@
         "summary" : "Add multiple pets to the store",
         "description" : "",
         "operationId" : "addMultiplePets",
-        "consumes" : [ "application/xml", "application/json" ],
-        "produces" : [ "application/xml", "application/json" ],
+        "consumes" : [ "application/json", "application/xml" ],
+        "produces" : [ "application/json", "application/xml" ],
         "parameters" : [ {
           "in" : "body",
           "name" : "body",
@@ -364,7 +349,7 @@
         "summary" : "testExtensions",
         "description" : "",
         "operationId" : "testingExtensions",
-        "produces" : [ "application/xml", "application/json" ],
+        "produces" : [ "application/json", "application/xml" ],
         "responses" : {
           "200" : {
             "description" : "successful operation",
@@ -376,11 +361,11 @@
         "security" : [ {
           "petstore_auth" : [ "write:pets", "read:pets" ]
         } ],
+        "x-extensionName3" : "extensionValue3",
         "x-firstExtension" : {
           "extensionName2" : "extensionValue2",
           "extensionName1" : "extensionValue1"
-        },
-        "x-extensionName3" : "extensionValue3"
+        }
       }
     },
     "/pet/testing" : {
@@ -389,7 +374,7 @@
         "summary" : "testing",
         "description" : "",
         "operationId" : "testing",
-        "produces" : [ "application/xml", "application/json" ],
+        "produces" : [ "application/json", "application/xml" ],
         "parameters" : [ {
           "name" : "items",
           "in" : "query",
@@ -510,26 +495,6 @@
         } ]
       }
     },
-    "/pet/testingMergedAnnotations" : {
-      "get" : {
-        "tags" : [ "pet" ],
-        "summary" : "testingMergedAnnotations",
-        "description" : "",
-        "operationId" : "testingMergedAnnotations",
-        "produces" : [ "application/json" ],
-        "responses" : {
-          "200" : {
-            "description" : "successful operation",
-            "schema" : {
-              "type" : "string"
-            }
-          }
-        },
-        "security" : [ {
-          "petstore_auth" : [ "write:pets", "read:pets" ]
-        } ]
-      }
-    },
     "/pet/testingVendorExtensions" : {
       "get" : {
         "tags" : [ "pet" ],
@@ -559,7 +524,7 @@
         "summary" : "Find pet by ID",
         "description" : "Returns a pet when ID < 10.  ID > 10 or nonintegers will simulate API error conditions",
         "operationId" : "getPetById",
-        "produces" : [ "application/xml", "application/json" ],
+        "produces" : [ "application/json", "application/xml" ],
         "parameters" : [ {
           "name" : "petId",
           "in" : "path",
@@ -596,7 +561,7 @@
         "description" : "",
         "operationId" : "updatePetWithForm",
         "consumes" : [ "application/x-www-form-urlencoded" ],
-        "produces" : [ "application/xml", "application/json" ],
+        "produces" : [ "application/json", "application/xml" ],
         "parameters" : [ {
           "name" : "name",
           "in" : "query",
@@ -635,7 +600,7 @@
         "summary" : "Deletes a pet",
         "description" : "",
         "operationId" : "removePet",
-        "produces" : [ "application/xml", "application/json" ],
+        "produces" : [ "application/json", "application/xml" ],
         "parameters" : [ {
           "name" : "api_key",
           "in" : "header",
@@ -661,13 +626,80 @@
         } ]
       }
     },
+    "/requestMappings" : {
+      "get" : {
+        "summary" : "getMapping",
+        "description" : "",
+        "operationId" : "testingGetMapping",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object"
+            }
+          }
+        }
+      },
+      "post" : {
+        "summary" : "postMapping",
+        "description" : "",
+        "operationId" : "testingPostMapping",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object"
+            }
+          }
+        }
+      },
+      "put" : {
+        "summary" : "putMapping",
+        "description" : "",
+        "operationId" : "testingPutMapping",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object"
+            }
+          }
+        }
+      },
+      "delete" : {
+        "summary" : "deleteMapping",
+        "description" : "",
+        "operationId" : "testingDeleteMapping",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object"
+            }
+          }
+        }
+      },
+      "patch" : {
+        "summary" : "patchMapping",
+        "description" : "",
+        "operationId" : "testingPatchMapping",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object"
+            }
+          }
+        }
+      }
+    },
     "/store/order" : {
       "post" : {
         "tags" : [ "store" ],
         "summary" : "Place an order for a pet",
         "description" : "",
         "operationId" : "placeOrder",
-        "produces" : [ "application/xml", "application/json" ],
+        "produces" : [ "application/json", "application/xml" ],
         "parameters" : [ {
           "in" : "body",
           "name" : "body",
@@ -696,7 +728,7 @@
         "summary" : "Find purchase order by ID",
         "description" : "For valid response try integer IDs with value <= 5 or > 10. Other values will generated exceptions",
         "operationId" : "getOrderById",
-        "produces" : [ "application/xml", "application/json" ],
+        "produces" : [ "application/json", "application/xml" ],
         "parameters" : [ {
           "name" : "orderId",
           "in" : "path",
@@ -726,7 +758,7 @@
         "summary" : "Delete purchase order by ID",
         "description" : "For valid response try integer IDs with value < 1000. Anything above 1000 or nonintegers will generate API errors",
         "operationId" : "deleteOrder",
-        "produces" : [ "application/xml", "application/json" ],
+        "produces" : [ "application/json", "application/xml" ],
         "parameters" : [ {
           "name" : "orderId",
           "in" : "path",
@@ -745,50 +777,65 @@
         }
       }
     },
-      "/store/orders/{orderIds}" : {
-          "get" : {
-              "tags" : [ "store" ],
-              "summary" : "Find multiple purchase orders by IDs",
-              "description" : "For valid response try integer IDs with value <= 5 or > 10. Other values will generated exceptions",
-              "operationId" : "getOrdersById",
-              "produces" : [ "application/xml", "application/json" ],
-              "parameters" : [ {
-                  "name" : "orderIds",
-                  "in" : "path",
-                  "description" : "IDs of pets that needs to be fetched",
-                  "required" : true,
-                  "type" : "array",
-                  "items" : {
-                      "type" : "string"
-                  },
-                  "collectionFormat" : "csv"
-              } ],
-              "responses" : {
-                  "200" : {
-                      "description" : "successful operation",
-                      "schema" : {
-                          "type" : "array",
-                          "items" : {
-                              "$ref" : "#/definitions/Order"
-                          }
-                      }
-                  },
-                  "400" : {
-                      "description" : "Invalid ID supplied"
-                  },
-                  "404" : {
-                      "description" : "Order not found"
-                  }
+    "/store/orders/{orderIds}" : {
+      "get" : {
+        "tags" : [ "store" ],
+        "summary" : "Find multiple purchase orders by IDs",
+        "description" : "For valid response try integer IDs with value <= 5 or > 10. Other values will generated exceptions",
+        "operationId" : "getOrdersById",
+        "produces" : [ "application/json", "application/xml" ],
+        "parameters" : [ {
+          "name" : "orderIds",
+          "in" : "path",
+          "description" : "IDs of pets that needs to be fetched",
+          "required" : true,
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          },
+          "collectionFormat" : "csv"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/Order"
               }
+            }
+          },
+          "400" : {
+            "description" : "Invalid ID supplied"
+          },
+          "404" : {
+            "description" : "Order not found"
           }
-      },
+        }
+      }
+    },
     "/store/ping" : {
       "get" : {
         "tags" : [ "store" ],
         "summary" : "ping",
         "description" : "",
         "operationId" : "storePing",
-        "produces" : [ "application/xml", "application/json" ],
+        "produces" : [ "application/json", "application/xml" ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "string"
+            }
+          }
+        }
+      }
+    },
+    "/testingEmptyRootPathResource" : {
+      "get" : {
+        "summary" : "testingEmptyRootPathResource",
+        "description" : "",
+        "operationId" : "testingEmptyRootPathResource",
         "responses" : {
           "200" : {
             "description" : "successful operation",
@@ -805,7 +852,7 @@
         "summary" : "Create user",
         "description" : "This can only be done by the logged in user.",
         "operationId" : "createUser",
-        "produces" : [ "application/xml", "application/json" ],
+        "produces" : [ "application/json", "application/xml" ],
         "parameters" : [ {
           "in" : "body",
           "name" : "body",
@@ -828,7 +875,7 @@
         "summary" : "Creates list of users with given input array",
         "description" : "",
         "operationId" : "createUsersWithArrayInput",
-        "produces" : [ "application/xml", "application/json" ],
+        "produces" : [ "application/json", "application/xml" ],
         "parameters" : [ {
           "in" : "body",
           "name" : "body",
@@ -854,7 +901,7 @@
         "summary" : "Creates list of users with given input array",
         "description" : "",
         "operationId" : "createUsersWithListInput",
-        "produces" : [ "application/xml", "application/json" ],
+        "produces" : [ "application/json", "application/xml" ],
         "parameters" : [ {
           "in" : "body",
           "name" : "body",
@@ -880,7 +927,7 @@
         "summary" : "Logs user into the system",
         "description" : "",
         "operationId" : "loginUser",
-        "produces" : [ "application/xml", "application/json" ],
+        "produces" : [ "application/json", "application/xml" ],
         "parameters" : [ {
           "name" : "username",
           "in" : "query",
@@ -913,7 +960,7 @@
         "summary" : "Logs out current logged in user session",
         "description" : "",
         "operationId" : "logoutUser",
-        "produces" : [ "application/xml", "application/json" ],
+        "produces" : [ "application/json", "application/xml" ],
         "responses" : {
           "default" : {
             "description" : "successful operation"
@@ -927,7 +974,7 @@
         "summary" : "Get user by user name",
         "description" : "",
         "operationId" : "getUserByName",
-        "produces" : [ "application/xml", "application/json" ],
+        "produces" : [ "application/json", "application/xml" ],
         "parameters" : [ {
           "name" : "username",
           "in" : "path",
@@ -955,7 +1002,7 @@
         "summary" : "Updated user",
         "description" : "This can only be done by the logged in user.",
         "operationId" : "updateUser",
-        "produces" : [ "application/xml", "application/json" ],
+        "produces" : [ "application/json", "application/xml" ],
         "parameters" : [ {
           "name" : "username",
           "in" : "path",
@@ -985,7 +1032,7 @@
         "summary" : "Delete user",
         "description" : "This can only be done by the logged in user.",
         "operationId" : "deleteUser",
-        "produces" : [ "application/xml", "application/json" ],
+        "produces" : [ "application/json", "application/xml" ],
         "parameters" : [ {
           "name" : "username",
           "in" : "path",
@@ -1007,7 +1054,7 @@
         "summary" : "Updated user",
         "description" : "This can only be done by the logged in user.",
         "operationId" : "updateUser",
-        "produces" : [ "application/xml", "application/json" ],
+        "produces" : [ "application/json", "application/xml" ],
         "parameters" : [ {
           "name" : "username",
           "in" : "path",
@@ -1111,9 +1158,9 @@
         "complete" : {
           "type" : "boolean"
         },
-          "optionalStatus" : {
-              "type" : "string"
-          }
+        "optionalStatus" : {
+          "type" : "string"
+        }
       },
       "xml" : {
         "name" : "Order"
