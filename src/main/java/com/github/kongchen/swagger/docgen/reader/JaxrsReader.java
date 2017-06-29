@@ -377,59 +377,59 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         return operation;
     }
 
-    private Class<?> convertToClass(Type type) {
-        Type typeToConvert = type;
-        if (type instanceof ParameterizedType) {
-            typeToConvert = ((ParameterizedType) type).getRawType();
-        }
-        try {
-            return Class.forName(getClassName(typeToConvert));
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-    }
+	private Class<?> convertToClass(Type type) {
+		Type typeToConvert = type;
+		if (type instanceof ParameterizedType) {
+			typeToConvert = ((ParameterizedType) type).getRawType();
+		}
+		try {
+			return Class.forName(getClassName(typeToConvert));
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
-    private static String getClassName(Type type) {
-        String fullName = type.toString();
-        if (fullName.startsWith(CLASS_NAME_PREFIX)) {
-            return fullName.substring(CLASS_NAME_PREFIX.length());
-        } else if (fullName.startsWith(INTERFACE_NAME_PREFIX)) {
-            return fullName.substring(INTERFACE_NAME_PREFIX.length());
-        }
-        return fullName;
-    }
+	private static String getClassName(Type type) {
+		String fullName = type.toString();
+		if (fullName.startsWith(CLASS_NAME_PREFIX)) {
+			return fullName.substring(CLASS_NAME_PREFIX.length());
+		} else if (fullName.startsWith(INTERFACE_NAME_PREFIX)) {
+			return fullName.substring(INTERFACE_NAME_PREFIX.length());
+		}
+		return fullName;
+	}
 
-    private Annotation[][] findParamAnnotations(Method method) {
-        Annotation[][] paramAnnotation = method.getParameterAnnotations();
+	private Annotation[][] findParamAnnotations(Method method) {
+		Annotation[][] paramAnnotation = method.getParameterAnnotations();
 
-        method = ReflectionUtils.getOverriddenMethod(method);
-        while(method != null) {
-            paramAnnotation = merge(paramAnnotation, method.getParameterAnnotations());
-            method = ReflectionUtils.getOverriddenMethod(method);
-        }
-        return paramAnnotation;
-    }
+		method = ReflectionUtils.getOverriddenMethod(method);
+		while(method != null) {
+			paramAnnotation = merge(paramAnnotation, method.getParameterAnnotations());
+			method = ReflectionUtils.getOverriddenMethod(method);
+		}
+		return paramAnnotation;
+	}
 
 
     private Annotation[][] merge(Annotation[][] paramAnnotation,
-            Annotation[][] superMethodParamAnnotations) {
-        Annotation[][] mergedAnnotations = new Annotation[paramAnnotation.length][];
+			Annotation[][] superMethodParamAnnotations) {
+    	Annotation[][] mergedAnnotations = new Annotation[paramAnnotation.length][];
 
-        for(int i=0; i<paramAnnotation.length; i++) {
-            mergedAnnotations[i] = merge(paramAnnotation[i], superMethodParamAnnotations[i]);
-        }
-        return mergedAnnotations;
-    }
+    	for(int i=0; i<paramAnnotation.length; i++) {
+    		mergedAnnotations[i] = merge(paramAnnotation[i], superMethodParamAnnotations[i]);
+    	}
+		return mergedAnnotations;
+	}
 
-    private Annotation[] merge(Annotation[] annotations,
-            Annotation[] annotations2) {
-        Set<Annotation> mergedAnnotations = new HashSet<Annotation>();
-        mergedAnnotations.addAll(Arrays.asList(annotations));
-        mergedAnnotations.addAll(Arrays.asList(annotations2));
-        return mergedAnnotations.toArray(new Annotation[0]);
-    }
+	private Annotation[] merge(Annotation[] annotations,
+			Annotation[] annotations2) {
+		Set<Annotation> mergedAnnotations = new HashSet<Annotation>();
+		mergedAnnotations.addAll(Arrays.asList(annotations));
+		mergedAnnotations.addAll(Arrays.asList(annotations2));
+		return mergedAnnotations.toArray(new Annotation[0]);
+	}
 
-    public String extractOperationMethod(ApiOperation apiOperation, Method method, Iterator<SwaggerExtension> chain) {
+	public String extractOperationMethod(ApiOperation apiOperation, Method method, Iterator<SwaggerExtension> chain) {
         if (!apiOperation.httpMethod().isEmpty()) {
             return apiOperation.httpMethod().toLowerCase();
         } else if (AnnotationUtils.findAnnotation(method, GET.class) != null) {
