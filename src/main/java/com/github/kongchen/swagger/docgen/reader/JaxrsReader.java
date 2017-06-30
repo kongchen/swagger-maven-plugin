@@ -313,7 +313,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
                             .headers(defaultResponseHeaders));
                     swagger.model(key, models.get(key));
                 }
-                models = ModelConverters.getInstance().readAll(responseClass);
+				models = ModelConverters.getInstance().readAll(responseClassType);
                 for (Map.Entry<String, Model> entry : models.entrySet()) {
                     swagger.model(entry.getKey(), entry.getValue());
                 }
