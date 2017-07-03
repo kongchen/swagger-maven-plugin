@@ -43,7 +43,8 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
     private ApiDocumentMojo mojo;
     private ObjectMapper mapper = new ObjectMapper();
 
-    @BeforeMethod
+    @Override
+	@BeforeMethod
     protected void setUp() throws Exception {
         super.setUp();
 

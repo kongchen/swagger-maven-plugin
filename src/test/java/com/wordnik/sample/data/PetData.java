@@ -111,6 +111,10 @@ public class PetData {
         return result;
     }
 
+	public List<Pet> findAllPets() {
+		return Collections.unmodifiableList(pets);
+	}
+
     public Pet addPet(Pet pet) {
         if (pet.getId().value() == 0) {
             long maxId = 0;
