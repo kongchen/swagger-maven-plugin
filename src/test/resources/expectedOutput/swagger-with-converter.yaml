@@ -143,6 +143,34 @@ paths:
       - petstore_auth:
         - "write:pets"
         - "read:pets"
+  /pet/findAll:
+    get:
+      tags:
+      - "pet"
+      summary: "Finds all Pets"
+      description: "Returns a paginated list of all the Pets."
+      operationId: "findAllPaginated"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "pageNumber"
+        in: "query"
+        description: "pageNumber"
+        required: true
+        type: "integer"
+        format: "int32"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/PagedListPet"
+        400:
+          description: "Invalid page number value"
+      security:
+      - petstore_auth:
+        - "write:pets"
+        - "read:pets"
   /pet/findByStatus:
     get:
       tags:
@@ -1048,6 +1076,32 @@ definitions:
         type: "string"
     xml:
       name: "Order"
+  PagedList:
+    type: "object"
+    properties:
+      items:
+        type: "array"
+        items:
+          type: "object"
+      pageNumber:
+        type: "integer"
+        format: "int32"
+      totalItems:
+        type: "integer"
+        format: "int32"
+  PagedListPet:
+    type: "object"
+    properties:
+      items:
+        type: "array"
+        items:
+          $ref: "#/definitions/Pet"
+      pageNumber:
+        type: "integer"
+        format: "int32"
+      totalItems:
+        type: "integer"
+        format: "int32"
   Pet:
     type: "object"
     required:

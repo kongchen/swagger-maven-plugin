@@ -185,7 +185,7 @@ public class PetResource {
 	@GET
 	@Path("/findAll")
 	@ApiOperation(value = "Finds all Pets", notes = "Returns a paginated list of all the Pets.")
-	@ApiResponses(value = { @ApiResponse(code = 400, message = "Invalid page value") })
+	@ApiResponses(value = { @ApiResponse(code = 400, message = "Invalid page number value") })
 	public PagedList<Pet> findAllPaginated(
 			@ApiParam(value = "pageNumber", required = true) @QueryParam("pageNumber") int pageNumber) {
 		List<Pet> allPets = petData.findAllPets();
