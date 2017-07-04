@@ -117,7 +117,16 @@ or define several definitions in a json file and specify the json path like this
     <json>/securityDefinition.json</json>
 </securityDefinition>
 ```
+
 The file will be read by `getClass().getResourceAsStream`, so please note the path you configured.
+
+Alternatively, specify the __absolute__ file path to the json definition file: 
+
+```xml
+<securityDefinition>
+    <jsonPath>${basedir}/securityDefinition.json</jsonPath>
+</securityDefinition>
+```
 
 The `securityDefinition.json` file should also follow the spec, one sample file like this:
 

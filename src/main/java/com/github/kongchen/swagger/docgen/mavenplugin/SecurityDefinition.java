@@ -8,7 +8,9 @@ import io.swagger.models.auth.BasicAuthDefinition;
 import io.swagger.models.auth.OAuth2Definition;
 import io.swagger.models.auth.SecuritySchemeDefinition;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -21,14 +23,16 @@ public class SecurityDefinition {
     private String type;
     private String description;
     private String json;
+    private String jsonPath;
 
     public Map<String, SecuritySchemeDefinition> getDefinitions() throws GenerateException {
         Map<String, SecuritySchemeDefinition> map = new HashMap<String, SecuritySchemeDefinition>();
         if (name != null && type != null) {
             map.put(name, getSecuritySchemeDefinitionByNameAndType());
-        } else if (json != null) {
+        } else if (json != null || jsonPath != null) {
             try {
-                JsonNode tree = new ObjectMapper().readTree(this.getClass().getResourceAsStream(json));
+                InputStream jsonStream = json != null ? this.getClass().getResourceAsStream(json) : new FileInputStream(jsonPath);
+                JsonNode tree = new ObjectMapper().readTree(jsonStream);
                 Iterator<String> fit = tree.fieldNames();
                 while (fit.hasNext()) {
                     String field = fit.next();
@@ -139,5 +143,13 @@ public class SecurityDefinition {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getJsonPath() {
+        return jsonPath;
+    }
+
+    public void setJsonPath(String jsonPath) {
+        this.jsonPath = jsonPath;
     }
 }

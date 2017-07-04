@@ -59,7 +59,7 @@
                                     <type>basic</type>
                                 </securityDefinition>
                                 <securityDefinition>
-                                    <json>/securityDefinition.json</json>
+                                    <jsonPath>${basedir}/src/test/resources/securityDefinition.json</jsonPath>
                                 </securityDefinition>
                             </securityDefinitions>
                             <!-- Support classpath or file absolute path here.
