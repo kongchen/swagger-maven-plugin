@@ -111,7 +111,7 @@ public class ApiDocumentMojo extends AbstractMojo {
                         apiSource.getSwaggerUIDocBasePath() == null
                                 ? apiSource.getBasePath()
                                 : apiSource.getSwaggerUIDocBasePath(),
-                        apiSource.getOutputFormats(), swaggerFileName, encoding);
+                        apiSource.getOutputFormats(), swaggerFileName, projectEncoding);
 
 
                 if (apiSource.isAttachSwaggerArtifact() && apiSource.getSwaggerDirectory() != null && project != null) {
