@@ -470,6 +470,93 @@ This is a contrived example
 
 
 
+## /pet/findAll
+
+
+### GET
+
+<a id="findAllPaginated">Finds all Pets</a>
+
+Returns a paginated list of all the Pets.
+
+
+
+
+#### Security
+
+
+
+
+* petstore_auth
+   * write:pets
+   * read:pets
+
+
+
+
+#### Request
+
+
+
+##### Parameters
+
+<table border="1">
+    <tr>
+        <th>Name</th>
+        <th>Located in</th>
+        <th>Required</th>
+        <th>Description</th>
+        <th>Default</th>
+        <th>Schema</th>
+    </tr>
+
+
+
+<tr>
+    <th>pageNumber</th>
+    <td>query</td>
+    <td>yes</td>
+    <td>pageNumber</td>
+    <td> - </td>
+
+
+            <td>integer (int32)</td>
+
+
+</tr>
+
+
+</table>
+
+
+
+#### Response
+
+**Content-Type: ** application/json, application/xml
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 200    | successful operation | <a href="#/definitions/PagedListPet">PagedListPet</a>|
+| 400    | Invalid page number value |  - |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## /pet/findByStatus
 
 
@@ -3078,6 +3165,112 @@ This can only be done by the logged in user.
 
 
                 string
+
+            </td>
+            <td>optional</td>
+            <td>-</td>
+            <td></td>
+        </tr>
+
+</table>
+
+## <a name="/definitions/PagedList">PagedList</a>
+
+<table border="1">
+    <tr>
+        <th>name</th>
+        <th>type</th>
+        <th>required</th>
+        <th>description</th>
+        <th>example</th>
+    </tr>
+
+        <tr>
+            <td>pageNumber</td>
+            <td>
+
+
+                    integer (int32)
+
+            </td>
+            <td>optional</td>
+            <td>-</td>
+            <td></td>
+        </tr>
+
+        <tr>
+            <td>totalItems</td>
+            <td>
+
+
+                    integer (int32)
+
+            </td>
+            <td>optional</td>
+            <td>-</td>
+            <td></td>
+        </tr>
+
+        <tr>
+            <td>items</td>
+            <td>
+
+
+                    array[object]
+
+            </td>
+            <td>optional</td>
+            <td>-</td>
+            <td></td>
+        </tr>
+
+</table>
+
+## <a name="/definitions/PagedListPet">PagedListPet</a>
+
+<table border="1">
+    <tr>
+        <th>name</th>
+        <th>type</th>
+        <th>required</th>
+        <th>description</th>
+        <th>example</th>
+    </tr>
+
+        <tr>
+            <td>pageNumber</td>
+            <td>
+
+
+                    integer (int32)
+
+            </td>
+            <td>optional</td>
+            <td>-</td>
+            <td></td>
+        </tr>
+
+        <tr>
+            <td>totalItems</td>
+            <td>
+
+
+                    integer (int32)
+
+            </td>
+            <td>optional</td>
+            <td>-</td>
+            <td></td>
+        </tr>
+
+        <tr>
+            <td>items</td>
+            <td>
+
+
+                    array[<a href="#/definitions/Pet">Pet</a>]
+
+
 
             </td>
             <td>optional</td>
