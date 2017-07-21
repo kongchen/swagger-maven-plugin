@@ -1531,6 +1531,18 @@
         "name": "Category"
       }
     },
+    "ListItem" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "integer",
+          "format" : "int64"
+        }
+      },
+      "xml" : {
+        "name" : "ListItem"
+      }
+    },
     "Order": {
       "type": "object",
       "properties": {
