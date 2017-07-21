@@ -1549,7 +1549,8 @@
           }
       },
       "xml": {
-        "name": "Order"
+        "name": "Order",
+        "namespace": "http://com.wordnik/sample/model"
       }
     },
     "PagedList" : {
@@ -1642,7 +1643,8 @@
         }
       },
       "xml": {
-        "name": "Pet"
+        "name": "Pet",
+        "namespace": "http://com.wordnik/sample/model"
       }
     },
     "Tag": {
@@ -1657,7 +1659,8 @@
         }
       },
       "xml": {
-        "name": "Tag"
+        "name": "Tag",
+        "namespace": "http://com.wordnik/sample/model"
       }
     },
     "User": {
@@ -1693,7 +1696,8 @@
         }
       },
       "xml": {
-        "name": "User"
+        "name": "User",
+        "namespace": "http://com.wordnik/sample/model"
       }
     }
   }
