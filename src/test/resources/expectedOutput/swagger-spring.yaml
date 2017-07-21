@@ -959,10 +959,15 @@ definitions:
       id:
         type: "integer"
         format: "int64"
+        xml:
+          namespace: "http://com.wordnik/sample/model/category"
       name:
         type: "string"
+        xml:
+          namespace: "http://com.wordnik/sample/model/category"
     xml:
       name: "Category"
+      namespace: "http://com.wordnik/sample/model/category"
   Order:
     type: "object"
     properties:
