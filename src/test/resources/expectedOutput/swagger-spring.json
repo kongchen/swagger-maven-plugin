@@ -121,7 +121,7 @@
         "operationId" : "pathVariableExpectParameterName",
         "produces" : [ "application/json" ],
         "parameters" : [ {
-          "name" : "",
+          "name" : "parameterName",
           "in" : "path",
           "required" : true,
           "type" : "string"
@@ -236,7 +236,7 @@
         "operationId" : "requestHeaderExpectParameterName",
         "produces" : [ "application/json" ],
         "parameters" : [ {
-          "name" : "",
+          "name" : "parameterName",
           "in" : "header",
           "required" : true,
           "type" : "string"
@@ -305,7 +305,7 @@
         "operationId" : "requestParamExpectParameterName",
         "produces" : [ "application/json" ],
         "parameters" : [ {
-          "name" : "",
+          "name" : "parameterName",
           "in" : "query",
           "required" : true,
           "type" : "string"
@@ -328,7 +328,7 @@
         "operationId" : "requestPartExpectParameterName",
         "produces" : [ "application/json" ],
         "parameters" : [ {
-          "name" : "",
+          "name" : "parameterName",
           "in" : "formData",
           "required" : true,
           "type" : "string"

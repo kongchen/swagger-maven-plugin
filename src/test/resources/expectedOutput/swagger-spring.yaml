@@ -92,7 +92,7 @@ paths:
       produces:
       - "application/json"
       parameters:
-      - name: ""
+      - name: "parameterName"
         in: "path"
         required: true
         type: "string"
@@ -187,7 +187,7 @@ paths:
       produces:
       - "application/json"
       parameters:
-      - name: ""
+      - name: "parameterName"
         in: "header"
         required: true
         type: "string"
@@ -244,7 +244,7 @@ paths:
       produces:
       - "application/json"
       parameters:
-      - name: ""
+      - name: "parameterName"
         in: "query"
         required: true
         type: "string"
@@ -263,7 +263,7 @@ paths:
       produces:
       - "application/json"
       parameters:
-      - name: ""
+      - name: "parameterName"
         in: "formData"
         required: true
         type: "string"
