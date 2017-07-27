@@ -69,6 +69,12 @@
         "description" : "",
         "operationId" : "cookieValueExpectCookieName",
         "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "cookieValueName",
+          "in" : "cookie",
+          "required" : true,
+          "type" : "string"
+        } ],
         "responses" : {
           "200" : {
             "description" : "successful operation",
@@ -86,6 +92,12 @@
         "description" : "",
         "operationId" : "cookieValueExpectCookieValue",
         "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "cookieValueValue",
+          "in" : "cookie",
+          "required" : true,
+          "type" : "string"
+        } ],
         "responses" : {
           "200" : {
             "description" : "successful operation",
@@ -103,6 +115,12 @@
         "description" : "",
         "operationId" : "cookieValueExpectParameterName",
         "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "parameterName",
+          "in" : "cookie",
+          "required" : true,
+          "type" : "string"
+        } ],
         "responses" : {
           "200" : {
             "description" : "successful operation",

@@ -46,7 +46,11 @@ paths:
       operationId: "cookieValueExpectCookieName"
       produces:
       - "application/json"
-      parameters: []
+      parameters:
+      - name: "cookieValueName"
+        in: "cookie"
+        required: true
+        type: "string"
       responses:
         200:
           description: "successful operation"
@@ -61,7 +65,11 @@ paths:
       operationId: "cookieValueExpectCookieValue"
       produces:
       - "application/json"
-      parameters: []
+      parameters:
+      - name: "cookieValueValue"
+        in: "cookie"
+        required: true
+        type: "string"
       responses:
         200:
           description: "successful operation"
@@ -76,7 +84,11 @@ paths:
       operationId: "cookieValueExpectParameterName"
       produces:
       - "application/json"
-      parameters: []
+      parameters:
+      - name: "parameterName"
+        in: "cookie"
+        required: true
+        type: "string"
       responses:
         200:
           description: "successful operation"
