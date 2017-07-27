@@ -18,8 +18,8 @@
   "host" : "www.example.com:8080",
   "basePath" : "/api",
   "tags" : [ {
-    "name" : "echo",
-    "description" : "Set of simple endpoints that return whatever value you pass in"
+      "name" : "echo",
+      "description" : "Set of simple endpoints that return whatever value you pass in"
   }, {
     "name" : "store",
     "description" : "Operations about store"
@@ -144,7 +144,7 @@
         "operationId" : "pathVariableExpectVariableName",
         "produces" : [ "application/json" ],
         "parameters" : [ {
-          "name" : "",
+          "name" : "pathVariableName",
           "in" : "path",
           "required" : true,
           "type" : "string"
@@ -190,7 +190,7 @@
         "operationId" : "requestHeaderExpectHeaderName",
         "produces" : [ "application/json" ],
         "parameters" : [ {
-          "name" : "",
+          "name" : "requestHeaderName",
           "in" : "header",
           "required" : true,
           "type" : "string"
@@ -259,7 +259,7 @@
         "operationId" : "requestParamExpectParamName",
         "produces" : [ "application/json" ],
         "parameters" : [ {
-          "name" : "",
+          "name" : "requestParamName",
           "in" : "query",
           "required" : true,
           "type" : "string"
@@ -351,7 +351,7 @@
         "operationId" : "requestPartExpectPartName",
         "produces" : [ "application/json" ],
         "parameters" : [ {
-          "name" : "",
+          "name" : "requestPartName",
           "in" : "formData",
           "required" : true,
           "type" : "string"
