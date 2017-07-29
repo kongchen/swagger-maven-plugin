@@ -5,7 +5,7 @@ import com.wordnik.sample.model.Pet;
 import io.swagger.annotations.*;
 
 import javax.ws.rs.GET;
-import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
@@ -36,4 +36,13 @@ public interface MyResource {
                   notes = "This is a contrived example"
     )
     public abstract List<ListItem> getListOfItems();
+
+    //contrived example test case for swagger-maven-plugin issue #504
+    @GET
+    @ApiOperation(value = "Get a response", notes = "This is a contrived example")
+    Response testParamInheritance(
+            @PathParam("firstParam") String firstParam,
+            @PathParam("secondParam") String secondParam,
+            @QueryParam("thirdParam") String thirdParam);
+
 }

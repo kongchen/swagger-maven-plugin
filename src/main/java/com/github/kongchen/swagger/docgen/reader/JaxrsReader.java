@@ -4,46 +4,26 @@ import io.swagger.annotations.*;
 import io.swagger.converter.ModelConverters;
 import io.swagger.jaxrs.ext.SwaggerExtension;
 import io.swagger.jaxrs.ext.SwaggerExtensions;
-import io.swagger.models.Model;
-import io.swagger.models.Operation;
-import io.swagger.models.Response;
-import io.swagger.models.SecurityRequirement;
-import io.swagger.models.Swagger;
+import io.swagger.models.*;
 import io.swagger.models.Tag;
 import io.swagger.models.parameters.Parameter;
 import io.swagger.models.properties.Property;
 import io.swagger.models.properties.RefProperty;
 import io.swagger.util.ReflectionUtils;
-
 import org.apache.maven.plugin.logging.Log;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.AnnotationUtils;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.HEAD;
+import javax.ws.rs.*;
 import javax.ws.rs.HttpMethod;
-import javax.ws.rs.OPTIONS;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
     private static final Logger LOGGER = LoggerFactory.getLogger(JaxrsReader.class);
@@ -402,12 +382,12 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
 	private Annotation[][] findParamAnnotations(Method method) {
 		Annotation[][] paramAnnotation = method.getParameterAnnotations();
 
-		method = ReflectionUtils.getOverriddenMethod(method);
-		while(method != null) {
-			paramAnnotation = merge(paramAnnotation, method.getParameterAnnotations());
-			method = ReflectionUtils.getOverriddenMethod(method);
-		}
-		return paramAnnotation;
+        Method overriddenMethod = ReflectionUtils.getOverriddenMethod(method);
+        while(overriddenMethod != null) {
+            paramAnnotation = merge(overriddenMethod.getParameterAnnotations(), paramAnnotation);
+            overriddenMethod = ReflectionUtils.getOverriddenMethod(overriddenMethod);
+        }
+        return paramAnnotation;
 	}
 
 
@@ -423,7 +403,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
 
 	private Annotation[] merge(Annotation[] annotations,
 			Annotation[] annotations2) {
-		Set<Annotation> mergedAnnotations = new HashSet<Annotation>();
+        List<Annotation> mergedAnnotations = new ArrayList<Annotation>();
 		mergedAnnotations.addAll(Arrays.asList(annotations));
 		mergedAnnotations.addAll(Arrays.asList(annotations2));
 		return mergedAnnotations.toArray(new Annotation[0]);

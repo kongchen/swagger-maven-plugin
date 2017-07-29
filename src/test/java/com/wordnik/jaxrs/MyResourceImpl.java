@@ -22,6 +22,7 @@ import com.wordnik.sample.model.ListItem;
 import com.wordnik.sample.model.Pet;
 
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,4 +57,16 @@ public class MyResourceImpl implements MyResource {
         return new ArrayList();
     }
 
+    //contrived example test case for swagger-maven-plugin issue #504
+    /* (non-Javadoc)
+	 * @see com.wordnik.jaxrs.MyResource#testParamInheritance(java.lang.String, java.lang.String, java.lang.String)
+	 */
+    @Path("{id1}/properties/{id2}")
+    @Override
+    public Response testParamInheritance(
+            @PathParam("id1") String id1,
+            @PathParam("id2") String id2,
+            String id3) {
+        return Response.ok().build();
+    }
 }
