@@ -16,12 +16,15 @@
 
 package com.wordnik.jaxrs;
 
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Response;
-
 import com.wordnik.sample.JavaRestResourceUtil;
 import com.wordnik.sample.data.PetData;
+import com.wordnik.sample.model.ListItem;
 import com.wordnik.sample.model.Pet;
+
+import javax.ws.rs.Path;
+import javax.ws.rs.core.Response;
+import java.util.ArrayList;
+import java.util.List;
 
 @Path("/myResourceImpl")
 public class MyResourceImpl implements MyResource {
@@ -30,7 +33,7 @@ public class MyResourceImpl implements MyResource {
 
     //contrived example test case for swagger-maven-plugin issue #358
     /* (non-Javadoc)
-	 * @see com.wordnik.jaxrs.MyResource#getPetsById(java.lang.Long, java.lang.Long)
+     * @see com.wordnik.jaxrs.MyResource#getPetsById(java.lang.Long, java.lang.Long)
 	 */
     @Override
     public Response getPetsById(Long startId, Long endId)
@@ -41,6 +44,16 @@ public class MyResourceImpl implements MyResource {
         } else {
             throw new com.wordnik.sample.exception.NotFoundException(404, "Pet not found");
         }
+    }
+
+    //contrived example test case for swagger-maven-plugin issue #505
+    /* (non-Javadoc)
+	 * @see com.wordnik.jaxrs.MyResource#getListOfItems()
+	 */
+    @Path("list")
+    @Override
+    public List<ListItem> getListOfItems() {
+        return new ArrayList();
     }
 
 }

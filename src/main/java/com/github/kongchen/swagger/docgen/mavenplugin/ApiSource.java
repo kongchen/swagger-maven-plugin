@@ -101,7 +101,10 @@ public class ApiSource {
 
     @Parameter
     private boolean useJAXBAnnotationProcessor;
-
+    
+    @Parameter
+    private boolean useJAXBAnnotationProcessorAsPrimary = true;
+    
     @Parameter
     private String swaggerSchemaConverter;
 
@@ -378,6 +381,14 @@ public class ApiSource {
 
     public void setUseJAXBAnnotationProcessor(boolean useJAXBAnnotationProcessor) {
         this.useJAXBAnnotationProcessor = useJAXBAnnotationProcessor;
+    }
+
+    public boolean isUseJAXBAnnotationProcessorAsPrimary() {
+        return useJAXBAnnotationProcessorAsPrimary;
+    }
+
+    public void setUseJAXBAnnotationProcessorAsPrimary(boolean useJAXBAnnotationProcessorAsPrimary) {
+        this.useJAXBAnnotationProcessorAsPrimary = useJAXBAnnotationProcessorAsPrimary;
     }
 
     public File getDescriptionFile() {

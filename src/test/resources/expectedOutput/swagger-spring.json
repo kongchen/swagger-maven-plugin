@@ -59,6 +59,25 @@
         }
       }
     },
+    "/myResourceImpl/list" : {
+      "get" : {
+        "summary" : "Get a list of items",
+        "description" : "This is a contrived example",
+        "operationId" : "getListOfItems",
+        "produces" : [ "application/json", "application/xml" ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ListItem"
+              }
+            }
+          }
+        }
+      }
+    },
     "/pet" : {
       "get" : {
         "tags" : [ "pet" ],
@@ -497,6 +516,26 @@
           },
           "collectionFormat" : "multi"
         } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "string"
+            }
+          }
+        },
+        "security" : [ {
+          "petstore_auth" : [ "write:pets", "read:pets" ]
+        } ]
+      }
+    },
+    "/pet/testingMergedAnnotations" : {
+      "get" : {
+        "tags" : [ "pet" ],
+        "summary" : "testingMergedAnnotations",
+        "description" : "",
+        "operationId" : "testingMergedAnnotations",
+        "produces" : [ "application/json" ],
         "responses" : {
           "200" : {
             "description" : "successful operation",
@@ -1062,6 +1101,18 @@
       },
       "xml" : {
         "name" : "Category"
+      }
+    },
+    "ListItem" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "integer",
+          "format" : "int64"
+        }
+      },
+      "xml" : {
+        "name" : "ListItem"
       }
     },
     "Order" : {

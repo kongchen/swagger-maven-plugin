@@ -34,6 +34,7 @@ import javax.ws.rs.Produces;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,6 +48,8 @@ import java.util.Set;
 public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
     private static final Logger LOGGER = LoggerFactory.getLogger(JaxrsReader.class);
     private static final ResponseContainerConverter RESPONSE_CONTAINER_CONVERTER = new ResponseContainerConverter();
+    private static final String CLASS_NAME_PREFIX = "class ";
+    private static final String INTERFACE_NAME_PREFIX = "interface ";
 
     public JaxrsReader(Swagger swagger, Log LOG) {
         super(swagger, LOG);
@@ -54,7 +57,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
 
     @Override
     public Swagger read(Set<Class<?>> classes) {
-        for (Class cls : classes) {
+        for (Class<?> cls : classes) {
             read(cls);
         }
         return swagger;
@@ -64,7 +67,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         return swagger;
     }
 
-    public Swagger read(Class cls) {
+    public Swagger read(Class<?> cls) {
         return read(cls, "", null, false, new String[0], new String[0], new HashMap<String, Tag>(), new ArrayList<Parameter>());
     }
 
@@ -163,7 +166,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
     private void handleSubResource(String[] apiConsumes, String httpMethod, String[] apiProduces, Map<String, Tag> tags, Method method, String operationPath, Operation operation) {
         if (isSubResource(method)) {
             Class<?> responseClass = method.getReturnType();
-            Swagger subSwagger = read(responseClass, operationPath, httpMethod, true, apiConsumes, apiProduces, tags, operation.getParameters());
+            read(responseClass, operationPath, httpMethod, true, apiConsumes, apiProduces, tags, operation.getParameters());
         }
     }
 
@@ -219,7 +222,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         String operationId = method.getName();
         String responseContainer = null;
 
-        Class<?> responseClass = null;
+        Type responseClassType = null;
         Map<String, Property> defaultResponseHeaders = null;
 
         if (apiOperation != null) {
@@ -245,8 +248,8 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
                 }
             }
 
-            if (!apiOperation.response().equals(Void.class)) {
-                responseClass = apiOperation.response();
+            if (!apiOperation.response().equals(Void.class) && !apiOperation.response().equals(void.class)) {
+                responseClassType = apiOperation.response();
             }
             if (!apiOperation.responseContainer().isEmpty()) {
                 responseContainer = apiOperation.responseContainer();
@@ -271,23 +274,18 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         }
         operation.operationId(operationId);
 
-        if (responseClass == null) {
+        if (responseClassType == null) {
             // pick out response from method declaration
             LOGGER.debug("picking up response class from method " + method);
-            Type t = method.getGenericReturnType();
-            responseClass = method.getReturnType();
-            if (!responseClass.equals(Void.class) && !responseClass.equals(void.class)
-                    && (AnnotationUtils.findAnnotation(responseClass, Api.class) == null)) {
-                LOGGER.debug("reading model " + responseClass);
-                Map<String, Model> models = ModelConverters.getInstance().readAll(t);
-            }
+            responseClassType = method.getGenericReturnType();
         }
-        if ((responseClass != null)
-                && !responseClass.equals(Void.class)
-                && !responseClass.equals(javax.ws.rs.core.Response.class)
-                && (AnnotationUtils.findAnnotation(responseClass, Api.class) == null)) {
-            if (isPrimitive(responseClass)) {
-                Property property = ModelConverters.getInstance().readAsProperty(responseClass);
+        if ((responseClassType != null)
+                && !responseClassType.equals(Void.class)
+                && !responseClassType.equals(void.class)
+                && !responseClassType.equals(javax.ws.rs.core.Response.class)
+                && (AnnotationUtils.findAnnotation(convertToClass(responseClassType), Api.class) == null)) {
+            if (isPrimitive(responseClassType)) {
+                Property property = ModelConverters.getInstance().readAsProperty(responseClassType);
                 if (property != null) {
                     Property responseProperty = RESPONSE_CONTAINER_CONVERTER.withResponseContainer(responseContainer, property);
 
@@ -296,10 +294,10 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
                             .schema(responseProperty)
                             .headers(defaultResponseHeaders));
                 }
-            } else if (!responseClass.equals(Void.class) && !responseClass.equals(void.class)) {
-                Map<String, Model> models = ModelConverters.getInstance().read(responseClass);
+            } else if (!responseClassType.equals(Void.class) && !responseClassType.equals(void.class)) {
+                Map<String, Model> models = ModelConverters.getInstance().read(responseClassType);
                 if (models.isEmpty()) {
-                    Property p = ModelConverters.getInstance().readAsProperty(responseClass);
+                    Property p = ModelConverters.getInstance().readAsProperty(responseClassType);
                     operation.response(apiOperation.code(), new Response()
                             .description("successful operation")
                             .schema(p)
@@ -315,10 +313,10 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
                             .headers(defaultResponseHeaders));
                     swagger.model(key, models.get(key));
                 }
-                models = ModelConverters.getInstance().readAll(responseClass);
-                for (Map.Entry<String, Model> entry : models.entrySet()) {
-                    swagger.model(entry.getKey(), entry.getValue());
-                }
+            }
+            Map<String, Model> models = ModelConverters.getInstance().readAll(responseClassType);
+            for (Map.Entry<String, Model> entry : models.entrySet()) {
+                swagger.model(entry.getKey(), entry.getValue());
             }
         }
 
@@ -352,7 +350,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         }
 
         // process parameters
-        Class[] parameterTypes = method.getParameterTypes();
+        Class<?>[] parameterTypes = method.getParameterTypes();
         Type[] genericParameterTypes = method.getGenericParameterTypes();
         Annotation[][] paramAnnotations = findParamAnnotations(method);
 
@@ -379,9 +377,31 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         return operation;
     }
 
+	private Class<?> convertToClass(Type type) {
+		Type typeToConvert = type;
+		if (type instanceof ParameterizedType) {
+			typeToConvert = ((ParameterizedType) type).getRawType();
+		}
+		try {
+			return Class.forName(getClassName(typeToConvert));
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private static String getClassName(Type type) {
+		String fullName = type.toString();
+		if (fullName.startsWith(CLASS_NAME_PREFIX)) {
+			return fullName.substring(CLASS_NAME_PREFIX.length());
+		} else if (fullName.startsWith(INTERFACE_NAME_PREFIX)) {
+			return fullName.substring(INTERFACE_NAME_PREFIX.length());
+		}
+		return fullName;
+	}
+
 	private Annotation[][] findParamAnnotations(Method method) {
 		Annotation[][] paramAnnotation = method.getParameterAnnotations();
-		
+
 		method = ReflectionUtils.getOverriddenMethod(method);
 		while(method != null) {
 			paramAnnotation = merge(paramAnnotation, method.getParameterAnnotations());
@@ -394,7 +414,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
     private Annotation[][] merge(Annotation[][] paramAnnotation,
 			Annotation[][] superMethodParamAnnotations) {
     	Annotation[][] mergedAnnotations = new Annotation[paramAnnotation.length][];
-    	
+
     	for(int i=0; i<paramAnnotation.length; i++) {
     		mergedAnnotations[i] = merge(paramAnnotation[i], superMethodParamAnnotations[i]);
     	}

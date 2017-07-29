@@ -34,6 +34,8 @@ import io.swagger.annotations.AuthorizationScope;
 import io.swagger.annotations.Extension;
 import io.swagger.annotations.ExtensionProperty;
 
+import java.util.List;
+
 import javax.ws.rs.BeanParam;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -179,6 +181,19 @@ public class PetResource {
             @ApiParam(value = "Tags to filter by", required = true, allowMultiple = true) @QueryParam("tags") String tags) {
         return Response.ok(petData.findPetByTags(tags)).build();
     }
+
+	@GET
+	@Path("/findAll")
+	@ApiOperation(value = "Finds all Pets", notes = "Returns a paginated list of all the Pets.")
+	@ApiResponses(value = { @ApiResponse(code = 400, message = "Invalid page number value") })
+	public PagedList<Pet> findAllPaginated(
+			@ApiParam(value = "pageNumber", required = true) @QueryParam("pageNumber") int pageNumber) {
+		List<Pet> allPets = petData.findAllPets();
+		int pageSize = 5;
+		int startIndex = (pageNumber - 1) * pageSize;
+		int endIndex = startIndex + pageSize;
+		return new PagedList<Pet>(pageNumber, allPets.size(), allPets.subList(startIndex, endIndex));
+	}
 
     @POST
     @Path("/{petId}")

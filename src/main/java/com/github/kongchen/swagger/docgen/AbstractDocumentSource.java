@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
+import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule.Priority;
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Helper;
 import com.github.jknack.handlebars.Options;
@@ -123,7 +124,7 @@ public abstract class AbstractDocumentSource {
                 throw new GenerateException(String.format("Create Swagger-outputDirectory[%s] failed.", swaggerPath));
             }
         }
-        cleanupOlds(dir, outputFormats);
+
         if (fileName == null || "".equals(fileName.trim())) {
             fileName = "swagger";
         }
@@ -135,7 +136,6 @@ public abstract class AbstractDocumentSource {
                         switch (output) {
                             case json:
                                 ObjectWriter jsonWriter = mapper.writer(new DefaultPrettyPrinter());
-                                LOG.info(jsonWriter.writeValueAsString(swagger));
                                 FileUtils.write(new File(dir, fileName + ".json"), jsonWriter.writeValueAsString(swagger), encoding);
                                 break;
                             case yaml:
@@ -159,7 +159,17 @@ public abstract class AbstractDocumentSource {
     public void loadModelModifier() throws GenerateException, IOException {
         ObjectMapper objectMapper = Json.mapper();
         if (apiSource.isUseJAXBAnnotationProcessor()) {
-            objectMapper.registerModule(new JaxbAnnotationModule());
+            JaxbAnnotationModule jaxbAnnotationModule = new JaxbAnnotationModule();
+            if (apiSource.isUseJAXBAnnotationProcessorAsPrimary()) {
+                jaxbAnnotationModule.setPriority(Priority.PRIMARY);    
+            } else {
+                jaxbAnnotationModule.setPriority(Priority.SECONDARY);
+            }
+            objectMapper.registerModule(jaxbAnnotationModule);
+            
+            // to support @ApiModel on class level.
+            // must be registered only if we use JaxbAnnotationModule before. Why?
+            objectMapper.registerModule(new EnhancedSwaggerModule());
         }
         ModelModifier modelModifier = new ModelModifier(objectMapper);
 
@@ -231,19 +241,6 @@ public abstract class AbstractDocumentSource {
                 this.typesToSkip.add(type);
             } catch (ClassNotFoundException e) {
                 throw new GenerateException(e);
-            }
-        }
-    }
-
-
-    private void cleanupOlds(File dir, String outputFormats) {
-        if (dir.listFiles() != null && outputFormats != null) {
-            for (String format : outputFormats.split(",")) {
-                for (File f : dir.listFiles()) {
-                    if (f.getName().endsWith(format.toLowerCase())) {
-                        f.delete();
-                    }
-                }
             }
         }
     }

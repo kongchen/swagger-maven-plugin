@@ -12,10 +12,8 @@ This plugin enables your Swagger-annotated project to generate **Swagger specs**
 * Use [Handlebars](http://handlebarsjs.com/) as template to customize the static document.
 
 # Versions
-- [3.1.0](https://github.com/kongchen/swagger-maven-plugin/) supports Swagger Spec [2.0](https://github
-.com/swagger-api/swagger-spec/blob/master/versions/2.0.md), support JAX-RS & SpingMVC. (**ACTIVE!**)
-- [3.0.1](https://github.com/kongchen/swagger-maven-plugin/tree/swagger-core_com.wordnik_namespaces/) supports Swagger Spec [2.0](https://github
-.com/swagger-api/swagger-spec/blob/master/versions/2.0.md), support JAX-RS & SpingMVC. (**ACTIVE!**)
+- [3.1.0](https://github.com/kongchen/swagger-maven-plugin/) supports Swagger Spec [2.0](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md), support JAX-RS & SpingMVC. (**ACTIVE!**)
+- [3.0.1](https://github.com/kongchen/swagger-maven-plugin/tree/swagger-core_com.wordnik_namespaces/) supports Swagger Spec [2.0](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md), support JAX-RS & SpingMVC. (**ACTIVE!**)
 - [2.3.4](https://github.com/kongchen/swagger-maven-plugin/tree/spec1.2) supports Swagger Spec [1.2](https://github.com/swagger-api/swagger-spec/blob/master/versions/1.2.md), support JAX-RS & SpringMVC. (**Lazily maintained**)
 - [1.1.1](https://github.com/kongchen/swagger-maven-plugin/tree/1.1.1) supports Swagger Spec 1.1. (**No longer maintained**)
 
@@ -49,7 +47,7 @@ Import the plugin in your project by adding following configuration in your `plu
 
 | **name** | **description** |
 |------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `skipSwaggerGeneration` | If `true`, swagger generation will be skipped. Default is `false`. |
+| `skipSwaggerGeneration` | If `true`, swagger generation will be skipped. Default is `false`. User property is `swagger.skip`. |
 | `apiSources` | List of `apiSource` elements. One `apiSource` can be considered as a version of APIs of your service. You can specify several `apiSource` elements, though generally one is enough. |
 
 # Configuration for `apiSource`
@@ -119,7 +117,16 @@ or define several definitions in a json file and specify the json path like this
     <json>/securityDefinition.json</json>
 </securityDefinition>
 ```
+
 The file will be read by `getClass().getResourceAsStream`, so please note the path you configured.
+
+Alternatively, specify the __absolute__ file path to the json definition file: 
+
+```xml
+<securityDefinition>
+    <jsonPath>${basedir}/securityDefinition.json</jsonPath>
+</securityDefinition>
+```
 
 The `securityDefinition.json` file should also follow the spec, one sample file like this:
 

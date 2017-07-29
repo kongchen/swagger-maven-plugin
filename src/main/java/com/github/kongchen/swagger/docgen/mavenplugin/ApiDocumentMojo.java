@@ -22,7 +22,7 @@ import java.util.List;
  * Date: 3/7/13
  */
 @Mojo(name = "generate", defaultPhase = LifecyclePhase.COMPILE, configurator = "include-project-dependencies",
-        requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME)
+        requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME, threadSafe = true)
 public class ApiDocumentMojo extends AbstractMojo {
 
     /**
@@ -44,7 +44,7 @@ public class ApiDocumentMojo extends AbstractMojo {
     /**
      * A flag indicating if the generation should be skipped.
      */
-    @Parameter(defaultValue = "false")
+    @Parameter(property = "swagger.skip", defaultValue = "false")
     private boolean skipSwaggerGeneration;
     
     @Parameter(property="file.encoding")
@@ -111,14 +111,16 @@ public class ApiDocumentMojo extends AbstractMojo {
                         apiSource.getSwaggerUIDocBasePath() == null
                                 ? apiSource.getBasePath()
                                 : apiSource.getSwaggerUIDocBasePath(),
-                        apiSource.getOutputFormats(), swaggerFileName, encoding);
+                        apiSource.getOutputFormats(), swaggerFileName, projectEncoding);
 
 
                 if (apiSource.isAttachSwaggerArtifact() && apiSource.getSwaggerDirectory() != null && project != null) {
                     String outputFormats = apiSource.getOutputFormats();
                     if (outputFormats != null) {
                         for (String format : outputFormats.split(",")) {
-                            String classifier = new File(apiSource.getSwaggerDirectory()).getName();
+                            String classifier = swaggerFileName.equals("swagger")
+                                    ? getSwaggerDirectoryName(apiSource.getSwaggerDirectory())
+                                    : swaggerFileName;
                             File swaggerFile = new File(apiSource.getSwaggerDirectory(), swaggerFileName + "." + format.toLowerCase());
                             projectHelper.attachArtifact(project, format.toLowerCase(), classifier, swaggerFile);
                         }
@@ -183,4 +185,9 @@ public class ApiDocumentMojo extends AbstractMojo {
     private String getSwaggerFileName(String swaggerFileName) {
         return swaggerFileName == null || "".equals(swaggerFileName.trim()) ? "swagger" : swaggerFileName;
     }
+
+    private String getSwaggerDirectoryName(String swaggerDirectory) {
+        return new File(swaggerDirectory).getName();
+    }
+
 }
