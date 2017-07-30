@@ -382,12 +382,12 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
 	private Annotation[][] findParamAnnotations(Method method) {
 		Annotation[][] paramAnnotation = method.getParameterAnnotations();
 
-        Method overriddenMethod = ReflectionUtils.getOverriddenMethod(method);
-        while(overriddenMethod != null) {
-            paramAnnotation = merge(overriddenMethod.getParameterAnnotations(), paramAnnotation);
-            overriddenMethod = ReflectionUtils.getOverriddenMethod(overriddenMethod);
-        }
-        return paramAnnotation;
+		Method overriddenMethod = ReflectionUtils.getOverriddenMethod(method);
+		while(overriddenMethod != null) {
+			paramAnnotation = merge(overriddenMethod.getParameterAnnotations(), paramAnnotation);
+			overriddenMethod = ReflectionUtils.getOverriddenMethod(overriddenMethod);
+		}
+		return paramAnnotation;
 	}
 
 
@@ -403,7 +403,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
 
 	private Annotation[] merge(Annotation[] annotations,
 			Annotation[] annotations2) {
-        List<Annotation> mergedAnnotations = new ArrayList<Annotation>();
+		List<Annotation> mergedAnnotations = new ArrayList<Annotation>();
 		mergedAnnotations.addAll(Arrays.asList(annotations));
 		mergedAnnotations.addAll(Arrays.asList(annotations2));
 		return mergedAnnotations.toArray(new Annotation[0]);
