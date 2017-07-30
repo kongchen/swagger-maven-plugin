@@ -1,6 +1,5 @@
-package com.wordnik.jaxrs;
+package com.wordnik.springmvc;
 
-import com.wordnik.sample.exception.NotFoundException;
 import com.wordnik.sample.model.ListItem;
 import io.swagger.annotations.ApiParam;
 
@@ -10,8 +9,6 @@ import javax.ws.rs.core.Response;
 import java.util.List;
 
 public abstract class MyResourceAbstract implements MyResource {
-    @Override
-    public abstract Response getPetsById(Long startId, Long endId) throws NotFoundException;
 
     @Override
     public abstract List<ListItem> getListOfItems();
