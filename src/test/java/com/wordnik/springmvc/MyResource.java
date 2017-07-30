@@ -6,10 +6,6 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Response;
 import java.util.List;
 
 @Api(description = "Operations about pets")
@@ -22,12 +18,4 @@ public interface MyResource {
                   notes = "This is a contrived example"
     )
     public abstract List<ListItem> getListOfItems();
-
-    //contrived example test case for swagger-maven-plugin issue #504
-    @GET
-    @ApiOperation(value = "Get a response", notes = "This is a contrived example")
-    Response testParamInheritance(
-            @PathParam("firstParamInterface") String firstParam,
-            @PathParam("secondParamInterface") String secondParam,
-            @QueryParam("thirdParamInterface") String thirdParam);
 }

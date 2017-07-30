@@ -9,6 +9,9 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
+/**
+ * @author daniele.orler
+ */
 public abstract class MyResourceAbstract implements MyResource {
     @Override
     public abstract Response getPetsById(Long startId, Long endId) throws NotFoundException;

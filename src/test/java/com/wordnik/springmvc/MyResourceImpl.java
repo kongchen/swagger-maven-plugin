@@ -18,28 +18,18 @@ package com.wordnik.springmvc;
 
 import com.wordnik.sample.model.ListItem;
 
-import javax.ws.rs.PathParam;
-import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MyResourceImpl extends MyResourceAbstract {
+public class MyResourceImpl implements MyResource {
 
     //contrived example test case for swagger-maven-plugin issue #505
     /* (non-Javadoc)
      * @see com.wordnik.springmvc.MyResource#getListOfItems()
-     */
+	 */
     @Override
     public List<ListItem> getListOfItems() {
         return new ArrayList();
-    }
-
-    @Override
-    public Response testParamInheritance(
-            @PathParam("firstParamConcrete") String firstParam,
-            String secondParam,
-            String thirdParam) {
-        return Response.ok().build();
     }
 
 }
