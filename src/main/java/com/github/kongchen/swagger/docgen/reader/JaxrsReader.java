@@ -391,12 +391,12 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
 	}
 
 
-    private Annotation[][] merge(Annotation[][] paramAnnotation,
-			Annotation[][] superMethodParamAnnotations) {
-    	Annotation[][] mergedAnnotations = new Annotation[paramAnnotation.length][];
+    private Annotation[][] merge(Annotation[][] overriddenMethodParamAnnotation,
+			Annotation[][] currentParamAnnotations) {
+    	Annotation[][] mergedAnnotations = new Annotation[overriddenMethodParamAnnotation.length][];
 
-    	for(int i=0; i<paramAnnotation.length; i++) {
-    		mergedAnnotations[i] = merge(paramAnnotation[i], superMethodParamAnnotations[i]);
+    	for(int i=0; i<overriddenMethodParamAnnotation.length; i++) {
+    		mergedAnnotations[i] = merge(overriddenMethodParamAnnotation[i], currentParamAnnotations[i]);
     	}
 		return mergedAnnotations;
 	}

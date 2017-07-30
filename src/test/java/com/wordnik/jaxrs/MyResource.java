@@ -41,8 +41,8 @@ public interface MyResource {
     @GET
     @ApiOperation(value = "Get a response", notes = "This is a contrived example")
     Response testParamInheritance(
-            @PathParam("firstParam") String firstParam,
-            @PathParam("secondParam") String secondParam,
-            @QueryParam("thirdParam") String thirdParam);
+            @PathParam("firstParamInterface") String firstParam,
+            @PathParam("secondParamInterface") String secondParam,
+            @QueryParam("thirdParamInterface") String thirdParam);
 
 }

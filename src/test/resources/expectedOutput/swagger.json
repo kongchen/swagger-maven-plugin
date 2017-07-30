@@ -110,24 +110,24 @@
         }
       }
     },
-    "/myResourceImpl/{id1}/properties/{id2}" : {
+    "/myResourceImpl/{firstParamConcrete}/properties" : {
       "get" : {
       "summary" : "Get a response",
       "description" : "This is a contrived example",
       "operationId" : "testParamInheritance",
       "produces" : [ "application/json", "application/xml" ],
       "parameters" : [ {
-        "name" : "id1",
+        "name" : "firstParamConcrete",
         "in" : "path",
         "required" : true,
         "type" : "string"
       }, {
-        "name" : "id2",
-        "in" : "path",
+        "name" : "secondParamAbstract",
+        "in" : "query",
         "required" : true,
         "type" : "string"
       }, {
-        "name" : "thirdParam",
+        "name" : "thirdParamInterface",
         "in" : "query",
         "required" : false,
         "type" : "string"

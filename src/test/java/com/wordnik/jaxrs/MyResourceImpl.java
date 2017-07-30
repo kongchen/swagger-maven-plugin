@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Path("/myResourceImpl")
-public class MyResourceImpl implements MyResource {
+public class MyResourceImpl extends MyResourceAbstract {
     static PetData petData = new PetData();
     static JavaRestResourceUtil ru = new JavaRestResourceUtil();
 
@@ -59,14 +59,14 @@ public class MyResourceImpl implements MyResource {
 
     //contrived example test case for swagger-maven-plugin issue #504
     /* (non-Javadoc)
-	 * @see com.wordnik.jaxrs.MyResource#testParamInheritance(java.lang.String, java.lang.String, java.lang.String)
-	 */
-    @Path("{id1}/properties/{id2}")
+     * @see com.wordnik.jaxrs.MyResource#testParamInheritance(java.lang.String, java.lang.String, java.lang.String)
+     */
+    @Path("{firstParamConcrete}/properties")
     @Override
     public Response testParamInheritance(
-            @PathParam("id1") String id1,
-            @PathParam("id2") String id2,
-            String id3) {
+            @PathParam("firstParamConcrete") String firstParam,
+            String secondParam,
+            String thirdParam) {
         return Response.ok().build();
     }
 }
