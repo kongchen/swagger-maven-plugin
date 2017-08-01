@@ -265,6 +265,9 @@ public abstract class AbstractReader {
     }
 
     protected void updateOperationProtocols(ApiOperation apiOperation, Operation operation) {
+        if(apiOperation == null) {
+            return;
+        }
         String[] protocols = apiOperation.protocols().split(",");
         for (String protocol : protocols) {
             String trimmed = protocol.trim();

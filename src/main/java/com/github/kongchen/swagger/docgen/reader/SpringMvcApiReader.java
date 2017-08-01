@@ -102,7 +102,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
                     continue;
                 }
                 ApiOperation apiOperation = AnnotatedElementUtils.findMergedAnnotation(method, ApiOperation.class);
-                if (apiOperation == null || apiOperation.hidden()) {
+                if (apiOperation != null && apiOperation.hidden()) {
                     continue;
                 }
 
@@ -137,6 +137,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
     }
 
     private Operation parseMethod(Method method) {
+        int responseCode = 200;
         Operation operation = new Operation();
 
         RequestMapping requestMapping = AnnotatedElementUtils.findMergedAnnotation(method, RequestMapping.class);
@@ -145,58 +146,63 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         List<String> consumes = new ArrayList<String>();
         String responseContainer = null;
         String operationId = method.getName();
+        Map<String, Property> defaultResponseHeaders = null;
 
         ApiOperation apiOperation = AnnotatedElementUtils.findMergedAnnotation(method, ApiOperation.class);
 
-        if (apiOperation.hidden()) {
-            return null;
-        }
-        if (!apiOperation.nickname().isEmpty()) {
-            operationId = apiOperation.nickname();
-        }
-
-        Map<String, Property> defaultResponseHeaders = parseResponseHeaders(apiOperation.responseHeaders());
-
-        operation.summary(apiOperation.value()).description(apiOperation.notes());
-
-        Set<Map<String, Object>> customExtensions = parseCustomExtensions(apiOperation.extensions());
-
-        for (Map<String, Object> extension : customExtensions) {
-            if (extension == null) {
-                continue;
+        if(apiOperation != null) {
+            if (apiOperation.hidden()) {
+                return null;
             }
-            for (Map.Entry<String, Object> map : extension.entrySet()) {
-                operation.setVendorExtension(
-                        map.getKey().startsWith("x-")
-                                ? map.getKey()
-                                : "x-" + map.getKey(), map.getValue()
-                );
+            if (!apiOperation.nickname().isEmpty()) {
+                operationId = apiOperation.nickname();
             }
-        }
 
-        if (!apiOperation.response().equals(Void.class)) {
-            responseClass = apiOperation.response();
-        }
-        if (!apiOperation.responseContainer().isEmpty()) {
-            responseContainer = apiOperation.responseContainer();
-        }
+            defaultResponseHeaders = parseResponseHeaders(apiOperation.responseHeaders());
 
-        ///security
-        List<SecurityRequirement> securities = new ArrayList<SecurityRequirement>();
-        for (Authorization auth : apiOperation.authorizations()) {
-            if (!auth.value().isEmpty()) {
-                SecurityRequirement security = new SecurityRequirement();
-                security.setName(auth.value());
-                for (AuthorizationScope scope : auth.scopes()) {
-                    if (!scope.scope().isEmpty()) {
-                        security.addScope(scope.scope());
-                    }
+            operation.summary(apiOperation.value()).description(apiOperation.notes());
+
+            Set<Map<String, Object>> customExtensions = parseCustomExtensions(apiOperation.extensions());
+
+            for (Map<String, Object> extension : customExtensions) {
+                if (extension == null) {
+                    continue;
                 }
-                securities.add(security);
+                for (Map.Entry<String, Object> map : extension.entrySet()) {
+                    operation.setVendorExtension(
+                            map.getKey().startsWith("x-")
+                                    ? map.getKey()
+                                    : "x-" + map.getKey(), map.getValue()
+                    );
+                }
             }
-        }
-        for (SecurityRequirement sec : securities) {
-            operation.security(sec);
+
+            if (!apiOperation.response().equals(Void.class)) {
+                responseClass = apiOperation.response();
+            }
+            if (!apiOperation.responseContainer().isEmpty()) {
+                responseContainer = apiOperation.responseContainer();
+            }
+
+            ///security
+            List<SecurityRequirement> securities = new ArrayList<SecurityRequirement>();
+            for (Authorization auth : apiOperation.authorizations()) {
+                if (!auth.value().isEmpty()) {
+                    SecurityRequirement security = new SecurityRequirement();
+                    security.setName(auth.value());
+                    for (AuthorizationScope scope : auth.scopes()) {
+                        if (!scope.scope().isEmpty()) {
+                            security.addScope(scope.scope());
+                        }
+                    }
+                    securities.add(security);
+                }
+            }
+            for (SecurityRequirement sec : securities) {
+                operation.security(sec);
+            }
+
+            responseCode = apiOperation.code();
         }
 
         if (responseClass == null) {
@@ -219,7 +225,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
                 Property property = ModelConverters.getInstance().readAsProperty(responseClass);
                 if (property != null) {
                     Property responseProperty = RESPONSE_CONTAINER_CONVERTER.withResponseContainer(responseContainer, property);
-                    operation.response(apiOperation.code(), new Response()
+                    operation.response(responseCode, new Response()
                             .description("successful operation")
                             .schema(responseProperty)
                             .headers(defaultResponseHeaders));
@@ -228,14 +234,14 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
                 Map<String, Model> models = ModelConverters.getInstance().read(responseClass);
                 if (models.isEmpty()) {
                     Property pp = ModelConverters.getInstance().readAsProperty(responseClass);
-                    operation.response(apiOperation.code(), new Response()
+                    operation.response(responseCode, new Response()
                             .description("successful operation")
                             .schema(pp)
                             .headers(defaultResponseHeaders));
                 }
                 for (String key : models.keySet()) {
                     Property responseProperty = RESPONSE_CONTAINER_CONVERTER.withResponseContainer(responseContainer, new RefProperty().asDefault(key));
-                    operation.response(apiOperation.code(), new Response()
+                    operation.response(responseCode, new Response()
                             .description("successful operation")
                             .schema(responseProperty)
                             .headers(defaultResponseHeaders));
