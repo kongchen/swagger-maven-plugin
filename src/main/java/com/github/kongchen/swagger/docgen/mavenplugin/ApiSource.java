@@ -5,15 +5,14 @@ import io.swagger.models.Contact;
 import io.swagger.models.Info;
 import io.swagger.models.License;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.reflections.ReflectionUtils;
 import org.reflections.Reflections;
+import org.reflections.scanners.SubTypesScanner;
 import org.springframework.core.annotation.AnnotationUtils;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * User: kongchen
@@ -66,7 +65,7 @@ public class ApiSource {
 
     @Parameter
     private String swaggerDirectory;
-    
+
     @Parameter
     private String swaggerFileName;
 
@@ -101,10 +100,10 @@ public class ApiSource {
 
     @Parameter
     private boolean useJAXBAnnotationProcessor;
-    
+
     @Parameter
     private boolean useJAXBAnnotationProcessorAsPrimary = true;
-    
+
     @Parameter
     private String swaggerSchemaConverter;
 
@@ -127,21 +126,50 @@ public class ApiSource {
     private List<String> modelConverters;
 
     public Set<Class<?>> getValidClasses(Class<? extends Annotation> clazz) {
+        List<String> locations = getLocations();
+        if (locations == null) {
+            locations = Arrays.asList("");
+        }
+        Set<Class<?>> classes;
+        if(clazz == null) {
+            classes = getValidClasses(locations);
+        }
+        else {
+            classes = getValidClasses(locations, clazz);
+        }
+
+        return classes;
+    }
+
+    private Set<Class<?>> getValidClasses(List<String> locations) {
+        Set<String> locationSet = new HashSet<String>(locations);
         Set<Class<?>> classes = new LinkedHashSet<Class<?>>();
-        if (getLocations() == null) {
-            Set<Class<?>> c = new Reflections("").getTypesAnnotatedWith(clazz, true);
+
+        // TODO Improve performance using getFieldsAnnotatedWith
+        Reflections reflections = new Reflections("", new SubTypesScanner(false));
+        Set<Class<?>> allClasses = reflections.getSubTypesOf(Object.class);
+        if(locations.contains("")) {
+            classes.addAll(allClasses);
+        }
+        else {
+            for (Class<?> clazz : allClasses) {
+                if (locationSet.contains(clazz.getPackage().getName())) {
+                    classes.add(clazz);
+                }
+            }
+        }
+
+        return classes;
+    }
+
+    private Set<Class<?>> getValidClasses(List<String> locations, Class<? extends Annotation> clazz) {
+        Set<Class<?>> classes = new LinkedHashSet<Class<?>>();
+        for (String location : locations) {
+            Set<Class<?>> c = new Reflections(location).getTypesAnnotatedWith(clazz, true);
             classes.addAll(c);
 
-            Set<Class<?>> inherited = new Reflections("").getTypesAnnotatedWith(clazz);
+            Set<Class<?>> inherited = new Reflections(location).getTypesAnnotatedWith(clazz);
             classes.addAll(inherited);
-        } else {
-            for (String location : locations) {
-                Set<Class<?>> c = new Reflections(location).getTypesAnnotatedWith(clazz, true);
-                classes.addAll(c);
-
-                Set<Class<?>> inherited = new Reflections(location).getTypesAnnotatedWith(clazz);
-                classes.addAll(inherited);
-            }
         }
 
         return classes;
@@ -275,7 +303,7 @@ public class ApiSource {
     public void setSwaggerDirectory(String swaggerDirectory) {
         this.swaggerDirectory = swaggerDirectory;
     }
-    
+
     public String getSwaggerFileName() {
         return swaggerFileName;
     }

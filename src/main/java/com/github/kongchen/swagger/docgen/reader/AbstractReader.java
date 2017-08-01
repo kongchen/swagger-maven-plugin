@@ -116,6 +116,10 @@ public abstract class AbstractReader {
 
     protected List<SecurityRequirement> getSecurityRequirements(Api api) {
         List<SecurityRequirement> securities = new ArrayList<SecurityRequirement>();
+        if(api == null) {
+            return securities;
+        }
+
         for (Authorization auth : api.authorizations()) {
             if (auth.value().isEmpty()) {
                 continue;
@@ -236,12 +240,15 @@ public abstract class AbstractReader {
         }
     }
 
-    protected boolean canReadApi(boolean readHidden, Api api) {
-        return (api != null && readHidden) || (api != null && !api.hidden());
+    protected boolean canReadApi(Class<?> cls, boolean readHidden, Api api) {
+        return !cls.isInterface() && ((api == null) || (readHidden) || (!api.hidden()));
     }
 
     protected Set<Tag> extractTags(Api api) {
         Set<Tag> output = new LinkedHashSet<Tag>();
+        if(api == null) {
+            return output;
+        }
 
         boolean hasExplicitTags = false;
         for (String tag : api.tags()) {
