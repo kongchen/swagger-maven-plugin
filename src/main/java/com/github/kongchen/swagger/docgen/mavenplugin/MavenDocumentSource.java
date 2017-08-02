@@ -42,7 +42,7 @@ public class MavenDocumentSource extends AbstractDocumentSource {
             }
         }
 
-        swagger = resolveApiReader().read(apiSource.getValidClasses(null));
+        swagger = resolveApiReader().read(apiSource.getValidClasses(Api.class));
 
         if (apiSource.getSecurityDefinitions() != null) {
             for (SecurityDefinition sd : apiSource.getSecurityDefinitions()) {

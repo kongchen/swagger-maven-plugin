@@ -83,7 +83,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
 
         if (controller.isAnnotationPresent(Api.class)) {
             Api api = AnnotatedElementUtils.findMergedAnnotation(controller, Api.class);
-            if (!canReadApi(controller, false, api)) {
+            if (!canReadApi(false, api)) {
                 return swagger;
             }
             tags = updateTagsForApi(null, api);
