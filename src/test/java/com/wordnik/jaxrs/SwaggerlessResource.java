@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 
+@Path("/")
 public class SwaggerlessResource {
 
     @GET
@@ -32,5 +34,10 @@ public class SwaggerlessResource {
         Pet pet = new Pet();
         pet.setName(new PetName(name));
         return pet;
+    }
+
+    @Path("/swaggerless/subresource")
+    public SwaggerlessSubresource subresourceEndpoint() {
+        return new SwaggerlessSubresource();
     }
 }
