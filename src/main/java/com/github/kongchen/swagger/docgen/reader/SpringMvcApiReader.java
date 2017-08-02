@@ -241,10 +241,10 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
                             .headers(defaultResponseHeaders));
                     swagger.model(key, models.get(key));
                 }
-                models = ModelConverters.getInstance().readAll(responseClass);
-                for (Map.Entry<String, Model> entry : models.entrySet()) {
-                    swagger.model(entry.getKey(), entry.getValue());
-                }
+            }
+            Map<String, Model> models = ModelConverters.getInstance().readAll(responseClass);
+            for (Map.Entry<String, Model> entry : models.entrySet()) {
+                swagger.model(entry.getKey(), entry.getValue());
             }
         }
 

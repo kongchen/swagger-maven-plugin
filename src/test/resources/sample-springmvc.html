@@ -173,6 +173,58 @@ This is a sample.
 
 
 
+## /myResourceImpl/list
+
+
+### GET
+
+<a id="getListOfItems">Get a list of items</a>
+
+This is a contrived example
+
+
+
+
+
+
+
+#### Request
+
+
+
+##### Parameters
+
+
+
+
+
+
+#### Response
+
+**Content-Type: ** application/json, application/xml
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 200    | successful operation | Array[<a href="#/definitions/ListItem">ListItem</a>]|
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## /pet
 
 
@@ -2839,6 +2891,32 @@ This can only be done by the logged in user.
                 
                     
                     string
+                
+            </td>
+            <td>optional</td>
+            <td>-</td>
+            <td></td>
+        </tr>
+    
+</table>
+
+## <a name="/definitions/ListItem">ListItem</a>
+
+<table border="1">
+    <tr>
+        <th>name</th>
+        <th>type</th>
+        <th>required</th>
+        <th>description</th>
+        <th>example</th>
+    </tr>
+    
+        <tr>
+            <td>id</td>
+            <td>
+                
+                    
+                    integer (int64)
                 
             </td>
             <td>optional</td>
