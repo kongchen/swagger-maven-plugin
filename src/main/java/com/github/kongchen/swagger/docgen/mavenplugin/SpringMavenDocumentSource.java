@@ -69,7 +69,7 @@ public class SpringMavenDocumentSource extends AbstractDocumentSource {
         }
     }
 
-    Sets.SetView<Class<?>> getValidClasses()
+    protected Sets.SetView<Class<?>> getValidClasses()
     {
         return Sets.union(
             apiSource.getValidClasses(Api.class),

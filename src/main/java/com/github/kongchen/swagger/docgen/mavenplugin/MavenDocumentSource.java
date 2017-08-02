@@ -4,6 +4,7 @@ import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
 import com.github.kongchen.swagger.docgen.GenerateException;
 import com.github.kongchen.swagger.docgen.reader.ClassSwaggerReader;
 import com.github.kongchen.swagger.docgen.reader.JaxrsReader;
+import com.google.common.collect.Sets;
 import io.swagger.annotations.Api;
 import io.swagger.config.FilterFactory;
 import io.swagger.core.filter.SpecFilter;
@@ -11,7 +12,9 @@ import io.swagger.core.filter.SwaggerSpecFilter;
 import io.swagger.models.auth.SecuritySchemeDefinition;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
+import org.springframework.web.bind.annotation.RestController;
 
+import javax.ws.rs.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +45,7 @@ public class MavenDocumentSource extends AbstractDocumentSource {
             }
         }
 
-        swagger = resolveApiReader().read(apiSource.getValidClasses(Api.class));
+        swagger = resolveApiReader().read(getValidClasses());
 
         if (apiSource.getSecurityDefinitions() != null) {
             for (SecurityDefinition sd : apiSource.getSecurityDefinitions()) {
@@ -65,6 +68,13 @@ public class MavenDocumentSource extends AbstractDocumentSource {
                     new HashMap<String, List<String>>(), new HashMap<String, String>(),
                     new HashMap<String, List<String>>());
         }
+    }
+
+    protected Sets.SetView<Class<?>> getValidClasses()
+    {
+        return Sets.union(
+                apiSource.getValidClasses(Api.class),
+                apiSource.getValidClasses(Path.class));
     }
 
     private ClassSwaggerReader resolveApiReader() throws GenerateException {
