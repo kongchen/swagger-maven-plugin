@@ -1060,10 +1060,15 @@ definitions:
       id:
         type: "integer"
         format: "int64"
+        xml:
+          namespace: "http://com.wordnik/sample/model/category"
       name:
         type: "string"
+        xml:
+          namespace: "http://com.wordnik/sample/model/category"
     xml:
       name: "Category"
+      namespace: "http://com.wordnik/sample/model/category"
   ListItem:
     type: "object"
     properties:
@@ -1072,6 +1077,7 @@ definitions:
         format: "int64"
     xml:
       name: "ListItem"
+      namespace: "http://com.wordnik/sample/model"
   Order:
     type: "object"
     properties:
@@ -1100,6 +1106,7 @@ definitions:
         type: "string"
     xml:
       name: "Order"
+      namespace: "http://com.wordnik/sample/model"
   PagedList:
     type: "object"
     properties:
@@ -1164,6 +1171,7 @@ definitions:
         - "sold"
     xml:
       name: "Pet"
+      namespace: "http://com.wordnik/sample/model"
   Tag:
     type: "object"
     properties:
@@ -1174,6 +1182,7 @@ definitions:
         type: "string"
     xml:
       name: "Tag"
+      namespace: "http://com.wordnik/sample/model"
   User:
     type: "object"
     properties:
@@ -1199,3 +1208,4 @@ definitions:
         description: "User Status"
     xml:
       name: "User"
+      namespace: "http://com.wordnik/sample/model"

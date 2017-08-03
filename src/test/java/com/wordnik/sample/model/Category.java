@@ -19,12 +19,12 @@ package com.wordnik.sample.model;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "Category")
+@XmlRootElement(name = "Category", namespace = "http://com.wordnik/sample/model/category")
 public class Category {
     private long id;
     private String name;
 
-    @XmlElement(name = "id")
+    @XmlElement(name = "id", namespace = "http://com.wordnik/sample/model/category")
     public long getId() {
         return id;
     }
@@ -33,7 +33,7 @@ public class Category {
         this.id = id;
     }
 
-    @XmlElement(name = "name")
+    @XmlElement(name = "name", namespace = "http://com.wordnik/sample/model/category")
     public String getName() {
         return name;
     }
