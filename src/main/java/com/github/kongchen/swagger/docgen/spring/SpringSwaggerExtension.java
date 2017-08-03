@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.ValueConstants;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.beans.PropertyDescriptor;
@@ -45,14 +46,13 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension {
             return new ArrayList<Parameter>();
         }
 
-        String defaultValue = "";
         List<Parameter> parameters = new ArrayList<Parameter>();
         Parameter parameter = null;
         for (Annotation annotation : annotations) {
             if (annotation instanceof ModelAttribute) {
                 parameters.addAll(extractParametersFromModelAttributeAnnotation(annotation, type));
             } else {
-                parameter = extractParameterFromAnnotation(annotation, defaultValue, type);
+                parameter = extractParameterFromAnnotation(annotation, type);
             }
 
             if (parameter != null) {
@@ -63,7 +63,7 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension {
         return parameters;
     }
 
-    private Parameter extractParameterFromAnnotation(Annotation annotation, String defaultValue, Type type) {
+    private Parameter extractParameterFromAnnotation(Annotation annotation, Type type) {
         Parameter parameter = null;
 
         if (annotation instanceof RequestParam) {
@@ -71,8 +71,8 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension {
             QueryParameter queryParameter = new QueryParameter().name(requestParam.value())
                     .required(requestParam.required());
 
-            if (!defaultValue.isEmpty()) {
-                queryParameter.setDefaultValue(defaultValue);
+            if (isValidDefaultValue(requestParam.defaultValue())) {
+                queryParameter.setDefaultValue(requestParam.defaultValue());
             }
             Property schema = ModelConverters.getInstance().readAsProperty(type);
             if (schema != null) {
@@ -83,9 +83,6 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension {
         } else if (annotation instanceof PathVariable) {
             PathVariable pathVariable = (PathVariable) annotation;
             PathParameter pathParameter = new PathParameter().name(pathVariable.value());
-            if (!defaultValue.isEmpty()) {
-                pathParameter.setDefaultValue(defaultValue);
-            }
             Property schema = ModelConverters.getInstance().readAsProperty(type);
             if (schema != null) {
                 pathParameter.setProperty(schema);
@@ -95,7 +92,9 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension {
             RequestHeader requestHeader = (RequestHeader) annotation;
             HeaderParameter headerParameter = new HeaderParameter().name(requestHeader.value())
                     .required(requestHeader.required());
-            headerParameter.setDefaultValue(defaultValue);
+            if (isValidDefaultValue(requestHeader.defaultValue())) {
+                headerParameter.setDefaultValue(requestHeader.defaultValue());
+            }
             Property schema = ModelConverters.getInstance().readAsProperty(type);
             if (schema != null) {
                 headerParameter.setProperty(schema);
@@ -106,8 +105,8 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension {
             CookieValue cookieValue = (CookieValue) annotation;
             CookieParameter cookieParameter = new CookieParameter().name(cookieValue.value())
                     .required(cookieValue.required());
-            if (!defaultValue.isEmpty()) {
-                cookieParameter.setDefaultValue(defaultValue);
+            if (isValidDefaultValue(cookieValue.defaultValue())) {
+                cookieParameter.setDefaultValue(cookieValue.defaultValue());
             }
             Property schema = ModelConverters.getInstance().readAsProperty(type);
             if (schema != null) {
@@ -119,10 +118,6 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension {
             RequestPart requestPart = (RequestPart) annotation;
             FormParameter formParameter = new FormParameter().name(requestPart.value())
                     .required(requestPart.required());
-
-            if (!defaultValue.isEmpty()) {
-                formParameter.setDefaultValue(defaultValue);
-            }
 
             JavaType ct = constructType(type);
             Property schema;
@@ -144,6 +139,10 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension {
         }
 
         return parameter;
+    }
+
+    private boolean isValidDefaultValue(String defaultValue) {
+        return defaultValue != null && !defaultValue.isEmpty() && !ValueConstants.DEFAULT_NONE.equals(defaultValue);
     }
 
     private List<Parameter> extractParametersFromModelAttributeAnnotation(Annotation annotation, Type type) {
@@ -172,12 +171,11 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension {
                     continue;
                 }
 
-                String defaultValue = "";
                 Parameter propertySetterExtractedParameter = null;
                 for (Annotation firstMethodParameterAnnotation : methodAnnotations[0]) {
                     Class parameterClass = propertyDescriptor.getPropertyType();
                     propertySetterExtractedParameter = this.extractParameterFromAnnotation(
-                            firstMethodParameterAnnotation, defaultValue, parameterClass);
+                            firstMethodParameterAnnotation, parameterClass);
                     if (propertySetterExtractedParameter != null) {
                         // When we find a valid parameter type to use, keep it
                         break;
@@ -196,6 +194,9 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension {
                     }
                     if (!propertySetterApiParam.name().isEmpty()) {
                         queryParameter.setName(propertySetterApiParam.name());
+                    }
+                    if (!propertySetterApiParam.defaultValue().isEmpty()) {
+                        queryParameter.setDefaultValue(propertySetterApiParam.defaultValue());
                     }
                     parameters.add(queryParameter);
                 } else {
