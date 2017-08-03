@@ -110,6 +110,35 @@
         }
       }
     },
+    "/myResourceImpl/{firstParamConcrete}/properties" : {
+      "get" : {
+      "summary" : "Get a response",
+      "description" : "This is a contrived example",
+      "operationId" : "testParamInheritance",
+      "produces" : [ "application/json", "application/xml" ],
+      "parameters" : [ {
+        "name" : "firstParamConcrete",
+        "in" : "path",
+        "required" : true,
+        "type" : "string"
+      }, {
+        "name" : "secondParamAbstract",
+        "in" : "query",
+        "required" : true,
+        "type" : "string"
+      }, {
+        "name" : "thirdParamInterface",
+        "in" : "query",
+        "required" : false,
+        "type" : "string"
+      } ],
+      "responses" : {
+        "default" : {
+          "description" : "successful operation"
+        }
+      }
+      }
+    },
     "/pet": {
       "get": {
         "tags": [
@@ -1559,14 +1588,21 @@
       "properties": {
         "id": {
           "type": "integer",
-          "format": "int64"
+          "format": "int64",
+          "xml": {
+            "namespace": "http://com.wordnik/sample/model/category"
+          }
         },
         "name": {
-          "type": "string"
+          "type": "string",
+          "xml": {
+            "namespace": "http://com.wordnik/sample/model/category"
+          }
         }
       },
       "xml": {
-        "name": "Category"
+        "name": "Category",
+        "namespace": "http://com.wordnik/sample/model/category"
       }
     },
     "ListItem" : {
@@ -1578,7 +1614,8 @@
         }
       },
       "xml" : {
-        "name" : "ListItem"
+        "name" : "ListItem",
+        "namespace": "http://com.wordnik/sample/model"
       }
     },
     "Order": {
@@ -1617,7 +1654,8 @@
           }
       },
       "xml": {
-        "name": "Order"
+        "name": "Order",
+        "namespace": "http://com.wordnik/sample/model"
       }
     },
     "PagedList" : {
@@ -1710,7 +1748,8 @@
         }
       },
       "xml": {
-        "name": "Pet"
+        "name": "Pet",
+        "namespace": "http://com.wordnik/sample/model"
       }
     },
     "Tag": {
@@ -1725,7 +1764,8 @@
         }
       },
       "xml": {
-        "name": "Tag"
+        "name": "Tag",
+        "namespace": "http://com.wordnik/sample/model"
       }
     },
     "User": {
@@ -1761,7 +1801,8 @@
         }
       },
       "xml": {
-        "name": "User"
+        "name": "User",
+        "namespace": "http://com.wordnik/sample/model"
       }
     }
   }

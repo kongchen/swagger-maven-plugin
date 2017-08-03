@@ -44,12 +44,7 @@ import io.swagger.util.PathUtils;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.apache.maven.plugin.logging.Log;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.*;
 
 import javax.ws.rs.BeanParam;
 import javax.ws.rs.FormParam;
@@ -377,6 +372,7 @@ public abstract class AbstractReader {
         validParameterAnnotations.add(PathVariable.class);
         validParameterAnnotations.add(RequestHeader.class);
         validParameterAnnotations.add(RequestPart.class);
+        validParameterAnnotations.add(CookieValue.class);
 
 
         boolean hasValidAnnotation = false;

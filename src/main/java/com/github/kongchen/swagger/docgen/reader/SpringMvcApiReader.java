@@ -21,6 +21,7 @@ import io.swagger.models.properties.Property;
 import io.swagger.models.properties.RefProperty;
 import org.apache.maven.plugin.logging.Log;
 import org.codehaus.plexus.util.StringUtils;
+import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.http.ResponseEntity;
@@ -292,6 +293,8 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         Class[] parameterTypes = method.getParameterTypes();
         Type[] genericParameterTypes = method.getGenericParameterTypes();
         Annotation[][] paramAnnotations = method.getParameterAnnotations();
+        DefaultParameterNameDiscoverer parameterNameDiscoverer = new DefaultParameterNameDiscoverer();
+        String[] parameterNames = parameterNameDiscoverer.getParameterNames(method);
         // paramTypes = method.getParameterTypes
         // genericParamTypes = method.getGenericParameterTypes
         for (int i = 0; i < parameterTypes.length; i++) {
@@ -300,6 +303,9 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
             List<Parameter> parameters = getParameters(type, annotations);
 
             for (Parameter parameter : parameters) {
+                if(parameter.getName().isEmpty()) {
+                    parameter.setName(parameterNames[i]);
+                }
                 operation.parameter(parameter);
             }
         }

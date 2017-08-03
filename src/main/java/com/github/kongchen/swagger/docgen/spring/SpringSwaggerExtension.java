@@ -14,6 +14,7 @@ import io.swagger.models.parameters.QueryParameter;
 import io.swagger.models.properties.ArrayProperty;
 import io.swagger.models.properties.FileProperty;
 import io.swagger.models.properties.Property;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -68,7 +69,8 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension {
 
         if (annotation instanceof RequestParam) {
             RequestParam requestParam = (RequestParam) annotation;
-            QueryParameter queryParameter = new QueryParameter().name(requestParam.value())
+            String paramName = StringUtils.defaultIfEmpty(requestParam.value(), requestParam.name());
+            QueryParameter queryParameter = new QueryParameter().name(paramName)
                     .required(requestParam.required());
 
             if (!defaultValue.isEmpty()) {
@@ -82,7 +84,8 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension {
             parameter = queryParameter;
         } else if (annotation instanceof PathVariable) {
             PathVariable pathVariable = (PathVariable) annotation;
-            PathParameter pathParameter = new PathParameter().name(pathVariable.value());
+            String paramName = StringUtils.defaultIfEmpty(pathVariable.value(), pathVariable.name());
+            PathParameter pathParameter = new PathParameter().name(paramName);
             if (!defaultValue.isEmpty()) {
                 pathParameter.setDefaultValue(defaultValue);
             }
@@ -93,7 +96,8 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension {
             parameter = pathParameter;
         } else if (annotation instanceof RequestHeader) {
             RequestHeader requestHeader = (RequestHeader) annotation;
-            HeaderParameter headerParameter = new HeaderParameter().name(requestHeader.value())
+            String paramName = StringUtils.defaultIfEmpty(requestHeader.value(), requestHeader.name());
+            HeaderParameter headerParameter = new HeaderParameter().name(paramName)
                     .required(requestHeader.required());
             headerParameter.setDefaultValue(defaultValue);
             Property schema = ModelConverters.getInstance().readAsProperty(type);
@@ -104,7 +108,8 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension {
             parameter = headerParameter;
         } else if (annotation instanceof CookieValue) {
             CookieValue cookieValue = (CookieValue) annotation;
-            CookieParameter cookieParameter = new CookieParameter().name(cookieValue.value())
+            String paramName = StringUtils.defaultIfEmpty(cookieValue.value(), cookieValue.name());
+            CookieParameter cookieParameter = new CookieParameter().name(paramName)
                     .required(cookieValue.required());
             if (!defaultValue.isEmpty()) {
                 cookieParameter.setDefaultValue(defaultValue);
@@ -117,7 +122,8 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension {
             parameter = cookieParameter;
         } else if (annotation instanceof RequestPart) {
             RequestPart requestPart = (RequestPart) annotation;
-            FormParameter formParameter = new FormParameter().name(requestPart.value())
+            String paramName = StringUtils.defaultIfEmpty(requestPart.value(), requestPart.name());
+            FormParameter formParameter = new FormParameter().name(paramName)
                     .required(requestPart.required());
 
             if (!defaultValue.isEmpty()) {
