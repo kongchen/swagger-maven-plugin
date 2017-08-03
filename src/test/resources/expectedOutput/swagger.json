@@ -110,6 +110,35 @@
         }
       }
     },
+    "/myResourceImpl/{firstParamConcrete}/properties" : {
+      "get" : {
+      "summary" : "Get a response",
+      "description" : "This is a contrived example",
+      "operationId" : "testParamInheritance",
+      "produces" : [ "application/json", "application/xml" ],
+      "parameters" : [ {
+        "name" : "firstParamConcrete",
+        "in" : "path",
+        "required" : true,
+        "type" : "string"
+      }, {
+        "name" : "secondParamAbstract",
+        "in" : "query",
+        "required" : true,
+        "type" : "string"
+      }, {
+        "name" : "thirdParamInterface",
+        "in" : "query",
+        "required" : false,
+        "type" : "string"
+      } ],
+      "responses" : {
+        "default" : {
+          "description" : "successful operation"
+        }
+      }
+      }
+    },
     "/pet": {
       "get": {
         "tags": [
