@@ -1,13 +1,15 @@
 package com.github.kongchen.swagger.docgen.mavenplugin;
 
-import com.google.common.collect.Sets;
-import io.swagger.annotations.Api;
 import java.util.Collections;
+import java.util.Set;
+
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugin.logging.SystemStreamLog;
 import org.springframework.web.bind.annotation.RestController;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import io.swagger.annotations.Api;
 
 public class SpringMavenDocumentSourceTest
 {
@@ -22,7 +24,7 @@ public class SpringMavenDocumentSourceTest
 
         SpringMavenDocumentSource springMavenDocumentSource = new SpringMavenDocumentSource(apiSource, log, "UTF-8");
 
-        Sets.SetView<Class<?>> validClasses = springMavenDocumentSource.getValidClasses();
+        Set<Class<?>> validClasses = springMavenDocumentSource.getValidClasses();
 
         Assert.assertEquals(validClasses.size(), 2);
         Assert.assertTrue(validClasses.contains(ExampleController1.class));

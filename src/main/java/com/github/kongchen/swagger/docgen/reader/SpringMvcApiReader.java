@@ -1,34 +1,5 @@
 package com.github.kongchen.swagger.docgen.reader;
 
-import com.github.kongchen.swagger.docgen.GenerateException;
-import com.github.kongchen.swagger.docgen.spring.SpringResource;
-import com.github.kongchen.swagger.docgen.util.SpringUtils;
-
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.Authorization;
-import io.swagger.annotations.AuthorizationScope;
-import io.swagger.converter.ModelConverters;
-import io.swagger.models.Model;
-import io.swagger.models.Operation;
-import io.swagger.models.Response;
-import io.swagger.models.SecurityRequirement;
-import io.swagger.models.Swagger;
-import io.swagger.models.Tag;
-import io.swagger.models.parameters.Parameter;
-import io.swagger.models.properties.Property;
-import io.swagger.models.properties.RefProperty;
-import org.apache.maven.plugin.logging.Log;
-import org.codehaus.plexus.util.StringUtils;
-import org.springframework.core.DefaultParameterNameDiscoverer;
-import org.springframework.core.annotation.AnnotatedElementUtils;
-import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseStatus;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -40,12 +11,52 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.maven.plugin.logging.Log;
+import org.codehaus.plexus.util.StringUtils;
+import org.springframework.core.DefaultParameterNameDiscoverer;
+import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+import com.github.kongchen.swagger.docgen.GenerateException;
+import com.github.kongchen.swagger.docgen.spring.SpringResource;
+import com.github.kongchen.swagger.docgen.spring.SpringSwaggerExtension;
+import com.github.kongchen.swagger.docgen.util.SpringUtils;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.Authorization;
+import io.swagger.annotations.AuthorizationScope;
+import io.swagger.converter.ModelConverters;
+import io.swagger.jaxrs.ext.SwaggerExtension;
+import io.swagger.jaxrs.ext.SwaggerExtensions;
+import io.swagger.models.Model;
+import io.swagger.models.Operation;
+import io.swagger.models.Response;
+import io.swagger.models.SecurityRequirement;
+import io.swagger.models.Swagger;
+import io.swagger.models.Tag;
+import io.swagger.models.parameters.Parameter;
+import io.swagger.models.properties.Property;
+import io.swagger.models.properties.RefProperty;
+
 public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerReader {
     private static final ResponseContainerConverter RESPONSE_CONTAINER_CONVERTER = new ResponseContainerConverter();
     private String resourcePath;
 
     public SpringMvcApiReader(Swagger swagger, Log log) {
         super(swagger, log);
+    }
+    
+    @Override
+    protected void updateExtensionChain() {
+    	List<SwaggerExtension> extensions = new ArrayList<SwaggerExtension>();
+    	extensions.add(new SpringSwaggerExtension());
+    	SwaggerExtensions.setExtensions(extensions);
     }
 
     @Override
