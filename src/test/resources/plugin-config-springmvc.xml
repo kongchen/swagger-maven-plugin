@@ -65,6 +65,9 @@
                                 <apiModelPropertyAccessExclusion>another-secret-property</apiModelPropertyAccessExclusion>
                                 <apiModelPropertyAccessExclusion>exclude-when-jev-option-not-set</apiModelPropertyAccessExclusion>
                             </apiModelPropertyAccessExclusions>
+                            <swaggerExtensions>
+                            	<swaggerExtension>com.wordnik.sample.VendorExtensionWithoutReader</swaggerExtension>
+                            </swaggerExtensions>
                         </apiSource>
                     </apiSources>
                 </configuration>

@@ -55,8 +55,8 @@ Import the plugin in your project by adding following configuration in your `plu
 | **name** | **description** |
 |------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `springmvc` | Tell the plugin your project is a JAX-RS(`false`) or a SpringMvc(`true`) project |
-| `locations` **required**| Classes containing Swagger's annotation ```@Api```, or packages containing those classes can be configured here. Multiple values must be separated by commas. Example: `<locations>com.github.kongchen.swagger.sample.wordnik.resource,com.github.kongchen.swagger.sample.wordnik.resource2</locations>` |
-| `schemes` | The transfer protocol of the API. Values MUST be from the list: `"http"`, `"https"`, `"ws"`, `"wss"`. Multiple values must be separated by commas. Example: `<schemes>http,https</schemes>` |
+| `locations` **required**| Classes containing Swagger's annotation ```@Api```, or packages containing those classes can be configured here. Multiple values must be separated by commas. Example: `<locations><location>com.github.kongchen.swagger.sample.wordnik.resource</location><location>com.github.kongchen.swagger.sample.wordnik.resource2</location></locations>` |
+| `schemes` | The transfer protocol of the API. Values MUST be from the list: `"http"`, `"https"`, `"ws"`, `"wss"`. Multiple values must be separated by commas. Example: `<schemes><scheme>http</scheme><scheme>https</scheme></schemes>` |
 | `host` | The host (name or ip) serving the API. This MUST be the host only and does not include the scheme nor sub-paths. It MAY include a port.  The host does not support [path templating](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#pathTemplating).|
 | `basePath` | The base path on which the API is served, which is relative to the host. The value MUST start with a leading slash (/). The basePath does not support [path templating](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#pathTemplating). |
 | `descriptionFile` | A Path to file with description to be set to Swagger Spec 2.0's [info Object](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#infoObject) |
@@ -67,13 +67,14 @@ Import the plugin in your project by adding following configuration in your `plu
 | `outputFormats` | The format types of the generated swagger spec. Valid values are `json`, `yaml` or both `json,yaml`. The `json` format is default.|
 | `swaggerDirectory` | The directory of generated `swagger.json` file. If null, no `swagger.json` will be generated. |
 | `swaggerFileName` | The filename of generated `filename.json` file. If null, `swagger.json` will be generated. |
-| `swaggerApiReader` | If not null, the value should be a full name of the class implementing `com.github.kongchen.swagger.docgen.reader.ClassSwaggerReader`. This allows you to flexibly implement/override the reader's implementation. Default is `com.github.kongchen.swagger.docgen.reader.JaxrsReader` |
+| `swaggerApiReader` | If not null, the value should be a full name of the class implementing `com.github.kongchen.swagger.docgen.reader.ClassSwaggerReader`. This allows you to flexibly implement/override the reader's implementation. `com.github.kongchen.swagger.docgen.reader.SwaggerReader` can be used to strictly use the official Swagger reader in order to generate the exact same output as Swagger''s runtime generation (with all its bugs). Default is `com.github.kongchen.swagger.docgen.reader.JaxrsReader`.  |
 | `attachSwaggerArtifact` | If enabled, the generated `swagger.json` file will be attached as a maven artifact. The `swaggerDirectory`'s name will be used as an artifact classifier. Default is `false`. |
 | `modelSubstitute` | The model substitute file's path, see more details [below](#model-substitution)|
 | `typesToSkip` | Nodes of class names to explicitly skip during parameter processing. More details [below](#typesToSkip)|
 | `apiModelPropertyAccessExclusions` | Allows the exclusion of specified `@ApiModelProperty` fields. This can be used to hide certain model properties from the swagger spec. More details [below](#apiModelPropertyAccessExclusions)|
 | `jsonExampleValues` | If `true`, all example values in `@ApiModelProperty` will be handled as json raw values. This is useful for creating valid examples in the generated json for all property types, including non-string ones. |
 | `modelConverters` | List of custom implementations of `io.swagger.converter.ModelConverter` that should be used when generating the swagger files. | 
+| `swaggerExtensions` | List of custom implementations of `io.swagger.jaxrs.ext.SwaggerExtension` that should be used when generating the swagger files. | 
 
 # <a id="templatefile">Template File</a>
 
@@ -315,6 +316,9 @@ There's a [sample here](https://github.com/swagger-maven-plugin/swagger-maven-ex
                 <swaggerApiReader>com.wordnik.swagger.jaxrs.reader.DefaultJaxrsApiReader</swaggerApiReader>
                 <attachSwaggerArtifact>true</attachSwaggerArtifact>
                 <modelConverters>io.swagger.validator.BeanValidator</modelConverters>
+                <swaggerExtensions>
+                    <swaggerExtension>com.example.VendorExtension</swaggerExtension>
+                </swaggerExtensions>
             </apiSource>
         </apiSources>
     </configuration>

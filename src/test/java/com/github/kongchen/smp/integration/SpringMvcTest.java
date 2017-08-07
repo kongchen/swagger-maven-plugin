@@ -8,6 +8,10 @@ import static com.github.kongchen.smp.integration.utils.TestUtils.createTempDirP
 import static com.github.kongchen.smp.integration.utils.TestUtils.setCustomReader;
 import com.github.kongchen.swagger.docgen.mavenplugin.ApiDocumentMojo;
 import com.github.kongchen.swagger.docgen.mavenplugin.ApiSource;
+
+import io.swagger.jaxrs.ext.SwaggerExtension;
+import io.swagger.jaxrs.ext.SwaggerExtensions;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,6 +30,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -38,10 +43,13 @@ public class SpringMvcTest extends AbstractMojoTestCase {
     private File swaggerOutputDir = new File(getBasedir(), "generated/swagger-ui-spring");
     private File docOutput = new File(getBasedir(), "generated/document-spring.html");
     private ApiDocumentMojo mojo;
+    private List<SwaggerExtension> extensions;
 
-    @BeforeMethod
+    @Override
+	@BeforeMethod
     protected void setUp() throws Exception {
-        super.setUp();
+    	extensions = new ArrayList<SwaggerExtension>(SwaggerExtensions.getExtensions());
+    	super.setUp();
 
         try {
             FileUtils.deleteDirectory(swaggerOutputDir);
@@ -52,6 +60,13 @@ public class SpringMvcTest extends AbstractMojoTestCase {
 
         File testPom = new File(getBasedir(), "target/test-classes/plugin-config-springmvc.xml");
         mojo = (ApiDocumentMojo) lookupMojo("generate", testPom);
+    }
+    
+    @Override
+    @AfterMethod
+    protected void tearDown() throws Exception {
+    	super.tearDown();
+    	SwaggerExtensions.setExtensions(extensions);
     }
 
     @Test
