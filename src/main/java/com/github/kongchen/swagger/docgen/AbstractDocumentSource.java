@@ -115,16 +115,16 @@ public abstract class AbstractDocumentSource {
                 throw new GenerateException("Cannot load: " + apiSource.getSwaggerInternalFilter(), e);
             }
         }
-        
+
         ClassSwaggerReader reader = resolveApiReader();
-        
+
         // the reader may modify the extensions list, therefore add the additional swagger extensions
         // after the instantiation of the reader
         if (apiSource.getSwaggerExtensions() != null) {
         	List<SwaggerExtension> extensions = SwaggerExtensions.getExtensions();
         	extensions.addAll(resolveSwaggerExtensions());
         }
-        
+
         swagger = reader.read(getValidClasses());
 
         if (apiSource.getSecurityDefinitions() != null) {
@@ -218,12 +218,12 @@ public abstract class AbstractDocumentSource {
         if (apiSource.isUseJAXBAnnotationProcessor()) {
             JaxbAnnotationModule jaxbAnnotationModule = new JaxbAnnotationModule();
             if (apiSource.isUseJAXBAnnotationProcessorAsPrimary()) {
-                jaxbAnnotationModule.setPriority(Priority.PRIMARY);    
+                jaxbAnnotationModule.setPriority(Priority.PRIMARY);
             } else {
                 jaxbAnnotationModule.setPriority(Priority.SECONDARY);
             }
             objectMapper.registerModule(jaxbAnnotationModule);
-            
+
             // to support @ApiModel on class level.
             // must be registered only if we use JaxbAnnotationModule before. Why?
             objectMapper.registerModule(new EnhancedSwaggerModule());
@@ -302,25 +302,10 @@ public abstract class AbstractDocumentSource {
         }
     }
 
-    protected File createFile(File dir, String outputResourcePath) throws IOException {
-        File serviceFile;
-        int i = outputResourcePath.lastIndexOf("/");
-        if (i != -1) {
-            String fileName = outputResourcePath.substring(i + 1);
-            String subDir = outputResourcePath.substring(0, i);
-            File finalDirectory = new File(dir, subDir);
-            finalDirectory.mkdirs();
-            serviceFile = new File(finalDirectory, fileName);
-        } else {
-            serviceFile = new File(dir, outputResourcePath);
-        }
-        while (!serviceFile.createNewFile()) {
-            serviceFile.delete();
-        }
-        LOG.info("Creating file " + serviceFile.getAbsolutePath());
-        return serviceFile;
+    public Swagger getSwaggerModel() {
+        return swagger;
     }
-
+    
     public void toDocuments() throws GenerateException {
         if (!isSorted) {
             Utils.sortSwagger(swagger);
@@ -384,7 +369,7 @@ public abstract class AbstractDocumentSource {
 
     /**
      * Resolves the API reader which should be used to scan the classes.
-     * 
+     *
      * @return ClassSwaggerReader to use
      * @throws GenerateException if the reader cannot be created / resolved
      */
@@ -392,16 +377,16 @@ public abstract class AbstractDocumentSource {
 
     /**
      * Returns the set of classes which should be included in the scanning.
-     * 
+     *
      * @return Set<Class<?>> containing all valid classes
      */
     protected Set<Class<?>> getValidClasses() {
         return apiSource.getValidClasses(Api.class);
     }
-    
+
     /**
      * Resolves all {@link SwaggerExtension} instances configured to be added to the Swagger configuration.
-     * 
+     *
      * @return Collection<SwaggerExtension> which should be added to the swagger configuration
      * @throws GenerateException if the swagger extensions could not be created / resolved
      */
