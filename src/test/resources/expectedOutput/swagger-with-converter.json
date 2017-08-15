@@ -58,11 +58,11 @@
         "consumes" : [ "application/json" ],
         "produces" : [ "application/json" ],
         "parameters" : [ {
-          "name" : "petId",
+          "name" : "id",
           "in" : "path",
           "required" : true,
-          "type" : "integer",
-          "format" : "int64"
+          "type" : "com.wordnik.sample.model.ListItem",
+          "format" : "array"
         } ],
         "responses" : {
           "200" : {

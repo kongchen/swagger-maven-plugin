@@ -47,10 +47,10 @@ paths:
       produces:
       - "application/json"
       parameters:
-      - name: "petId"
+      - name: "id"
         in: "path"
         required: true
-        type: "integer"
+        type: "com.wordnik.sample.model.ListItem"
         format: "int64"
       responses:
         200:

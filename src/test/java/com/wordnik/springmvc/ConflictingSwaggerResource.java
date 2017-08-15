@@ -3,6 +3,7 @@ package com.wordnik.springmvc;
 import com.wordnik.sample.model.Pet;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -13,7 +14,9 @@ public class ConflictingSwaggerResource {
 
     @RequestMapping(value = "/{petId}", method = RequestMethod.GET)
     @ApiOperation("")
-    public Pet getPetById(@PathVariable("petId") Long petId) {
+    public Pet getPetById(
+            @ApiParam(name = "id", type = "com.wordnik.sample.model.ListItem", collectionFormat = "list")
+            @PathVariable("petId") Long petId) {
         return new Pet();
     }
 }

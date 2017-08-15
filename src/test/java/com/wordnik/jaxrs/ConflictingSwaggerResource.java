@@ -14,8 +14,12 @@ public class ConflictingSwaggerResource {
     @GET
     @Path("/{petId}")
     @ApiOperation("")
-    public Pet getPetById(@PathParam("petId") Long petId)
+    public Pet getPetById(
+            @ApiParam(name = "id", type = "com.wordnik.sample.model.ListItem", collectionFormat = "list", format = "array")
+            @PathParam("petId") Long petId)
     {
         return new Pet();
     }
+
+    // TODO Test subresource and @BeanParam
 }
