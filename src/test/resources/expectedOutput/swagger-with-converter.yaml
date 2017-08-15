@@ -481,6 +481,8 @@ paths:
       responses:
         401:
           description: "Some vendor error description"
+        501:
+          description: "Some vendor error description added using swaggerExtension"
         default:
           description: "successful operation"
       security:

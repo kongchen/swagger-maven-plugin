@@ -1,9 +1,38 @@
 package com.github.kongchen.swagger.docgen.reader;
 
-import com.github.kongchen.swagger.docgen.jaxrs.BeanParamInjectParamExtention;
-import com.github.kongchen.swagger.docgen.jaxrs.JaxrsParameterExtension;
-import com.github.kongchen.swagger.docgen.spring.SpringSwaggerExtension;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.ws.rs.BeanParam;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
+
+import org.apache.commons.lang3.reflect.TypeUtils;
+import org.apache.maven.plugin.logging.Log;
+import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+
 import com.sun.jersey.api.core.InjectParam;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -19,7 +48,6 @@ import io.swagger.annotations.ResponseHeader;
 import io.swagger.converter.ModelConverters;
 import io.swagger.jaxrs.ext.SwaggerExtension;
 import io.swagger.jaxrs.ext.SwaggerExtensions;
-import io.swagger.jersey.SwaggerJerseyJaxrs;
 import io.swagger.models.Model;
 import io.swagger.models.Operation;
 import io.swagger.models.Path;
@@ -28,7 +56,6 @@ import io.swagger.models.Scheme;
 import io.swagger.models.SecurityRequirement;
 import io.swagger.models.Swagger;
 import io.swagger.models.Tag;
-import io.swagger.models.parameters.AbstractSerializableParameter;
 import io.swagger.models.parameters.BodyParameter;
 import io.swagger.models.parameters.FormParameter;
 import io.swagger.models.parameters.HeaderParameter;
@@ -41,30 +68,6 @@ import io.swagger.models.properties.Property;
 import io.swagger.models.properties.RefProperty;
 import io.swagger.util.ParameterProcessor;
 import io.swagger.util.PathUtils;
-import org.apache.commons.lang3.reflect.TypeUtils;
-import org.apache.maven.plugin.logging.Log;
-import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.web.bind.annotation.*;
-
-import javax.ws.rs.BeanParam;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * @author chekong on 15/4/28.
@@ -96,17 +99,11 @@ public abstract class AbstractReader {
         updateExtensionChain();
     }
 
-    private void updateExtensionChain() {
-        List<SwaggerExtension> extensions = new ArrayList<SwaggerExtension>();
-        Class<? extends AbstractReader> clazz = this.getClass();
-        if (clazz == SpringMvcApiReader.class || SpringMvcApiReader.class.isAssignableFrom(clazz)) {
-            extensions.add(new SpringSwaggerExtension());
-        } else {
-            extensions.add(new BeanParamInjectParamExtention());
-            extensions.add(new SwaggerJerseyJaxrs());
-            extensions.add(new JaxrsParameterExtension());
-        }
-        SwaggerExtensions.setExtensions(extensions);
+    /**
+     * Method which allows sub-classes to modify the Swagger extension chain.
+     */
+    protected void updateExtensionChain() {
+    	// default implementation does nothing
     }
 
     protected List<SecurityRequirement> getSecurityRequirements(Api api) {

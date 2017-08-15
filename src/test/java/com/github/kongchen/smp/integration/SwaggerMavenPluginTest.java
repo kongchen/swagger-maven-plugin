@@ -6,12 +6,16 @@ import com.github.kongchen.smp.integration.utils.PetIdToStringModelConverter;
 import com.github.kongchen.swagger.docgen.mavenplugin.ApiDocumentMojo;
 import com.github.kongchen.swagger.docgen.mavenplugin.ApiSource;
 import com.google.common.collect.ImmutableList;
+
+import io.swagger.jaxrs.ext.SwaggerExtension;
+import io.swagger.jaxrs.ext.SwaggerExtensions;
 import net.javacrumbs.jsonunit.core.Configuration;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -42,11 +46,13 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
     private File docOutput = new File(getBasedir(), "generated/document.html");
     private ApiDocumentMojo mojo;
     private ObjectMapper mapper = new ObjectMapper();
+    private List<SwaggerExtension> extensions;
 
     @Override
 	@BeforeMethod
     protected void setUp() throws Exception {
-        super.setUp();
+    	extensions = new ArrayList<SwaggerExtension>(SwaggerExtensions.getExtensions());
+    	super.setUp();
 
         try {
             FileUtils.deleteDirectory(swaggerOutputDir);
@@ -57,6 +63,13 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
 
         File testPom = new File(getBasedir(), "target/test-classes/plugin-config.xml");
         mojo = (ApiDocumentMojo) lookupMojo("generate", testPom);
+    }
+    
+    @Override
+    @AfterMethod
+    protected void tearDown() throws Exception {
+    	super.tearDown();
+    	SwaggerExtensions.setExtensions(extensions);
     }
 
     @Test
