@@ -61,7 +61,7 @@ public class SpringMvcTest extends AbstractMojoTestCase {
         File testPom = new File(getBasedir(), "target/test-classes/plugin-config-springmvc.xml");
         mojo = (ApiDocumentMojo) lookupMojo("generate", testPom);
     }
-    
+
     @Override
     @AfterMethod
     protected void tearDown() throws Exception {
@@ -197,6 +197,12 @@ public class SpringMvcTest extends AbstractMojoTestCase {
         Assert.assertFalse(docOutput.exists());
     }
 
+    @Test
+    public void testPreferSwaggerValuesYaml() throws Exception {
+        mojo.getApiSources().get(0).setPreferSwaggerValues(false);
+        assertGeneratedSwaggerSpecYaml("This is a sample.", "/expectedOutput/swagger-spring-preferswaggervalues.yaml");
+    }
+
     @DataProvider
     private Iterator<Object[]> pathProvider() throws Exception {
         String tempDirPath = createTempDirPath();
@@ -223,23 +229,31 @@ public class SpringMvcTest extends AbstractMojoTestCase {
     }
 
     private void assertGeneratedSwaggerSpecJson(String description) throws MojoExecutionException, MojoFailureException, IOException {
+        assertGeneratedSwaggerSpecJson(description, "/expectedOutput/swagger-spring.json");
+    }
+
+    private void assertGeneratedSwaggerSpecJson(String description, String expectedOutput) throws MojoExecutionException, MojoFailureException, IOException {
         mojo.execute();
         ObjectMapper mapper = new ObjectMapper();
         JsonNode actualJson = mapper.readTree(new File(swaggerOutputDir, "swagger.json"));
-        JsonNode expectJson = mapper.readTree(this.getClass().getResourceAsStream("/expectedOutput/swagger-spring.json"));
+        JsonNode expectJson = mapper.readTree(this.getClass().getResourceAsStream(expectedOutput));
 
         changeDescription(expectJson, description);
         assertJsonEquals(expectJson, actualJson, Configuration.empty().when(IGNORING_ARRAY_ORDER));
     }
 
     private void assertGeneratedSwaggerSpecYaml(String description) throws MojoExecutionException, MojoFailureException, IOException {
+        assertGeneratedSwaggerSpecYaml(description, "/expectedOutput/swagger-spring.yaml");
+    }
+
+    private void assertGeneratedSwaggerSpecYaml(String description, String expectedOutput) throws MojoExecutionException, MojoFailureException, IOException {
         mojo.getApiSources().get(0).setOutputFormats("yaml");
         mojo.execute();
 
         String actualYaml = io.swagger.util.Yaml.pretty().writeValueAsString(
                 new Yaml().load(FileUtils.readFileToString(new File(swaggerOutputDir, "swagger.yaml"))));
         String expectYaml = io.swagger.util.Yaml.pretty().writeValueAsString(
-                new Yaml().load(this.getClass().getResourceAsStream("/expectedOutput/swagger-spring.yaml")));
+                new Yaml().load(this.getClass().getResourceAsStream(expectedOutput)));
 
         ObjectMapper mapper = new ObjectMapper();
         JsonNode actualJson = mapper.readTree(YamlToJson(actualYaml));

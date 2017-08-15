@@ -430,5 +430,13 @@ public class ApiSource {
     public void setModelConverters(List<String> modelConverters) {
         this.modelConverters = modelConverters;
     }
+
+    public boolean isPreferSwaggerValues() {
+        return preferSwaggerValues;
+    }
+
+    public void setPreferSwaggerValues(boolean preferSwaggerValues) {
+        this.preferSwaggerValues = preferSwaggerValues;
+    }
 }
 

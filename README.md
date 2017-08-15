@@ -75,7 +75,7 @@ Import the plugin in your project by adding following configuration in your `plu
 | `jsonExampleValues` | If `true`, all example values in `@ApiModelProperty` will be handled as json raw values. This is useful for creating valid examples in the generated json for all property types, including non-string ones. |
 | `modelConverters` | List of custom implementations of `io.swagger.converter.ModelConverter` that should be used when generating the swagger files. |
 | `swaggerExtensions` | List of custom implementations of `io.swagger.jaxrs.ext.SwaggerExtension` that should be used when generating the swagger files. |
-| `preferSwaggerValues` | Determines how to resolve conflicts between Swagger annotations and JAX-RS (or SpringMvc), eg. `@ApiParam(name = "id") @PathParam("petId") Long petId`.  If `true`, the value from the Swagger annotation will be used; otherwise, the value from the JAX-RS annotation will prevail.  Default value is `true`. |
+| `preferSwaggerValues` | Determines how to resolve conflicts between Swagger and JAX-RS (or SpringMvc) annotations, eg. `@ApiParam(name = "id") @PathParam("petId") Long petId`.  If `true`, the value from the Swagger annotation will be used; otherwise, the value from the JAX-RS annotation will prevail.  Default value is `true`. |
 
 # <a id="templatefile">Template File</a>
 
