@@ -305,7 +305,7 @@ public abstract class AbstractDocumentSource {
     public Swagger getSwaggerModel() {
         return swagger;
     }
-    
+
     public void toDocuments() throws GenerateException {
         if (!isSorted) {
             Utils.sortSwagger(swagger);
