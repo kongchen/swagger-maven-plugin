@@ -5,7 +5,7 @@ import io.swagger.annotations.*;
 
 import javax.ws.rs.*;
 
-@Api
+@Api(basePath = "/swaggerBasePath", produces = "application/xml", consumes = "application/xml")
 @Path("/jaxrsBasePath")
 @Produces("application/json")
 @Consumes("application/json")

@@ -50,8 +50,8 @@
         "summary" : "",
         "description" : "",
         "operationId" : "getPetById",
-        "consumes" : [ "application/json" ],
-        "produces" : [ "application/json" ],
+        "consumes" : [ "application/xml" ],
+        "produces" : [ "application/xml" ],
         "parameters" : [ {
           "name" : "petId",
           "in" : "path",

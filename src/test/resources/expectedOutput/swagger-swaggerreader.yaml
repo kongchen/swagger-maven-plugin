@@ -42,9 +42,9 @@ paths:
       description: ""
       operationId: "getPetById"
       consumes:
-      - "application/json"
+      - "application/xml"
       produces:
-      - "application/json"
+      - "application/xml"
       parameters:
       - name: "petId"
         in: "path"

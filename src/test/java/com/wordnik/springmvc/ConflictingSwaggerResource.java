@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-@Api
+@Api(basePath = "/swaggerBasePath", produces = "application/xml", consumes = "application/xml")
 @RequestMapping(value = "/springMvcBasePath", produces = "application/json", consumes = "application/json")
 public class ConflictingSwaggerResource {
 
