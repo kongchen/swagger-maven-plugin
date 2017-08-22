@@ -20,6 +20,7 @@ import javax.ws.rs.HeaderParam;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 
+import io.swagger.models.parameters.*;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.apache.maven.plugin.logging.Log;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -56,12 +57,6 @@ import io.swagger.models.Scheme;
 import io.swagger.models.SecurityRequirement;
 import io.swagger.models.Swagger;
 import io.swagger.models.Tag;
-import io.swagger.models.parameters.BodyParameter;
-import io.swagger.models.parameters.FormParameter;
-import io.swagger.models.parameters.HeaderParameter;
-import io.swagger.models.parameters.Parameter;
-import io.swagger.models.parameters.PathParameter;
-import io.swagger.models.parameters.QueryParameter;
 import io.swagger.models.properties.ArrayProperty;
 import io.swagger.models.properties.MapProperty;
 import io.swagger.models.properties.Property;
@@ -76,6 +71,15 @@ public abstract class AbstractReader {
     protected final Log LOG;
     protected Swagger swagger;
     private Set<Type> typesToSkip = new HashSet<Type>();
+    private boolean preferSwaggerValues = true;
+
+    public boolean isPreferSwaggerValues() {
+        return preferSwaggerValues;
+    }
+
+    public void setPreferSwaggerValues(boolean preferSwaggerValues) {
+        this.preferSwaggerValues = preferSwaggerValues;
+    }
 
     public Set<Type> getTypesToSkip() {
         return typesToSkip;
@@ -391,7 +395,7 @@ public abstract class AbstractReader {
 
         if (!parameters.isEmpty()) {
             for (Parameter parameter : parameters) {
-                ParameterProcessor.applyAnnotations(swagger, parameter, type, annotations);
+                applySwaggerAnnotations(swagger, parameter, type, annotations);
             }
         } else {
             LOG.debug("Looking for body params in " + cls);
@@ -403,6 +407,30 @@ public abstract class AbstractReader {
             }
         }
         return parameters;
+    }
+
+    private void applySwaggerAnnotations(Swagger swagger, Parameter parameter, Type type, List<Annotation> annotations) {
+        String initialName = parameter.getName();
+        String initialType = null;
+        String initialFormat = null;
+        if(parameter instanceof AbstractSerializableParameter) {
+            initialType = ((AbstractSerializableParameter) parameter).getType();
+            initialFormat = ((AbstractSerializableParameter) parameter).getFormat();
+        }
+
+        ParameterProcessor.applyAnnotations(swagger, parameter, type, annotations);
+
+        if(!preferSwaggerValues) {
+            restoreValues(parameter, initialName, initialType, initialFormat);
+        }
+    }
+
+    private void restoreValues(Parameter parameter, String name, String type, String format) {
+        parameter.setName(name);
+        if (parameter instanceof AbstractSerializableParameter) {
+            ((AbstractSerializableParameter) parameter).setType(type);
+            ((AbstractSerializableParameter) parameter).setFormat(format);
+        }
     }
 
     protected void updateApiResponse(Operation operation, ApiResponses responseAnnotation) {

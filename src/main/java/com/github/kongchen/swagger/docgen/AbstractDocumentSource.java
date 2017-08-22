@@ -413,7 +413,9 @@ public abstract class AbstractDocumentSource {
             Class<?> clazz = Class.forName(customReaderClassName);
             if (AbstractReader.class.isAssignableFrom(clazz)) {
                 Constructor<?> constructor = clazz.getConstructor(Swagger.class, Log.class);
-                return (ClassSwaggerReader) constructor.newInstance(swagger, LOG);
+                AbstractReader reader = (AbstractReader) constructor.newInstance(swagger, LOG);
+                reader.setPreferSwaggerValues(apiSource.isPreferSwaggerValues());
+                return (ClassSwaggerReader) reader;
             } else {
                 return (ClassSwaggerReader) clazz.newInstance();
             }

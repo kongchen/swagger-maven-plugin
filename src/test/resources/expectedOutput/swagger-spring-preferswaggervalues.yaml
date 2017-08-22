@@ -467,7 +467,7 @@ paths:
         in: "query"
         description: "Status values that need to be considered for filter"
         required: true
-        type: "array"
+        type: "string"
         items:
           type: "string"
           default: "available"
@@ -475,7 +475,6 @@ paths:
           - "available"
           - "pending"
           - "sold"
-        collectionFormat: "multi"
       responses:
         200:
           description: "successful operation"
@@ -544,10 +543,9 @@ paths:
         in: "query"
         description: "Tags to filter by"
         required: true
-        type: "array"
+        type: "string"
         items:
           type: "string"
-        collectionFormat: "multi"
       responses:
         200:
           description: "successful operation"

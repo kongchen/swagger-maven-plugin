@@ -26,6 +26,7 @@ public class MavenDocumentSource extends AbstractDocumentSource {
         if (customReaderClassName == null) {
             JaxrsReader reader = new JaxrsReader(swagger, LOG);
             reader.setTypesToSkip(this.typesToSkip);
+            reader.setPreferSwaggerValues(apiSource.isPreferSwaggerValues());
             return reader;
         } else {
             return getCustomApiReader(customReaderClassName);
