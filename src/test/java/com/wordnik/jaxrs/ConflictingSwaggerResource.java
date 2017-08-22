@@ -1,7 +1,11 @@
 package com.wordnik.jaxrs;
 
+
+import com.wordnik.sample.model.ApiResponse;
 import com.wordnik.sample.model.Pet;
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 
 import javax.ws.rs.*;
 
@@ -21,5 +25,12 @@ public class ConflictingSwaggerResource {
         return new Pet();
     }
 
-    // TODO Test subresource and @BeanParam
+    @POST
+    @Path("/bean")
+    @ApiOperation("")
+    public Pet createBean(@BeanParam ConflictingBean conflictingBean) {
+        return new Pet();
+    }
+
+    // TODO Test subresource
 }

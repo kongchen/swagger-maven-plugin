@@ -34,6 +34,45 @@ paths:
           description: "successful operation"
           schema:
             type: "string"
+  /jaxrsBasePath/bean:
+    post:
+      summary: ""
+      description: ""
+      operationId: "createBean"
+      consumes:
+      - "application/xml"
+      produces:
+      - "application/xml"
+      parameters:
+      - name: "beanAttribute"
+        in: "path"
+        required: true
+        type: "com.wordnik.sample.model.Pet"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+  /jaxrsBasePath/bean:
+    post:
+      summary: ""
+      description: ""
+      operationId: "createBean"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "beanAttribute"
+        in: "path"
+        description: ""
+        required: false
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Pet"
   /jaxrsBasePath/{petId}:
     get:
       summary: ""
