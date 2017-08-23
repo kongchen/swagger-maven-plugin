@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
 import javax.ws.rs.*;
+import javax.ws.rs.core.Response;
 
 @Api(basePath = "/swaggerBasePath", produces = "application/xml", consumes = "application/xml")
 @Path("/jaxrsBasePath")
@@ -50,5 +51,13 @@ public class ConflictingSwaggerResource {
     @ApiOperation("")
     public ConflictingSubresource subresourceEndpoint() {
         return new ConflictingSubresource();
+    }
+
+    @GET
+    @Path("/stringList")
+    @ApiOperation(value = "", response = String.class, responseContainer = "list")
+    public Response getStringList()
+    {
+        return Response.status(200).build();
     }
 }

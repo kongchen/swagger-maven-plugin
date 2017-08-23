@@ -98,6 +98,26 @@
         }
       }
     },
+    "/jaxrsBasePath/stringList" : {
+      "get" : {
+        "summary" : "",
+        "description" : "",
+        "operationId" : "getStringList",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "type" : "string"
+              }
+            }
+          }
+        }
+      }
+    },
     "/jaxrsBasePath/{petId}" : {
       "put" : {
         "summary" : "",

@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import javax.ws.rs.core.Response;
+
 @Api(basePath = "/swaggerBasePath", produces = "application/xml", consumes = "application/xml")
 @RequestMapping(value = "/springMvcBasePath", produces = "application/json", consumes = "application/json")
 public class ConflictingSwaggerResource {
@@ -19,5 +21,12 @@ public class ConflictingSwaggerResource {
             @ApiParam(name = "id", type = "com.wordnik.sample.model.ListItem", collectionFormat = "list")
             @PathVariable("petId") Long petId) {
         return new Pet();
+    }
+
+    @RequestMapping(value = "/stringList", method = RequestMethod.GET)
+    @ApiOperation(value = "", response = String.class, responseContainer = "list")
+    public Response getStringList()
+    {
+        return Response.status(200).build();
     }
 }
