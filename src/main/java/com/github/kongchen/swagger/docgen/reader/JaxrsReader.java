@@ -32,7 +32,6 @@ import org.springframework.core.annotation.AnnotationUtils;
 
 import com.github.kongchen.swagger.docgen.jaxrs.BeanParamInjectParamExtention;
 import com.github.kongchen.swagger.docgen.jaxrs.JaxrsParameterExtension;
-import com.github.kongchen.swagger.docgen.spring.SpringSwaggerExtension;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -277,6 +276,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
                 }
             }
 
+            // TODO Start here
             if (!apiOperation.response().equals(Void.class) && !apiOperation.response().equals(void.class)) {
                 responseClassType = apiOperation.response();
             }
@@ -370,12 +370,6 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
 
         if (AnnotationUtils.findAnnotation(method, Deprecated.class) != null) {
             operation.deprecated(true);
-        }
-
-        // FIXME `hidden` is never used
-        boolean hidden = false;
-        if (apiOperation != null) {
-            hidden = apiOperation.hidden();
         }
 
         // process parameters

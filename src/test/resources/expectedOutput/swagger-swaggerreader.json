@@ -93,7 +93,7 @@
       }
     },
     "/jaxrsBasePath/{petId}" : {
-      "get" : {
+      "put" : {
         "summary" : "",
         "description" : "",
         "operationId" : "getPetById",

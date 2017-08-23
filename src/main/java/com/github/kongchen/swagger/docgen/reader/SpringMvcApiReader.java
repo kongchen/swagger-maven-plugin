@@ -191,6 +191,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
             }
         }
 
+        // TODO Start here
         if (!apiOperation.response().equals(Void.class)) {
             responseClass = apiOperation.response();
         }

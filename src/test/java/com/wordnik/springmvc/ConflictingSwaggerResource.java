@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class ConflictingSwaggerResource {
 
     @RequestMapping(value = "/{petId}", method = RequestMethod.GET)
-    @ApiOperation(value = "", produces = "application/xml", consumes = "application/xml",
+    @ApiOperation(value = "", produces = "application/xml", consumes = "application/xml", httpMethod = "put",
                   response = String.class, responseContainer = "list", responseReference = "#/definitions/ListItem")
     public Pet getPetById(
             @ApiParam(name = "id", type = "com.wordnik.sample.model.ListItem", collectionFormat = "list")
