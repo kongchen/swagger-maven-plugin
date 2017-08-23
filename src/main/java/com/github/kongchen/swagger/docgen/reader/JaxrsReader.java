@@ -60,6 +60,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
     private static final String CLASS_NAME_PREFIX = "class ";
     private static final String INTERFACE_NAME_PREFIX = "interface ";
 
+    @Deprecated
     public JaxrsReader(Swagger swagger, Log LOG) {
         this(swagger, LOG, true);
     }

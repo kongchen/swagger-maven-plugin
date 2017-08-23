@@ -16,7 +16,7 @@ import io.swagger.models.Swagger;
 public class SwaggerReader extends AbstractReader implements ClassSwaggerReader {
 
     public SwaggerReader(Swagger swagger, Log LOG) {
-        super(swagger, LOG);
+        super(swagger, LOG, true);
     }
 
     @Override

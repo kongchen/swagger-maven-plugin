@@ -35,11 +35,13 @@ public class BeanParamInjectParamExtention extends AbstractSwaggerExtension {
 
     private boolean preferSwaggerValues;
 
+    @Deprecated
     public BeanParamInjectParamExtention() {
         this(true);
     }
 
     public BeanParamInjectParamExtention(boolean preferSwaggerValues) {
+        super();
         this.preferSwaggerValues = preferSwaggerValues;
     }
 

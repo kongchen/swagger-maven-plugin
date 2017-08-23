@@ -431,6 +431,7 @@ public abstract class AbstractDocumentSource {
             reader = constructor.newInstance(swagger, LOG, apiSource.isPreferSwaggerValues());
         }
         catch (NoSuchMethodException ex) {
+            LOG.warn("Could not find 3-arg constructor for " + clazz.getName() + ". Using deprecated 2-arg constructor.");
             constructor = clazz.getConstructor(Swagger.class, Log.class);
             reader = constructor.newInstance(swagger, LOG);
         }

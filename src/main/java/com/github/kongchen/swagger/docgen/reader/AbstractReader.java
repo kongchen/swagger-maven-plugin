@@ -89,6 +89,7 @@ public abstract class AbstractReader {
         this.typesToSkip.add(type);
     }
 
+    @Deprecated
     public AbstractReader(Swagger swagger, Log LOG) {
         this(swagger, LOG, true);
     }

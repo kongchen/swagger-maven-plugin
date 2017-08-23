@@ -12,12 +12,13 @@ import java.util.List;
 
 public class VendorExtensionsJaxrsReader extends JaxrsReader {
 
-    public VendorExtensionsJaxrsReader(Swagger swagger, Log log) {
-        this(swagger, log, true);
+    @Deprecated
+    public VendorExtensionsJaxrsReader(Swagger swagger, Log LOG) {
+        this(swagger, LOG, true);
     }
 
-    public VendorExtensionsJaxrsReader(Swagger swagger, Log log, boolean preferSwaggerValues) {
-        super(swagger, log, preferSwaggerValues);
+    public VendorExtensionsJaxrsReader(Swagger swagger, Log LOG, boolean preferSwaggerValues) {
+        super(swagger, LOG, preferSwaggerValues);
 
         List<SwaggerExtension> extensions = new LinkedList<SwaggerExtension>(SwaggerExtensions.getExtensions());
         extensions.add(new TestVendorExtension());

@@ -15,7 +15,7 @@ import org.apache.maven.plugin.logging.Log;
  */
 public class CustomSpringMvcReader extends VendorExtensionsSpringMvcReader {
     public CustomSpringMvcReader(Swagger swagger, Log log) {
-        super(swagger, log);
+        super(swagger, log, true);
     }
 
     @Override

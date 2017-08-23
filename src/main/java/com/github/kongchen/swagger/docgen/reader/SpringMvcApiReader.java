@@ -48,6 +48,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
     private static final ResponseContainerConverter RESPONSE_CONTAINER_CONVERTER = new ResponseContainerConverter();
     private String resourcePath;
 
+    @Deprecated
     public SpringMvcApiReader(Swagger swagger, Log log) {
         this(swagger, log, true);
     }

@@ -12,6 +12,7 @@ import java.util.List;
 
 public class VendorExtensionsSpringMvcReader extends SpringMvcApiReader {
 
+    @Deprecated
     public VendorExtensionsSpringMvcReader(Swagger swagger, Log log) {
         this(swagger, log, true);
     }

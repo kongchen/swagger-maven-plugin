@@ -12,7 +12,7 @@ import java.util.Set;
 public class CustomJaxrsReader extends VendorExtensionsJaxrsReader {
 
     public CustomJaxrsReader(Swagger swagger, Log LOG) {
-        super(swagger, LOG);
+        super(swagger, LOG, true);
     }
 
     @Override
