@@ -37,6 +37,23 @@ paths:
           description: "successful operation"
           schema:
             type: "string"
+  /springMvcBasePath/petList:
+    get:
+      summary: ""
+      description: ""
+      operationId: "getPetList"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              type: "string"
   /springMvcBasePath/stringList:
     get:
       summary: ""

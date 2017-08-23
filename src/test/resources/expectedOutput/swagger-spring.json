@@ -47,6 +47,26 @@
         }
       }
     },
+    "/springMvcBasePath/petList" : {
+      "get" : {
+        "summary" : "",
+        "description" : "",
+        "operationId" : "getPetList",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "type" : "string"
+              }
+            }
+          }
+        }
+      }
+    },
     "/springMvcBasePath/stringList" : {
       "get" : {
         "summary" : "",

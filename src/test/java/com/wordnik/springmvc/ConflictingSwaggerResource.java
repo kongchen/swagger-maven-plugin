@@ -4,11 +4,13 @@ import com.wordnik.sample.model.Pet;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import javax.ws.rs.core.Response;
+import java.util.List;
 
 @Api(basePath = "/swaggerBasePath", produces = "application/xml", consumes = "application/xml")
 @RequestMapping(value = "/springMvcBasePath", produces = "application/json", consumes = "application/json")
@@ -25,8 +27,15 @@ public class ConflictingSwaggerResource {
 
     @RequestMapping(value = "/stringList", method = RequestMethod.GET)
     @ApiOperation(value = "", response = String.class, responseContainer = "list")
-    public Response getStringList()
+    public ResponseEntity getStringList()
     {
-        return Response.status(200).build();
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/petList", method = RequestMethod.GET)
+    @ApiOperation(value = "", response = String.class, responseContainer = "list")
+    public ResponseEntity<List<Pet>> getPetList()
+    {
+        return new ResponseEntity(HttpStatus.OK);
     }
 }
