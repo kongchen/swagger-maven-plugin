@@ -13,7 +13,11 @@ import java.util.List;
 public class VendorExtensionsSpringMvcReader extends SpringMvcApiReader {
 
     public VendorExtensionsSpringMvcReader(Swagger swagger, Log log) {
-        super(swagger, log);
+        this(swagger, log, true);
+    }
+
+    public VendorExtensionsSpringMvcReader(Swagger swagger, Log log, boolean preferSwaggerValues) {
+        super(swagger, log, preferSwaggerValues);
 
         List<SwaggerExtension> extensions = new LinkedList<SwaggerExtension>(SwaggerExtensions.getExtensions());
         extensions.add(new TestVendorExtension());

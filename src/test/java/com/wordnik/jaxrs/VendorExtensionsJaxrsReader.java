@@ -12,8 +12,12 @@ import java.util.List;
 
 public class VendorExtensionsJaxrsReader extends JaxrsReader {
 
-    public VendorExtensionsJaxrsReader(Swagger swagger, Log LOG) {
-        super(swagger, LOG);
+    public VendorExtensionsJaxrsReader(Swagger swagger, Log log) {
+        this(swagger, log, true);
+    }
+
+    public VendorExtensionsJaxrsReader(Swagger swagger, Log log, boolean preferSwaggerValues) {
+        super(swagger, log, preferSwaggerValues);
 
         List<SwaggerExtension> extensions = new LinkedList<SwaggerExtension>(SwaggerExtensions.getExtensions());
         extensions.add(new TestVendorExtension());

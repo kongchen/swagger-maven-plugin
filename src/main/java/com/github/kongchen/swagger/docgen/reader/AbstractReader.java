@@ -71,15 +71,7 @@ public abstract class AbstractReader {
     protected final Log LOG;
     protected Swagger swagger;
     private Set<Type> typesToSkip = new HashSet<Type>();
-    private boolean preferSwaggerValues = true;
-
-    public boolean isPreferSwaggerValues() {
-        return preferSwaggerValues;
-    }
-
-    public void setPreferSwaggerValues(boolean preferSwaggerValues) {
-        this.preferSwaggerValues = preferSwaggerValues;
-    }
+    protected boolean preferSwaggerValues = true;
 
     public Set<Type> getTypesToSkip() {
         return typesToSkip;
@@ -98,8 +90,13 @@ public abstract class AbstractReader {
     }
 
     public AbstractReader(Swagger swagger, Log LOG) {
+        this(swagger, LOG, true);
+    }
+
+    public AbstractReader(Swagger swagger, Log LOG, boolean preferSwaggerValues) {
         this.swagger = swagger;
         this.LOG = LOG;
+        this.preferSwaggerValues = preferSwaggerValues;
         updateExtensionChain();
     }
 

@@ -43,6 +43,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.*;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -412,16 +413,29 @@ public abstract class AbstractDocumentSource {
             LOG.info("Reading custom API reader: " + customReaderClassName);
             Class<?> clazz = Class.forName(customReaderClassName);
             if (AbstractReader.class.isAssignableFrom(clazz)) {
-                Constructor<?> constructor = clazz.getConstructor(Swagger.class, Log.class);
-                AbstractReader reader = (AbstractReader) constructor.newInstance(swagger, LOG);
-                reader.setPreferSwaggerValues(apiSource.isPreferSwaggerValues());
-                return (ClassSwaggerReader) reader;
+                return (ClassSwaggerReader) createAbstractReader(clazz);
             } else {
                 return (ClassSwaggerReader) clazz.newInstance();
             }
         } catch (Exception e) {
             throw new GenerateException("Cannot load Swagger API reader: " + customReaderClassName, e);
         }
+    }
+
+    private AbstractReader createAbstractReader(Class<?> clazz) throws ReflectiveOperationException {
+        Object reader;
+        Constructor<?> constructor;
+
+        try {
+            constructor = clazz.getConstructor(Swagger.class, Log.class, boolean.class);
+            reader = constructor.newInstance(swagger, LOG, apiSource.isPreferSwaggerValues());
+        }
+        catch (NoSuchMethodException ex) {
+            constructor = clazz.getConstructor(Swagger.class, Log.class);
+            reader = constructor.newInstance(swagger, LOG);
+        }
+
+        return (AbstractReader) reader;
     }
 }
 

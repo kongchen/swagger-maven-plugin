@@ -49,9 +49,13 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
     private String resourcePath;
 
     public SpringMvcApiReader(Swagger swagger, Log log) {
-        super(swagger, log);
+        this(swagger, log, true);
     }
-    
+
+    public SpringMvcApiReader(Swagger swagger, Log log, boolean preferSwaggerValues) {
+        super(swagger, log, preferSwaggerValues);
+    }
+
     @Override
     protected void updateExtensionChain() {
     	List<SwaggerExtension> extensions = new ArrayList<SwaggerExtension>();

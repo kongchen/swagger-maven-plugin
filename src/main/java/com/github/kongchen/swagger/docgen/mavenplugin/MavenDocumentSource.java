@@ -21,12 +21,12 @@ public class MavenDocumentSource extends AbstractDocumentSource {
         }
     }
 
+    @Override
     protected ClassSwaggerReader resolveApiReader() throws GenerateException {
         String customReaderClassName = apiSource.getSwaggerApiReader();
         if (customReaderClassName == null) {
-            JaxrsReader reader = new JaxrsReader(swagger, LOG);
+            JaxrsReader reader = new JaxrsReader(swagger, LOG, apiSource.isPreferSwaggerValues());
             reader.setTypesToSkip(this.typesToSkip);
-            reader.setPreferSwaggerValues(apiSource.isPreferSwaggerValues());
             return reader;
         } else {
             return getCustomApiReader(customReaderClassName);

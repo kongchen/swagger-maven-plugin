@@ -33,6 +33,16 @@ import java.util.Set;
  */
 public class BeanParamInjectParamExtention extends AbstractSwaggerExtension {
 
+    private boolean preferSwaggerValues;
+
+    public BeanParamInjectParamExtention() {
+        this(true);
+    }
+
+    public BeanParamInjectParamExtention(boolean preferSwaggerValues) {
+        this.preferSwaggerValues = preferSwaggerValues;
+    }
+
     @Override
     public List<Parameter> extractParameters(List<Annotation> annotations, Type type, Set<Type> typesToSkip, Iterator<SwaggerExtension> chain) {
         Class<?> cls = TypeUtils.getRawType(type, type);
@@ -96,7 +106,7 @@ public class BeanParamInjectParamExtention extends AbstractSwaggerExtension {
                         }
                     }
 
-                    if (!param.name().isEmpty()) {
+                    if (!param.name().isEmpty() && preferSwaggerValues) {
                         parameter.setName(param.name());
                     }
                 }

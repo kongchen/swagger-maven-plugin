@@ -61,13 +61,17 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
     private static final String INTERFACE_NAME_PREFIX = "interface ";
 
     public JaxrsReader(Swagger swagger, Log LOG) {
-        super(swagger, LOG);
+        this(swagger, LOG, true);
     }
-    
+
+    public JaxrsReader(Swagger swagger, Log LOG, boolean preferSwaggerValues) {
+        super(swagger, LOG, preferSwaggerValues);
+    }
+
     @Override
     protected void updateExtensionChain() {
     	List<SwaggerExtension> extensions = new ArrayList<SwaggerExtension>();
-    	extensions.add(new BeanParamInjectParamExtention());
+    	extensions.add(new BeanParamInjectParamExtention(preferSwaggerValues));
         extensions.add(new SwaggerJerseyJaxrs());
         extensions.add(new JaxrsParameterExtension());
     	SwaggerExtensions.setExtensions(extensions);
