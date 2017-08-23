@@ -276,7 +276,6 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
                 }
             }
 
-            // TODO Start here
             if (!apiOperation.response().equals(Void.class) && !apiOperation.response().equals(void.class)) {
                 responseClassType = apiOperation.response();
             }
@@ -303,11 +302,15 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         }
         operation.operationId(operationId);
 
-        if (responseClassType == null) {
-            // pick out response from method declaration
-            LOGGER.debug("picking up response class from method " + method);
-            responseClassType = method.getGenericReturnType();
+        Type methodReturnType = method.getGenericReturnType();
+         if(!methodReturnType.equals(javax.ws.rs.core.Response.class)) {
+            if (responseClassType == null || !preferSwaggerValues) {
+                LOGGER.debug("picking up response class from method " + method);
+                responseClassType = methodReturnType;
+                responseContainer = null;
+            }
         }
+
         if ((responseClassType != null)
                 && !responseClassType.equals(Void.class)
                 && !responseClassType.equals(void.class)
@@ -453,7 +456,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
 	}
 
 	public String extractOperationMethod(ApiOperation apiOperation, Method method, Iterator<SwaggerExtension> chain) {
-        if (!apiOperation.httpMethod().isEmpty()) {
+        if (!apiOperation.httpMethod().isEmpty() && preferSwaggerValues) {
             return apiOperation.httpMethod().toLowerCase();
         } else if (AnnotationUtils.findAnnotation(method, GET.class) != null) {
             return "get";

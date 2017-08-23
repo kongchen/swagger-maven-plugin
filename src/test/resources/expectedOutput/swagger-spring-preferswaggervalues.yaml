@@ -642,9 +642,9 @@ paths:
         200:
           description: "successful operation"
           schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Pet"
+            type: "object"
+            additionalProperties:
+              type: "object"
       security:
       - petstore_auth:
         - "write:pets"

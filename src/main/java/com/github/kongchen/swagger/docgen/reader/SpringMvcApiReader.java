@@ -217,11 +217,15 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
             operation.security(sec);
         }
 
-        if (responseClass == null) {
-            // pick out response from method declaration
-            LOG.info("picking up response class from method " + method);
-            responseClass = method.getGenericReturnType();
+        Type methodReturnType = method.getGenericReturnType();
+        if(!methodReturnType.equals(ResponseEntity.class)) {
+            if (responseClass == null || !preferSwaggerValues) {
+                LOG.debug("picking up response class from method " + method);
+                responseClass = methodReturnType;
+                responseContainer = null;
+            }
         }
+
         if (responseClass instanceof ParameterizedType && ResponseEntity.class.equals(((ParameterizedType) responseClass).getRawType())) {
             responseClass = ((ParameterizedType) responseClass).getActualTypeArguments()[0];
         }
