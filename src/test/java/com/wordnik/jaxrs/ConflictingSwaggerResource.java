@@ -1,7 +1,6 @@
 package com.wordnik.jaxrs;
 
 
-import com.wordnik.sample.model.ApiResponse;
 import com.wordnik.sample.model.Pet;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -15,9 +14,24 @@ import javax.ws.rs.*;
 @Consumes("application/json")
 public class ConflictingSwaggerResource {
 
+    /*
+    https://github.com/swagger-api/swagger-core/wiki/Annotations-1.5.X
+    http://docs.swagger.io/swagger-core/current/apidocs/index.html?io/swagger/annotations
+
+    // Api                     basePath        produces        consumes
+    ApiModel                ???
+    ApiModelProperty        dataType        name
+    ApiOperation            produces        consumes        response        responseContainer       responseReference
+    // ApiParam                format          name            type            collectionFormat
+    ApiResponse             reference       response        responseContainer
+    ApiResponses            ---
+    ResponseHeader          ---
+     */
+
     @GET
     @Path("/{petId}")
-    @ApiOperation("")
+    @ApiOperation(value = "", produces = "application/xml", consumes = "application/xml",
+                  response = String.class, responseContainer = "list", responseReference = "#/definitions/ListItem")
     public Pet getPetById(
             @ApiParam(name = "id", type = "com.wordnik.sample.model.ListItem", collectionFormat = "list", format = "array")
             @PathParam("petId") Long petId)
