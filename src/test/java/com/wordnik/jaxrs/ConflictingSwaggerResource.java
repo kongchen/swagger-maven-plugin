@@ -32,5 +32,9 @@ public class ConflictingSwaggerResource {
         return new Pet();
     }
 
-    // TODO Test subresource
+    @Path("/subresource")
+    @ApiOperation("")
+    public ConflictingSubresource subresourceEndpoint() {
+        return new ConflictingSubresource();
+    }
 }

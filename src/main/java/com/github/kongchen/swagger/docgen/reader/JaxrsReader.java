@@ -23,6 +23,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.logging.Log;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
@@ -103,6 +104,11 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
 
         // only read if allowing hidden apis OR api is not marked as hidden
         if (!canReadApi(readHidden, api)) {
+            return swagger;
+        }
+
+        // if @Path is missing and this is not a subresource, then return
+        if((apiPath == null) && StringUtils.isEmpty(parentPath)) {
             return swagger;
         }
 

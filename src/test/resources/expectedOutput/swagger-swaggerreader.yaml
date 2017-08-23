@@ -55,6 +55,26 @@ paths:
           description: "successful operation"
           schema:
             $ref: "#/definitions/Pet"
+  /jaxrsBasePath/subresource/{petId}:
+    get:
+      summary: ""
+      description: ""
+      operationId: "getPetById"
+      consumes:
+      - "application/xml"
+      produces:
+      - "application/xml"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "com.wordnik.sample.model.ListItem"
+        format: "array"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Pet"
   /jaxrsBasePath/{petId}:
     get:
       summary: ""
