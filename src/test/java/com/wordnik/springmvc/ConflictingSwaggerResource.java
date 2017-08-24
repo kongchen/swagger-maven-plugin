@@ -1,6 +1,7 @@
 package com.wordnik.springmvc;
 
 import com.wordnik.sample.model.Pet;
+import com.wordnik.sample.model.User;
 import io.swagger.annotations.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,8 +17,8 @@ public class ConflictingSwaggerResource {
 
     @RequestMapping(value = "/{petId}", method = RequestMethod.GET)
     @ApiOperation(value = "", produces = "application/xml", consumes = "application/xml", httpMethod = "put",
-                  response = String.class, responseContainer = "list", responseReference = "#/definitions/ListItem")
-    @ApiResponse(code = 200, message = "successful operation", response = String.class, responseContainer = "list", reference = "#/definitions/ListItem")
+                  response = User.class, responseContainer = "list", responseReference = "#/definitions/ListItem")
+    @ApiResponse(code = 200, message = "successful operation", response = User.class, responseContainer = "list", reference = "#/definitions/ListItem")
     public Pet getPetById(
             @ApiParam(name = "id", type = "com.wordnik.sample.model.ListItem", collectionFormat = "list")
             @PathVariable("petId") Long petId) {
@@ -27,7 +28,7 @@ public class ConflictingSwaggerResource {
     @RequestMapping(method = RequestMethod.POST)
     @ApiOperation("")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = String.class, responseContainer = "list", reference = "#/definitions/ListItem")
+            @ApiResponse(code = 200, message = "successful operation", response = User.class, responseContainer = "list", reference = "#/definitions/ListItem")
     })
     public Pet addPet(
             @ApiParam(value = "Pet object that needs to be added to the store", required = true) Pet pet) {
@@ -42,8 +43,8 @@ public class ConflictingSwaggerResource {
     }
 
     @RequestMapping(value = "/petList", method = RequestMethod.GET)
-    @ApiOperation(value = "", response = String.class, responseContainer = "list")
-    @ApiResponse(code = 200, message = "successful operation", response = String.class, responseContainer = "list", reference = "#/definitions/ListItem")
+    @ApiOperation(value = "", response = User.class, responseContainer = "list")
+    @ApiResponse(code = 200, message = "successful operation", response = User.class, responseContainer = "list", reference = "#/definitions/ListItem")
     public ResponseEntity<List<Pet>> getPetList()
     {
         return new ResponseEntity(HttpStatus.OK);
@@ -55,6 +56,16 @@ public class ConflictingSwaggerResource {
             @ApiResponse(code = 200, message = "successful operation", response = Pet.class, responseContainer = "list", reference = "#/definitions/ListItem")
     })
     public ResponseEntity<String> helloWorld() {
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/userList", method = RequestMethod.GET)
+    @ApiOperation("")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "successful operation", response = User.class, responseContainer = "list")
+    })
+    public ResponseEntity getUserList()
+    {
         return new ResponseEntity(HttpStatus.OK);
     }
 }

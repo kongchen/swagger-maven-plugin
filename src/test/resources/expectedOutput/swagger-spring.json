@@ -67,7 +67,7 @@
           "200" : {
             "description" : "successful operation",
             "schema" : {
-              "$ref" : "#/definitions/Pet"
+              "$ref" : "#/definitions/User"
             }
           }
         }
@@ -103,7 +103,7 @@
             "schema" : {
               "type" : "array",
               "items" : {
-                "type" : "string"
+                "$ref" : "#/definitions/User"
               }
             }
           }
@@ -130,6 +130,23 @@
         }
       }
     },
+    "/springMvcBasePath/userList" : {
+      "get" : {
+        "summary" : "",
+        "description" : "",
+        "operationId" : "getUserList",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/User"
+            }
+          }
+        }
+      }
+    },
     "/springMvcBasePath/{petId}" : {
       "get" : {
         "summary" : "",
@@ -150,7 +167,7 @@
             "schema" : {
               "type" : "array",
               "items" : {
-                "type" : "string"
+                "$ref" : "#/definitions/User"
               }
             }
           }

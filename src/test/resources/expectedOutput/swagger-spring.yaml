@@ -57,7 +57,7 @@ paths:
         200:
           description: "successful operation"
           schema:
-            $ref: "#/definitions/Pet"
+            $ref: "#/definitions/User"
   /springMvcBasePath/helloWorld:
     get:
       summary: ""
@@ -89,7 +89,7 @@ paths:
           schema:
             type: "array"
             items:
-              type: "string"
+              $ref: "#/definitions/User"
   /springMvcBasePath/stringList:
     get:
       summary: ""
@@ -107,6 +107,21 @@ paths:
             type: "array"
             items:
               type: "string"
+  /springMvcBasePath/userList:
+    get:
+      summary: ""
+      description: ""
+      operationId: "getUserList"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/User"
   /springMvcBasePath/{petId}:
     get:
       summary: ""
@@ -128,7 +143,7 @@ paths:
           schema:
             type: "array"
             items:
-              type: "string"
+              $ref: "#/definitions/User"
   /echo/cookieValueExpectCookieName:
     get:
       tags:

@@ -2,6 +2,7 @@ package com.wordnik.jaxrs;
 
 
 import com.wordnik.sample.model.Pet;
+import com.wordnik.sample.model.User;
 import io.swagger.annotations.*;
 
 import javax.ws.rs.*;
@@ -30,8 +31,8 @@ public class ConflictingSwaggerResource {
     @GET
     @Path("/{petId}")
     @ApiOperation(value = "", produces = "application/xml", consumes = "application/xml", httpMethod = "put",
-                  response = String.class, responseContainer = "list", responseReference = "#/definitions/ListItem")
-    @ApiResponse(code = 200, message = "successful operation", response = String.class, responseContainer = "list", reference = "#/definitions/ListItem")
+                  response = User.class, responseContainer = "list", responseReference = "#/definitions/ListItem")
+    @ApiResponse(code = 200, message = "successful operation", response = User.class, responseContainer = "list", reference = "#/definitions/ListItem")
     public Pet getPetById(
             @ApiParam(name = "id", type = "com.wordnik.sample.model.ListItem", collectionFormat = "list", format = "array")
             @PathParam("petId") Long petId)
@@ -42,7 +43,7 @@ public class ConflictingSwaggerResource {
     @POST
     @ApiOperation("")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = String.class, responseContainer = "list", reference = "#/definitions/ListItem")
+            @ApiResponse(code = 200, message = "successful operation", response = User.class, responseContainer = "list", reference = "#/definitions/ListItem")
     })
     public Pet addPet(
             @ApiParam(value = "Pet object that needs to be added to the store", required = true) Pet pet) {
@@ -66,6 +67,17 @@ public class ConflictingSwaggerResource {
     @Path("/stringList")
     @ApiOperation(value = "", response = String.class, responseContainer = "list")
     public Response getStringList()
+    {
+        return Response.status(200).build();
+    }
+
+    @GET
+    @Path("/userList")
+    @ApiOperation("")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "successful operation", response = User.class, responseContainer = "list")
+    })
+    public Response getUserList()
     {
         return Response.status(200).build();
     }

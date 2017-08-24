@@ -113,6 +113,23 @@ paths:
             type: "array"
             items:
               type: "string"
+  /jaxrsBasePath/userList:
+    get:
+      summary: ""
+      description: ""
+      operationId: "getUserList"
+      consumes:
+      - "application/xml"
+      produces:
+      - "application/xml"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/User"
   /jaxrsBasePath/{petId}:
     put:
       summary: ""
@@ -134,7 +151,7 @@ paths:
           schema:
             type: "array"
             items:
-              type: "string"
+              $ref: "#/definitions/User"
   /myResourceImpl:
     get:
       summary: "Find pet(s) by ID"
