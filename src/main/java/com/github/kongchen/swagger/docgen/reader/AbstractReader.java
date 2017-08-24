@@ -439,21 +439,13 @@ public abstract class AbstractReader {
                     .description(apiResponse.message())
                     .headers(responseHeaders);
 
-            if (responseClass.equals(Void.class)) {
-                if (operation.getResponses() != null) {
-                    Response apiOperationResponse = operation.getResponses().get(String.valueOf(apiResponse.code()));
-                    if (apiOperationResponse != null) {
-                        response.setSchema(apiOperationResponse.getSchema());
-                    }
-                }
-            } else {
+            Property schema = null;
+            if (!responseClass.equals(Void.class)) {
                 Map<String, Model> models = ModelConverters.getInstance().read(responseClass);
                 for (String key : models.keySet()) {
-                    final Property schema = new RefProperty().asDefault(key);
+                    schema = new RefProperty().asDefault(key);
                     if (apiResponse.responseContainer().equals("List")) {
-                        response.schema(new ArrayProperty(schema));
-                    } else {
-                        response.schema(schema);
+                        schema = new ArrayProperty(schema);
                     }
                     swagger.model(key, models.get(key));
                 }
@@ -461,24 +453,39 @@ public abstract class AbstractReader {
                 for (Map.Entry<String, Model> entry : models.entrySet()) {
                     swagger.model(entry.getKey(), entry.getValue());
                 }
+            }
 
-                if (response.getSchema() == null) {
-                    Map<String, Response> responses = operation.getResponses();
-                    if (responses != null) {
-                        Response apiOperationResponse = responses.get(String.valueOf(apiResponse.code()));
-                        if (apiOperationResponse != null) {
-                            response.setSchema(apiOperationResponse.getSchema());
-                        }
-                    }
+            int apiResponseCode = apiResponse.code();
+            Property responseSchema = getResponseSchema(operation, apiResponseCode);
+
+            if(responseSchema != null) {
+                if(schema == null || !preferSwaggerValues) {
+                    schema = responseSchema;
                 }
             }
 
-            if (apiResponse.code() == 0) {
+            response.setSchema(schema);
+
+            if (apiResponseCode == 0) {
                 operation.defaultResponse(response);
             } else {
-                operation.response(apiResponse.code(), response);
+                operation.response(apiResponseCode, response);
             }
         }
+    }
+
+    private Property getResponseSchema(Operation operation, int apiResponseCode) {
+        Property responseSchema = null;
+
+        Map<String, Response> responses = operation.getResponses();
+        if (responses != null) {
+            Response apiOperationResponse = responses.get(String.valueOf(apiResponseCode));
+            if (apiOperationResponse != null) {
+                responseSchema = apiOperationResponse.getSchema();
+            }
+        }
+
+        return responseSchema;
     }
 
     protected String[] updateOperationProduces(String[] parentProduces, String[] apiProduces, Operation operation) {

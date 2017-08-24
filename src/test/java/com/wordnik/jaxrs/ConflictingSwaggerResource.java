@@ -24,7 +24,7 @@ public class ConflictingSwaggerResource {
     // ApiOperation            produces        consumes        response        responseContainer       responseReference
     // ApiParam                format          name            type            collectionFormat
     // ApiResponse             reference       response        responseContainer
-    ApiResponses            ---
+    // ApiResponses            ---
     ResponseHeader          ---
      */
 
