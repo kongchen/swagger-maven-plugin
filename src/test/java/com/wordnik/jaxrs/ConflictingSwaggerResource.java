@@ -2,10 +2,7 @@ package com.wordnik.jaxrs;
 
 
 import com.wordnik.sample.model.Pet;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.*;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
@@ -42,17 +39,15 @@ public class ConflictingSwaggerResource {
         return new Pet();
     }
 
-    /*
     @POST
-    @Consumes({"application/json", "application/xml"})
-    @ApiOperation(value = "Add a new pet to the store")
-    @ApiResponses(value = {@ApiResponse(code = 405, message = "Invalid input")})
-    public Response addPet(
+    @ApiOperation("")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "successful operation", response = String.class, responseContainer = "list", reference = "#/definitions/ListItem")
+    })
+    public Pet addPet(
             @ApiParam(value = "Pet object that needs to be added to the store", required = true) Pet pet) {
-        Pet updatedPet = petData.addPet(pet);
-        return Response.ok().entity(updatedPet).build();
+        return pet;
     }
-    */
 
     @POST
     @Path("/bean")
