@@ -1,6 +1,7 @@
 package com.wordnik.jaxrs;
 
 
+import com.wordnik.sample.model.ConflictingApiModel;
 import com.wordnik.sample.model.Pet;
 import com.wordnik.sample.model.User;
 import io.swagger.annotations.*;
@@ -13,20 +14,6 @@ import javax.ws.rs.core.Response;
 @Produces("application/json")
 @Consumes("application/json")
 public class ConflictingSwaggerResource {
-
-    /*
-    https://github.com/swagger-api/swagger-core/wiki/Annotations-1.5.X
-    http://docs.swagger.io/swagger-core/current/apidocs/index.html?io/swagger/annotations
-
-    // Api                     basePath        produces        consumes
-    ApiModel                ???
-    ApiModelProperty        dataType        name
-    // ApiOperation            produces        consumes        response        responseContainer       responseReference
-    // ApiParam                format          name            type            collectionFormat
-    // ApiResponse             reference       response        responseContainer
-    // ApiResponses            ---
-    ResponseHeader          ---
-     */
 
     @GET
     @Path("/{petId}")
@@ -72,13 +59,14 @@ public class ConflictingSwaggerResource {
     }
 
     @GET
-    @Path("/userList")
+    @Path("/conflictingApiModel")
     @ApiOperation("")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = User.class, responseContainer = "list")
+            @ApiResponse(code = 200, message = "successful operation", response = ConflictingApiModel.class)
     })
-    public Response getUserList()
+    public Response getConflictingApiModel()
     {
         return Response.status(200).build();
     }
+
 }

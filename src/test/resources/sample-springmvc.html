@@ -2970,6 +2970,59 @@ Returns a pet when ID &lt; 10.  ID &gt; 10 or nonintegers will simulate API erro
 
 
 
+## /springMvcBasePath/conflictingApiModel
+
+
+### GET
+
+<a id="getConflictingApiModel"></a>
+
+
+
+
+
+
+
+
+
+#### Request
+
+
+**Content-Type: ** application/json
+
+##### Parameters
+
+
+
+
+
+
+#### Response
+
+**Content-Type: ** application/json
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 200    | successful operation | <a href="#/definitions/ConflictingApiModel">ConflictingApiModel</a>|
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## /springMvcBasePath/helloWorld
 
 
@@ -3111,59 +3164,6 @@ Returns a pet when ID &lt; 10.  ID &gt; 10 or nonintegers will simulate API erro
 | Status Code | Reason      | Response Model |
 |-------------|-------------|----------------|
 | 200    | successful operation | Array[<a href=""></a>]|
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## /springMvcBasePath/userList
-
-
-### GET
-
-<a id="getUserList"></a>
-
-
-
-
-
-
-
-
-
-#### Request
-
-
-**Content-Type: ** application/json
-
-##### Parameters
-
-
-
-
-
-
-#### Response
-
-**Content-Type: ** application/json
-
-
-| Status Code | Reason      | Response Model |
-|-------------|-------------|----------------|
-| 200    | successful operation | <a href="#/definitions/User">User</a>|
 
 
 
@@ -4422,6 +4422,32 @@ This can only be done by the logged in user.
             </td>
             <td>optional</td>
             <td>-</td>
+            <td></td>
+        </tr>
+    
+</table>
+
+## <a name="/definitions/ConflictingApiModel">ConflictingApiModel</a>
+
+<table border="1">
+    <tr>
+        <th>name</th>
+        <th>type</th>
+        <th>required</th>
+        <th>description</th>
+        <th>example</th>
+    </tr>
+    
+        <tr>
+            <td>modelId</td>
+            <td>
+                
+                    <a href="#/definitions/Pet">Pet</a>
+                    
+                
+            </td>
+            <td>optional</td>
+            <td>Model Id</td>
             <td></td>
         </tr>
     

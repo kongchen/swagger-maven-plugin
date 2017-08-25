@@ -1,5 +1,6 @@
 package com.wordnik.springmvc;
 
+import com.wordnik.sample.model.ConflictingApiModel;
 import com.wordnik.sample.model.Pet;
 import com.wordnik.sample.model.User;
 import io.swagger.annotations.*;
@@ -59,12 +60,12 @@ public class ConflictingSwaggerResource {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/userList", method = RequestMethod.GET)
+    @RequestMapping(value = "/conflictingApiModel", method = RequestMethod.GET)
     @ApiOperation("")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = User.class, responseContainer = "list")
+            @ApiResponse(code = 200, message = "successful operation", response = ConflictingApiModel.class)
     })
-    public ResponseEntity getUserList()
+    public ResponseEntity getConflictingApiModel()
     {
         return new ResponseEntity(HttpStatus.OK);
     }

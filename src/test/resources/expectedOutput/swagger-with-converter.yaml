@@ -131,11 +131,11 @@ paths:
             type: "array"
             items:
               type: "string"
-  /jaxrsBasePath/userList:
+  /jaxrsBasePath/conflictingApiModel:
     get:
       summary: ""
       description: ""
-      operationId: "getUserList"
+      operationId: "getConflictingApiModel"
       consumes:
       - "application/json"
       produces:
@@ -145,7 +145,7 @@ paths:
         200:
           description: "successful operation"
           schema:
-            $ref: "#/definitions/User"
+            $ref: "#/definitions/ConflictingApiModel"
   /jaxrsBasePath/{petId}:
     put:
       summary: ""
@@ -1229,6 +1229,12 @@ definitions:
     xml:
       name: "Category"
       namespace: "http://com.wordnik/sample/model/category"
+  ConflictingApiModel:
+    type: "object"
+    properties:
+      modelId:
+        description: "Model Id"
+        $ref: "#/definitions/Pet"
   ListItem:
     type: "object"
     properties:
