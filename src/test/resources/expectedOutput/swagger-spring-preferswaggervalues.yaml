@@ -1380,6 +1380,7 @@ definitions:
     type: "object"
     properties:
       id:
+        description: "Model Id"
         type: "integer"
         format: "int64"
   ListItem:

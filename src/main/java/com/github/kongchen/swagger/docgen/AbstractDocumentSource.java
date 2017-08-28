@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.SerializationConfig;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.introspect.ClassIntrospector;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule.Priority;
 import com.github.jknack.handlebars.Handlebars;
@@ -18,7 +20,6 @@ import com.github.kongchen.swagger.docgen.mavenplugin.SecurityDefinition;
 import com.github.kongchen.swagger.docgen.reader.AbstractReader;
 import com.github.kongchen.swagger.docgen.reader.ClassSwaggerReader;
 import com.github.kongchen.swagger.docgen.reader.ModelModifier;
-import com.google.common.collect.Sets;
 
 import io.swagger.annotations.Api;
 import io.swagger.config.FilterFactory;
@@ -39,17 +40,13 @@ import org.apache.commons.io.IOUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.io.*;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,7 +61,6 @@ public abstract class AbstractDocumentSource {
     protected final Log LOG;
     protected final List<Type> typesToSkip = new ArrayList<Type>();
     protected Swagger swagger;
-    protected String swaggerSchemaConverter;
     private final String outputPath;
     private final String templatePath;
     private final String swaggerPath;
@@ -229,6 +225,12 @@ public abstract class AbstractDocumentSource {
             // must be registered only if we use JaxbAnnotationModule before. Why?
             objectMapper.registerModule(new EnhancedSwaggerModule());
         }
+
+        ClassIntrospector interceptingClassIntrospector = new InterceptingClassIntrospector(apiSource.isPreferSwaggerValues());
+        SerializationConfig serializationConfig = objectMapper.getSerializationConfig();
+        serializationConfig = serializationConfig.with(interceptingClassIntrospector);
+        objectMapper.setConfig(serializationConfig);
+
         ModelModifier modelModifier = new ModelModifier(objectMapper);
 
         List<String> apiModelPropertyAccessExclusions = apiSource.getApiModelPropertyAccessExclusions();
