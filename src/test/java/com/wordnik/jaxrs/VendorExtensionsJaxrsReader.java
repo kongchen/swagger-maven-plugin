@@ -1,5 +1,6 @@
 package com.wordnik.jaxrs;
 
+import com.github.kongchen.swagger.docgen.mavenplugin.ApiSource;
 import com.github.kongchen.swagger.docgen.reader.JaxrsReader;
 import com.wordnik.sample.TestVendorExtension;
 import io.swagger.jaxrs.ext.SwaggerExtension;
@@ -14,7 +15,7 @@ public class VendorExtensionsJaxrsReader extends JaxrsReader {
 
     @Deprecated
     public VendorExtensionsJaxrsReader(Swagger swagger, Log LOG) {
-        this(swagger, LOG, true);
+        this(swagger, LOG, ApiSource.PREFER_SWAGGER_VALUES_DEFAULT);
     }
 
     public VendorExtensionsJaxrsReader(Swagger swagger, Log LOG, boolean preferSwaggerValues) {

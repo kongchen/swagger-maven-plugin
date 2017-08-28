@@ -23,6 +23,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
+import com.github.kongchen.swagger.docgen.mavenplugin.ApiSource;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.logging.Log;
 import org.reflections.Reflections;
@@ -62,7 +63,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
 
     @Deprecated
     public JaxrsReader(Swagger swagger, Log LOG) {
-        this(swagger, LOG, true);
+        this(swagger, LOG, ApiSource.PREFER_SWAGGER_VALUES_DEFAULT);
     }
 
     public JaxrsReader(Swagger swagger, Log LOG, boolean preferSwaggerValues) {

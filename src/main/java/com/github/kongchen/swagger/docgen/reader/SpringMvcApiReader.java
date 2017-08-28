@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.github.kongchen.swagger.docgen.mavenplugin.ApiSource;
 import org.apache.maven.plugin.logging.Log;
 import org.codehaus.plexus.util.StringUtils;
 import org.springframework.core.DefaultParameterNameDiscoverer;
@@ -50,7 +51,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
 
     @Deprecated
     public SpringMvcApiReader(Swagger swagger, Log log) {
-        this(swagger, log, true);
+        this(swagger, log, ApiSource.PREFER_SWAGGER_VALUES_DEFAULT);
     }
 
     public SpringMvcApiReader(Swagger swagger, Log log, boolean preferSwaggerValues) {
@@ -191,7 +192,6 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
             }
         }
 
-        // TODO Start here
         if (!apiOperation.response().equals(Void.class)) {
             responseClass = apiOperation.response();
         }

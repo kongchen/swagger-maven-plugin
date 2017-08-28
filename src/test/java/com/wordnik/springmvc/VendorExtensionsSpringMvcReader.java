@@ -1,5 +1,6 @@
 package com.wordnik.springmvc;
 
+import com.github.kongchen.swagger.docgen.mavenplugin.ApiSource;
 import com.github.kongchen.swagger.docgen.reader.SpringMvcApiReader;
 import com.wordnik.sample.TestVendorExtension;
 import io.swagger.jaxrs.ext.SwaggerExtension;
@@ -14,7 +15,7 @@ public class VendorExtensionsSpringMvcReader extends SpringMvcApiReader {
 
     @Deprecated
     public VendorExtensionsSpringMvcReader(Swagger swagger, Log log) {
-        this(swagger, log, true);
+        this(swagger, log, ApiSource.PREFER_SWAGGER_VALUES_DEFAULT);
     }
 
     public VendorExtensionsSpringMvcReader(Swagger swagger, Log log, boolean preferSwaggerValues) {

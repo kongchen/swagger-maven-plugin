@@ -1,5 +1,6 @@
 package com.github.kongchen.swagger.docgen.jaxrs;
 
+import com.github.kongchen.swagger.docgen.mavenplugin.ApiSource;
 import com.sun.jersey.api.core.InjectParam;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import io.swagger.annotations.ApiParam;
@@ -37,7 +38,7 @@ public class BeanParamInjectParamExtention extends AbstractSwaggerExtension {
 
     @Deprecated
     public BeanParamInjectParamExtention() {
-        this(true);
+        this(ApiSource.PREFER_SWAGGER_VALUES_DEFAULT);
     }
 
     public BeanParamInjectParamExtention(boolean preferSwaggerValues) {

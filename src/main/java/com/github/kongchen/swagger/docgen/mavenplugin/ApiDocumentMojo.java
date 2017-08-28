@@ -105,7 +105,6 @@ public class ApiDocumentMojo extends AbstractMojo {
     }
 
     protected void generateSwaggerModel(AbstractDocumentSource documentSource) throws GenerateException, IOException, MojoExecutionException {
-
         documentSource.loadTypesToSkip();
         documentSource.loadModelModifier();
         documentSource.loadModelConverters();
@@ -131,7 +130,6 @@ public class ApiDocumentMojo extends AbstractMojo {
                         ? apiSource.getBasePath()
                         : apiSource.getSwaggerUIDocBasePath(),
                 apiSource.getOutputFormats(), swaggerFileName, projectEncoding);
-
 
         if (apiSource.isAttachSwaggerArtifact() && apiSource.getSwaggerDirectory() != null && project != null) {
             String outputFormats = apiSource.getOutputFormats();

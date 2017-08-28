@@ -22,6 +22,8 @@ import io.swagger.models.License;
  */
 public class ApiSource {
 
+    public static final boolean PREFER_SWAGGER_VALUES_DEFAULT = true;
+
     /**
      * Java classes containing Swagger's annotation <code>@Api</code>, or Java packages containing those classes
      * can be configured here.
@@ -140,7 +142,7 @@ public class ApiSource {
      * annotation will prevail.
      */
     @Parameter
-    private boolean preferSwaggerValues = true;
+    private boolean preferSwaggerValues = PREFER_SWAGGER_VALUES_DEFAULT;
 
     public Set<Class<?>> getValidClasses(Class<? extends Annotation> clazz) {
         Set<Class<?>> classes = new LinkedHashSet<Class<?>>();

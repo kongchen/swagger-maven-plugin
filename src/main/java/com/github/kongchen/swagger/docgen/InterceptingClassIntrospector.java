@@ -2,14 +2,17 @@ package com.github.kongchen.swagger.docgen;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.SerializationConfig;
-import com.fasterxml.jackson.databind.introspect.*;
+import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
+import com.fasterxml.jackson.databind.introspect.BasicBeanDescription;
+import com.fasterxml.jackson.databind.introspect.BasicClassIntrospector;
+import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.lang.annotation.Annotation;
 
 public class InterceptingClassIntrospector extends BasicClassIntrospector {
 
-    private boolean preferSwaggerValues = true;
+    private boolean preferSwaggerValues;
 
     public InterceptingClassIntrospector(boolean preferSwaggerValues) {
         this.preferSwaggerValues = preferSwaggerValues;

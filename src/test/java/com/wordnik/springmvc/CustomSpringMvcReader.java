@@ -1,7 +1,7 @@
 package com.wordnik.springmvc;
 
 import com.github.kongchen.swagger.docgen.GenerateException;
-import com.github.kongchen.swagger.docgen.reader.SpringMvcApiReader;
+import com.github.kongchen.swagger.docgen.mavenplugin.ApiSource;
 import com.github.kongchen.swagger.docgen.spring.SpringResource;
 import io.swagger.models.Swagger;
 
@@ -15,7 +15,7 @@ import org.apache.maven.plugin.logging.Log;
  */
 public class CustomSpringMvcReader extends VendorExtensionsSpringMvcReader {
     public CustomSpringMvcReader(Swagger swagger, Log log) {
-        super(swagger, log, true);
+        super(swagger, log, ApiSource.PREFER_SWAGGER_VALUES_DEFAULT);
     }
 
     @Override

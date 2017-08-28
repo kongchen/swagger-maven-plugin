@@ -20,6 +20,7 @@ import javax.ws.rs.HeaderParam;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 
+import com.github.kongchen.swagger.docgen.mavenplugin.ApiSource;
 import io.swagger.models.parameters.*;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.apache.maven.plugin.logging.Log;
@@ -91,7 +92,7 @@ public abstract class AbstractReader {
 
     @Deprecated
     public AbstractReader(Swagger swagger, Log LOG) {
-        this(swagger, LOG, true);
+        this(swagger, LOG, ApiSource.PREFER_SWAGGER_VALUES_DEFAULT);
     }
 
     public AbstractReader(Swagger swagger, Log LOG, boolean preferSwaggerValues) {

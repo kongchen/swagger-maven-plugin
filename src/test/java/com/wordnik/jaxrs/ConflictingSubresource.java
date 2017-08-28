@@ -1,7 +1,6 @@
 package com.wordnik.jaxrs;
 
 import com.wordnik.sample.model.Pet;
-import com.wordnik.sample.model.PetName;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;

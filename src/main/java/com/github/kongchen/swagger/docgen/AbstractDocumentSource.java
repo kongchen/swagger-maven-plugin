@@ -309,6 +309,25 @@ public abstract class AbstractDocumentSource {
         return swagger;
     }
 
+    protected File createFile(File dir, String outputResourcePath) throws IOException {
+        File serviceFile;
+        int i = outputResourcePath.lastIndexOf("/");
+        if (i != -1) {
+            String fileName = outputResourcePath.substring(i + 1);
+            String subDir = outputResourcePath.substring(0, i);
+            File finalDirectory = new File(dir, subDir);
+            finalDirectory.mkdirs();
+            serviceFile = new File(finalDirectory, fileName);
+        } else {
+            serviceFile = new File(dir, outputResourcePath);
+        }
+        while (!serviceFile.createNewFile()) {
+            serviceFile.delete();
+        }
+        LOG.info("Creating file " + serviceFile.getAbsolutePath());
+        return serviceFile;
+    }
+
     public void toDocuments() throws GenerateException {
         if (!isSorted) {
             Utils.sortSwagger(swagger);

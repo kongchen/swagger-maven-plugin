@@ -1,6 +1,5 @@
 package com.wordnik.jaxrs;
 
-
 import com.wordnik.sample.model.ConflictingApiModel;
 import com.wordnik.sample.model.Pet;
 import com.wordnik.sample.model.User;
