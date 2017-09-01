@@ -8,3 +8,5 @@
 /.project
 /generated/
 /test-output/
+.factorypath
+.vscode
