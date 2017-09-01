@@ -20,6 +20,7 @@ import java.util.*;
 public class SecurityDefinition {
     private String name;
     private String type;
+    private String in;
     private String description;
     private String json;
     private String jsonPath;
@@ -90,34 +91,6 @@ public class SecurityDefinition {
         }
     }
 
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    }
-
-    }
-
-    }
-
-    }
-
-    }
-
-
-    public String getJson() {
-        return json;
-    }
-
-    public void setJson(String json) {
-        this.json = json;
-    }
-
     public String getName() {
         return name;
     }
@@ -134,11 +107,11 @@ public class SecurityDefinition {
         this.type = type;
     }
 
-    public String getJsonPath() {
-        return jsonPath;
+    public String getIn() {
+        return in;
     }
 
-    public void setJsonPath(String jsonPath) {
-        this.jsonPath = jsonPath;
+    public void setIn(String in) {
+        this.in = in;
     }
 }
