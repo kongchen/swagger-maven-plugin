@@ -18,8 +18,6 @@ import com.github.kongchen.swagger.docgen.mavenplugin.SecurityDefinition;
 import com.github.kongchen.swagger.docgen.reader.AbstractReader;
 import com.github.kongchen.swagger.docgen.reader.ClassSwaggerReader;
 import com.github.kongchen.swagger.docgen.reader.ModelModifier;
-import com.google.common.collect.Sets;
-
 import io.swagger.annotations.Api;
 import io.swagger.config.FilterFactory;
 import io.swagger.converter.ModelConverter;
@@ -39,21 +37,13 @@ import org.apache.commons.io.IOUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.io.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * @author chekong 05/13/2013
@@ -115,21 +105,21 @@ public abstract class AbstractDocumentSource {
                 throw new GenerateException("Cannot load: " + apiSource.getSwaggerInternalFilter(), e);
             }
         }
-        
+
         ClassSwaggerReader reader = resolveApiReader();
-        
+
         // the reader may modify the extensions list, therefore add the additional swagger extensions
         // after the instantiation of the reader
         if (apiSource.getSwaggerExtensions() != null) {
-        	List<SwaggerExtension> extensions = SwaggerExtensions.getExtensions();
-        	extensions.addAll(resolveSwaggerExtensions());
+            List<SwaggerExtension> extensions = SwaggerExtensions.getExtensions();
+            extensions.addAll(resolveSwaggerExtensions());
         }
-        
+
         swagger = reader.read(getValidClasses());
 
         if (apiSource.getSecurityDefinitions() != null) {
             for (SecurityDefinition sd : apiSource.getSecurityDefinitions()) {
-                for (Map.Entry<String, SecuritySchemeDefinition> entry : sd.getDefinitions().entrySet()) {
+                for (Map.Entry<String, SecuritySchemeDefinition> entry : sd.generateSecuritySchemeDefinitions().entrySet()) {
                     swagger.addSecurityDefinition(entry.getKey(), entry.getValue());
                 }
             }
@@ -144,13 +134,12 @@ public abstract class AbstractDocumentSource {
         }
 
         if (FilterFactory.getFilter() != null) {
-            swagger = new SpecFilter().filter(swagger, FilterFactory.getFilter(),
-                    new HashMap<String, List<String>>(), new HashMap<String, String>(),
+            swagger = new SpecFilter().filter(swagger, FilterFactory.getFilter(), new HashMap<String, List<String>>(), new HashMap<String, String>(),
                     new HashMap<String, List<String>>());
         }
     }
 
-	public void toSwaggerDocuments(String uiDocBasePath, String outputFormats, String encoding) throws GenerateException {
+    public void toSwaggerDocuments(String uiDocBasePath, String outputFormats, String encoding) throws GenerateException {
         toSwaggerDocuments(uiDocBasePath, outputFormats, null, encoding);
     }
 
@@ -218,12 +207,12 @@ public abstract class AbstractDocumentSource {
         if (apiSource.isUseJAXBAnnotationProcessor()) {
             JaxbAnnotationModule jaxbAnnotationModule = new JaxbAnnotationModule();
             if (apiSource.isUseJAXBAnnotationProcessorAsPrimary()) {
-                jaxbAnnotationModule.setPriority(Priority.PRIMARY);    
+                jaxbAnnotationModule.setPriority(Priority.PRIMARY);
             } else {
                 jaxbAnnotationModule.setPriority(Priority.SECONDARY);
             }
             objectMapper.registerModule(jaxbAnnotationModule);
-            
+
             // to support @ApiModel on class level.
             // must be registered only if we use JaxbAnnotationModule before. Why?
             objectMapper.registerModule(new EnhancedSwaggerModule());
@@ -273,9 +262,7 @@ public abstract class AbstractDocumentSource {
                     final ModelConverter modelConverterInstance = (ModelConverter) modelConverterClass.newInstance();
                     ModelConverters.getInstance().addConverter(modelConverterInstance);
                 } else {
-                    throw new MojoExecutionException(
-                            String.format("Class %s has to be a subclass of %s",
-                                    modelConverterClass.getName(), ModelConverter.class));
+                    throw new MojoExecutionException(String.format("Class %s has to be a subclass of %s", modelConverterClass.getName(), ModelConverter.class));
                 }
             } catch (ClassNotFoundException e) {
                 throw new MojoExecutionException(String.format("Could not find custom model converter %s", modelConverter), e);
@@ -384,7 +371,7 @@ public abstract class AbstractDocumentSource {
 
     /**
      * Resolves the API reader which should be used to scan the classes.
-     * 
+     *
      * @return ClassSwaggerReader to use
      * @throws GenerateException if the reader cannot be created / resolved
      */
@@ -392,34 +379,34 @@ public abstract class AbstractDocumentSource {
 
     /**
      * Returns the set of classes which should be included in the scanning.
-     * 
+     *
      * @return Set<Class<?>> containing all valid classes
      */
     protected Set<Class<?>> getValidClasses() {
         return apiSource.getValidClasses(Api.class);
     }
-    
+
     /**
      * Resolves all {@link SwaggerExtension} instances configured to be added to the Swagger configuration.
-     * 
+     *
      * @return Collection<SwaggerExtension> which should be added to the swagger configuration
      * @throws GenerateException if the swagger extensions could not be created / resolved
      */
     protected List<SwaggerExtension> resolveSwaggerExtensions() throws GenerateException {
-    	List<String> clazzes = apiSource.getSwaggerExtensions();
-    	List<SwaggerExtension> resolved = new ArrayList<SwaggerExtension>();
-    	if (clazzes != null) {
-    		for (String clazz : clazzes) {
-    			SwaggerExtension extension;
-				try {
-					extension = (SwaggerExtension) Class.forName(clazz).newInstance();
-				} catch (Exception e) {
-					throw new GenerateException("Cannot load Swagger extension: " + clazz, e);
-				}
-        		resolved.add(extension);
-    		}
-    	}
-    	return resolved;
+        List<String> clazzes = apiSource.getSwaggerExtensions();
+        List<SwaggerExtension> resolved = new ArrayList<SwaggerExtension>();
+        if (clazzes != null) {
+            for (String clazz : clazzes) {
+                SwaggerExtension extension;
+                try {
+                    extension = (SwaggerExtension) Class.forName(clazz).newInstance();
+                } catch (Exception e) {
+                    throw new GenerateException("Cannot load Swagger extension: " + clazz, e);
+                }
+                resolved.add(extension);
+            }
+        }
+        return resolved;
     }
 
     protected ClassSwaggerReader getCustomApiReader(String customReaderClassName) throws GenerateException {
@@ -439,7 +426,8 @@ public abstract class AbstractDocumentSource {
 }
 
 enum Output {
-    json, yaml
+    json,
+    yaml
 }
 
 class TemplatePath {
