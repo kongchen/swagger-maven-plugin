@@ -1,4 +1,4 @@
-# Swagger Maven Plugin 
+# Swagger Maven Plugin
 [![Build Status](https://travis-ci.org/kongchen/swagger-maven-plugin.png)](https://travis-ci.org/kongchen/swagger-maven-plugin)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.kongchen/swagger-maven-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.kongchen/swagger-maven-plugin)
 
@@ -22,7 +22,7 @@ Version 3.1.0+ of this plugin depends on the repackaged/rebranded io.swagger.swa
 
 
 # Usage
-Import the plugin in your project by adding following configuration in your `plugins` block: 
+Import the plugin in your project by adding following configuration in your `plugins` block:
 
 ```xml
 <build>
@@ -73,8 +73,9 @@ Import the plugin in your project by adding following configuration in your `plu
 | `typesToSkip` | Nodes of class names to explicitly skip during parameter processing. More details [below](#typesToSkip)|
 | `apiModelPropertyAccessExclusions` | Allows the exclusion of specified `@ApiModelProperty` fields. This can be used to hide certain model properties from the swagger spec. More details [below](#apiModelPropertyAccessExclusions)|
 | `jsonExampleValues` | If `true`, all example values in `@ApiModelProperty` will be handled as json raw values. This is useful for creating valid examples in the generated json for all property types, including non-string ones. |
-| `modelConverters` | List of custom implementations of `io.swagger.converter.ModelConverter` that should be used when generating the swagger files. | 
-| `swaggerExtensions` | List of custom implementations of `io.swagger.jaxrs.ext.SwaggerExtension` that should be used when generating the swagger files. | 
+| `modelConverters` | List of custom implementations of `io.swagger.converter.ModelConverter` that should be used when generating the swagger files. |
+| `swaggerExtensions` | List of custom implementations of `io.swagger.jaxrs.ext.SwaggerExtension` that should be used when generating the swagger files. |
+| `preferSwaggerValues` | Determines how to resolve conflicts between Swagger and JAX-RS (or SpringMvc) annotations, eg. `@ApiParam(name = "id") @PathParam("petId") Long petId`.  If `true`, the value from the Swagger annotation will be used; otherwise, the value from the JAX-RS annotation will prevail.  Default value is `true`. |
 
 # <a id="templatefile">Template File</a>
 
@@ -121,7 +122,7 @@ or define several definitions in a json file and specify the json path like this
 
 The file will be read by `getClass().getResourceAsStream`, so please note the path you configured.
 
-Alternatively, specify the __absolute__ file path to the json definition file: 
+Alternatively, specify the __absolute__ file path to the json definition file:
 
 ```xml
 <securityDefinition>

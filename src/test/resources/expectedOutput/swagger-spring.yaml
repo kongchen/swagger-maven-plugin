@@ -37,6 +37,113 @@ paths:
           description: "successful operation"
           schema:
             type: "string"
+  /springMvcBasePath:
+    post:
+      summary: ""
+      description: ""
+      operationId: "addPet"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Pet object that needs to be added to the store"
+        required: true
+        schema:
+          $ref: "#/definitions/Pet"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/User"
+  /springMvcBasePath/helloWorld:
+    get:
+      summary: ""
+      description: ""
+      operationId: "helloWorld"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Pet"
+  /springMvcBasePath/petList:
+    get:
+      summary: ""
+      description: ""
+      operationId: "getPetList"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/User"
+  /springMvcBasePath/stringList:
+    get:
+      summary: ""
+      description: ""
+      operationId: "getStringList"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              type: "string"
+  /springMvcBasePath/conflictingApiModel:
+    get:
+      summary: ""
+      description: ""
+      operationId: "getConflictingApiModel"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/ConflictingApiModel"
+  /springMvcBasePath/{petId}:
+    get:
+      summary: ""
+      description: ""
+      operationId: "getPetById"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "com.wordnik.sample.model.ListItem"
+        format: "int64"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/User"
   /echo/cookieValueExpectCookieName:
     get:
       tags:
@@ -1273,6 +1380,12 @@ definitions:
     xml:
       name: "Category"
       namespace: "http://com.wordnik/sample/model/category"
+  ConflictingApiModel:
+    type: "object"
+    properties:
+      modelId:
+        description: "Model Id"
+        $ref: "#/definitions/Pet"
   ListItem:
     type: "object"
     properties:

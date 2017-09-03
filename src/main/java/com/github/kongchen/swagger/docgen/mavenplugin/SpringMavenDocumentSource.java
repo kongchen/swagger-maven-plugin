@@ -38,7 +38,7 @@ public class SpringMavenDocumentSource extends AbstractDocumentSource {
     protected ClassSwaggerReader resolveApiReader() throws GenerateException {
         String customReaderClassName = apiSource.getSwaggerApiReader();
         if (customReaderClassName == null) {
-            SpringMvcApiReader reader = new SpringMvcApiReader(swagger, LOG);
+            SpringMvcApiReader reader = new SpringMvcApiReader(swagger, LOG, apiSource.isPreferSwaggerValues());
             reader.setTypesToSkip(this.typesToSkip);
             return reader;
         } else {

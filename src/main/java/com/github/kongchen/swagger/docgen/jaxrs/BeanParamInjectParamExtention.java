@@ -1,5 +1,6 @@
 package com.github.kongchen.swagger.docgen.jaxrs;
 
+import com.github.kongchen.swagger.docgen.mavenplugin.ApiSource;
 import com.sun.jersey.api.core.InjectParam;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import io.swagger.annotations.ApiParam;
@@ -32,6 +33,18 @@ import java.util.Set;
  * @author chekong on 15/5/9.
  */
 public class BeanParamInjectParamExtention extends AbstractSwaggerExtension {
+
+    private boolean preferSwaggerValues;
+
+    @Deprecated
+    public BeanParamInjectParamExtention() {
+        this(ApiSource.PREFER_SWAGGER_VALUES_DEFAULT);
+    }
+
+    public BeanParamInjectParamExtention(boolean preferSwaggerValues) {
+        super();
+        this.preferSwaggerValues = preferSwaggerValues;
+    }
 
     @Override
     public List<Parameter> extractParameters(List<Annotation> annotations, Type type, Set<Type> typesToSkip, Iterator<SwaggerExtension> chain) {
@@ -96,7 +109,7 @@ public class BeanParamInjectParamExtention extends AbstractSwaggerExtension {
                         }
                     }
 
-                    if (!param.name().isEmpty()) {
+                    if (!param.name().isEmpty() && preferSwaggerValues) {
                         parameter.setName(param.name());
                     }
                 }

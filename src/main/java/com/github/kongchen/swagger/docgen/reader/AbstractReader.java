@@ -20,6 +20,8 @@ import javax.ws.rs.HeaderParam;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 
+import com.github.kongchen.swagger.docgen.mavenplugin.ApiSource;
+import io.swagger.models.parameters.*;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.apache.maven.plugin.logging.Log;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -56,12 +58,6 @@ import io.swagger.models.Scheme;
 import io.swagger.models.SecurityRequirement;
 import io.swagger.models.Swagger;
 import io.swagger.models.Tag;
-import io.swagger.models.parameters.BodyParameter;
-import io.swagger.models.parameters.FormParameter;
-import io.swagger.models.parameters.HeaderParameter;
-import io.swagger.models.parameters.Parameter;
-import io.swagger.models.parameters.PathParameter;
-import io.swagger.models.parameters.QueryParameter;
 import io.swagger.models.properties.ArrayProperty;
 import io.swagger.models.properties.MapProperty;
 import io.swagger.models.properties.Property;
@@ -76,6 +72,7 @@ public abstract class AbstractReader {
     protected final Log LOG;
     protected Swagger swagger;
     private Set<Type> typesToSkip = new HashSet<Type>();
+    protected boolean preferSwaggerValues = true;
 
     public Set<Type> getTypesToSkip() {
         return typesToSkip;
@@ -93,9 +90,15 @@ public abstract class AbstractReader {
         this.typesToSkip.add(type);
     }
 
+    @Deprecated
     public AbstractReader(Swagger swagger, Log LOG) {
+        this(swagger, LOG, ApiSource.PREFER_SWAGGER_VALUES_DEFAULT);
+    }
+
+    public AbstractReader(Swagger swagger, Log LOG, boolean preferSwaggerValues) {
         this.swagger = swagger;
         this.LOG = LOG;
+        this.preferSwaggerValues = preferSwaggerValues;
         updateExtensionChain();
     }
 
@@ -391,7 +394,7 @@ public abstract class AbstractReader {
 
         if (!parameters.isEmpty()) {
             for (Parameter parameter : parameters) {
-                ParameterProcessor.applyAnnotations(swagger, parameter, type, annotations);
+                applySwaggerAnnotations(swagger, parameter, type, annotations);
             }
         } else {
             LOG.debug("Looking for body params in " + cls);
@@ -405,6 +408,30 @@ public abstract class AbstractReader {
         return parameters;
     }
 
+    private void applySwaggerAnnotations(Swagger swagger, Parameter parameter, Type type, List<Annotation> annotations) {
+        String initialName = parameter.getName();
+        String initialType = null;
+        String initialFormat = null;
+        if(parameter instanceof AbstractSerializableParameter) {
+            initialType = ((AbstractSerializableParameter) parameter).getType();
+            initialFormat = ((AbstractSerializableParameter) parameter).getFormat();
+        }
+
+        ParameterProcessor.applyAnnotations(swagger, parameter, type, annotations);
+
+        if(!preferSwaggerValues) {
+            restoreValues(parameter, initialName, initialType, initialFormat);
+        }
+    }
+
+    private void restoreValues(Parameter parameter, String name, String type, String format) {
+        parameter.setName(name);
+        if (parameter instanceof AbstractSerializableParameter) {
+            ((AbstractSerializableParameter) parameter).setType(type);
+            ((AbstractSerializableParameter) parameter).setFormat(format);
+        }
+    }
+
     protected void updateApiResponse(Operation operation, ApiResponses responseAnnotation) {
         for (ApiResponse apiResponse : responseAnnotation.value()) {
             Map<String, Property> responseHeaders = parseResponseHeaders(apiResponse.responseHeaders());
@@ -413,21 +440,13 @@ public abstract class AbstractReader {
                     .description(apiResponse.message())
                     .headers(responseHeaders);
 
-            if (responseClass.equals(Void.class)) {
-                if (operation.getResponses() != null) {
-                    Response apiOperationResponse = operation.getResponses().get(String.valueOf(apiResponse.code()));
-                    if (apiOperationResponse != null) {
-                        response.setSchema(apiOperationResponse.getSchema());
-                    }
-                }
-            } else {
+            Property schema = null;
+            if (!responseClass.equals(Void.class)) {
                 Map<String, Model> models = ModelConverters.getInstance().read(responseClass);
                 for (String key : models.keySet()) {
-                    final Property schema = new RefProperty().asDefault(key);
+                    schema = new RefProperty().asDefault(key);
                     if (apiResponse.responseContainer().equals("List")) {
-                        response.schema(new ArrayProperty(schema));
-                    } else {
-                        response.schema(schema);
+                        schema = new ArrayProperty(schema);
                     }
                     swagger.model(key, models.get(key));
                 }
@@ -435,24 +454,39 @@ public abstract class AbstractReader {
                 for (Map.Entry<String, Model> entry : models.entrySet()) {
                     swagger.model(entry.getKey(), entry.getValue());
                 }
+            }
 
-                if (response.getSchema() == null) {
-                    Map<String, Response> responses = operation.getResponses();
-                    if (responses != null) {
-                        Response apiOperationResponse = responses.get(String.valueOf(apiResponse.code()));
-                        if (apiOperationResponse != null) {
-                            response.setSchema(apiOperationResponse.getSchema());
-                        }
-                    }
+            int apiResponseCode = apiResponse.code();
+            Property responseSchema = getResponseSchema(operation, apiResponseCode);
+
+            if(responseSchema != null) {
+                if(schema == null || !preferSwaggerValues) {
+                    schema = responseSchema;
                 }
             }
 
-            if (apiResponse.code() == 0) {
+            response.setSchema(schema);
+
+            if (apiResponseCode == 0) {
                 operation.defaultResponse(response);
             } else {
-                operation.response(apiResponse.code(), response);
+                operation.response(apiResponseCode, response);
             }
         }
+    }
+
+    private Property getResponseSchema(Operation operation, int apiResponseCode) {
+        Property responseSchema = null;
+
+        Map<String, Response> responses = operation.getResponses();
+        if (responses != null) {
+            Response apiOperationResponse = responses.get(String.valueOf(apiResponseCode));
+            if (apiOperationResponse != null) {
+                responseSchema = apiOperationResponse.getSchema();
+            }
+        }
+
+        return responseSchema;
     }
 
     protected String[] updateOperationProduces(String[] parentProduces, String[] apiProduces, Operation operation) {

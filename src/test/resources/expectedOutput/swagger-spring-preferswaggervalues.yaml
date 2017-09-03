@@ -14,9 +14,12 @@ info:
 host: "www.example.com:8080"
 basePath: "/api"
 tags:
+- name: "echo"
+  description: "Set of simple endpoints that return whatever value you pass in"
 - name: "pet"
   description: "Operations about pets"
 - name: "store"
+  description: "Operations about store"
 - name: "user"
   description: "Operations about user"
 schemes:
@@ -34,26 +37,7 @@ paths:
           description: "successful operation"
           schema:
             type: "string"
-  /jaxrsBasePath/bean:
-    post:
-      summary: ""
-      description: ""
-      operationId: "createBean"
-      consumes:
-      - "application/xml"
-      produces:
-      - "application/xml"
-      parameters:
-      - name: "beanAttribute"
-        in: "path"
-        required: true
-        type: "com.wordnik.sample.model.Pet"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/ApiResponse"
-  /jaxrsBasePath:
+  /springMvcBasePath:
     post:
       summary: ""
       description: ""
@@ -73,48 +57,40 @@ paths:
         200:
           description: "successful operation"
           schema:
-            $ref: "#/definitions/User"
-  /jaxrsBasePath/bean:
-    post:
-      summary: ""
-      description: ""
-      operationId: "createBean"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      parameters:
-      - name: "beanAttribute"
-        in: "path"
-        description: ""
-        required: false
-        type: "string"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
             $ref: "#/definitions/Pet"
-  /jaxrsBasePath/subresource/{petId}:
+  /springMvcBasePath/helloWorld:
     get:
       summary: ""
       description: ""
-      operationId: "getPetById"
+      operationId: "helloWorld"
       consumes:
       - "application/json"
       produces:
       - "application/json"
-      parameters:
-      - name: "id"
-        in: "path"
-        required: true
-        type: "com.wordnik.sample.model.ListItem"
-        format: "array"
+      parameters: []
       responses:
         200:
           description: "successful operation"
           schema:
-            $ref: "#/definitions/Pet"
-  /jaxrsBasePath/stringList:
+            type: "string"
+  /springMvcBasePath/petList:
+    get:
+      summary: ""
+      description: ""
+      operationId: "getPetList"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Pet"
+  /springMvcBasePath/stringList:
     get:
       summary: ""
       description: ""
@@ -131,7 +107,7 @@ paths:
             type: "array"
             items:
               type: "string"
-  /jaxrsBasePath/conflictingApiModel:
+  /springMvcBasePath/conflictingApiModel:
     get:
       summary: ""
       description: ""
@@ -146,8 +122,8 @@ paths:
           description: "successful operation"
           schema:
             $ref: "#/definitions/ConflictingApiModel"
-  /jaxrsBasePath/{petId}:
-    put:
+  /springMvcBasePath/{petId}:
+    get:
       summary: ""
       description: ""
       operationId: "getPetById"
@@ -156,52 +132,312 @@ paths:
       produces:
       - "application/json"
       parameters:
-      - name: "id"
+      - name: "petId"
         in: "path"
         required: true
-        type: "com.wordnik.sample.model.ListItem"
-        format: "array"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/User"
-  /myResourceImpl:
-    get:
-      summary: "Find pet(s) by ID"
-      description: "This is a contrived example"
-      operationId: "getPetsById"
-      produces:
-      - "application/xml"
-      - "application/json"
-      parameters:
-      - name: "startId"
-        in: "query"
-        description: "start ID of pets that need to be fetched"
-        required: true
         type: "integer"
-        maximum: 99.0
-        minimum: 1.0
-        format: "int64"
-      - name: "endId"
-        in: "query"
-        description: "end ID of pets that need to be fetched"
-        required: true
-        type: "integer"
-        maximum: 99.0
-        minimum: 1.0
         format: "int64"
       responses:
         200:
           description: "successful operation"
           schema:
             $ref: "#/definitions/Pet"
-        400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Pet not found"
+  /echo/cookieValueExpectCookieName:
+    get:
+      tags:
+      - "echo"
+      summary: ""
+      description: ""
+      operationId: "cookieValueExpectCookieName"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "cookieValueName"
+        in: "cookie"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "string"
+  /echo/cookieValueExpectCookieValue:
+    get:
+      tags:
+      - "echo"
+      summary: ""
+      description: ""
+      operationId: "cookieValueExpectCookieValue"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "cookieValueValue"
+        in: "cookie"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "string"
+  /echo/cookieValueExpectParameterName:
+    get:
+      tags:
+      - "echo"
+      summary: ""
+      description: ""
+      operationId: "cookieValueExpectParameterName"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "parameterName"
+        in: "cookie"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "string"
+  /echo/pathVariableExpectParameterName/{parameterName}:
+    get:
+      tags:
+      - "echo"
+      summary: ""
+      description: ""
+      operationId: "pathVariableExpectParameterName"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "parameterName"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "string"
+  /echo/pathVariableExpectVariableName/{parameterName}:
+    get:
+      tags:
+      - "echo"
+      summary: ""
+      description: ""
+      operationId: "pathVariableExpectVariableName"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "pathVariableName"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "string"
+  /echo/pathVariableExpectVariableValue/{parameterName}:
+    get:
+      tags:
+      - "echo"
+      summary: ""
+      description: ""
+      operationId: "pathVariableExpectVariableValue"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "pathVariableValue"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "string"
+  /echo/requestHeaderExpectHeaderName:
+    get:
+      tags:
+      - "echo"
+      summary: ""
+      description: ""
+      operationId: "requestHeaderExpectHeaderName"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "requestHeaderName"
+        in: "header"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "string"
+  /echo/requestHeaderExpectHeaderValue:
+    get:
+      tags:
+      - "echo"
+      summary: ""
+      description: ""
+      operationId: "requestHeaderExpectHeaderValue"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "requestHeaderValue"
+        in: "header"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "string"
+  /echo/requestHeaderExpectParameterName:
+    get:
+      tags:
+      - "echo"
+      summary: ""
+      description: ""
+      operationId: "requestHeaderExpectParameterName"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "parameterName"
+        in: "header"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "string"
+  /echo/requestParamExpectParamName:
+    get:
+      tags:
+      - "echo"
+      summary: ""
+      description: ""
+      operationId: "requestParamExpectParamName"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "requestParamName"
+        in: "query"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "string"
+  /echo/requestParamExpectParamValue:
+    get:
+      tags:
+      - "echo"
+      summary: ""
+      description: ""
+      operationId: "requestParamExpectParamValue"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "requestParamValue"
+        in: "query"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "string"
+  /echo/requestParamExpectParameterName:
+    get:
+      tags:
+      - "echo"
+      summary: ""
+      description: ""
+      operationId: "requestParamExpectParameterName"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "parameterName"
+        in: "query"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "string"
+  /echo/requestPartExpectParameterName:
+    get:
+      tags:
+      - "echo"
+      summary: ""
+      description: ""
+      operationId: "requestPartExpectParameterName"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "parameterName"
+        in: "formData"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "string"
+  /echo/requestPartExpectPartName:
+    get:
+      tags:
+      - "echo"
+      summary: ""
+      description: ""
+      operationId: "requestPartExpectPartName"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "requestPartName"
+        in: "formData"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "string"
+  /echo/requestPartExpectPartValue:
+    get:
+      tags:
+      - "echo"
+      summary: ""
+      description: ""
+      operationId: "requestPartExpectPartValue"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "requestPartValue"
+        in: "formData"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "string"
+  /testingEmptyRootPathResource:
+    get:
+      summary: "testingEmptyRootPathResource"
+      description: ""
+      operationId: "testingEmptyRootPathResource"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "string"
   /myResourceImpl/list:
     get:
       summary: "Get a list of items"
@@ -218,30 +454,6 @@ paths:
             type: "array"
             items:
               $ref: "#/definitions/ListItem"
-  /myResourceImpl/{firstParamConcrete}/properties:
-    get:
-      summary: "Get a response"
-      description: "This is a contrived example"
-      operationId: "testParamInheritance"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "firstParamConcrete"
-        in: "path"
-        required: true
-        type: "string"
-      - name: "secondParamAbstract"
-        in: "query"
-        required: true
-        type: "string"
-      - name: "thirdParamInterface"
-        in: "query"
-        required: false
-        type: "string"
-      responses:
-        default:
-          description: "successful operation"
   /pet:
     get:
       tags:
@@ -268,8 +480,8 @@ paths:
       description: ""
       operationId: "addPet"
       consumes:
-      - "application/json"
       - "application/xml"
+      - "application/json"
       produces:
       - "application/xml"
       - "application/json"
@@ -281,6 +493,10 @@ paths:
         schema:
           $ref: "#/definitions/Pet"
       responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Pet"
         405:
           description: "Invalid input"
       security:
@@ -294,8 +510,8 @@ paths:
       description: ""
       operationId: "updatePet"
       consumes:
-      - "application/json"
       - "application/xml"
+      - "application/json"
       produces:
       - "application/xml"
       - "application/json"
@@ -307,40 +523,16 @@ paths:
         schema:
           $ref: "#/definitions/Pet"
       responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Pet"
         400:
           description: "Invalid ID supplied"
         404:
           description: "Pet not found"
         405:
           description: "Validation exception"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-  /pet/findAll:
-    get:
-      tags:
-      - "pet"
-      summary: "Finds all Pets"
-      description: "Returns a paginated list of all the Pets."
-      operationId: "findAllPaginated"
-      produces:
-      - "application/xml"
-      - "application/json"
-      parameters:
-      - name: "pageNumber"
-        in: "query"
-        description: "pageNumber"
-        required: true
-        type: "integer"
-        format: "int32"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/PagedListPet"
-        400:
-          description: "Invalid page number value"
       security:
       - petstore_auth:
         - "write:pets"
@@ -360,6 +552,43 @@ paths:
         in: "query"
         description: "Status values that need to be considered for filter"
         required: true
+        type: "string"
+        items:
+          type: "string"
+          default: "available"
+          enum:
+          - "available"
+          - "pending"
+          - "sold"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Pet"
+        400:
+          description: "Invalid status value"
+      security:
+      - petstore_auth:
+        - "write:pets"
+        - "read:pets"
+  /pet/findByStatuses:
+    get:
+      tags:
+      - "pet"
+      summary: "Finds Pets by status"
+      description: "Multiple status values can be provided with multiple query parameters.\
+        \ Example: ?status=sold&status=pending"
+      operationId: "findPetsByStatuses"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "status"
+        in: "query"
+        description: "Status values that need to be considered for filter"
+        required: true
         type: "array"
         items:
           type: "string"
@@ -371,7 +600,8 @@ paths:
         collectionFormat: "multi"
       responses:
         200:
-          description: "successful operation"
+          description: "Operation successful, and items were found matching the query.\
+            \ Data in response body."
           schema:
             type: "array"
             items:
@@ -388,7 +618,7 @@ paths:
       - "pet"
       summary: "Finds Pets by tags"
       description: "Muliple tags can be provided with comma seperated strings. Use\
-        \ tag1, tag2, tag3 for testing."
+        \ tags=tag1,tag2,tag3 for testing."
       operationId: "findPetsByTags"
       produces:
       - "application/xml"
@@ -398,10 +628,9 @@ paths:
         in: "query"
         description: "Tags to filter by"
         required: true
-        type: "array"
+        type: "string"
         items:
           type: "string"
-        collectionFormat: "multi"
       responses:
         200:
           description: "successful operation"
@@ -416,23 +645,82 @@ paths:
         - "write:pets"
         - "read:pets"
       deprecated: true
-  /pet/pets/{petName}:
+  /pet/petPing:
     get:
       tags:
       - "pet"
-      summary: "Finds Pets by name"
+      summary: "ping the service"
       description: ""
-      operationId: "findPetByPetName"
+      operationId: "petPing"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "string"
+      security:
+      - petstore_auth:
+        - "write:pets"
+        - "read:pets"
+  /pet/pets:
+    get:
+      tags:
+      - "pet"
+      summary: "Retrieve all pets. Pagination supported"
+      description: "If you wish to paginate the results of this API, supply offset\
+        \ and limit query parameters."
+      operationId: "getAllPetsPaginated"
       produces:
       - "application/xml"
       - "application/json"
       parameters:
-      - name: "petName"
-        in: "path"
-        description: "petName"
+      - name: "limit"
+        in: "query"
+        description: "The pagination limit"
+        required: false
+        type: "integer"
+        format: "int32"
+      - name: "offset"
+        in: "query"
+        description: "The pagination offset"
+        required: false
+        type: "integer"
+        format: "int32"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "object"
+            additionalProperties:
+              type: "object"
+      security:
+      - petstore_auth:
+        - "write:pets"
+        - "read:pets"
+    post:
+      tags:
+      - "pet"
+      summary: "Add multiple pets to the store"
+      description: ""
+      operationId: "addMultiplePets"
+      consumes:
+      - "application/xml"
+      - "application/json"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "A list of pet objects that need to be added to the store"
         required: true
-        type: "string"
-        pattern: "[^/]*"
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/Pet"
       responses:
         200:
           description: "successful operation"
@@ -440,27 +728,23 @@ paths:
             type: "array"
             items:
               $ref: "#/definitions/Pet"
-        400:
-          description: "Invalid status value"
+        405:
+          description: "Invalid input"
       security:
       - petstore_auth:
         - "write:pets"
         - "read:pets"
-  /pet/test:
+  /pet/test/extensions:
     get:
       tags:
       - "pet"
-      summary: "Test pet as json string in query"
+      summary: "testExtensions"
       description: ""
-      operationId: "test"
+      operationId: "testingExtensions"
       produces:
+      - "application/xml"
       - "application/json"
-      parameters:
-      - name: "pet"
-        in: "query"
-        description: "describe Pet in json here"
-        required: false
-        type: "string"
+      parameters: []
       responses:
         200:
           description: "successful operation"
@@ -470,13 +754,44 @@ paths:
       - petstore_auth:
         - "write:pets"
         - "read:pets"
-  /pet/test/apiimplicitparams/{path-test-name}:
+      x-firstExtension:
+        extensionName2: "extensionValue2"
+        extensionName1: "extensionValue1"
+      x-extensionName3: "extensionValue3"
+  /pet/testing:
     get:
       tags:
       - "pet"
-      summary: "Test apiimplicitparams"
+      summary: "testing"
       description: ""
-      operationId: "testapiimplicitparams"
+      operationId: "testing"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "items"
+        in: "query"
+        required: true
+        type: "array"
+        items:
+          type: "string"
+        collectionFormat: "multi"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "object"
+      security:
+      - petstore_auth:
+        - "write:pets"
+        - "read:pets"
+  /pet/testingApiImplicitParams/{path-test-name}:
+    get:
+      tags:
+      - "pet"
+      summary: "testingApiImplicitParams"
+      description: ""
+      operationId: "testingApiImplicitParams"
       produces:
       - "application/json"
       parameters:
@@ -502,41 +817,80 @@ paths:
         200:
           description: "successful operation"
           schema:
-            $ref: "#/definitions/Pet"
+            type: "string"
       security:
       - petstore_auth:
         - "write:pets"
         - "read:pets"
-  /pet/test/extensions:
+  /pet/testingBasicAuth:
     get:
       tags:
       - "pet"
-      summary: "testExtensions"
+      summary: "testingBasicAuth"
       description: ""
-      operationId: "testingExtensions"
+      operationId: "testingBasicAuth"
       produces:
-      - "text/plain"
+      - "application/json"
       parameters: []
       responses:
         200:
           description: "successful operation"
           schema:
-            $ref: "#/definitions/Pet"
+            type: "string"
+      security:
+      - basicAuth: []
+      - petstore_auth:
+        - "write:pets"
+        - "read:pets"
+  /pet/testingVendorExtensions:
+    get:
+      tags:
+      - "pet"
+      summary: "testingVendorExtensions"
+      description: ""
+      operationId: "testingVendorExtensions"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "string"
+        401:
+          description: "Some vendor error description"
+        501:
+          description: "Some vendor error description added using swaggerExtension"
       security:
       - petstore_auth:
         - "write:pets"
         - "read:pets"
-      x-firstExtension:
-        extensionName2: "extensionValue2"
-        extensionName1: "extensionValue1"
-      x-extensionName3: "extensionValue3"
-  /pet/test/testFormApiImplicitParams:
+  /pet/testingMergedAnnotations:
     get:
       tags:
       - "pet"
-      summary: "Test testFormApiImplicitParams"
+      summary: "testingMergedAnnotations"
       description: ""
-      operationId: "testFormApiImplicitParams"
+      operationId: "testingMergedAnnotations"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "string"
+      security:
+      - petstore_auth:
+        - "write:pets"
+        - "read:pets"
+  /pet/testingFormApiImplicitParam:
+    get:
+      tags:
+      - "pet"
+      summary: "testingFormApiImplicitParam"
+      description: ""
+      operationId: "testingFormApiImplicitParam"
       produces:
       - "application/json"
       parameters:
@@ -553,116 +907,8 @@ paths:
         200:
           description: "successful operation"
           schema:
-            $ref: "#/definitions/Pet"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-  /pet/test/testingArrayResponse:
-    get:
-      tags:
-      - "pet"
-      summary: "testingArrayResponse"
-      description: ""
-      operationId: "testingArrayResponse"
-      produces:
-      - "application/xml"
-      - "application/json"
-      parameters: []
-      responses:
-        200:
-          description: "array"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Pet"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-  /pet/test/testingBasicAuth:
-    get:
-      tags:
-      - "pet"
-      summary: "testingBasicAuth"
-      description: ""
-      operationId: "testingBasicAuth"
-      produces:
-      - "application/xml"
-      - "application/json"
-      parameters: []
-      responses:
-        200:
-          description: "successful operation"
-          schema:
             type: "string"
       security:
-      - basicAuth: []
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-  /pet/test/testingVendorExtensions:
-    get:
-      tags:
-      - "pet"
-      summary: "testingVendorExtensions"
-      description: ""
-      operationId: "testingVendorExtensions"
-      produces:
-      - "application/xml"
-      - "application/json"
-      parameters: []
-      responses:
-        401:
-          description: "Some vendor error description"
-        501:
-          description: "Some vendor error description added using swaggerExtension"
-        default:
-          description: "successful operation"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-  /pet/{startId}:{endId}:
-    get:
-      tags:
-      - "pet"
-      summary: "Find pet(s) by ID"
-      description: "This is a contrived example of a path segment containing multiple path parameters, separated by a character which may be present in the path parameter template. You may think that it returns a range of pets from startId to endId, inclusive, but it doesn't."
-      operationId: "getPetsById"
-      produces:
-      - "application/xml"
-      - "application/json"
-      parameters:
-      - name: "startId"
-        in: "path"
-        required: true
-        description: "start ID of pets that need to be fetched"
-        type: "integer"
-        maximum: 99.0
-        minimum: 1.0
-        format: "int64"
-        pattern: "[0-9]{1,2}"
-      - name: "endId"
-        in: "path"
-        description: "end ID of pets that need to be fetched"
-        required: true
-        type: "integer"
-        maximum: 99.0
-        minimum: 1.0
-        format: "int64"
-        pattern: "[0-9]{1,2}"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/Pet"
-        400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Pet not found"
-      security:
-      - api_key: []
       - petstore_auth:
         - "write:pets"
         - "read:pets"
@@ -685,11 +931,10 @@ paths:
         type: "integer"
         maximum: 5.0
         minimum: 1.0
-        pattern: "[0-9]"
         format: "int64"
       responses:
         200:
-          description: "successful operation"
+          description: "Pet data found"
           schema:
             $ref: "#/definitions/Pet"
         400:
@@ -713,58 +958,25 @@ paths:
       - "application/xml"
       - "application/json"
       parameters:
-      - name: "petId"
-        in: "path"
-        description: "ID of pet that needs to be updated"
-        required: true
-        type: "string"
       - name: "name"
-        in: "formData"
+        in: "query"
         description: "Updated name of the pet"
         required: false
         type: "string"
-        default: "defaultValue"
+      - name: "petId"
+        in: "path"
+        required: true
+        type: "string"
       - name: "status"
-        in: "formData"
+        in: "query"
         description: "Updated status of the pet"
         required: false
         type: "string"
-        enum:
-          - value1
-          - value2
-      - name: "myHeader"
-        in: "header"
-        required: false
-        type: "string"
-      - name: "intValue"
-        in: "header"
-        required: false
-        type: "integer"
-        format: "int32"
-      - name: "listValue"
-        in: "query"
-        required: false
-        type: "array"
-        items:
-          type: "string"
-        collectionFormat: "multi"
-      - name: "testIntegerAllowableValues"
-        in: "query"
-        description: "testIntegerAllowableValues"
-        required: false
-        type: "integer"
-        default: 25
-        format: "int32"
-        enum:
-        - 25
-        - 50
-        - 100
-      - name: "myParentHeader"
-        in: "header"
-        description: "Header from parent"
-        required: false
-        type: "string"
       responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/ApiResponse"
         405:
           description: "Invalid input"
       security:
@@ -783,88 +995,19 @@ paths:
       parameters:
       - name: "api_key"
         in: "header"
-        required: false
+        required: true
         type: "string"
       - name: "petId"
         in: "path"
         description: "Pet id to delete"
         required: true
         type: "integer"
+        maximum: 2147483647
+        minimum: 0
         format: "int64"
       responses:
         400:
           description: "Invalid pet value"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-  /pet/{petId}/testInjectParam:
-    post:
-      tags:
-      - "pet"
-      summary: "Updates a pet in the store with form data"
-      description: ""
-      operationId: "updatePetWithFormViaInjectParam"
-      consumes:
-      - "application/x-www-form-urlencoded"
-      produces:
-      - "application/xml"
-      - "application/json"
-      parameters:
-      - name: "petId"
-        in: "path"
-        description: "ID of pet that needs to be updated"
-        required: true
-        type: "string"
-      - name: "name"
-        in: "formData"
-        description: "Updated name of the pet"
-        required: false
-        type: "string"
-        default: "defaultValue"
-      - name: "status"
-        in: "formData"
-        description: "Updated status of the pet"
-        required: false
-        type: "string"
-        enum:
-          - value1
-          - value2
-      - name: "myHeader"
-        in: "header"
-        required: false
-        type: "string"
-      - name: "intValue"
-        in: "header"
-        required: false
-        type: "integer"
-        format: "int32"
-      - name: "listValue"
-        in: "query"
-        required: false
-        type: "array"
-        items:
-          type: "string"
-        collectionFormat: "multi"
-      - name: "testIntegerAllowableValues"
-        in: "query"
-        description: "testIntegerAllowableValues"
-        required: false
-        type: "integer"
-        default: 25
-        format: "int32"
-        enum:
-        - 25
-        - 50
-        - 100
-      - name: "myParentHeader"
-        in: "header"
-        description: "Header from parent"
-        required: false
-        type: "string"
-      responses:
-        405:
-          description: "Invalid input"
       security:
       - petstore_auth:
         - "write:pets"
@@ -974,52 +1117,20 @@ paths:
           description: "Invalid ID supplied"
         404:
           description: "Order not found"
-  /store/pingGet:
+  /store/ping:
     get:
       tags:
       - "store"
-      summary: "Simple ping endpoint"
+      summary: "ping"
       description: ""
-      operationId: "pingGet"
+      operationId: "storePing"
       produces:
       - "application/xml"
       - "application/json"
       parameters: []
       responses:
         200:
-          description: "Successful request - see response for 'pong'"
-          schema:
-            type: "string"
-  /store/pingPost:
-    post:
-      tags:
-      - "store"
-      summary: "Simple ping endpoint"
-      description: ""
-      operationId: "pingPost"
-      produces:
-      - "application/xml"
-      - "application/json"
-      parameters: []
-      responses:
-        200:
-          description: "Successful request - see response for 'pong'"
-          schema:
-            type: "string"
-  /store/pingPut:
-    put:
-      tags:
-      - "store"
-      summary: "Simple ping endpoint"
-      description: ""
-      operationId: "pingPut"
-      produces:
-      - "application/xml"
-      - "application/json"
-      parameters: []
-      responses:
-        200:
-          description: "Successful request - see response for 'pong'"
+          description: "successful operation"
           schema:
             type: "string"
   /user:
@@ -1199,6 +1310,32 @@ paths:
           description: "Invalid username supplied"
         404:
           description: "User not found"
+    patch:
+      tags:
+      - "user"
+      summary: "Updated user"
+      description: "This can only be done by the logged in user."
+      operationId: "updateUser"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "username"
+        in: "path"
+        description: "name that need to be deleted"
+        required: true
+        type: "string"
+      - in: "body"
+        name: "body"
+        description: "Updated user object"
+        required: true
+        schema:
+          $ref: "#/definitions/User"
+      responses:
+        400:
+          description: "Invalid user supplied"
+        404:
+          description: "User not found"
 securityDefinitions:
   api_key:
     type: "apiKey"
@@ -1214,6 +1351,16 @@ securityDefinitions:
       write:pets: "modify pets in your account"
       read:pets: "read your pets"
 definitions:
+  ApiResponse:
+    type: "object"
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+      type:
+        type: "string"
+      message:
+        type: "string"
   Category:
     type: "object"
     properties:
@@ -1232,9 +1379,10 @@ definitions:
   ConflictingApiModel:
     type: "object"
     properties:
-      modelId:
+      id:
         description: "Model Id"
-        $ref: "#/definitions/Pet"
+        type: "integer"
+        format: "int64"
   ListItem:
     type: "object"
     properties:
@@ -1273,32 +1421,6 @@ definitions:
     xml:
       name: "Order"
       namespace: "http://com.wordnik/sample/model"
-  PagedList:
-    type: "object"
-    properties:
-      items:
-        type: "array"
-        items:
-          type: "object"
-      pageNumber:
-        type: "integer"
-        format: "int32"
-      totalItems:
-        type: "integer"
-        format: "int32"
-  PagedListPet:
-    type: "object"
-    properties:
-      items:
-        type: "array"
-        items:
-          $ref: "#/definitions/Pet"
-      pageNumber:
-        type: "integer"
-        format: "int32"
-      totalItems:
-        type: "integer"
-        format: "int32"
   Pet:
     type: "object"
     required:
@@ -1306,7 +1428,7 @@ definitions:
     - "photoUrls"
     properties:
       id:
-        type: "string"
+        type: "integer"
       category:
         $ref: "#/definitions/Category"
       name:

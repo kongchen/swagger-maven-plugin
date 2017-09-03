@@ -173,6 +173,429 @@ This is a sample.
 
 
 
+## /jaxrsBasePath
+
+
+
+
+
+
+### POST
+
+
+<a id="addPet"></a>
+
+
+
+
+
+
+
+
+
+#### Request
+
+
+**Content-Type: ** application/json
+
+##### Parameters
+
+<table border="1">
+    <tr>
+        <th>Name</th>
+        <th>Located in</th>
+        <th>Required</th>
+        <th>Description</th>
+        <th>Default</th>
+        <th>Schema</th>
+    </tr>
+
+
+
+<tr>
+    <th>body</th>
+    <td>body</td>
+    <td>yes</td>
+    <td>Pet object that needs to be added to the store</td>
+    <td> - </td>
+
+    <td>
+    
+    <a href="#/definitions/Pet">Pet</a> 
+    </td>
+
+</tr>
+
+
+</table>
+
+
+
+#### Response
+
+**Content-Type: ** application/json
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 200    | successful operation | <a href="#/definitions/User">User</a>|
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## /jaxrsBasePath/bean
+
+
+
+
+
+
+### POST
+
+
+<a id="createBean"></a>
+
+
+
+
+
+
+
+
+
+#### Request
+
+
+**Content-Type: ** application/json
+
+##### Parameters
+
+<table border="1">
+    <tr>
+        <th>Name</th>
+        <th>Located in</th>
+        <th>Required</th>
+        <th>Description</th>
+        <th>Default</th>
+        <th>Schema</th>
+    </tr>
+
+
+
+<tr>
+    <th>beanAttribute</th>
+    <td>path</td>
+    <td>no</td>
+    <td></td>
+    <td> - </td>
+
+    
+            <td>string </td>
+    
+
+</tr>
+
+
+</table>
+
+
+
+#### Response
+
+**Content-Type: ** application/json
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 200    | successful operation | <a href="#/definitions/Pet">Pet</a>|
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## /jaxrsBasePath/conflictingApiModel
+
+
+### GET
+
+<a id="getConflictingApiModel"></a>
+
+
+
+
+
+
+
+
+
+#### Request
+
+
+**Content-Type: ** application/json
+
+##### Parameters
+
+
+
+
+
+
+#### Response
+
+**Content-Type: ** application/json
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 200    | successful operation | <a href="#/definitions/ConflictingApiModel">ConflictingApiModel</a>|
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## /jaxrsBasePath/stringList
+
+
+### GET
+
+<a id="getStringList"></a>
+
+
+
+
+
+
+
+
+
+#### Request
+
+
+**Content-Type: ** application/json
+
+##### Parameters
+
+
+
+
+
+
+#### Response
+
+**Content-Type: ** application/json
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 200    | successful operation | Array[<a href=""></a>]|
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## /jaxrsBasePath/subresource/{petId}
+
+
+### GET
+
+<a id="getPetById"></a>
+
+
+
+
+
+
+
+
+
+#### Request
+
+
+**Content-Type: ** application/json
+
+##### Parameters
+
+<table border="1">
+    <tr>
+        <th>Name</th>
+        <th>Located in</th>
+        <th>Required</th>
+        <th>Description</th>
+        <th>Default</th>
+        <th>Schema</th>
+    </tr>
+
+
+
+<tr>
+    <th>id</th>
+    <td>path</td>
+    <td>yes</td>
+    <td></td>
+    <td> - </td>
+
+    
+            <td>com.wordnik.sample.model.ListItem (array)</td>
+    
+
+</tr>
+
+
+</table>
+
+
+
+#### Response
+
+**Content-Type: ** application/json
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 200    | successful operation | <a href="#/definitions/Pet">Pet</a>|
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## /jaxrsBasePath/{petId}
+
+
+
+
+### PUT
+
+<a id="getPetById"></a>
+
+
+
+
+
+
+
+
+
+#### Request
+
+
+**Content-Type: ** application/json
+
+##### Parameters
+
+<table border="1">
+    <tr>
+        <th>Name</th>
+        <th>Located in</th>
+        <th>Required</th>
+        <th>Description</th>
+        <th>Default</th>
+        <th>Schema</th>
+    </tr>
+
+
+
+<tr>
+    <th>id</th>
+    <td>path</td>
+    <td>yes</td>
+    <td></td>
+    <td> - </td>
+
+    
+            <td>com.wordnik.sample.model.ListItem (array)</td>
+    
+
+</tr>
+
+
+</table>
+
+
+
+#### Response
+
+**Content-Type: ** application/json
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 200    | successful operation | Array[<a href="#/definitions/User">User</a>]|
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## /myResourceImpl
 
 
@@ -3224,6 +3647,32 @@ This can only be done by the logged in user.
             <td></td>
         </tr>
 
+</table>
+
+## <a name="/definitions/ConflictingApiModel">ConflictingApiModel</a>
+
+<table border="1">
+    <tr>
+        <th>name</th>
+        <th>type</th>
+        <th>required</th>
+        <th>description</th>
+        <th>example</th>
+    </tr>
+    
+        <tr>
+            <td>modelId</td>
+            <td>
+                
+                    <a href="#/definitions/Pet">Pet</a>
+                    
+                
+            </td>
+            <td>optional</td>
+            <td>Model Id</td>
+            <td></td>
+        </tr>
+    
 </table>
 
 ## <a name="/definitions/ListItem">ListItem</a>

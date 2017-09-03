@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.github.kongchen.swagger.docgen.mavenplugin.ApiSource;
 import org.apache.maven.plugin.logging.Log;
 import org.codehaus.plexus.util.StringUtils;
 import org.springframework.core.DefaultParameterNameDiscoverer;
@@ -48,10 +49,15 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
     private static final ResponseContainerConverter RESPONSE_CONTAINER_CONVERTER = new ResponseContainerConverter();
     private String resourcePath;
 
+    @Deprecated
     public SpringMvcApiReader(Swagger swagger, Log log) {
-        super(swagger, log);
+        this(swagger, log, ApiSource.PREFER_SWAGGER_VALUES_DEFAULT);
     }
-    
+
+    public SpringMvcApiReader(Swagger swagger, Log log, boolean preferSwaggerValues) {
+        super(swagger, log, preferSwaggerValues);
+    }
+
     @Override
     protected void updateExtensionChain() {
     	List<SwaggerExtension> extensions = new ArrayList<SwaggerExtension>();
@@ -211,11 +217,15 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
             operation.security(sec);
         }
 
-        if (responseClass == null) {
-            // pick out response from method declaration
-            LOG.info("picking up response class from method " + method);
-            responseClass = method.getGenericReturnType();
+        Type methodReturnType = method.getGenericReturnType();
+        if(!methodReturnType.equals(ResponseEntity.class)) {
+            if (responseClass == null || !preferSwaggerValues) {
+                LOG.debug("picking up response class from method " + method);
+                responseClass = methodReturnType;
+                responseContainer = null;
+            }
         }
+
         if (responseClass instanceof ParameterizedType && ResponseEntity.class.equals(((ParameterizedType) responseClass).getRawType())) {
             responseClass = ((ParameterizedType) responseClass).getActualTypeArguments()[0];
         }

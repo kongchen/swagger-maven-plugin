@@ -64,7 +64,7 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
         File testPom = new File(getBasedir(), "target/test-classes/plugin-config.xml");
         mojo = (ApiDocumentMojo) lookupMojo("generate", testPom);
     }
-    
+
     @Override
     @AfterMethod
     protected void tearDown() throws Exception {
@@ -248,6 +248,13 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
         mojo.getApiSources().get(0).setModelConverters(ImmutableList.of(PetIdToStringModelConverter.class.getName()));
 
         executeAndAssertGeneratedSwaggerSpecJson("This is a sample.", "/expectedOutput/swagger-with-converter.json");
+    }
+
+    @Test
+    public void testPreferSwaggerValuesYaml() throws MojoFailureException, MojoExecutionException, IOException {
+        mojo.getApiSources().get(0).setPreferSwaggerValues(false);
+
+        assertGeneratedSwaggerSpecYaml("This is a sample.", "/expectedOutput/swagger-preferswaggervalues.yaml");
     }
 
     @Test

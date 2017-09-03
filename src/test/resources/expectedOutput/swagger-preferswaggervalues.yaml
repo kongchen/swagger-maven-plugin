@@ -34,25 +34,6 @@ paths:
           description: "successful operation"
           schema:
             type: "string"
-  /jaxrsBasePath/bean:
-    post:
-      summary: ""
-      description: ""
-      operationId: "createBean"
-      consumes:
-      - "application/xml"
-      produces:
-      - "application/xml"
-      parameters:
-      - name: "beanAttribute"
-        in: "path"
-        required: true
-        type: "com.wordnik.sample.model.Pet"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/ApiResponse"
   /jaxrsBasePath:
     post:
       summary: ""
@@ -73,7 +54,7 @@ paths:
         200:
           description: "successful operation"
           schema:
-            $ref: "#/definitions/User"
+            $ref: "#/definitions/Pet"
   /jaxrsBasePath/bean:
     post:
       summary: ""
@@ -84,7 +65,7 @@ paths:
       produces:
       - "application/json"
       parameters:
-      - name: "beanAttribute"
+      - name: "attribute"
         in: "path"
         description: ""
         required: false
@@ -104,11 +85,11 @@ paths:
       produces:
       - "application/json"
       parameters:
-      - name: "id"
+      - name: "petId"
         in: "path"
         required: true
-        type: "com.wordnik.sample.model.ListItem"
-        format: "array"
+        type: "integer"
+        format: "int64"
       responses:
         200:
           description: "successful operation"
@@ -147,7 +128,7 @@ paths:
           schema:
             $ref: "#/definitions/ConflictingApiModel"
   /jaxrsBasePath/{petId}:
-    put:
+    get:
       summary: ""
       description: ""
       operationId: "getPetById"
@@ -156,18 +137,16 @@ paths:
       produces:
       - "application/json"
       parameters:
-      - name: "id"
+      - name: "petId"
         in: "path"
         required: true
-        type: "com.wordnik.sample.model.ListItem"
-        format: "array"
+        type: "integer"
+        format: "int64"
       responses:
         200:
           description: "successful operation"
           schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/User"
+            $ref: "#/definitions/Pet"
   /myResourceImpl:
     get:
       summary: "Find pet(s) by ID"
@@ -360,7 +339,7 @@ paths:
         in: "query"
         description: "Status values that need to be considered for filter"
         required: true
-        type: "array"
+        type: "string"
         items:
           type: "string"
           default: "available"
@@ -368,7 +347,6 @@ paths:
           - "available"
           - "pending"
           - "sold"
-        collectionFormat: "multi"
       responses:
         200:
           description: "successful operation"
@@ -398,10 +376,9 @@ paths:
         in: "query"
         description: "Tags to filter by"
         required: true
-        type: "array"
+        type: "string"
         items:
           type: "string"
-        collectionFormat: "multi"
       responses:
         200:
           description: "successful operation"
@@ -558,28 +535,6 @@ paths:
       - petstore_auth:
         - "write:pets"
         - "read:pets"
-  /pet/test/testingArrayResponse:
-    get:
-      tags:
-      - "pet"
-      summary: "testingArrayResponse"
-      description: ""
-      operationId: "testingArrayResponse"
-      produces:
-      - "application/xml"
-      - "application/json"
-      parameters: []
-      responses:
-        200:
-          description: "array"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Pet"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
   /pet/test/testingBasicAuth:
     get:
       tags:
@@ -623,6 +578,28 @@ paths:
       - petstore_auth:
         - "write:pets"
         - "read:pets"
+  /pet/test/testingArrayResponse:
+    get:
+      tags:
+      - "pet"
+      summary: "testingArrayResponse"
+      description: ""
+      operationId: "testingArrayResponse"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "array"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Pet"
+      security:
+      - petstore_auth:
+        - "write:pets"
+        - "read:pets"
   /pet/{startId}:{endId}:
     get:
       tags:
@@ -636,8 +613,8 @@ paths:
       parameters:
       - name: "startId"
         in: "path"
-        required: true
         description: "start ID of pets that need to be fetched"
+        required: true
         type: "integer"
         maximum: 99.0
         minimum: 1.0
@@ -1232,9 +1209,10 @@ definitions:
   ConflictingApiModel:
     type: "object"
     properties:
-      modelId:
+      id:
         description: "Model Id"
-        $ref: "#/definitions/Pet"
+        type: "integer"
+        format: "int64"
   ListItem:
     type: "object"
     properties:
@@ -1306,7 +1284,7 @@ definitions:
     - "photoUrls"
     properties:
       id:
-        type: "string"
+        type: "integer"
       category:
         $ref: "#/definitions/Category"
       name:

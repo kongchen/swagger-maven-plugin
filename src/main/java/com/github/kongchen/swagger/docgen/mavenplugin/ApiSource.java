@@ -22,6 +22,8 @@ import io.swagger.models.License;
  */
 public class ApiSource {
 
+    public static final boolean PREFER_SWAGGER_VALUES_DEFAULT = true;
+
     /**
      * Java classes containing Swagger's annotation <code>@Api</code>, or Java packages containing those classes
      * can be configured here.
@@ -67,7 +69,7 @@ public class ApiSource {
 
     @Parameter
     private String swaggerDirectory;
-    
+
     @Parameter
     private String swaggerFileName;
 
@@ -98,7 +100,7 @@ public class ApiSource {
     private String swaggerApiReader;
 
     /**
-     * List of full qualified class names of SwaggerExtension implementations to be 
+     * List of full qualified class names of SwaggerExtension implementations to be
      * considered for the generation
      */
     @Parameter
@@ -109,10 +111,10 @@ public class ApiSource {
 
     @Parameter
     private boolean useJAXBAnnotationProcessor;
-    
+
     @Parameter
     private boolean useJAXBAnnotationProcessorAsPrimary = true;
-    
+
     @Parameter
     private String swaggerSchemaConverter;
 
@@ -133,6 +135,14 @@ public class ApiSource {
 
     @Parameter
     private List<String> modelConverters;
+
+    /**
+     * Determines how to resolve conflicts between Swagger annotations and JAX-RS (or SpringMvc).
+     * It true, the value from the Swagger annotation will be used.  If false, the value of the JAX-RS
+     * annotation will prevail.
+     */
+    @Parameter
+    private boolean preferSwaggerValues = PREFER_SWAGGER_VALUES_DEFAULT;
 
     public Set<Class<?>> getValidClasses(Class<? extends Annotation> clazz) {
         Set<Class<?>> classes = new LinkedHashSet<Class<?>>();
@@ -283,7 +293,7 @@ public class ApiSource {
     public void setSwaggerDirectory(String swaggerDirectory) {
         this.swaggerDirectory = swaggerDirectory;
     }
-    
+
     public String getSwaggerFileName() {
         return swaggerFileName;
     }
@@ -334,7 +344,7 @@ public class ApiSource {
     public void setSwaggerApiReader(String swaggerApiReader) {
         this.swaggerApiReader = swaggerApiReader;
     }
-    
+
     public List<String> getSwaggerExtensions() {
 		return swaggerExtensions;
 	}
@@ -421,6 +431,14 @@ public class ApiSource {
 
     public void setModelConverters(List<String> modelConverters) {
         this.modelConverters = modelConverters;
+    }
+
+    public boolean isPreferSwaggerValues() {
+        return preferSwaggerValues;
+    }
+
+    public void setPreferSwaggerValues(boolean preferSwaggerValues) {
+        this.preferSwaggerValues = preferSwaggerValues;
     }
 }
 

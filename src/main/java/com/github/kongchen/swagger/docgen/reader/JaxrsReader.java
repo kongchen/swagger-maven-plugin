@@ -23,6 +23,8 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
+import com.github.kongchen.swagger.docgen.mavenplugin.ApiSource;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.logging.Log;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
@@ -31,7 +33,6 @@ import org.springframework.core.annotation.AnnotationUtils;
 
 import com.github.kongchen.swagger.docgen.jaxrs.BeanParamInjectParamExtention;
 import com.github.kongchen.swagger.docgen.jaxrs.JaxrsParameterExtension;
-import com.github.kongchen.swagger.docgen.spring.SpringSwaggerExtension;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -60,14 +61,19 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
     private static final String CLASS_NAME_PREFIX = "class ";
     private static final String INTERFACE_NAME_PREFIX = "interface ";
 
+    @Deprecated
     public JaxrsReader(Swagger swagger, Log LOG) {
-        super(swagger, LOG);
+        this(swagger, LOG, ApiSource.PREFER_SWAGGER_VALUES_DEFAULT);
     }
-    
+
+    public JaxrsReader(Swagger swagger, Log LOG, boolean preferSwaggerValues) {
+        super(swagger, LOG, preferSwaggerValues);
+    }
+
     @Override
     protected void updateExtensionChain() {
     	List<SwaggerExtension> extensions = new ArrayList<SwaggerExtension>();
-    	extensions.add(new BeanParamInjectParamExtention());
+    	extensions.add(new BeanParamInjectParamExtention(preferSwaggerValues));
         extensions.add(new SwaggerJerseyJaxrs());
         extensions.add(new JaxrsParameterExtension());
     	SwaggerExtensions.setExtensions(extensions);
@@ -98,6 +104,11 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
 
         // only read if allowing hidden apis OR api is not marked as hidden
         if (!canReadApi(readHidden, api)) {
+            return swagger;
+        }
+
+        // if @Path is missing and this is not a subresource, then return
+        if((apiPath == null) && StringUtils.isEmpty(parentPath)) {
             return swagger;
         }
 
@@ -292,11 +303,15 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         }
         operation.operationId(operationId);
 
-        if (responseClassType == null) {
-            // pick out response from method declaration
-            LOGGER.debug("picking up response class from method " + method);
-            responseClassType = method.getGenericReturnType();
+        Type methodReturnType = method.getGenericReturnType();
+         if(!methodReturnType.equals(javax.ws.rs.core.Response.class)) {
+            if (responseClassType == null || !preferSwaggerValues) {
+                LOGGER.debug("picking up response class from method " + method);
+                responseClassType = methodReturnType;
+                responseContainer = null;
+            }
         }
+
         if ((responseClassType != null)
                 && !responseClassType.equals(Void.class)
                 && !responseClassType.equals(void.class)
@@ -359,12 +374,6 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
 
         if (AnnotationUtils.findAnnotation(method, Deprecated.class) != null) {
             operation.deprecated(true);
-        }
-
-        // FIXME `hidden` is never used
-        boolean hidden = false;
-        if (apiOperation != null) {
-            hidden = apiOperation.hidden();
         }
 
         // process parameters
@@ -448,7 +457,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
 	}
 
 	public String extractOperationMethod(ApiOperation apiOperation, Method method, Iterator<SwaggerExtension> chain) {
-        if (!apiOperation.httpMethod().isEmpty()) {
+        if (!apiOperation.httpMethod().isEmpty() && preferSwaggerValues) {
             return apiOperation.httpMethod().toLowerCase();
         } else if (AnnotationUtils.findAnnotation(method, GET.class) != null) {
             return "get";

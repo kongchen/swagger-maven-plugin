@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.SerializationConfig;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.introspect.ClassIntrospector;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule.Priority;
 import com.github.jknack.handlebars.Handlebars;
@@ -18,7 +20,6 @@ import com.github.kongchen.swagger.docgen.mavenplugin.SecurityDefinition;
 import com.github.kongchen.swagger.docgen.reader.AbstractReader;
 import com.github.kongchen.swagger.docgen.reader.ClassSwaggerReader;
 import com.github.kongchen.swagger.docgen.reader.ModelModifier;
-import com.google.common.collect.Sets;
 
 import io.swagger.annotations.Api;
 import io.swagger.config.FilterFactory;
@@ -39,16 +40,13 @@ import org.apache.commons.io.IOUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.io.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,7 +61,6 @@ public abstract class AbstractDocumentSource {
     protected final Log LOG;
     protected final List<Type> typesToSkip = new ArrayList<Type>();
     protected Swagger swagger;
-    protected String swaggerSchemaConverter;
     private final String outputPath;
     private final String templatePath;
     private final String swaggerPath;
@@ -115,16 +112,16 @@ public abstract class AbstractDocumentSource {
                 throw new GenerateException("Cannot load: " + apiSource.getSwaggerInternalFilter(), e);
             }
         }
-        
+
         ClassSwaggerReader reader = resolveApiReader();
-        
+
         // the reader may modify the extensions list, therefore add the additional swagger extensions
         // after the instantiation of the reader
         if (apiSource.getSwaggerExtensions() != null) {
         	List<SwaggerExtension> extensions = SwaggerExtensions.getExtensions();
         	extensions.addAll(resolveSwaggerExtensions());
         }
-        
+
         swagger = reader.read(getValidClasses());
 
         if (apiSource.getSecurityDefinitions() != null) {
@@ -218,16 +215,22 @@ public abstract class AbstractDocumentSource {
         if (apiSource.isUseJAXBAnnotationProcessor()) {
             JaxbAnnotationModule jaxbAnnotationModule = new JaxbAnnotationModule();
             if (apiSource.isUseJAXBAnnotationProcessorAsPrimary()) {
-                jaxbAnnotationModule.setPriority(Priority.PRIMARY);    
+                jaxbAnnotationModule.setPriority(Priority.PRIMARY);
             } else {
                 jaxbAnnotationModule.setPriority(Priority.SECONDARY);
             }
             objectMapper.registerModule(jaxbAnnotationModule);
-            
+
             // to support @ApiModel on class level.
             // must be registered only if we use JaxbAnnotationModule before. Why?
             objectMapper.registerModule(new EnhancedSwaggerModule());
         }
+
+        ClassIntrospector interceptingClassIntrospector = new InterceptingClassIntrospector(apiSource.isPreferSwaggerValues());
+        SerializationConfig serializationConfig = objectMapper.getSerializationConfig();
+        serializationConfig = serializationConfig.with(interceptingClassIntrospector);
+        objectMapper.setConfig(serializationConfig);
+
         ModelModifier modelModifier = new ModelModifier(objectMapper);
 
         List<String> apiModelPropertyAccessExclusions = apiSource.getApiModelPropertyAccessExclusions();
@@ -300,6 +303,10 @@ public abstract class AbstractDocumentSource {
                 throw new GenerateException(e);
             }
         }
+    }
+
+    public Swagger getSwaggerModel() {
+        return swagger;
     }
 
     protected File createFile(File dir, String outputResourcePath) throws IOException {
@@ -384,7 +391,7 @@ public abstract class AbstractDocumentSource {
 
     /**
      * Resolves the API reader which should be used to scan the classes.
-     * 
+     *
      * @return ClassSwaggerReader to use
      * @throws GenerateException if the reader cannot be created / resolved
      */
@@ -392,16 +399,16 @@ public abstract class AbstractDocumentSource {
 
     /**
      * Returns the set of classes which should be included in the scanning.
-     * 
+     *
      * @return Set<Class<?>> containing all valid classes
      */
     protected Set<Class<?>> getValidClasses() {
         return apiSource.getValidClasses(Api.class);
     }
-    
+
     /**
      * Resolves all {@link SwaggerExtension} instances configured to be added to the Swagger configuration.
-     * 
+     *
      * @return Collection<SwaggerExtension> which should be added to the swagger configuration
      * @throws GenerateException if the swagger extensions could not be created / resolved
      */
@@ -427,14 +434,30 @@ public abstract class AbstractDocumentSource {
             LOG.info("Reading custom API reader: " + customReaderClassName);
             Class<?> clazz = Class.forName(customReaderClassName);
             if (AbstractReader.class.isAssignableFrom(clazz)) {
-                Constructor<?> constructor = clazz.getConstructor(Swagger.class, Log.class);
-                return (ClassSwaggerReader) constructor.newInstance(swagger, LOG);
+                return (ClassSwaggerReader) createAbstractReader(clazz);
             } else {
                 return (ClassSwaggerReader) clazz.newInstance();
             }
         } catch (Exception e) {
             throw new GenerateException("Cannot load Swagger API reader: " + customReaderClassName, e);
         }
+    }
+
+    private AbstractReader createAbstractReader(Class<?> clazz) throws ReflectiveOperationException {
+        Object reader;
+        Constructor<?> constructor;
+
+        try {
+            constructor = clazz.getConstructor(Swagger.class, Log.class, boolean.class);
+            reader = constructor.newInstance(swagger, LOG, apiSource.isPreferSwaggerValues());
+        }
+        catch (NoSuchMethodException ex) {
+            LOG.warn("Could not find 3-arg constructor for " + clazz.getName() + ". Using deprecated 2-arg constructor.");
+            constructor = clazz.getConstructor(Swagger.class, Log.class);
+            reader = constructor.newInstance(swagger, LOG);
+        }
+
+        return (AbstractReader) reader;
     }
 }
 
