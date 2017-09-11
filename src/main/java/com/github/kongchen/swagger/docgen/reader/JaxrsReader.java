@@ -60,10 +60,10 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
     private static final String CLASS_NAME_PREFIX = "class ";
     private static final String INTERFACE_NAME_PREFIX = "interface ";
 
-    public JaxrsReader(Swagger swagger, Log LOG) {
+  public JaxrsReader(Swagger swagger, Log LOG) {
         super(swagger, LOG);
     }
-    
+
     @Override
     protected void updateExtensionChain() {
     	List<SwaggerExtension> extensions = new ArrayList<SwaggerExtension>();
@@ -103,6 +103,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
 
         Map<String, Tag> tags = updateTagsForApi(parentTags, api);
         List<SecurityRequirement> securities = getSecurityRequirements(api);
+        Map<String, Tag> discoveredTags = scanClasspathForTags();
 
         // merge consumes, pro duces
 
@@ -152,14 +153,25 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
                 updateOperation(apiConsumes, apiProduces, tags, securities, operation);
                 updatePath(operationPath, httpMethod, operation);
             }
-            updateTagDescriptions();
+            updateTagDescriptions(discoveredTags);
         }
 
         return swagger;
     }
 
-    private void updateTagDescriptions() {
-        HashMap<String, Tag> tags = new HashMap<String, Tag>();
+    private void updateTagDescriptions(Map<String, Tag> discoveredTags) {
+        if (swagger.getTags() != null) {
+            for (Tag tag : swagger.getTags()) {
+                Tag rightTag = discoveredTags.get(tag.getName());
+                if (rightTag != null && rightTag.getDescription() != null) {
+                    tag.setDescription(rightTag.getDescription());
+                }
+            }
+        }
+    }
+
+    private Map<String, Tag> scanClasspathForTags() {
+        Map<String, Tag> tags = new HashMap<String, Tag>();
         for (Class<?> aClass: new Reflections("").getTypesAnnotatedWith(SwaggerDefinition.class)) {
             SwaggerDefinition swaggerDefinition = AnnotationUtils.findAnnotation(aClass, SwaggerDefinition.class);
 
@@ -167,18 +179,12 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
 
                 String tagName = tag.name();
                 if (!tagName.isEmpty()) {
-                    tags.put(tag.name(), new Tag().name(tag.name()).description(tag.description()));
+                  tags.put(tag.name(), new Tag().name(tag.name()).description(tag.description()));
                 }
             }
         }
-        if (swagger.getTags() != null) {
-            for (Tag tag : swagger.getTags()) {
-                Tag rightTag = tags.get(tag.getName());
-                if (rightTag != null && rightTag.getDescription() != null) {
-                    tag.setDescription(rightTag.getDescription());
-                }
-            }
-        }
+
+        return tags;
     }
 
     private void handleSubResource(String[] apiConsumes, String httpMethod, String[] apiProduces, Map<String, Tag> tags, Method method, String operationPath, Operation operation) {
