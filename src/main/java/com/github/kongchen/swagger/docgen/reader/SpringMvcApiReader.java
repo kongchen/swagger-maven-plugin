@@ -51,7 +51,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
     public SpringMvcApiReader(Swagger swagger, Log log) {
         super(swagger, log);
     }
-    
+
     @Override
     protected void updateExtensionChain() {
     	List<SwaggerExtension> extensions = new ArrayList<SwaggerExtension>();
@@ -113,8 +113,8 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
                 if (requestMapping == null) {
                     continue;
                 }
-                ApiOperation apiOperation = AnnotatedElementUtils.findMergedAnnotation(method, ApiOperation.class);
-                if (apiOperation == null || apiOperation.hidden()) {
+                ApiOperation apiOperation = getApiOperation(method);
+                if (apiOperation.hidden()) {
                     continue;
                 }
 
@@ -158,7 +158,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         String responseContainer = null;
         String operationId = method.getName();
 
-        ApiOperation apiOperation = AnnotatedElementUtils.findMergedAnnotation(method, ApiOperation.class);
+        ApiOperation apiOperation = getApiOperation(method);
 
         if (apiOperation.hidden()) {
             return null;
