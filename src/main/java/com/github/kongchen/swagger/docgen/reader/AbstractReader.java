@@ -22,6 +22,7 @@ import javax.ws.rs.QueryParam;
 
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.apache.maven.plugin.logging.Log;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -516,6 +517,27 @@ public abstract class AbstractReader {
         }
 
         return ParameterProcessor.applyAnnotations(swagger, parameter, apiClass, Arrays.asList(new Annotation[]{param}));
+    }
+
+    protected ApiOperation getApiOperation(Method method) {
+        ApiOperation result = AnnotatedElementUtils.findMergedAnnotation(method, ApiOperation.class);
+        if (result == null) {
+            result = getDefaultApiOperation();
+        }
+        return result;
+    }
+
+    protected ApiOperation getDefaultApiOperation() {
+        try {
+            return AnnotatedElementUtils.findMergedAnnotation
+                    (getClass().getMethod("defaultApiOperation"), ApiOperation.class);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException("This should never happen");
+        }
+    }
+
+    @ApiOperation("")
+    public final void defaultApiOperation() {
     }
 
     void processOperationDecorator(Operation operation, Method method) {
