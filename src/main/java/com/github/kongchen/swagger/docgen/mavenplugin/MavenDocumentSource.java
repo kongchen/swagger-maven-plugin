@@ -1,5 +1,6 @@
 package com.github.kongchen.swagger.docgen.mavenplugin;
 
+import com.google.common.collect.Sets;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
 
@@ -7,6 +8,9 @@ import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
 import com.github.kongchen.swagger.docgen.GenerateException;
 import com.github.kongchen.swagger.docgen.reader.ClassSwaggerReader;
 import com.github.kongchen.swagger.docgen.reader.JaxrsReader;
+
+import javax.ws.rs.Path;
+import java.util.Set;
 
 /**
  * @author chekong
@@ -21,6 +25,14 @@ public class MavenDocumentSource extends AbstractDocumentSource {
         }
     }
 
+    @Override
+    protected Set<Class<?>> getValidClasses() {
+        return Sets.union(
+                super.getValidClasses(),
+                apiSource.getValidClasses(Path.class));
+    }
+
+    @Override
     protected ClassSwaggerReader resolveApiReader() throws GenerateException {
         String customReaderClassName = apiSource.getSwaggerApiReader();
         if (customReaderClassName == null) {

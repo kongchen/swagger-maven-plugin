@@ -30,8 +30,8 @@ public class SpringMavenDocumentSource extends AbstractDocumentSource {
     @Override
     protected Set<Class<?>> getValidClasses() {
         return Sets.union(
-            super.getValidClasses(),
-            apiSource.getValidClasses(RestController.class));
+                super.getValidClasses(),
+                apiSource.getValidClasses(RestController.class));
     }
 
     @Override
