@@ -1566,6 +1566,11 @@
       "name": "api_key",
       "in": "header"
     },
+    "api_key_2": {
+      "type": "apiKey",
+      "name": "api_key_2",
+      "in": "header"
+    },
     "basicAuth": {
       "type": "basic"
     },
