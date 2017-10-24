@@ -35,6 +35,9 @@ public class ApiSource {
     @Parameter
     private String basePath;
 
+    @Parameter(defaultValue = "false")
+    private boolean removeBasePathFromEndpoints;
+
     /**
      * The host (name or ip) serving the API.
      * This MUST be the host only and does not include the scheme nor sub-paths.
@@ -59,7 +62,7 @@ public class ApiSource {
     @Parameter
     private String outputPath;
 
-    @Parameter
+    @Parameter(defaultValue = "json")
     private String outputFormats;
 
     @Parameter
@@ -448,6 +451,14 @@ public class ApiSource {
 
 	private String emptyToNull(String str) {
         return StringUtils.isEmpty(str) ? null : str;
+    }
+
+    public Boolean getRemoveBasePathFromEndpoints() {
+        return removeBasePathFromEndpoints;
+    }
+
+    public void setRemoveBasePathFromEndpoints(Boolean removeBasePathFromEndpoints) {
+        this.removeBasePathFromEndpoints = removeBasePathFromEndpoints;
     }
 }
 
