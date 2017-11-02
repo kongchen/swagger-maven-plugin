@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.github.kongchen.swagger.docgen.GenerateException;
 import com.github.kongchen.swagger.docgen.spring.SpringResource;
@@ -100,6 +101,8 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
             }
             tags = updateTagsForApi(null, api);
             resourceSecurities = getSecurityRequirements(api);
+        } else if (controller.isAnnotationPresent(RestController.class)) {
+        	tags = updateTagsForRestController(controller);
         }
 
         resourcePath = resource.getControllerMapping();
@@ -147,6 +150,20 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         }
         return swagger;
     }
+
+	protected Map<String, Tag> updateTagsForRestController(Class<?> controller) {
+		// the simple name of the controller will be used as a tag UNLESS a value is present
+		RestController restController = AnnotatedElementUtils.findMergedAnnotation(controller, RestController.class);
+		Map<String, Tag> tagsMap = new HashMap<String, Tag>();
+		String tagName = restController.value();
+		if (tagName == null || tagName.length() == 0) {
+			tagName = controller.getSimpleName();
+		}
+		Tag tag = new Tag().name(tagName);
+		tagsMap.put(tagName, tag);
+		swagger.tag(tag);
+		return tagsMap;
+	}
 
     private Operation parseMethod(Method method) {
         int responseCode = 200;
