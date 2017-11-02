@@ -1,5 +1,6 @@
 package com.github.kongchen.swagger.docgen.jaxrs;
 
+import com.fasterxml.jackson.databind.JavaType;
 import com.sun.jersey.api.core.InjectParam;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import io.swagger.annotations.ApiParam;
@@ -35,7 +36,7 @@ public class BeanParamInjectParamExtention extends AbstractSwaggerExtension {
 
     @Override
     public List<Parameter> extractParameters(List<Annotation> annotations, Type type, Set<Type> typesToSkip, Iterator<SwaggerExtension> chain) {
-        Class<?> cls = TypeUtils.getRawType(type, type);
+        Class<?> cls = type instanceof JavaType ? ((JavaType) type).getRawClass() : TypeUtils.getRawType(type, type);
 
         List<Parameter> output = new ArrayList<Parameter>();
         if (shouldIgnoreClass(cls) || typesToSkip.contains(type)) {
