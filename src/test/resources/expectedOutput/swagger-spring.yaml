@@ -14,6 +14,7 @@ info:
 host: "www.example.com:8080"
 basePath: "/api"
 tags:
+- name: "SwaggerlessResource"
 - name: "echo"
   description: "Set of simple endpoints that return whatever value you pass in"
 - name: "pet"
@@ -1032,6 +1033,8 @@ paths:
             type: "string"
   /swaggerless/{petId}:
     get:
+      tags:
+      - "SwaggerlessResource"    
       operationId: "getPetByName"
       parameters:
       - name: "name"

@@ -18,8 +18,10 @@
   "host" : "www.example.com:8080",
   "basePath" : "/api",
   "tags" : [ {
-      "name" : "echo",
-      "description" : "Set of simple endpoints that return whatever value you pass in"
+      "name" : "SwaggerlessResource"
+  }, {
+    "name" : "echo",
+    "description" : "Set of simple endpoints that return whatever value you pass in"
   }, {
     "name" : "store",
     "description" : "Operations about store"
@@ -1171,6 +1173,7 @@
     },
     "/swaggerless/{petId}" : {
       "get" : {
+        "tags" : [ "SwaggerlessResource" ],
         "operationId" : "getPetByName",
         "parameters" : [ {
           "name" : "name",
