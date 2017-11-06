@@ -1,31 +1,9 @@
 package com.github.kongchen.swagger.docgen.reader;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.maven.plugin.logging.Log;
-import org.codehaus.plexus.util.StringUtils;
-import org.springframework.core.DefaultParameterNameDiscoverer;
-import org.springframework.core.annotation.AnnotatedElementUtils;
-import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseStatus;
-
 import com.github.kongchen.swagger.docgen.GenerateException;
 import com.github.kongchen.swagger.docgen.spring.SpringResource;
 import com.github.kongchen.swagger.docgen.spring.SpringSwaggerExtension;
 import com.github.kongchen.swagger.docgen.util.SpringUtils;
-
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponses;
@@ -43,6 +21,29 @@ import io.swagger.models.Tag;
 import io.swagger.models.parameters.Parameter;
 import io.swagger.models.properties.Property;
 import io.swagger.models.properties.RefProperty;
+import org.apache.maven.plugin.logging.Log;
+import org.codehaus.plexus.util.StringUtils;
+import org.springframework.core.DefaultParameterNameDiscoverer;
+import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
+import static org.springframework.core.annotation.AnnotatedElementUtils.findMergedAnnotation;
 
 public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerReader {
     private static final ResponseContainerConverter RESPONSE_CONTAINER_CONVERTER = new ResponseContainerConverter();
@@ -51,7 +52,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
     public SpringMvcApiReader(Swagger swagger, Log log) {
         super(swagger, log);
     }
-    
+
     @Override
     protected void updateExtensionChain() {
     	List<SwaggerExtension> extensions = new ArrayList<SwaggerExtension>();
@@ -84,7 +85,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
 
         // Add the description from the controller api
         Class<?> controller = resource.getControllerClass();
-        RequestMapping controllerRM = AnnotatedElementUtils.findMergedAnnotation(controller, RequestMapping.class);
+        RequestMapping controllerRM = findMergedAnnotation(controller, RequestMapping.class);
 
         String[] controllerProduces = new String[0];
         String[] controllerConsumes = new String[0];
@@ -94,7 +95,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         }
 
         if (controller.isAnnotationPresent(Api.class)) {
-            Api api = AnnotatedElementUtils.findMergedAnnotation(controller, Api.class);
+            Api api = findMergedAnnotation(controller, Api.class);
             if (!canReadApi(false, api)) {
                 return swagger;
             }
@@ -109,11 +110,11 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
 
         for (String path : apiMethodMap.keySet()) {
             for (Method method : apiMethodMap.get(path)) {
-                RequestMapping requestMapping = AnnotatedElementUtils.findMergedAnnotation(method, RequestMapping.class);
+                RequestMapping requestMapping = findMergedAnnotation(method, RequestMapping.class);
                 if (requestMapping == null) {
                     continue;
                 }
-                ApiOperation apiOperation = AnnotatedElementUtils.findMergedAnnotation(method, ApiOperation.class);
+                ApiOperation apiOperation = findMergedAnnotation(method, ApiOperation.class);
                 if (apiOperation != null && apiOperation.hidden()) {
                     continue;
                 }
@@ -152,7 +153,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         int responseCode = 200;
         Operation operation = new Operation();
 
-        RequestMapping requestMapping = AnnotatedElementUtils.findMergedAnnotation(method, RequestMapping.class);
+        RequestMapping requestMapping = findMergedAnnotation(method, RequestMapping.class);
         Type responseClass = null;
         List<String> produces = new ArrayList<String>();
         List<String> consumes = new ArrayList<String>();
@@ -160,7 +161,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         String operationId = method.getName();
         Map<String, Property> defaultResponseHeaders = null;
 
-        ApiOperation apiOperation = AnnotatedElementUtils.findMergedAnnotation(method, ApiOperation.class);
+        ApiOperation apiOperation = findMergedAnnotation(method, ApiOperation.class);
 
         if(apiOperation != null) {
             if (apiOperation.hidden()) {
@@ -279,15 +280,23 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
             }
         }
 
-        ApiResponses responseAnnotation = AnnotatedElementUtils.findMergedAnnotation(method, ApiResponses.class);
+        ApiResponses responseAnnotation = findMergedAnnotation(method, ApiResponses.class);
         if (responseAnnotation != null) {
             updateApiResponse(operation, responseAnnotation);
         } else {
-            ResponseStatus responseStatus = AnnotatedElementUtils.findMergedAnnotation(method, ResponseStatus.class);
+            ResponseStatus responseStatus = findMergedAnnotation(method, ResponseStatus.class);
             if (responseStatus != null) {
                 operation.response(responseStatus.value().value(), new Response().description(responseStatus.reason()));
             }
         }
+
+        List<ResponseStatus> errorResponses = getResponseStatusesFromExceptions(method);
+        for (ResponseStatus responseStatus: errorResponses) {
+            int code = responseStatus.code().value();
+            String description = defaultIfEmpty(responseStatus.reason(), responseStatus.code().getReasonPhrase());
+            operation.response(code, new Response().description(description));
+        }
+
 
         Deprecated annotation = AnnotationUtils.findAnnotation(method, Deprecated.class);
         if (annotation != null) {
@@ -333,12 +342,21 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         return operation;
     }
 
-
+    protected List<ResponseStatus> getResponseStatusesFromExceptions(Method method) {
+        List<ResponseStatus> result = new LinkedList<ResponseStatus>();
+        for (Class exceptionClass: method.getExceptionTypes()) {
+            ResponseStatus responseStatus = findMergedAnnotation(exceptionClass, ResponseStatus.class);
+            if (null != responseStatus) {
+                result.add(responseStatus);
+            }
+        }
+        return result;
+    }
 
     private Map<String, List<Method>> collectApisByRequestMapping(List<Method> methods) {
         Map<String, List<Method>> apiMethodMap = new HashMap<String, List<Method>>();
         for (Method method : methods) {
-            RequestMapping requestMapping = AnnotatedElementUtils.findMergedAnnotation(method, RequestMapping.class);
+            RequestMapping requestMapping = findMergedAnnotation(method, RequestMapping.class);
             if (requestMapping != null) {
                 String path;
                 if (requestMapping.value().length != 0) {
@@ -390,7 +408,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         // Iterate over all value attributes of the class-level RequestMapping annotation
         for (String controllerRequestMappingValue : controllerRequestMappingValues) {
             for (Method method : controllerClazz.getMethods()) {
-                RequestMapping methodRequestMapping = AnnotatedElementUtils.findMergedAnnotation(method, RequestMapping.class);
+                RequestMapping methodRequestMapping = findMergedAnnotation(method, RequestMapping.class);
 
                 // Look for method-level @RequestMapping annotation
                 if (methodRequestMapping != null) {
