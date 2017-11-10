@@ -2,7 +2,6 @@ package com.github.kongchen.swagger.docgen.reader;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,7 +30,6 @@ import org.springframework.core.annotation.AnnotationUtils;
 
 import com.github.kongchen.swagger.docgen.jaxrs.BeanParamInjectParamExtention;
 import com.github.kongchen.swagger.docgen.jaxrs.JaxrsParameterExtension;
-import com.github.kongchen.swagger.docgen.spring.SpringSwaggerExtension;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -57,8 +55,6 @@ import io.swagger.util.ReflectionUtils;
 public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
     private static final Logger LOGGER = LoggerFactory.getLogger(JaxrsReader.class);
     private static final ResponseContainerConverter RESPONSE_CONTAINER_CONVERTER = new ResponseContainerConverter();
-    private static final String CLASS_NAME_PREFIX = "class ";
-    private static final String INTERFACE_NAME_PREFIX = "interface ";
 
   public JaxrsReader(Swagger swagger, Log LOG) {
         super(swagger, LOG);
@@ -373,19 +369,11 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
             operation.deprecated(true);
         }
 
-        // FIXME `hidden` is never used
-        boolean hidden = false;
-        if (apiOperation != null) {
-            hidden = apiOperation.hidden();
-        }
-
         // process parameters
         Class<?>[] parameterTypes = method.getParameterTypes();
         Type[] genericParameterTypes = method.getGenericParameterTypes();
         Annotation[][] paramAnnotations = findParamAnnotations(method);
 
-        // paramTypes = method.getParameterTypes
-        // genericParamTypes = method.getGenericParameterTypes
         for (int i = 0; i < parameterTypes.length; i++) {
             Type type = genericParameterTypes[i];
             List<Annotation> annotations = Arrays.asList(paramAnnotations[i]);
@@ -406,28 +394,6 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
 
         return operation;
     }
-
-	private Class<?> convertToClass(Type type) {
-		Type typeToConvert = type;
-		if (type instanceof ParameterizedType) {
-			typeToConvert = ((ParameterizedType) type).getRawType();
-		}
-		try {
-			return Class.forName(getClassName(typeToConvert));
-		} catch (ClassNotFoundException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	private static String getClassName(Type type) {
-		String fullName = type.toString();
-		if (fullName.startsWith(CLASS_NAME_PREFIX)) {
-			return fullName.substring(CLASS_NAME_PREFIX.length());
-		} else if (fullName.startsWith(INTERFACE_NAME_PREFIX)) {
-			return fullName.substring(INTERFACE_NAME_PREFIX.length());
-		}
-		return fullName;
-	}
 
 	private Annotation[][] findParamAnnotations(Method method) {
 		Annotation[][] paramAnnotation = method.getParameterAnnotations();

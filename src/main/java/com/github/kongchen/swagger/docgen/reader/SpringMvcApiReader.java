@@ -51,7 +51,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
     public SpringMvcApiReader(Swagger swagger, Log log) {
         super(swagger, log);
     }
-    
+
     @Override
     protected void updateExtensionChain() {
     	List<SwaggerExtension> extensions = new ArrayList<SwaggerExtension>();
@@ -294,12 +294,6 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
             operation.deprecated(true);
         }
 
-        // FIXME `hidden` is never used
-        boolean hidden = false;
-        if (apiOperation != null) {
-            hidden = apiOperation.hidden();
-        }
-
         // process parameters
         Class[] parameterTypes = method.getParameterTypes();
         Type[] genericParameterTypes = method.getGenericParameterTypes();
@@ -365,22 +359,6 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         } else {
             return this.resourcePath;
         }
-    }
-
-    @Deprecated // TODO: Delete method never used
-    private Class<?> getGenericSubtype(Class<?> clazz, Type type) {
-        if (!(clazz.getName().equals("void") || type.toString().equals("void"))) {
-            try {
-                ParameterizedType paramType = (ParameterizedType) type;
-                Type[] argTypes = paramType.getActualTypeArguments();
-                if (argTypes.length > 0) {
-                    return (Class<?>) argTypes[0];
-                }
-            } catch (ClassCastException e) {
-                //FIXME: find out why this happens to only certain types
-            }
-        }
-        return clazz;
     }
 
     //Helper method for loadDocuments()
