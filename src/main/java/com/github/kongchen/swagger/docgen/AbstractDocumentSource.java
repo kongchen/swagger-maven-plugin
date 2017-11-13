@@ -97,45 +97,63 @@ public abstract class AbstractDocumentSource {
     }
 
     public void loadDocuments() throws GenerateException {
-        if (apiSource.getSwaggerInternalFilter() != null) {
-            try {
-                LOG.info("Setting filter configuration: " + apiSource.getSwaggerInternalFilter());
-                FilterFactory.setFilter((SwaggerSpecFilter) Class.forName(apiSource.getSwaggerInternalFilter()).newInstance());
-            } catch (Exception e) {
-                throw new GenerateException("Cannot load: " + apiSource.getSwaggerInternalFilter(), e);
-            }
-        }
-
         ClassSwaggerReader reader = resolveApiReader();
 
-        // the reader may modify the extensions list, therefore add the additional swagger extensions
-        // after the instantiation of the reader
-        if (apiSource.getSwaggerExtensions() != null) {
-            List<SwaggerExtension> extensions = SwaggerExtensions.getExtensions();
-            extensions.addAll(resolveSwaggerExtensions());
-        }
+        loadSwaggerExtensions(apiSource);
 
         swagger = reader.read(getValidClasses());
 
-        if (apiSource.getSecurityDefinitions() != null) {
-            for (SecurityDefinition sd : apiSource.getSecurityDefinitions()) {
-                for (Map.Entry<String, SecuritySchemeDefinition> entry : sd.generateSecuritySchemeDefinitions().entrySet()) {
-                    swagger.addSecurityDefinition(entry.getKey(), entry.getValue());
-                }
+        swagger = addSecurityDefinitions(swagger, apiSource);
+
+        swagger = doFilter(swagger);
+    }
+
+    private Swagger doFilter(Swagger swagger) throws GenerateException {
+        String filterClassName = apiSource.getSwaggerInternalFilter();
+        if (filterClassName != null) {
+            try {
+                LOG.debug(String.format("Setting filter configuration: %s", filterClassName));
+                FilterFactory.setFilter((SwaggerSpecFilter) Class.forName(filterClassName).newInstance());
+            } catch (Exception e) {
+                throw new GenerateException("Cannot load: " + filterClassName, e);
             }
         }
 
-        // sort security defs to make output consistent
-        Map<String, SecuritySchemeDefinition> defs = swagger.getSecurityDefinitions();
-        if (defs != null) {
-            Map<String, SecuritySchemeDefinition> sortedDefs = new TreeMap<String, SecuritySchemeDefinition>();
-            sortedDefs.putAll(defs);
-            swagger.setSecurityDefinitions(sortedDefs);
+        SwaggerSpecFilter filter = FilterFactory.getFilter();
+        if (filter == null) {
+            return swagger;
         }
+        return new SpecFilter().filter(
+                swagger,
+                filter,
+                new HashMap<String, List<String>>(),
+                new HashMap<String, String>(),
+                new HashMap<String, List<String>>());
+    }
 
-        if (FilterFactory.getFilter() != null) {
-            swagger = new SpecFilter().filter(swagger, FilterFactory.getFilter(), new HashMap<String, List<String>>(), new HashMap<String, String>(),
-                    new HashMap<String, List<String>>());
+    private Swagger addSecurityDefinitions(final Swagger swagger, ApiSource apiSource) throws GenerateException {
+        Swagger result = swagger;
+        if (apiSource.getSecurityDefinitions() == null) {
+            return result;
+        }
+        Map<String, SecuritySchemeDefinition> definitions = new TreeMap<String, SecuritySchemeDefinition>();
+        for (SecurityDefinition sd : apiSource.getSecurityDefinitions()) {
+            for (Map.Entry<String, SecuritySchemeDefinition> entry : sd.generateSecuritySchemeDefinitions().entrySet()) {
+                definitions.put(entry.getKey(), entry.getValue());
+            }
+        }
+        result.setSecurityDefinitions(definitions);
+        return result;
+    }
+
+    /**
+     * The reader may modify the extensions list, therefore add the additional swagger extensions
+     * after the instantiation of the reader
+     */
+    private void loadSwaggerExtensions(ApiSource apiSource) throws GenerateException {
+        if (apiSource.getSwaggerExtensions() != null) {
+            List<SwaggerExtension> extensions = SwaggerExtensions.getExtensions();
+            extensions.addAll(resolveSwaggerExtensions());
         }
     }
 
