@@ -17,7 +17,9 @@
   },
   "host": "www.example.com:8080",
   "basePath": "/api",
-  "tags": [
+  "tags": [ {
+      "name" : "Resource-V1"
+    }, 
     {
       "name": "pet",
       "description": "Operations about pets"
@@ -1425,6 +1427,74 @@
             "description": "User not found"
           }
         }
+      }
+    },
+    "/v1.0/sub" : {
+      "get" : {
+        "tags" : [ "Resource-V1" ],
+        "summary" : "List of users",
+        "description" : "Get user list",
+        "operationId" : "getUsers",
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful operation"
+          }
+        },
+        "security" : [ {
+          "api_key" : [ ]
+        } ]
+      },
+      "put" : {
+        "tags" : [ "Resource-V1" ],
+        "summary" : "Update User",
+        "description" : "",
+        "operationId" : "updateUser",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "User to be updated",
+          "required" : true,
+          "schema": {
+              "$ref": "#/definitions/User"
+            }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful operation"
+          }
+        },
+        "security" : [ {
+          "api_key" : [ ]
+        } ]
+      }
+    },
+    "/v1.0/sub/{username}" : {
+      "get" : {
+        "tags" : [ "Resource-V1" ],
+        "summary" : "Fetch a user by username",
+        "description" : "",
+        "operationId" : "getUserByName",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "username",
+          "in" : "path",
+          "description" : "Username of user that needs to be fetched",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/User"
+            }
+          }
+        },
+        "security" : [ {
+          "api_key" : [ ]
+        } ]
       }
     }
   },
