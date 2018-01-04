@@ -60,17 +60,17 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
     private static final String CLASS_NAME_PREFIX = "class ";
     private static final String INTERFACE_NAME_PREFIX = "interface ";
 
-  public JaxrsReader(Swagger swagger, Log LOG) {
+    public JaxrsReader(Swagger swagger, Log LOG) {
         super(swagger, LOG);
     }
 
     @Override
     protected void updateExtensionChain() {
-    	List<SwaggerExtension> extensions = new ArrayList<SwaggerExtension>();
-    	extensions.add(new BeanParamInjectParamExtention());
+        List<SwaggerExtension> extensions = new ArrayList<SwaggerExtension>();
+        extensions.add(new BeanParamInjectParamExtention());
         extensions.add(new SwaggerJerseyJaxrs());
         extensions.add(new JaxrsParameterExtension());
-    	SwaggerExtensions.setExtensions(extensions);
+        SwaggerExtensions.setExtensions(extensions);
     }
 
     @Override
@@ -112,7 +112,8 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         // handle subresources by looking at return type
 
         // parse the method
-        for (Method method : cls.getMethods()) {
+        List<Method> filteredMethods = getFilteredMethods(cls);
+        for (Method method : filteredMethods) {
             ApiOperation apiOperation = AnnotationUtils.findAnnotation(method, ApiOperation.class);
             if (apiOperation != null && apiOperation.hidden()) {
                 continue;
@@ -159,6 +160,17 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         return swagger;
     }
 
+    private List<Method> getFilteredMethods(Class<?> cls) {
+        Method[] methods = cls.getMethods();
+        List<Method> filteredMethods = new ArrayList<Method>();
+        for (Method method : methods) {
+            if (!method.isBridge()) {
+                filteredMethods.add(method);
+            }
+        }
+        return filteredMethods;
+    }
+
     private void updateTagDescriptions(Map<String, Tag> discoveredTags) {
         if (swagger.getTags() != null) {
             for (Tag tag : swagger.getTags()) {
@@ -172,14 +184,14 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
 
     private Map<String, Tag> scanClasspathForTags() {
         Map<String, Tag> tags = new HashMap<String, Tag>();
-        for (Class<?> aClass: new Reflections("").getTypesAnnotatedWith(SwaggerDefinition.class)) {
+        for (Class<?> aClass : new Reflections("").getTypesAnnotatedWith(SwaggerDefinition.class)) {
             SwaggerDefinition swaggerDefinition = AnnotationUtils.findAnnotation(aClass, SwaggerDefinition.class);
 
             for (io.swagger.annotations.Tag tag : swaggerDefinition.tags()) {
 
                 String tagName = tag.name();
                 if (!tagName.isEmpty()) {
-                  tags.put(tag.name(), new Tag().name(tag.name()).description(tag.description()));
+                    tags.put(tag.name(), new Tag().name(tag.name()).description(tag.description()));
                 }
             }
         }
@@ -407,59 +419,59 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         return operation;
     }
 
-	private Class<?> convertToClass(Type type) {
-		Type typeToConvert = type;
-		if (type instanceof ParameterizedType) {
-			typeToConvert = ((ParameterizedType) type).getRawType();
-		}
-		try {
-			return Class.forName(getClassName(typeToConvert));
-		} catch (ClassNotFoundException e) {
-			throw new RuntimeException(e);
-		}
-	}
+    private Class<?> convertToClass(Type type) {
+        Type typeToConvert = type;
+        if (type instanceof ParameterizedType) {
+            typeToConvert = ((ParameterizedType) type).getRawType();
+        }
+        try {
+            return Class.forName(getClassName(typeToConvert));
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-	private static String getClassName(Type type) {
-		String fullName = type.toString();
-		if (fullName.startsWith(CLASS_NAME_PREFIX)) {
-			return fullName.substring(CLASS_NAME_PREFIX.length());
-		} else if (fullName.startsWith(INTERFACE_NAME_PREFIX)) {
-			return fullName.substring(INTERFACE_NAME_PREFIX.length());
-		}
-		return fullName;
-	}
+    private static String getClassName(Type type) {
+        String fullName = type.toString();
+        if (fullName.startsWith(CLASS_NAME_PREFIX)) {
+            return fullName.substring(CLASS_NAME_PREFIX.length());
+        } else if (fullName.startsWith(INTERFACE_NAME_PREFIX)) {
+            return fullName.substring(INTERFACE_NAME_PREFIX.length());
+        }
+        return fullName;
+    }
 
-	private Annotation[][] findParamAnnotations(Method method) {
-		Annotation[][] paramAnnotation = method.getParameterAnnotations();
+    private Annotation[][] findParamAnnotations(Method method) {
+        Annotation[][] paramAnnotation = method.getParameterAnnotations();
 
-		Method overriddenMethod = ReflectionUtils.getOverriddenMethod(method);
-		while(overriddenMethod != null) {
-			paramAnnotation = merge(overriddenMethod.getParameterAnnotations(), paramAnnotation);
-			overriddenMethod = ReflectionUtils.getOverriddenMethod(overriddenMethod);
-		}
-		return paramAnnotation;
-	}
+        Method overriddenMethod = ReflectionUtils.getOverriddenMethod(method);
+        while (overriddenMethod != null) {
+            paramAnnotation = merge(overriddenMethod.getParameterAnnotations(), paramAnnotation);
+            overriddenMethod = ReflectionUtils.getOverriddenMethod(overriddenMethod);
+        }
+        return paramAnnotation;
+    }
 
 
     private Annotation[][] merge(Annotation[][] overriddenMethodParamAnnotation,
-			Annotation[][] currentParamAnnotations) {
-    	Annotation[][] mergedAnnotations = new Annotation[overriddenMethodParamAnnotation.length][];
+                                 Annotation[][] currentParamAnnotations) {
+        Annotation[][] mergedAnnotations = new Annotation[overriddenMethodParamAnnotation.length][];
 
-    	for(int i=0; i<overriddenMethodParamAnnotation.length; i++) {
-    		mergedAnnotations[i] = merge(overriddenMethodParamAnnotation[i], currentParamAnnotations[i]);
-    	}
-		return mergedAnnotations;
-	}
+        for (int i = 0; i < overriddenMethodParamAnnotation.length; i++) {
+            mergedAnnotations[i] = merge(overriddenMethodParamAnnotation[i], currentParamAnnotations[i]);
+        }
+        return mergedAnnotations;
+    }
 
-	private Annotation[] merge(Annotation[] annotations,
-			Annotation[] annotations2) {
-		List<Annotation> mergedAnnotations = new ArrayList<Annotation>();
-		mergedAnnotations.addAll(Arrays.asList(annotations));
-		mergedAnnotations.addAll(Arrays.asList(annotations2));
-		return mergedAnnotations.toArray(new Annotation[0]);
-	}
+    private Annotation[] merge(Annotation[] annotations,
+                               Annotation[] annotations2) {
+        List<Annotation> mergedAnnotations = new ArrayList<Annotation>();
+        mergedAnnotations.addAll(Arrays.asList(annotations));
+        mergedAnnotations.addAll(Arrays.asList(annotations2));
+        return mergedAnnotations.toArray(new Annotation[0]);
+    }
 
-	public String extractOperationMethod(ApiOperation apiOperation, Method method, Iterator<SwaggerExtension> chain) {
+    public String extractOperationMethod(ApiOperation apiOperation, Method method, Iterator<SwaggerExtension> chain) {
         if (apiOperation != null && !apiOperation.httpMethod().isEmpty()) {
             return apiOperation.httpMethod().toLowerCase();
         } else if (AnnotationUtils.findAnnotation(method, GET.class) != null) {

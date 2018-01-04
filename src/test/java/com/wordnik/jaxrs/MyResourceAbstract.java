@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * @author daniele.orler
  */
-public abstract class MyResourceAbstract implements MyResource {
+public abstract class MyResourceAbstract<T> implements MyResource<T> {
     @Override
     public abstract Response getPetsById(Long startId, Long endId) throws NotFoundException;
 

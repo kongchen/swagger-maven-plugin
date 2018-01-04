@@ -68,6 +68,23 @@ paths:
           description: "Invalid ID supplied"
         404:
           description: "Pet not found"
+    post:
+      summary: "Insert a response"
+      description: "This is a contrived example"
+      operationId: "insertResource"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Resource to insert"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        default:
+          description: "successful operation"
   /myResourceImpl/list:
     get:
       summary: "Get a list of items"
