@@ -81,7 +81,26 @@
             "description" : "Pet not found"
           }
         }
-      }
+      },
+      "post" : {
+        "summary" : "Insert a response",
+        "description" : "This is a contrived example",
+        "operationId" : "insertResource",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Resource to insert",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+            }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+            }
+          }
+        }
     },
     "/myResourceImpl/list" : {
       "get" : {

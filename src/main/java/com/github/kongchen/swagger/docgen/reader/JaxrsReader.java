@@ -112,7 +112,8 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         // handle subresources by looking at return type
 
         // parse the method
-        for (Method method : cls.getMethods()) {
+        List<Method> filteredMethods = getFilteredMethods(cls);
+        for (Method method : filteredMethods) {
             ApiOperation apiOperation = AnnotationUtils.findAnnotation(method, ApiOperation.class);
             if (apiOperation != null && apiOperation.hidden()) {
                 continue;
@@ -175,6 +176,17 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         }
 
         return swagger;
+    }
+
+    private List<Method> getFilteredMethods(Class<?> cls) {
+        Method[] methods = cls.getMethods();
+        List<Method> filteredMethods = new ArrayList<Method>();
+        for (Method method : methods) {
+            if (!method.isBridge()) {
+                filteredMethods.add(method);
+            }
+        }
+        return filteredMethods;
     }
 
     private void updateTagDescriptions(Map<String, Tag> discoveredTags) {

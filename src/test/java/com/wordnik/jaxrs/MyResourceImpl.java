@@ -21,6 +21,9 @@ import com.wordnik.sample.data.PetData;
 import com.wordnik.sample.model.ListItem;
 import com.wordnik.sample.model.Pet;
 
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
@@ -28,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Path("/myResourceImpl")
-public class MyResourceImpl extends MyResourceAbstract {
+public class MyResourceImpl extends MyResourceAbstract<String> {
     static PetData petData = new PetData();
     static JavaRestResourceUtil ru = new JavaRestResourceUtil();
 
@@ -67,6 +70,13 @@ public class MyResourceImpl extends MyResourceAbstract {
             @PathParam("firstParamConcrete") String firstParam,
             String secondParam,
             String thirdParam) {
+        return Response.ok().build();
+    }
+
+    @POST
+    @ApiOperation(value = "Insert a response", notes = "This is a contrived example")
+    @Override
+    public Response insertResource(@ApiParam(value = "Resource to insert", required = true) String resource) {
         return Response.ok().build();
     }
 }
