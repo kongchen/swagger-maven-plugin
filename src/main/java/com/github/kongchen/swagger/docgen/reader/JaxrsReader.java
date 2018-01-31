@@ -118,8 +118,26 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
                 continue;
             }
             Path methodPath = AnnotationUtils.findAnnotation(method, Path.class);
+            
+            String parentPathValue = String.valueOf(parentPath);
+            //is method default handler within a subresource
+            if(apiPath == null && methodPath == null && parentPath != null && readHidden){
+                final String updatedMethodPath = String.valueOf(parentPath);
+                Path path = new Path(){                  
+                    @Override
+                    public String value(){
+                        return updatedMethodPath;
+                    }
 
-            String operationPath = getPath(apiPath, methodPath, parentPath);
+                    @Override
+                    public Class<? extends Annotation> annotationType() {
+                        return Path.class;
+                    }
+                };
+                methodPath = path;
+                parentPathValue = null;
+            }
+            String operationPath = getPath(apiPath, methodPath, parentPathValue);
             if (operationPath != null) {
                 Map<String, String> regexMap = new HashMap<String, String>();
                 operationPath = parseOperationPath(operationPath, regexMap);
