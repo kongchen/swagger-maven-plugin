@@ -46,6 +46,15 @@
             <name>Andrew B</name>
         </developer>
     </developers>
+    <contributors>
+        <contributor>
+            <email>stripodi@adobe.com</email>
+            <name>Simone Tripodi</name>
+            <organization>Adobe Research (Schweiz) AG</organization>
+            <organizationUrl>http://www.adobe.com/</organizationUrl>
+            <timezone>+1</timezone>
+        </contributor>
+    </contributors>
 
     <properties>
         <maven.version>2.2.1</maven.version>
@@ -103,6 +112,11 @@
         <dependency>
             <groupId>io.swagger</groupId>
             <artifactId>swagger-jaxrs</artifactId>
+            <version>${swagger.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-servlet</artifactId>
             <version>${swagger.version}</version>
         </dependency>
         <dependency>
