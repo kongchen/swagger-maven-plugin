@@ -7,6 +7,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.reflections.Reflections;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -67,7 +68,7 @@ public class ApiSource {
 
     @Parameter
     private String swaggerDirectory;
-    
+
     @Parameter
     private String swaggerFileName;
 
@@ -98,7 +99,7 @@ public class ApiSource {
     private String swaggerApiReader;
 
     /**
-     * List of full qualified class names of SwaggerExtension implementations to be 
+     * List of full qualified class names of SwaggerExtension implementations to be
      * considered for the generation
      */
     @Parameter
@@ -109,10 +110,10 @@ public class ApiSource {
 
     @Parameter
     private boolean useJAXBAnnotationProcessor;
-    
+
     @Parameter
     private boolean useJAXBAnnotationProcessorAsPrimary = true;
-    
+
     @Parameter
     private String swaggerSchemaConverter;
 
@@ -192,9 +193,9 @@ public class ApiSource {
             SwaggerDefinition swaggerDefinition = AnnotationUtils.findAnnotation(aClass, SwaggerDefinition.class);
             io.swagger.annotations.Info infoAnnotation = swaggerDefinition.info();
             Info info = new Info().title(infoAnnotation.title())
-                    .description(infoAnnotation.description())
+                    .description(emptyToNull(infoAnnotation.description()))
                     .version(infoAnnotation.version())
-                    .termsOfService(infoAnnotation.termsOfService())
+                    .termsOfService(emptyToNull(infoAnnotation.termsOfService()))
                     .license(from(infoAnnotation.license()))
                     .contact(from(infoAnnotation.contact()));
             resultInfo.mergeWith(info);
@@ -203,29 +204,37 @@ public class ApiSource {
     }
 
     private Contact from(io.swagger.annotations.Contact contactAnnotation) {
-        return new Contact()
-                .name(contactAnnotation.name())
-                .email(contactAnnotation.email())
-                .url(contactAnnotation.url());
+        Contact contact = new Contact()
+                .name(emptyToNull(contactAnnotation.name()))
+                .email(emptyToNull(contactAnnotation.email()))
+                .url(emptyToNull(contactAnnotation.url()));
+        if (contact.getName() == null && contact.getEmail() == null && contact.getUrl() == null) {
+            contact = null;
+        }
+        return contact;
     }
 
     private License from(io.swagger.annotations.License licenseAnnotation) {
-        return new License()
-                .name(licenseAnnotation.name())
-                .url(licenseAnnotation.url());
+        License license = new License()
+                .name(emptyToNull(licenseAnnotation.name()))
+                .url(emptyToNull(licenseAnnotation.url()));
+        if (license.getName() == null && license.getUrl() == null) {
+            license = null;
+        }
+        return license;
     }
 
     private void setBasePathFromAnnotation() {
         for (Class<?> aClass : getValidClasses(SwaggerDefinition.class)) {
             SwaggerDefinition swaggerDefinition = AnnotationUtils.findAnnotation(aClass, SwaggerDefinition.class);
-            basePath = swaggerDefinition.basePath();
+            basePath = emptyToNull(swaggerDefinition.basePath());
         }
     }
 
     private void setHostFromAnnotation() {
         for (Class<?> aClass : getValidClasses(SwaggerDefinition.class)) {
             SwaggerDefinition swaggerDefinition = AnnotationUtils.findAnnotation(aClass, SwaggerDefinition.class);
-            host = swaggerDefinition.host();
+            host = emptyToNull(swaggerDefinition.host());
         }
     }
 
@@ -283,7 +292,7 @@ public class ApiSource {
     public void setSwaggerDirectory(String swaggerDirectory) {
         this.swaggerDirectory = swaggerDirectory;
     }
-    
+
     public String getSwaggerFileName() {
         return swaggerFileName;
     }
@@ -334,7 +343,7 @@ public class ApiSource {
     public void setSwaggerApiReader(String swaggerApiReader) {
         this.swaggerApiReader = swaggerApiReader;
     }
-    
+
     public List<String> getSwaggerExtensions() {
 		return swaggerExtensions;
 	}
@@ -421,6 +430,10 @@ public class ApiSource {
 
     public void setModelConverters(List<String> modelConverters) {
         this.modelConverters = modelConverters;
+    }
+
+    private String emptyToNull(String str) {
+        return StringUtils.isEmpty(str) ? null : str;
     }
 }
 
