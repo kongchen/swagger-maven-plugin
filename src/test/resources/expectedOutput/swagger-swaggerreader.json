@@ -639,7 +639,7 @@
           "required" : false,
           "type" : "array",
           "items" : {
-            "type" : "object"
+            "type" : "string"
           },
           "collectionFormat" : "multi"
         }, {
@@ -1391,7 +1391,8 @@
           "type" : "string"
         },
         "phone" : {
-          "type" : "string"
+          "type" : "string",
+          "x-test": "value"
         },
         "userStatus" : {
           "type" : "integer",
