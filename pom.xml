@@ -60,7 +60,7 @@
         <maven.version>2.2.1</maven.version>
         <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
         <java.version>1.6</java.version>
-        <swagger.version>1.5.16</swagger.version>
+        <swagger.version>1.5.18</swagger.version>
         <github.global.server>github</github.global.server>
         <jackson.version>2.8.9</jackson.version>
         <log4j.version>1.2.16</log4j.version>
@@ -219,10 +219,10 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-           <groupId>junit-addons</groupId>
+            <groupId>junit-addons</groupId>
             <artifactId>junit-addons</artifactId>
             <version>${junit-addons.version}</version>
-	    <scope>test</scope>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
