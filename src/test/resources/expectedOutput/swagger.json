@@ -1654,7 +1654,7 @@
         } ]
       }
     }
-  },    
+  },
   "securityDefinitions": {
     "api_key": {
       "type": "apiKey",
@@ -1888,7 +1888,8 @@
           "type": "string"
         },
         "phone": {
-          "type": "string"
+          "type": "string",
+          "x-test": "value"
         },
         "userStatus": {
           "type": "integer",

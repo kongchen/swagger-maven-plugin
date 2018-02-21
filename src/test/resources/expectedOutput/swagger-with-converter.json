@@ -19,7 +19,7 @@
   "basePath": "/api",
   "tags": [ {
       "name" : "Resource-V1"
-    }, 
+    },
     {
       "name": "pet",
       "description": "Operations about pets"
@@ -1883,7 +1883,8 @@
           "type": "string"
         },
         "phone": {
-          "type": "string"
+          "type": "string",
+          "x-test": "value"
         },
         "userStatus": {
           "type": "integer",
