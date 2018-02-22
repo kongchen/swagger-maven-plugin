@@ -2,20 +2,18 @@ package com.github.kongchen.swagger.docgen.mavenplugin;
 
 import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
 import com.github.kongchen.swagger.docgen.GenerateException;
-
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.Component;
-import org.apache.maven.plugins.annotations.LifecyclePhase;
-import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.apache.maven.plugins.annotations.*;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
 
 import java.io.File;
 import java.util.List;
+import java.util.Set;
+
+import static java.util.Collections.singleton;
 
 /**
  * User: kongchen
@@ -41,13 +39,17 @@ public class ApiDocumentMojo extends AbstractMojo {
     @Component
     private MavenProjectHelper projectHelper;
 
+    @Parameter(defaultValue = "${project.build.outputDirectory}", readonly = true)
+    private File outputDirectory;
+
+
     /**
      * A flag indicating if the generation should be skipped.
      */
     @Parameter(property = "swagger.skip", defaultValue = "false")
     private boolean skipSwaggerGeneration;
-    
-    @Parameter(property="file.encoding")
+
+    @Parameter(property = "file.encoding")
     private String encoding;
 
     public List<ApiSource> getApiSources() {
@@ -60,7 +62,7 @@ public class ApiDocumentMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        if(project !=null) {
+        if (project != null) {
             projectEncoding = project.getProperties().getProperty("project.build.sourceEncoding");
         }
 
@@ -85,6 +87,7 @@ public class ApiDocumentMojo extends AbstractMojo {
         try {
             getLog().debug(apiSources.toString());
             for (ApiSource apiSource : apiSources) {
+                apiSource.setModuleClassLoader(getModuleClassLoader());
                 validateConfiguration(apiSource);
                 AbstractDocumentSource documentSource = apiSource.isSpringmvc()
                         ? new SpringMavenDocumentSource(apiSource, getLog(), projectEncoding)
@@ -131,6 +134,32 @@ public class ApiDocumentMojo extends AbstractMojo {
             throw new MojoFailureException(e.getMessage(), e);
         } catch (Exception e) {
             throw new MojoExecutionException(e.getMessage(), e);
+        }
+    }
+
+    private ClassLoader getModuleClassLoader() {
+        ExtensibleClassLoader loader = new ExtensibleClassLoader(ApiDocumentMojo.class.getClassLoader());
+
+        final Set<File> projectClassPaths = singleton(outputDirectory);
+        for (File file : projectClassPaths) {
+            addToClassPool(file, loader);
+        }
+        return loader;
+    }
+
+
+    /**
+     * Adds the location to the class pool.
+     *
+     * @param location The location of a jar file or a directory
+     */
+    private void addToClassPool(final File location, ExtensibleClassLoader extensibleClassLoader) {
+        if (!location.exists())
+            throw new IllegalArgumentException("The location '" + location + "' does not exist!");
+        try {
+            extensibleClassLoader.addURL(location.toURL());
+        } catch (Exception e) {
+            throw new IllegalArgumentException("The location '" + location + "' could not be loaded to the class path!", e);
         }
     }
 
@@ -181,7 +210,7 @@ public class ApiDocumentMojo extends AbstractMojo {
             return false;
         }
     }
-    
+
     private String getSwaggerFileName(String swaggerFileName) {
         return swaggerFileName == null || "".equals(swaggerFileName.trim()) ? "swagger" : swaggerFileName;
     }
