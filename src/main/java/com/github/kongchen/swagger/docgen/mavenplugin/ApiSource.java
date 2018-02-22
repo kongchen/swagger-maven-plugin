@@ -1,21 +1,20 @@
 package com.github.kongchen.swagger.docgen.mavenplugin;
 
+import io.swagger.annotations.SwaggerDefinition;
+import io.swagger.models.Contact;
+import io.swagger.models.Info;
+import io.swagger.models.License;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.reflections.Reflections;
+import org.springframework.core.annotation.AnnotationUtils;
+
 import java.io.File;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.maven.plugins.annotations.Parameter;
-import org.reflections.Reflections;
-import org.springframework.core.annotation.AnnotationUtils;
-
-import io.swagger.annotations.SwaggerDefinition;
-import io.swagger.models.Contact;
-import io.swagger.models.Info;
-import io.swagger.models.License;
 
 /**
  * User: kongchen
@@ -135,6 +134,8 @@ public class ApiSource {
     @Parameter
     private List<String> modelConverters;
 
+    private ClassLoader moduleClassLoader;
+
     public Set<Class<?>> getValidClasses(Class<? extends Annotation> clazz) {
         Set<Class<?>> classes = new LinkedHashSet<Class<?>>();
         if (getLocations() == null) {
@@ -145,15 +146,25 @@ public class ApiSource {
             classes.addAll(inherited);
         } else {
             for (String location : locations) {
-                Set<Class<?>> c = new Reflections(location).getTypesAnnotatedWith(clazz, true);
-                classes.addAll(c);
+                try {
+                    Set<Class<?>> c = new Reflections(location, moduleClassLoader).getTypesAnnotatedWith
+                            (clazz, true);
+                    classes.addAll(c);
 
-                Set<Class<?>> inherited = new Reflections(location).getTypesAnnotatedWith(clazz);
-                classes.addAll(inherited);
+                    Set<Class<?>> inherited = new Reflections(location, moduleClassLoader)
+                            .getTypesAnnotatedWith(clazz);
+                    classes.addAll(inherited);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             }
         }
 
         return classes;
+    }
+
+    public void setModuleClassLoader(ClassLoader moduleClassLoader) {
+        this.moduleClassLoader = moduleClassLoader;
     }
 
     public List<String> getApiModelPropertyAccessExclusions() {
@@ -168,6 +179,10 @@ public class ApiSource {
         return securityDefinitions;
     }
 
+    public void setSecurityDefinitions(List<SecurityDefinition> securityDefinitions) {
+        this.securityDefinitions = securityDefinitions;
+    }
+
     public List<String> getTypesToSkip() {
         return typesToSkip;
     }
@@ -176,15 +191,15 @@ public class ApiSource {
         this.typesToSkip = typesToSkip;
     }
 
-    public void setSecurityDefinitions(List<SecurityDefinition> securityDefinitions) {
-        this.securityDefinitions = securityDefinitions;
-    }
-
     public Info getInfo() {
         if (info == null) {
             setInfoFromAnnotation();
         }
         return info;
+    }
+
+    public void setInfo(Info info) {
+        this.info = info;
     }
 
     private void setInfoFromAnnotation() {
@@ -236,10 +251,6 @@ public class ApiSource {
             SwaggerDefinition swaggerDefinition = AnnotationUtils.findAnnotation(aClass, SwaggerDefinition.class);
             host = emptyToNull(swaggerDefinition.host());
         }
-    }
-
-    public void setInfo(Info info) {
-        this.info = info;
     }
 
     public List<String> getLocations() {
@@ -309,12 +320,12 @@ public class ApiSource {
         this.attachSwaggerArtifact = attachSwaggerArtifact;
     }
 
-    public void setSwaggerUIDocBasePath(String swaggerUIDocBasePath) {
-        this.swaggerUIDocBasePath = swaggerUIDocBasePath;
-    }
-
     public String getSwaggerUIDocBasePath() {
         return swaggerUIDocBasePath;
+    }
+
+    public void setSwaggerUIDocBasePath(String swaggerUIDocBasePath) {
+        this.swaggerUIDocBasePath = swaggerUIDocBasePath;
     }
 
     public String getHost() {
@@ -324,8 +335,8 @@ public class ApiSource {
         return host;
     }
 
-    public void setModelSubstitute(String modelSubstitute) {
-        this.modelSubstitute = modelSubstitute;
+    public void setHost(String host) {
+        this.host = host;
     }
 
     public String getSwaggerInternalFilter() {
@@ -345,23 +356,19 @@ public class ApiSource {
     }
 
     public List<String> getSwaggerExtensions() {
-		return swaggerExtensions;
-	}
+        return swaggerExtensions;
+    }
 
-	public void setSwaggerExtensions(List<String> swaggerExtensions) {
-		this.swaggerExtensions = swaggerExtensions;
-	}
+    public void setSwaggerExtensions(List<String> swaggerExtensions) {
+        this.swaggerExtensions = swaggerExtensions;
+    }
 
-	public String getApiSortComparator() {
+    public String getApiSortComparator() {
         return apiSortComparator;
     }
 
     public void setApiSortComparator(String apiSortComparator) {
         this.apiSortComparator = apiSortComparator;
-    }
-
-    public void setHost(String host) {
-        this.host = host;
     }
 
     public List<String> getSchemes() {
@@ -374,6 +381,10 @@ public class ApiSource {
 
     public String getModelSubstitute() {
         return modelSubstitute;
+    }
+
+    public void setModelSubstitute(String modelSubstitute) {
+        this.modelSubstitute = modelSubstitute;
     }
 
     public boolean isSpringmvc() {
