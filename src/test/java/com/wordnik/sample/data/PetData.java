@@ -26,7 +26,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class PetData {
+public class PetData implements CrudService<Pet> {
+
     static List<Pet> pets = new ArrayList<Pet>();
     static List<Category> categories = new ArrayList<Category>();
 
@@ -61,7 +62,7 @@ public class PetData {
                 "url1", "url2"}, new String[]{"tag3", "tag4"}, "available"));
     }
 
-    public Pet getPetbyId(long petId) {
+    public Pet get(long petId) {
         for (Pet pet : pets) {
             if (pet.getId().value() == petId) {
                 return pet;
@@ -70,7 +71,7 @@ public class PetData {
         return null;
     }
 
-    public void deletePet(long petId) {
+    public void delete(long petId) {
         if (!pets.isEmpty()) {
             for (int i = pets.size(); i >= 0; i++) {
                 Pet pet = pets.get(i);
@@ -111,11 +112,11 @@ public class PetData {
         return result;
     }
 
-	public List<Pet> findAllPets() {
+	public List<Pet> getAll() {
 		return Collections.unmodifiableList(pets);
 	}
 
-    public Pet addPet(Pet pet) {
+    public Pet save(Pet pet) {
         if (pet.getId().value() == 0) {
             long maxId = 0;
             for (int i = pets.size() - 1; i >= 0; i--) {
@@ -134,6 +135,10 @@ public class PetData {
         }
         pets.add(pet);
         return pet;
+    }
+
+    public Pet update(Pet pet) {
+        return save(pet);
     }
 
     static Pet createPet(long id, Category cat, String name, String[] urls,

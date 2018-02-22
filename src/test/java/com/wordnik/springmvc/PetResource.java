@@ -16,10 +16,9 @@
 
 package com.wordnik.springmvc;
 
-import com.wordnik.sample.JavaRestResourceUtil;
 import com.wordnik.sample.TestVendorExtension;
+import com.wordnik.sample.data.CrudService;
 import com.wordnik.sample.data.PetData;
-import com.wordnik.sample.exception.NotFoundException;
 import com.wordnik.sample.model.PaginationHelper;
 import com.wordnik.sample.model.Pet;
 import io.swagger.annotations.Api;
@@ -36,9 +35,13 @@ import io.swagger.annotations.ExtensionProperty;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -54,51 +57,13 @@ import java.util.Set;
 })
 
 @RequestMapping(value = "/pet", produces = {"application/json", "application/xml"})
-public class PetResource {
+public class PetResource extends CrudController<Pet> {
 
     static PetData petData = new PetData();
-    static JavaRestResourceUtil ru = new JavaRestResourceUtil();
 
-    @RequestMapping(value = "/{petId}", method = RequestMethod.GET)
-    @ApiOperation(value = "Find pet by ID",
-            notes = "Returns a pet when ID < 10.  ID > 10 or nonintegers will simulate API error conditions",
-            authorizations = @Authorization(value = "api_key")
-    )
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Pet data found", response = Pet.class),
-            @ApiResponse(code = 400, message = "Invalid ID supplied"),
-            @ApiResponse(code = 404, message = "Pet not found")})
-    public ResponseEntity<Pet> getPetById(
-            @ApiParam(value = "ID of pet that needs to be fetched", allowableValues = "range[1,5]", required = true)
-            @PathVariable("petId") Long petId)
-            throws NotFoundException {
-        Pet pet = petData.getPetbyId(petId);
-        if (pet != null) {
-            return new ResponseEntity(pet, HttpStatus.OK);
-        } else {
-            throw new NotFoundException(404, "Pet not found");
-        }
-    }
-
-    @RequestMapping(value = "/{petId}", method = RequestMethod.DELETE)
-    @ApiOperation(value = "Deletes a pet", nickname = "removePet")
-    @ApiResponses(value = {@ApiResponse(code = 400, message = "Invalid pet value")})
-    public ResponseEntity deletePet(
-            @RequestHeader("api_key") String apiKey,
-            @ApiParam(value = "Pet id to delete", required = true)
-            @PathVariable("petId") @Size(min = 0, max = Integer.MAX_VALUE) Long petId) {
-        petData.deletePet(petId);
-        return new ResponseEntity(HttpStatus.OK);
-    }
-
-    @RequestMapping(consumes = {"application/json", "application/xml"}, method = RequestMethod.POST)
-    @ApiOperation(value = "Add a new pet to the store")
-    @ApiResponses(value = {@ApiResponse(code = 405, message = "Invalid input")})
-    public ResponseEntity<Pet> addPet(
-            @ApiParam(value = "Pet object that needs to be added to the store", required = true)
-            @RequestBody Pet pet) {
-        Pet updatedPet = petData.addPet(pet);
-        return new ResponseEntity<Pet>(updatedPet, HttpStatus.OK);
+    @Override
+    protected CrudService<Pet> getCrudService() {
+        return petData;
     }
 
     @RequestMapping(value = "/pets", consumes = {"application/json", "application/xml"}, method = RequestMethod.POST)
@@ -109,21 +74,9 @@ public class PetResource {
             @RequestBody Set<Pet> pets) {
         List<Pet> createdPets = new ArrayList<Pet>();
         for (Pet pet : pets) {
-            createdPets.add(petData.addPet(pet));
+            createdPets.add(petData.save(pet));
         }
         return new ResponseEntity<List<Pet>>(createdPets, HttpStatus.OK);
-    }
-
-    @RequestMapping(consumes = {"application/json", "application/xml"}, method = RequestMethod.PUT)
-    @ApiOperation(value = "Update an existing pet")
-    @ApiResponses(value = {@ApiResponse(code = 400, message = "Invalid ID supplied"),
-            @ApiResponse(code = 404, message = "Pet not found"),
-            @ApiResponse(code = 405, message = "Validation exception")})
-    public ResponseEntity<Pet> updatePet(
-            @ApiParam(value = "Pet object that needs to be added to the store", required = true)
-            @RequestBody Pet pet) {
-        Pet updatedPet = petData.addPet(pet);
-        return new ResponseEntity<Pet>(updatedPet, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/findByStatus", method = RequestMethod.GET)
