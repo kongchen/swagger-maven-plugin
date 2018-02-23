@@ -12,22 +12,22 @@ import java.util.List;
 /**
  *
  */
-public class ExtensibleClassLoader extends URLClassLoader {
+public class ShortMemoryClassLoader extends URLClassLoader {
 
-    List<URL> cp = new LinkedList<URL>();
+    private List<URL> classpath = new LinkedList<URL>();
 
-    public ExtensibleClassLoader(ClassLoader classLoader) {
+    public ShortMemoryClassLoader(ClassLoader classLoader) {
         super(new URL[0], classLoader);
     }
 
     @Override
     public void addURL(URL url) {
-        cp.add(url);
+        classpath.add(url);
         super.addURL(url);
     }
 
     @Override
     public Enumeration<URL> getResources(String name) throws IOException {
-        return Collections.enumeration(cp);
+        return Collections.enumeration(classpath);
     }
 }

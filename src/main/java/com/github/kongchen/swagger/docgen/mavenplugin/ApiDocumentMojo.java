@@ -141,7 +141,7 @@ public class ApiDocumentMojo extends AbstractMojo {
         if (outputDirectory==null){ // tests
             return ApiDocumentMojo.class.getClassLoader();
         }
-        ExtensibleClassLoader loader = new ExtensibleClassLoader(ApiDocumentMojo.class.getClassLoader());
+        ShortMemoryClassLoader loader = new ShortMemoryClassLoader(ApiDocumentMojo.class.getClassLoader());
 
         final Set<File> projectClassPaths = singleton(outputDirectory);
         for (File file : projectClassPaths) {
@@ -156,14 +156,14 @@ public class ApiDocumentMojo extends AbstractMojo {
      *
      * @param location The location of a jar file or a directory
      */
-    private void addToClassPool(final File location, ExtensibleClassLoader extensibleClassLoader) {
+    private void addToClassPool(final File location, ShortMemoryClassLoader shortMemoryClassLoader) {
         if (location==null) {
             return;
         }
         if (!location.exists())
             throw new IllegalArgumentException("The location '" + location + "' does not exist!");
         try {
-            extensibleClassLoader.addURL(location.toURL());
+            shortMemoryClassLoader.addURL(location.toURL());
         } catch (Exception e) {
             throw new IllegalArgumentException("The location '" + location + "' could not be loaded to the class path!", e);
         }

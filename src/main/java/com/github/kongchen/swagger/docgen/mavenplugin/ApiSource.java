@@ -139,28 +139,35 @@ public class ApiSource {
     public Set<Class<?>> getValidClasses(Class<? extends Annotation> clazz) {
         Set<Class<?>> classes = new LinkedHashSet<Class<?>>();
         if (getLocations() == null) {
-            Set<Class<?>> c = new Reflections("").getTypesAnnotatedWith(clazz, true);
-            classes.addAll(c);
-
-            Set<Class<?>> inherited = new Reflections("").getTypesAnnotatedWith(clazz);
-            classes.addAll(inherited);
+            forNoLocation(clazz, classes);
         } else {
-            for (String location : locations) {
-                try {
-                    Set<Class<?>> c = new Reflections(location, moduleClassLoader).getTypesAnnotatedWith
-                            (clazz, true);
-                    classes.addAll(c);
+            forAllLocations(clazz, classes);
+        }
+        return classes;
+    }
 
-                    Set<Class<?>> inherited = new Reflections(location, moduleClassLoader)
-                            .getTypesAnnotatedWith(clazz);
-                    classes.addAll(inherited);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
+    private void forNoLocation(Class<? extends Annotation> clazz, Set<Class<?>> classes) {
+        Set<Class<?>> c = new Reflections("").getTypesAnnotatedWith(clazz, true);
+        classes.addAll(c);
+
+        Set<Class<?>> inherited = new Reflections("").getTypesAnnotatedWith(clazz);
+        classes.addAll(inherited);
+    }
+
+    private void forAllLocations(Class<? extends Annotation> clazz, Set<Class<?>> classes) {
+        for (String location : locations) {
+            try {
+                Set<Class<?>> c = new Reflections(location, moduleClassLoader).getTypesAnnotatedWith
+                        (clazz, true);
+                classes.addAll(c);
+
+                Set<Class<?>> inherited = new Reflections(location, moduleClassLoader)
+                        .getTypesAnnotatedWith(clazz);
+                classes.addAll(inherited);
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
         }
-
-        return classes;
     }
 
     public void setModuleClassLoader(ClassLoader moduleClassLoader) {
