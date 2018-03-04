@@ -446,7 +446,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
 	}
 
 
-    public static Annotation[][] merge(Annotation[][] overriddenMethodParamAnnotation,
+    private static Annotation[][] merge(Annotation[][] overriddenMethodParamAnnotation,
 			Annotation[][] currentParamAnnotations) {
     	Annotation[][] mergedAnnotations = new Annotation[overriddenMethodParamAnnotation.length][];
 
@@ -456,7 +456,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
 		return mergedAnnotations;
 	}
 
-	public static Annotation[] merge(Annotation[] annotations,
+	private static Annotation[] merge(Annotation[] annotations,
 			Annotation[] annotations2) {
 		List<Annotation> mergedAnnotations = new ArrayList<Annotation>();
 		mergedAnnotations.addAll(Arrays.asList(annotations));
