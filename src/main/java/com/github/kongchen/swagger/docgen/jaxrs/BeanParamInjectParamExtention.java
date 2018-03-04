@@ -104,8 +104,13 @@ public class BeanParamInjectParamExtention extends AbstractSwaggerExtension {
             List<Annotation> annotations = typeWithAnnotations.getAnnotations();
 
             /*
-             * Skip the type of the bean itself when recursing into its members in
-             * order to avoid cycles, as crazy as that user code would have to be.
+             * Skip the type of the bean itself when recursing into its members
+             * in order to avoid a cycle (stack overflow), as crazy as that user
+             * code would have to be.
+             * 
+             * There are no tests to prove this works because the test bean
+             * classes are shared with SwaggerReaderTest and Swagger's own logic
+             * doesn't prevent this problem.
              */
             Set<Type> recurseTypesToSkip = new HashSet<Type>(typesToSkip);
             recurseTypesToSkip.add(cls);

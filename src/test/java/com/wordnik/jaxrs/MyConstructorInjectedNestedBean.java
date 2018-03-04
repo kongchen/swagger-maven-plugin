@@ -1,6 +1,5 @@
 package com.wordnik.jaxrs;
 
-import javax.ws.rs.BeanParam;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.HeaderParam;
 
@@ -13,32 +12,23 @@ import io.swagger.annotations.ApiParam;
  */
 public class MyConstructorInjectedNestedBean {
     
+    /**
+     * Note: this property will not be found by
+     * {@link com.github.kongchen.swagger.docgen.reader.SwaggerReader}, which
+     * seems to be a limitation of {@link io.swagger.jaxrs.Reader} itself.
+     */
     private final String constructorInjectedHeader;
     
-    /**
-     * This bean param should be ignored because otherwise we would cycle
-     * endlessly until stack overflow.
-     */
-    private final MyBean evilNestedBeanParamCycle;
-    
     public MyConstructorInjectedNestedBean(
-            
             @ApiParam("Header injected at constructor")
             @HeaderParam("constructorInjectedHeader")
             @DefaultValue("foo")
-            String constructorInjectedHeader,
-            
-            @BeanParam MyBean evilNestedBeanParamCycle
+            String constructorInjectedHeader
     ) {
         this.constructorInjectedHeader = constructorInjectedHeader;
-        this.evilNestedBeanParamCycle = evilNestedBeanParamCycle;
     }
 
-    public String getMyNestedBeanHeader() {
+    public String getConstructorInjectedHeader() {
         return constructorInjectedHeader;
-    }
-    
-    public MyBean getEvilNestedBeanParamCycle() {
-        return evilNestedBeanParamCycle;
     }
 }

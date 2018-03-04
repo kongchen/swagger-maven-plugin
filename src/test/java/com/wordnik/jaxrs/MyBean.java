@@ -113,4 +113,27 @@ public class MyBean extends MyParentBean {
         this.listValue = listValue;
     }
 
+    public MyNestedBean getNestedBean() {
+        return nestedBean;
+    }
+    
+    public void setNestedBean(MyNestedBean nestedBean) {
+        this.nestedBean = nestedBean;
+    }
+    
+    public MyConstructorInjectedNestedBean getConstructorInjectedNestedBean() {
+        return constructorInjectedNestedBean;
+    }
+    
+    public void setConstructorInjectedNestedBean(MyConstructorInjectedNestedBean constructorInjectedNestedBean) {
+        this.constructorInjectedNestedBean = constructorInjectedNestedBean;
+    }
+    
+    public int getConstrainedField() {
+        return constrainedField;
+    }
+    
+    public void setConstrainedField(int constrainedField) {
+        this.constrainedField = constrainedField;
+    }
 }
