@@ -2,7 +2,6 @@ package com.wordnik.jaxrs;
 
 import io.swagger.annotations.ApiParam;
 
-import javax.validation.constraints.Min;
 import javax.ws.rs.*;
 import java.util.List;
 
@@ -35,6 +34,10 @@ public class MyBean extends MyParentBean {
 
     @QueryParam(value = "listValue")
     private List<String> listValue;
+    
+    @ApiParam
+    @BeanParam
+    private MyNestedBean nestedBean;
 
     @ApiParam(value = "testIntegerAllowableValues", defaultValue = "25", allowableValues = "25, 50, 100")
     @QueryParam("testIntegerAllowableValues")

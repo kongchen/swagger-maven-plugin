@@ -903,6 +903,13 @@
             "collectionFormat": "multi"
           },
           {
+            "name": "myNestedBeanHeader",
+            "in": "header",
+            "description": "Header from nested bean",
+            "required": false,
+            "type": "string"
+          },
+          {
             "name": "testIntegerAllowableValues",
             "in": "query",
             "description": "testIntegerAllowableValues",
@@ -1042,6 +1049,13 @@
             "type": "array",
             "items": { "type": "string" },
             "collectionFormat": "multi"
+          },
+          {
+            "name": "myNestedBeanHeader",
+            "in": "header",
+            "description": "Header from nested bean",
+            "required": false,
+            "type": "string"
           },
           {
             "name": "testIntegerAllowableValues",
