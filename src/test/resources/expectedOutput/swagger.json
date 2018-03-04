@@ -910,6 +910,14 @@
             "type": "string"
           },
           {
+            "name": "constructorInjectedHeader",
+            "in": "header",
+            "description": "Header injected at constructor",
+            "required": false,
+            "type": "string",
+            "default": "foo"
+          },
+          {
             "name": "testIntegerAllowableValues",
             "in": "query",
             "description": "testIntegerAllowableValues",
@@ -1067,6 +1075,14 @@
             "description": "Header from nested bean",
             "required": false,
             "type": "string"
+          },
+          {
+            "name": "constructorInjectedHeader",
+            "in": "header",
+            "description": "Header injected at constructor",
+            "required": false,
+            "type": "string",
+            "default": "foo"
           },
           {
             "name": "testIntegerAllowableValues",

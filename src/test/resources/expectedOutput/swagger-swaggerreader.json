@@ -651,16 +651,6 @@
           "default" : 25,
           "format" : "int32",
           "enum" : [ 25, 50, 100 ]
-        }, {
-            "name": "constrainedField",
-            "in": "query",
-            "required": true,
-            "type": "integer",
-            "minimum": 25,
-            "maximum": 75,
-            "default": 55,
-            "pattern": "[0-9]5",
-            "format": "int32"
         } ],
         "responses" : {
           "405" : {
@@ -1207,9 +1197,6 @@
     },
     "MyBean" : {
       "type" : "object",
-      "required" : [
-        "constrainedField"
-      ],
       "properties" : {
         "myParentheader" : {
           "type" : "string"
@@ -1235,12 +1222,6 @@
         },
         "testIntegerAllowableValues" : {
           "type" : "integer",
-          "format" : "int32"
-        },
-        "constrainedField" : {
-          "type" : "integer",
-          "minimum" : 25,
-          "maximum" : 75,
           "format" : "int32"
         },
         "myheader" : {

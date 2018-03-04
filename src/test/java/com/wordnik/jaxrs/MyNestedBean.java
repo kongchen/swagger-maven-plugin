@@ -10,7 +10,7 @@ import io.swagger.annotations.ApiParam;
  */
 public class MyNestedBean {
     
-    @ApiParam(value = "Header from nested bean", required = false)
+    @ApiParam("Header from nested bean")
     @HeaderParam("myNestedBeanHeader")
     private String myNestedBeanHeader;
     
@@ -27,5 +27,13 @@ public class MyNestedBean {
     
     public void setMyNestedBeanHeader(String myNestedBeanHeader) {
         this.myNestedBeanHeader = myNestedBeanHeader;
+    }
+    
+    public MyBean getEvilNestedBeanParamCycle() {
+        return evilNestedBeanParamCycle;
+    }
+    
+    public void setEvilNestedBeanParamCycle(MyBean evilNestedBeanParamCycle) {
+        this.evilNestedBeanParamCycle = evilNestedBeanParamCycle;
     }
 }

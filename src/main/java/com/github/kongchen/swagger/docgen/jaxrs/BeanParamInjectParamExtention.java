@@ -10,6 +10,7 @@ import org.apache.commons.lang3.reflect.TypeUtils;
 
 import javax.ws.rs.BeanParam;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -83,6 +84,18 @@ public class BeanParamInjectParamExtention extends AbstractSwaggerExtension {
             typesWithAnnotations.add(new TypeWithAnnotations(type, annotations));
         }
         
+        for (Constructor<?> constructor : getDeclaredAndInheritedConstructors(cls)) {
+            
+            Type[] parameterTypes = constructor.getGenericParameterTypes();
+            Annotation[][] parameterAnnotations = constructor.getParameterAnnotations();
+            
+            for (int i = 0; i < parameterTypes.length; i++) {
+                Type type = parameterTypes[i];
+                List<Annotation> annotations = Arrays.asList(parameterAnnotations[i]);
+                typesWithAnnotations.add(new TypeWithAnnotations(type, annotations));
+            }
+        }
+        
         List<Parameter> output = new ArrayList<Parameter>();
         
         for (TypeWithAnnotations typeWithAnnotations : typesWithAnnotations) {
@@ -126,6 +139,16 @@ public class BeanParamInjectParamExtention extends AbstractSwaggerExtension {
             inspectedClass = inspectedClass.getSuperclass();
         }
         return methods;
+    }
+
+    private List<Constructor<?>> getDeclaredAndInheritedConstructors(Class<?> clazz) {
+        List<Constructor<?>> constructor = new ArrayList<Constructor<?>>();
+        Class<?> inspectedClass = clazz;
+        while (inspectedClass != null) {
+            constructor.addAll(Arrays.asList(inspectedClass.getDeclaredConstructors()));
+            inspectedClass = inspectedClass.getSuperclass();
+        }
+        return constructor;
     }
 
     private static final class TypeWithAnnotations {

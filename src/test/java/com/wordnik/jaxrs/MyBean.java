@@ -41,6 +41,13 @@ public class MyBean extends MyParentBean {
     
     @BeanParam
     private MyNestedBean nestedBean;
+    
+    /**
+     * This field is to test that bean params using constructor injection behave
+     * correctly. It's also nested just to avoid adding too much test code.
+     */
+    @BeanParam
+    private MyConstructorInjectedNestedBean constructorInjectedNestedBean;
 
     @ApiParam(value = "testIntegerAllowableValues", defaultValue = "25", allowableValues = "25, 50, 100")
     @QueryParam("testIntegerAllowableValues")
