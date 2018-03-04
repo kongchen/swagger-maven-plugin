@@ -10,6 +10,7 @@ import org.apache.commons.lang3.reflect.TypeUtils;
 
 import javax.ws.rs.BeanParam;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -31,6 +32,27 @@ import java.util.Set;
  * @author chekong on 15/5/9.
  */
 public class BeanParamInjectParamExtention extends AbstractSwaggerExtension {
+    
+    private static final AccessibleObjectGetter<Field> FIELD_GETTER = new AccessibleObjectGetter<Field>() {
+        @Override
+        public Field[] get(Class<?> clazz) {
+            return clazz.getDeclaredFields();
+        }
+    };
+    
+    private static final AccessibleObjectGetter<Method> METHOD_GETTER = new AccessibleObjectGetter<Method>() {
+        @Override
+        public Method[] get(Class<?> clazz) {
+            return clazz.getDeclaredMethods();
+        }
+    };
+    
+    private static final AccessibleObjectGetter<Constructor<?>> CONSTRUCTOR_GETTER = new AccessibleObjectGetter<Constructor<?>>() {
+        @Override
+        public Constructor<?>[] get(Class<?> clazz) {
+            return clazz.getDeclaredConstructors();
+        }
+    };
 
     private final JaxrsReader reader;
     
@@ -62,7 +84,7 @@ public class BeanParamInjectParamExtention extends AbstractSwaggerExtension {
         
         Collection<TypeWithAnnotations> typesWithAnnotations = new ArrayList<TypeWithAnnotations>();
         
-        for (Field field : getDeclaredAndInheritedFields(cls)) {
+        for (Field field : getDeclaredAndInheritedMembers(cls, FIELD_GETTER)) {
             Type type = field.getGenericType();
             List<Annotation> annotations = Arrays.asList(field.getAnnotations());
             typesWithAnnotations.add(new TypeWithAnnotations(type, annotations));
@@ -72,7 +94,7 @@ public class BeanParamInjectParamExtention extends AbstractSwaggerExtension {
          * For methods we will only examine setters and will only look at the
          * annotations on the parameter, not the method itself.
          */
-        for (Method method : getDeclaredAndInheritedMethods(cls)) {
+        for (Method method : getDeclaredAndInheritedMembers(cls, METHOD_GETTER)) {
 
             Type[] parameterTypes = method.getGenericParameterTypes();
             // skip methods that don't look like setters
@@ -84,7 +106,7 @@ public class BeanParamInjectParamExtention extends AbstractSwaggerExtension {
             typesWithAnnotations.add(new TypeWithAnnotations(type, annotations));
         }
         
-        for (Constructor<?> constructor : getDeclaredAndInheritedConstructors(cls)) {
+        for (Constructor<?> constructor : getDeclaredAndInheritedMembers(cls, CONSTRUCTOR_GETTER)) {
             
             Type[] parameterTypes = constructor.getGenericParameterTypes();
             Annotation[][] parameterAnnotations = constructor.getParameterAnnotations();
@@ -126,34 +148,20 @@ public class BeanParamInjectParamExtention extends AbstractSwaggerExtension {
         return FormDataContentDisposition.class.equals(cls);
     }
 
-    private List<Field> getDeclaredAndInheritedFields(Class<?> clazz) {
-        List<Field> fields = new ArrayList<Field>();
+    private <T extends AccessibleObject> List<T> getDeclaredAndInheritedMembers(Class<?> clazz, AccessibleObjectGetter<? extends T> getter) {
+        List<T> fields = new ArrayList<T>();
         Class<?> inspectedClass = clazz;
         while (inspectedClass != null) {
-            fields.addAll(Arrays.asList(inspectedClass.getDeclaredFields()));
+            fields.addAll(Arrays.asList(getter.get(inspectedClass)));
             inspectedClass = inspectedClass.getSuperclass();
         }
         return fields;
     }
-
-    private List<Method> getDeclaredAndInheritedMethods(Class<?> clazz) {
-        List<Method> methods = new ArrayList<Method>();
-        Class<?> inspectedClass = clazz;
-        while (inspectedClass != null) {
-            methods.addAll(Arrays.asList(inspectedClass.getDeclaredMethods()));
-            inspectedClass = inspectedClass.getSuperclass();
-        }
-        return methods;
-    }
-
-    private List<Constructor<?>> getDeclaredAndInheritedConstructors(Class<?> clazz) {
-        List<Constructor<?>> constructor = new ArrayList<Constructor<?>>();
-        Class<?> inspectedClass = clazz;
-        while (inspectedClass != null) {
-            constructor.addAll(Arrays.asList(inspectedClass.getDeclaredConstructors()));
-            inspectedClass = inspectedClass.getSuperclass();
-        }
-        return constructor;
+    
+    // get rid of this and use lambdas instead once Java 8 is supported
+    private interface AccessibleObjectGetter<T extends AccessibleObject> {
+        
+        T[] get(Class<?> clazz);
     }
 
     private static final class TypeWithAnnotations {
