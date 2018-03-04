@@ -2,6 +2,10 @@ package com.wordnik.jaxrs;
 
 import io.swagger.annotations.ApiParam;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.ws.rs.*;
 import java.util.List;
 
@@ -41,8 +45,19 @@ public class MyBean extends MyParentBean {
 
     @ApiParam(value = "testIntegerAllowableValues", defaultValue = "25", allowableValues = "25, 50, 100")
     @QueryParam("testIntegerAllowableValues")
-    @DefaultValue("25")
     public Integer testIntegerAllowableValues;
+    
+    /**
+     * This field's allowableValues, required, pattern, and defaultValue should
+     * be derived based on its JAX-RS and validation annotations.
+     */
+    @QueryParam("constrainedField")
+    @Min(25L)
+    @Max(75L)
+    @NotNull
+    @Pattern(regexp = "[0-9]5")
+    @DefaultValue("55")
+    private int constrainedField;
 
     public String getMyheader() {
         return myHeader;
