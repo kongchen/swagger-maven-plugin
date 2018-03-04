@@ -39,7 +39,6 @@ public class MyBean extends MyParentBean {
     @QueryParam(value = "listValue")
     private List<String> listValue;
     
-    @ApiParam
     @BeanParam
     private MyNestedBean nestedBean;
 
