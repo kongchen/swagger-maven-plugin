@@ -60,10 +60,19 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         super(swagger, LOG);
     }
 
+    /**
+     * This is overridden and made public so that it can be called by
+     * {@link BeanParamInjectParamExtention}.
+     */
+    @Override
+    public List<Parameter> getParameters(Type type, List<Annotation> annotations, Set<Type> typesToSkip) {
+        return super.getParameters(type, annotations, typesToSkip);
+    }
+  
     @Override
     protected void updateExtensionChain() {
     	List<SwaggerExtension> extensions = new ArrayList<SwaggerExtension>();
-    	extensions.add(new BeanParamInjectParamExtention());
+    	extensions.add(new BeanParamInjectParamExtention(this));
         extensions.add(new SwaggerJerseyJaxrs());
         extensions.add(new JaxrsParameterExtension());
     	SwaggerExtensions.setExtensions(extensions);
@@ -425,7 +434,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         return operation;
     }
 
-	private Annotation[][] findParamAnnotations(Method method) {
+	public static Annotation[][] findParamAnnotations(Method method) {
 		Annotation[][] paramAnnotation = method.getParameterAnnotations();
 
 		Method overriddenMethod = ReflectionUtils.getOverriddenMethod(method);
@@ -437,7 +446,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
 	}
 
 
-    private Annotation[][] merge(Annotation[][] overriddenMethodParamAnnotation,
+    public static Annotation[][] merge(Annotation[][] overriddenMethodParamAnnotation,
 			Annotation[][] currentParamAnnotations) {
     	Annotation[][] mergedAnnotations = new Annotation[overriddenMethodParamAnnotation.length][];
 
@@ -447,7 +456,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
 		return mergedAnnotations;
 	}
 
-	private Annotation[] merge(Annotation[] annotations,
+	public static Annotation[] merge(Annotation[] annotations,
 			Annotation[] annotations2) {
 		List<Annotation> mergedAnnotations = new ArrayList<Annotation>();
 		mergedAnnotations.addAll(Arrays.asList(annotations));
