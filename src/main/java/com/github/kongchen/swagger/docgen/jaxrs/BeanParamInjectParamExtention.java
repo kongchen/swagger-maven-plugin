@@ -153,19 +153,19 @@ public class BeanParamInjectParamExtention extends AbstractSwaggerExtension {
 
     private static final class TypeWithAnnotations {
 
-        final Type type;
-        final List<Annotation> annotations;
+        private final Type type;
+        private final List<Annotation> annotations;
         
         TypeWithAnnotations(Type type, List<Annotation> annotations) {
             this.type = type;
             this.annotations = annotations;
         }
         
-        Type getType() {
+        public Type getType() {
             return type;
         }
         
-        List<Annotation> getAnnotations() {
+        public List<Annotation> getAnnotations() {
             return annotations;
         }
     }
