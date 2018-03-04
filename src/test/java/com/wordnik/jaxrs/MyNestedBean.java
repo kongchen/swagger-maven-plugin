@@ -1,5 +1,6 @@
 package com.wordnik.jaxrs;
 
+import javax.ws.rs.BeanParam;
 import javax.ws.rs.HeaderParam;
 
 import io.swagger.annotations.ApiParam;
@@ -12,6 +13,13 @@ public class MyNestedBean {
     @ApiParam(value = "Header from nested bean", required = false)
     @HeaderParam("myNestedBeanHeader")
     private String myNestedBeanHeader;
+    
+    /**
+     * This bean param should be ignored because otherwise we would cycle
+     * endlessly until stack overflow.
+     */
+    @BeanParam
+    private MyBean evilNestedBeanParamCycle;
 
     public String getMyNestedBeanHeader() {
         return myNestedBeanHeader;
