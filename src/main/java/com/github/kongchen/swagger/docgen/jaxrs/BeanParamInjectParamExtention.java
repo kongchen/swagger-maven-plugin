@@ -26,8 +26,8 @@ import java.util.Set;
 
 /**
  * This extension extracts the parameters inside a {@code @BeanParam} by
- * exploding the target bean type's fields/methods and recursively feeding them
- * back through the {@link JaxrsReader}.
+ * expanding the target bean type's fields/methods/constructor parameters and
+ * recursively feeding them back through the {@link JaxrsReader}.
  * 
  * @author chekong on 15/5/9.
  */
