@@ -19,7 +19,7 @@ public class MyConstructorInjectedNestedBean {
      */
     private final String constructorInjectedHeader;
     
-    // @Inject would typically go here, telling e.g. Jersey to use constructor injection
+    // @Inject would typically go here in real life, telling e.g. Jersey to use constructor injection
     public MyConstructorInjectedNestedBean(
             @ApiParam("Header injected at constructor")
             @HeaderParam("constructorInjectedHeader")
