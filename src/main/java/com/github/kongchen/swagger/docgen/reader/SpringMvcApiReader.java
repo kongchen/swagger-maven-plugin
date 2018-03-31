@@ -283,6 +283,10 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
             }
         }
 
+        if (!genericTypeMap.isEmpty()) {
+            operationId += ((Class) genericTypeMap.values().iterator().next()).getSimpleName();
+        }
+
         operation.operationId(operationId);
 
         for (String str : requestMapping.produces()) {
