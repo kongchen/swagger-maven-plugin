@@ -61,7 +61,6 @@ import javax.ws.rs.core.Response;
 @Produces({"application/json", "application/xml"})
 public class PetResource {
     static PetData petData = new PetData();
-    static JavaRestResourceUtil ru = new JavaRestResourceUtil();
 
     @GET
     @Path("/{petId : [0-9]}")
@@ -75,7 +74,7 @@ public class PetResource {
     public Response getPetById(
             @ApiParam(value = "ID of pet that needs to be fetched", allowableValues = "range[1,5]", required = true) @PathParam("petId") Long petId)
             throws com.wordnik.sample.exception.NotFoundException {
-        Pet pet = petData.getPetbyId(petId);
+        Pet pet = petData.get(petId);
         if (pet != null) {
             return Response.ok().entity(pet).build();
         } else {
@@ -96,7 +95,7 @@ public class PetResource {
             @ApiParam(value = "start ID of pets that need to be fetched", allowableValues = "range[1,99]", required = true) @PathParam("startId") Long startId,
             @ApiParam(value = "end ID of pets that need to be fetched", allowableValues = "range[1,99]", required = true) @PathParam("endId") Long endId)
             throws com.wordnik.sample.exception.NotFoundException {
-        Pet pet = petData.getPetbyId(startId);
+        Pet pet = petData.get(startId);
         if (pet != null) {
             return Response.ok().entity(pet).build();
         } else {
@@ -111,7 +110,7 @@ public class PetResource {
     public Response deletePet(
             @ApiParam() @HeaderParam("api_key") String apiKey,
             @ApiParam(value = "Pet id to delete", required = true) @PathParam("petId") Long petId) {
-        petData.deletePet(petId);
+        petData.delete(petId);
         return Response.ok().build();
     }
 
@@ -121,7 +120,7 @@ public class PetResource {
     @ApiResponses(value = {@ApiResponse(code = 405, message = "Invalid input")})
     public Response addPet(
             @ApiParam(value = "Pet object that needs to be added to the store", required = true) Pet pet) {
-        Pet updatedPet = petData.addPet(pet);
+        Pet updatedPet = petData.save(pet);
         return Response.ok().entity(updatedPet).build();
     }
 
@@ -133,7 +132,7 @@ public class PetResource {
             @ApiResponse(code = 405, message = "Validation exception")})
     public Response updatePet(
             @ApiParam(value = "Pet object that needs to be added to the store", required = true) Pet pet) {
-        Pet updatedPet = petData.addPet(pet);
+        Pet updatedPet = petData.save(pet);
         return Response.ok().entity(updatedPet).build();
     }
 
@@ -147,7 +146,7 @@ public class PetResource {
     public Response findPetByPetName(
             @ApiParam(value = "petName", required = true)
             @PathParam("petName") PetName petName) {
-        return Response.ok(petData.getPetbyId(1)).build();
+        return Response.ok(petData.get(1)).build();
     }
 
     @GET
@@ -188,7 +187,7 @@ public class PetResource {
 	@ApiResponses(value = { @ApiResponse(code = 400, message = "Invalid page number value") })
 	public PagedList<Pet> findAllPaginated(
 			@ApiParam(value = "pageNumber", required = true) @QueryParam("pageNumber") int pageNumber) {
-		List<Pet> allPets = petData.findAllPets();
+		List<Pet> allPets = petData.getAll();
 		int pageSize = 5;
 		int startIndex = (pageNumber - 1) * pageSize;
 		int endIndex = startIndex + pageSize;

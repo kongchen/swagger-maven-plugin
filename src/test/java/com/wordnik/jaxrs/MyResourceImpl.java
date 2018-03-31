@@ -20,9 +20,9 @@ import com.wordnik.sample.JavaRestResourceUtil;
 import com.wordnik.sample.data.PetData;
 import com.wordnik.sample.model.ListItem;
 import com.wordnik.sample.model.Pet;
-
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -42,7 +42,7 @@ public class MyResourceImpl extends MyResourceAbstract<String> {
     @Override
     public Response getPetsById(Long startId, Long endId)
             throws com.wordnik.sample.exception.NotFoundException {
-        Pet pet = petData.getPetbyId(startId);
+        Pet pet = petData.get(startId);
         if (pet != null) {
             return Response.ok().entity(pet).build();
         } else {

@@ -19,12 +19,14 @@ import io.swagger.models.SecurityRequirement;
 import io.swagger.models.Swagger;
 import io.swagger.models.Tag;
 import io.swagger.models.parameters.Parameter;
+import io.swagger.models.properties.ArrayProperty;
 import io.swagger.models.properties.Property;
 import io.swagger.models.properties.RefProperty;
 import org.apache.maven.plugin.logging.Log;
 import org.codehaus.plexus.util.StringUtils;
 import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -128,7 +130,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
                 //http method
                 for (RequestMethod requestMethod : requestMapping.method()) {
                     String httpMethod = requestMethod.toString().toLowerCase();
-                    Operation operation = parseMethod(method);
+                    Operation operation = parseMethod(method, controller);
 
                     updateOperationParameters(new ArrayList<Parameter>(), regexMap, operation);
 
@@ -152,7 +154,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         return swagger;
     }
 
-    private Operation parseMethod(Method method) {
+    private Operation parseMethod(Method method, Class<?> controller) {
         int responseCode = 200;
         Operation operation = new Operation();
 
@@ -163,6 +165,8 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         String responseContainer = null;
         String operationId = method.getName();
         Map<String, Property> defaultResponseHeaders = null;
+
+        Map<Type, Type> genericTypeMap = getGenericTypeMap(method, controller);
 
         ApiOperation apiOperation = findMergedAnnotation(method, ApiOperation.class);
 
@@ -229,6 +233,10 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         if (responseClass instanceof ParameterizedType && ResponseEntity.class.equals(((ParameterizedType) responseClass).getRawType())) {
             responseClass = ((ParameterizedType) responseClass).getActualTypeArguments()[0];
         }
+        if (genericTypeMap.containsKey(responseClass)) {
+            responseClass = genericTypeMap.get(responseClass);
+        }
+
         boolean hasApiAnnotation = false;
         if (responseClass instanceof Class) {
             hasApiAnnotation = findAnnotation((Class) responseClass, Api.class) != null;
@@ -239,7 +247,12 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
                 && !hasApiAnnotation) {
             if (isPrimitive(responseClass)) {
                 Property property = ModelConverters.getInstance().readAsProperty(responseClass);
+
                 if (property != null) {
+                    if (property instanceof ArrayProperty) {
+                        solveGenericTypes((ArrayProperty) property, genericTypeMap, responseClass);
+                    }
+
                     Property responseProperty = RESPONSE_CONTAINER_CONVERTER.withResponseContainer(responseContainer, property);
                     operation.response(responseCode, new Response()
                             .description("successful operation")
@@ -268,6 +281,10 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
             for (Map.Entry<String, Model> entry : models.entrySet()) {
                 swagger.model(entry.getKey(), entry.getValue());
             }
+        }
+
+        if (!genericTypeMap.isEmpty()) {
+            operationId += ((Class) genericTypeMap.values().iterator().next()).getSimpleName();
         }
 
         operation.operationId(operationId);
@@ -316,6 +333,11 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         // genericParamTypes = method.getGenericParameterTypes
         for (int i = 0; i < parameterTypes.length; i++) {
             Type type = genericParameterTypes[i];
+
+            if (genericTypeMap.containsKey(type)) {
+                type = genericTypeMap.get(type);
+            }
+
             List<Annotation> annotations = Arrays.asList(paramAnnotations[i]);
             List<Parameter> parameters = getParameters(type, annotations);
 
@@ -337,6 +359,55 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         processOperationDecorator(operation, method);
 
         return operation;
+    }
+
+    /**
+     * Swaps generic items in ArrayProperties to concrete type Properties
+     */
+    private void solveGenericTypes(ArrayProperty property, Map<Type, Type> genericTypeMap, Type type) {
+        if (property != null && !CollectionUtils.isEmpty(genericTypeMap) && type instanceof ParameterizedType) {
+            Type actualType = ((ParameterizedType) type).getActualTypeArguments()[0];
+
+            if (genericTypeMap.containsKey(actualType)) {
+                actualType = genericTypeMap.get(actualType);
+                Property prop = ModelConverters.getInstance().readAsProperty(actualType);
+
+                if (prop instanceof ArrayProperty) {
+                    solveGenericTypes((ArrayProperty) prop, genericTypeMap, actualType);
+                }
+                property.setItems(prop);
+            }
+        }
+    }
+
+    /**
+     * Creates a map linking class generic types to actual parameter types
+     *
+     * @param method        Parsed method
+     * @param controller    Controller containing the specified method
+     *
+     * @return  A map of concrete types indexed by their matching generic type parameter
+     */
+    private Map<Type, Type> getGenericTypeMap(Method method, Class<?> controller) {
+        Type[] types = method.getDeclaringClass().getTypeParameters();
+        Map<Type, Type> genericTypeMap = new HashMap<Type, Type>(types.length);
+
+        if (types.length > 0 && method.getDeclaringClass().equals(controller.getSuperclass())) {
+            Type[] actualTypes;
+
+            if (controller.getGenericSuperclass() instanceof ParameterizedType) {
+                actualTypes = ((ParameterizedType) controller.getGenericSuperclass()).getActualTypeArguments();
+            } else {
+                actualTypes = new Type[0];
+            }
+
+            if (types.length == actualTypes.length) {
+                for (int i = 0; i < types.length; i++) {
+                    genericTypeMap.put(types[i], actualTypes[i]);
+                }
+            }
+        }
+        return genericTypeMap;
     }
 
     private Map<String, List<Method>> collectApisByRequestMapping(List<Method> methods) {
