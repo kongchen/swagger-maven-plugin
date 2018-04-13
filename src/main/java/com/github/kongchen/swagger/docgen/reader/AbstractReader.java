@@ -382,8 +382,14 @@ public abstract class AbstractReader {
 
         return hasValidAnnotation;
     }
+    
+    // this is final to enforce that only the implementation method below can be overridden, to avoid confusion
+    protected final List<Parameter> getParameters(Type type, List<Annotation> annotations) {
+        return getParameters(type, annotations, typesToSkip);
+    }
 
-    protected List<Parameter> getParameters(Type type, List<Annotation> annotations) {
+    // this method exists so that outside callers can choose their own custom types to skip
+    protected List<Parameter> getParameters(Type type, List<Annotation> annotations, Set<Type> typesToSkip) {
         if (!hasValidAnnotations(annotations) || isApiParamHidden(annotations)) {
             return Collections.emptyList();
         }

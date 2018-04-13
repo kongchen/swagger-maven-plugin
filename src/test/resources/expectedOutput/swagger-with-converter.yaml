@@ -632,6 +632,17 @@ paths:
         items:
           type: "string"
         collectionFormat: "multi"
+      - name: "myNestedBeanHeader"
+        in: "header"
+        description: "Header from nested bean"
+        required: false
+        type: "string"
+      - name: "constructorInjectedHeader"
+        in: "header"
+        description: "Header injected at constructor"
+        required: false
+        type: "string"
+        default: "foo"
       - name: "testIntegerAllowableValues"
         in: "query"
         description: "testIntegerAllowableValues"
@@ -643,6 +654,15 @@ paths:
         - 25
         - 50
         - 100
+      - name: "constrainedField"
+        in: "query"
+        required: true
+        type: "integer"
+        minimum: 25
+        maximum: 75
+        default: 55
+        pattern: "[0-9]5"
+        format: "int32"
       - name: "myParentHeader"
         in: "header"
         description: "Header from parent"
@@ -730,6 +750,17 @@ paths:
         items:
           type: "string"
         collectionFormat: "multi"
+      - name: "myNestedBeanHeader"
+        in: "header"
+        description: "Header from nested bean"
+        required: false
+        type: "string"
+      - name: "constructorInjectedHeader"
+        in: "header"
+        description: "Header injected at constructor"
+        required: false
+        type: "string"
+        default: "foo"
       - name: "testIntegerAllowableValues"
         in: "query"
         description: "testIntegerAllowableValues"
@@ -741,6 +772,15 @@ paths:
         - 25
         - 50
         - 100
+      - name: "constrainedField"
+        in: "query"
+        required: true
+        type: "integer"
+        minimum: 25
+        maximum: 75
+        default: 55
+        pattern: "[0-9]5"
+        format: "int32"
       - name: "myParentHeader"
         in: "header"
         description: "Header from parent"

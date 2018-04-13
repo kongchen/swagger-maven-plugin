@@ -1,51 +1,77 @@
 package com.github.kongchen.swagger.docgen.jaxrs;
 
+import com.github.kongchen.swagger.docgen.reader.JaxrsReader;
 import com.sun.jersey.api.core.InjectParam;
 import com.sun.jersey.core.header.FormDataContentDisposition;
-import io.swagger.annotations.ApiParam;
 import io.swagger.jaxrs.ext.AbstractSwaggerExtension;
 import io.swagger.jaxrs.ext.SwaggerExtension;
-import io.swagger.models.parameters.AbstractSerializableParameter;
 import io.swagger.models.parameters.Parameter;
-import io.swagger.models.parameters.SerializableParameter;
-import io.swagger.models.properties.PropertyBuilder;
-import io.swagger.util.AllowableValues;
-import io.swagger.util.AllowableValuesUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.TypeUtils;
 
 import javax.ws.rs.BeanParam;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
+ * This extension extracts the parameters inside a {@code @BeanParam} by
+ * expanding the target bean type's fields/methods/constructor parameters and
+ * recursively feeding them back through the {@link JaxrsReader}.
+ * 
  * @author chekong on 15/5/9.
  */
 public class BeanParamInjectParamExtention extends AbstractSwaggerExtension {
+    
+    private static final AccessibleObjectGetter<Field> FIELD_GETTER = new AccessibleObjectGetter<Field>() {
+        @Override
+        public Field[] get(Class<?> clazz) {
+            return clazz.getDeclaredFields();
+        }
+    };
+    
+    private static final AccessibleObjectGetter<Method> METHOD_GETTER = new AccessibleObjectGetter<Method>() {
+        @Override
+        public Method[] get(Class<?> clazz) {
+            return clazz.getDeclaredMethods();
+        }
+    };
+    
+    private static final AccessibleObjectGetter<Constructor<?>> CONSTRUCTOR_GETTER = new AccessibleObjectGetter<Constructor<?>>() {
+        @Override
+        public Constructor<?>[] get(Class<?> clazz) {
+            return clazz.getDeclaredConstructors();
+        }
+    };
 
+    private final JaxrsReader reader;
+    
+    public BeanParamInjectParamExtention(JaxrsReader reader) {
+        this.reader = reader;
+    }
+    
     @Override
     public List<Parameter> extractParameters(List<Annotation> annotations, Type type, Set<Type> typesToSkip, Iterator<SwaggerExtension> chain) {
         Class<?> cls = TypeUtils.getRawType(type, type);
 
-        List<Parameter> output = new ArrayList<Parameter>();
         if (shouldIgnoreClass(cls) || typesToSkip.contains(type)) {
             // stop the processing chain
             typesToSkip.add(type);
-            return output;
+            return Collections.emptyList();
         }
         for (Annotation annotation : annotations) {
             if (annotation instanceof BeanParam || annotation instanceof InjectParam) {
-                return extractParameters(cls);
+                return extractParameters(cls, typesToSkip);
             }
         }
         if (chain.hasNext()) {
@@ -54,59 +80,67 @@ public class BeanParamInjectParamExtention extends AbstractSwaggerExtension {
         return Collections.emptyList();
     }
 
-    private List<Parameter> extractParameters(Class<?> cls) {
-        List<Parameter> parameters = new ArrayList<Parameter>();
+    private List<Parameter> extractParameters(Class<?> cls, Set<Type> typesToSkip) {
+        
+        Collection<TypeWithAnnotations> typesWithAnnotations = new ArrayList<TypeWithAnnotations>();
+        
+        for (Field field : getDeclaredAndInheritedMembers(cls, FIELD_GETTER)) {
+            Type type = field.getGenericType();
+            List<Annotation> annotations = Arrays.asList(field.getAnnotations());
+            typesWithAnnotations.add(new TypeWithAnnotations(type, annotations));
+        }
+        
+        /*
+         * For methods we will only examine setters and will only look at the
+         * annotations on the parameter, not the method itself.
+         */
+        for (Method method : getDeclaredAndInheritedMembers(cls, METHOD_GETTER)) {
 
-        for (AccessibleObject accessibleObject : getDeclaredAndInheritedFieldsAndMethods(cls)) {
-            SerializableParameter parameter = null;
-
-            int i = 0;
-            int apiParaIdx = -1;
-            boolean hidden = false;
-
-            for (Annotation annotation : accessibleObject.getAnnotations()) {
-                if (annotation instanceof ApiParam) {
-                    if (((ApiParam) annotation).hidden()) {
-                        hidden = true;
-                    } else {
-                        apiParaIdx = i;
-                    }
-                }
-                i++;
-                Type paramType = extractType(accessibleObject, cls);
-                parameter = JaxrsParameterExtension.getParameter(paramType, parameter, annotation);
+            Type[] parameterTypes = method.getGenericParameterTypes();
+            // skip methods that don't look like setters
+            if (parameterTypes.length != 1 || method.getReturnType() != void.class) {
+                continue;
             }
-
-            if (parameter != null) {
-                if (apiParaIdx != -1) {
-                    ApiParam param = (ApiParam) accessibleObject.getAnnotations()[apiParaIdx];
-                    parameter.setDescription(param.value());
-                    parameter.setRequired(param.required());
-                    parameter.setAccess(param.access());
-
-                    if (parameter instanceof AbstractSerializableParameter && StringUtils.isNotEmpty(param.defaultValue())) {
-                        ((AbstractSerializableParameter)parameter).setDefaultValue(param.defaultValue());
-                    }
-
-                    AllowableValues allowableValues = AllowableValuesUtils.create(param.allowableValues());
-                    if (allowableValues != null) {
-                        Map<PropertyBuilder.PropertyId, Object> args = allowableValues.asPropertyArguments();
-                        if (args.containsKey(PropertyBuilder.PropertyId.ENUM)) {
-                            parameter.setEnum((List<String>) args.get(PropertyBuilder.PropertyId.ENUM));
-                        }
-                    }
-
-                    if (!param.name().isEmpty()) {
-                        parameter.setName(param.name());
-                    }
-                }
-                if (!hidden) {
-                    parameters.add(parameter);
-                }
+            Type type = parameterTypes[0];
+            List<Annotation> annotations = Arrays.asList(JaxrsReader.findParamAnnotations(method)[0]);
+            typesWithAnnotations.add(new TypeWithAnnotations(type, annotations));
+        }
+        
+        for (Constructor<?> constructor : getDeclaredAndInheritedMembers(cls, CONSTRUCTOR_GETTER)) {
+            
+            Type[] parameterTypes = constructor.getGenericParameterTypes();
+            Annotation[][] parameterAnnotations = constructor.getParameterAnnotations();
+            
+            for (int i = 0; i < parameterTypes.length; i++) {
+                Type type = parameterTypes[i];
+                List<Annotation> annotations = Arrays.asList(parameterAnnotations[i]);
+                typesWithAnnotations.add(new TypeWithAnnotations(type, annotations));
             }
         }
+        
+        List<Parameter> output = new ArrayList<Parameter>();
+        
+        for (TypeWithAnnotations typeWithAnnotations : typesWithAnnotations) {
+            
+            Type type = typeWithAnnotations.getType();
+            List<Annotation> annotations = typeWithAnnotations.getAnnotations();
 
-        return parameters;
+            /*
+             * Skip the type of the bean itself when recursing into its members
+             * in order to avoid a cycle (stack overflow), as crazy as that user
+             * code would have to be.
+             * 
+             * There are no tests to prove this works because the test bean
+             * classes are shared with SwaggerReaderTest and Swagger's own logic
+             * doesn't prevent this problem.
+             */
+            Set<Type> recurseTypesToSkip = new HashSet<Type>(typesToSkip);
+            recurseTypesToSkip.add(cls);
+            
+            output.addAll(reader.getParameters(type, annotations, recurseTypesToSkip));
+        }
+
+        return output;
     }
 
     @Override
@@ -114,38 +148,38 @@ public class BeanParamInjectParamExtention extends AbstractSwaggerExtension {
         return FormDataContentDisposition.class.equals(cls);
     }
 
-    private List<AccessibleObject> getDeclaredAndInheritedFieldsAndMethods(Class<?> clazz) {
-        List<AccessibleObject> accessibleObjects = new ArrayList<AccessibleObject>();
-        recurseGetDeclaredAndInheritedFields(clazz, accessibleObjects);
-        recurseGetDeclaredAndInheritedMethods(clazz, accessibleObjects);
-        return accessibleObjects;
+    private <T extends AccessibleObject> List<T> getDeclaredAndInheritedMembers(Class<?> clazz, AccessibleObjectGetter<? extends T> getter) {
+        List<T> fields = new ArrayList<T>();
+        Class<?> inspectedClass = clazz;
+        while (inspectedClass != null) {
+            fields.addAll(Arrays.asList(getter.get(inspectedClass)));
+            inspectedClass = inspectedClass.getSuperclass();
+        }
+        return fields;
+    }
+    
+    // get rid of this and use lambdas instead once Java 8 is supported
+    private interface AccessibleObjectGetter<T extends AccessibleObject> {
+        
+        T[] get(Class<?> clazz);
     }
 
-    private void recurseGetDeclaredAndInheritedFields(Class<?> clazz, List<AccessibleObject> fields) {
-        fields.addAll(Arrays.asList(clazz.getDeclaredFields()));
-        Class<?> superClass = clazz.getSuperclass();
-        if (superClass != null) {
-            recurseGetDeclaredAndInheritedFields(superClass, fields);
-        }
-    }
+    private static final class TypeWithAnnotations {
 
-    private void recurseGetDeclaredAndInheritedMethods(Class<?> clazz, List<AccessibleObject> methods) {
-        methods.addAll(Arrays.asList(clazz.getDeclaredMethods()));
-        Class<?> superClass = clazz.getSuperclass();
-        if (superClass != null) {
-            recurseGetDeclaredAndInheritedMethods(superClass, methods);
+        private final Type type;
+        private final List<Annotation> annotations;
+        
+        TypeWithAnnotations(Type type, List<Annotation> annotations) {
+            this.type = type;
+            this.annotations = annotations;
         }
-    }
-
-    private Type extractType(AccessibleObject accessibleObject, Type defaulType) {
-        if (accessibleObject instanceof Field) {
-            return ((Field) accessibleObject).getGenericType();
-        } else if (accessibleObject instanceof Method) {
-            Method method = (Method) accessibleObject;
-            if (method.getParameterTypes().length == 1) {
-                return method.getParameterTypes()[0];
-            }
+        
+        public Type getType() {
+            return type;
         }
-        return defaulType;
+        
+        public List<Annotation> getAnnotations() {
+            return annotations;
+        }
     }
 }
