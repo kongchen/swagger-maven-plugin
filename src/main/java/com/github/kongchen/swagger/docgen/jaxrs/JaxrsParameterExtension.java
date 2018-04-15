@@ -45,6 +45,10 @@ public class JaxrsParameterExtension extends AbstractSwaggerExtension {
             parameters.add(parameter);
         }
 
+        if (chain.hasNext()) {
+            return chain.next().extractParameters(annotations, type, typesToSkip, chain);
+        }
+
         return parameters;
     }
 

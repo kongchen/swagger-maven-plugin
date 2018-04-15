@@ -61,6 +61,10 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension {
             }
         }
 
+        if (chain.hasNext()) {
+            return chain.next().extractParameters(annotations, type, typesToSkip, chain);
+        }
+
         return parameters;
     }
 
