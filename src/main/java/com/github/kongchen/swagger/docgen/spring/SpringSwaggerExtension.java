@@ -1,6 +1,7 @@
 package com.github.kongchen.swagger.docgen.spring;
 
 import com.fasterxml.jackson.databind.JavaType;
+import com.google.common.collect.Lists;
 import io.swagger.annotations.ApiParam;
 import io.swagger.converter.ModelConverters;
 import io.swagger.jaxrs.ext.AbstractSwaggerExtension;
@@ -30,10 +31,7 @@ import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author chekong on 15/4/27.
@@ -61,11 +59,11 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension {
             }
         }
 
-        if (chain.hasNext()) {
-            return chain.next().extractParameters(annotations, type, typesToSkip, chain);
+        if (!parameters.isEmpty()) {
+            return parameters;
         }
-
-        return parameters;
+        super.extractParameters(annotations, type, typesToSkip, chain);
+        return Lists.newArrayList();
     }
 
     private Parameter extractParameterFromAnnotation(Annotation annotation, String defaultValue, Type type) {

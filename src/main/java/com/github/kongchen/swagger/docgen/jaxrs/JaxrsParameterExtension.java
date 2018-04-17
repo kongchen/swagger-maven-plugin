@@ -1,5 +1,6 @@
 package com.github.kongchen.swagger.docgen.jaxrs;
 
+import com.google.common.collect.Lists;
 import io.swagger.converter.ModelConverters;
 import io.swagger.jaxrs.ext.AbstractSwaggerExtension;
 import io.swagger.jaxrs.ext.SwaggerExtension;
@@ -20,10 +21,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author chekong on 15/5/12.
@@ -45,11 +43,11 @@ public class JaxrsParameterExtension extends AbstractSwaggerExtension {
             parameters.add(parameter);
         }
 
-        if (chain.hasNext()) {
-            return chain.next().extractParameters(annotations, type, typesToSkip, chain);
+        if (!parameters.isEmpty()) {
+            return parameters;
         }
-
-        return parameters;
+        super.extractParameters(annotations, type, typesToSkip, chain);
+        return Lists.newArrayList();
     }
 
     public static SerializableParameter getParameter(Type type, SerializableParameter parameter, Annotation annotation) {
