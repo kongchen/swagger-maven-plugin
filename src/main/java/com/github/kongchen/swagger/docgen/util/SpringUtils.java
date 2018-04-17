@@ -19,7 +19,7 @@ public class SpringUtils {
      * @param version
      * @return
      */
-    public static String createResourceKey(String resourceName, String version) {
+    public static String createResourceKey(final String resourceName, final String version) {
         String resourceKey;
         if (!version.isEmpty()) {
             resourceKey = resourceName + "." + version;
@@ -34,13 +34,13 @@ public class SpringUtils {
      * @param mapping
      * @return version of resource
      */
-    public static String parseVersion(String mapping) {
+    public static String parseVersion(final String mapping) {
         String version = "";
-        String[] mappingArray = mapping.split("/");
+        final String[] mappingArray = mapping.split("/");
 
-        for (String str : mappingArray) {
+        for (final String str : mappingArray) {
             if (str.length() < 4) {
-                for (char c : str.toCharArray()) {
+                for (final char c : str.toCharArray()) {
                     if (Character.isDigit(c)) {
                         version = str;
                         break;
@@ -60,11 +60,11 @@ public class SpringUtils {
      *            Instrospected class
      * @return At least 1 route value (empty string)
      */
-    public static String[] getControllerResquestMapping(Class<?> controllerClazz) {
+    public static String[] getControllerResquestMapping(final Class<?> controllerClazz) {
 	String[] controllerRequestMappingValues = {};
 
 	// Determine if we will use class-level requestmapping or dummy string
-	RequestMapping classRequestMapping = AnnotationUtils.findAnnotation(controllerClazz, RequestMapping.class);
+	final RequestMapping classRequestMapping = AnnotationUtils.findAnnotation(controllerClazz, RequestMapping.class);
 	if (classRequestMapping != null) {
 	    controllerRequestMappingValues = classRequestMapping.value();
 	}

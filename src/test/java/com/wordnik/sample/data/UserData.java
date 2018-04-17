@@ -50,8 +50,8 @@ public class UserData {
 
     }
 
-    public User findUserByName(String username) {
-        for (User user : users) {
+    public User findUserByName(final String username) {
+        for (final User user : users) {
             if (user.getUsername().equals(username)) {
                 return user;
             }
@@ -59,7 +59,7 @@ public class UserData {
         return null;
     }
 
-    public void addUser(User user) {
+    public void addUser(final User user) {
         if (!users.isEmpty()) {
             for (int i = users.size() - 1; i >= 0; i--) {
                 if (users.get(i).getUsername().equals(user.getUsername())) {
@@ -70,7 +70,7 @@ public class UserData {
         users.add(user);
     }
 
-    public void removeUser(String username) {
+    public void removeUser(final String username) {
         if (!users.isEmpty()) {
             for (int i = users.size() - 1; i >= 0; i--) {
                 if (users.get(i).getUsername().equals(username)) {
@@ -80,9 +80,9 @@ public class UserData {
         }
     }
 
-    private static User createUser(long id, String username, String firstName,
-                                   String lastName, String email, String phone, int userStatus) {
-        User user = new User();
+    private static User createUser(final long id, final String username, final String firstName,
+                                   final String lastName, final String email, final String phone, final int userStatus) {
+        final User user = new User();
         user.setId(id);
         user.setUsername(username);
         user.setFirstName(firstName);

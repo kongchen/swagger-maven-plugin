@@ -17,9 +17,9 @@
 package com.wordnik.sample.exception;
 
 public class BadRequestException extends ApiException {
-    private int code;
+    private final int code;
 
-    public BadRequestException(int code, String msg) {
+    public BadRequestException(final int code, final String msg) {
         super(code, msg);
         this.code = code;
     }

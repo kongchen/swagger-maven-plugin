@@ -43,24 +43,24 @@ public class SpringExceptionHandlerReaderTest {
 
     @Test
     public void getResponseStatusesFromExceptions() throws NoSuchMethodException {
-        List<ResponseStatus> result = exceptionHandlerReader.getResponseStatusesFromExceptions(
+        final List<ResponseStatus> result = exceptionHandlerReader.getResponseStatusesFromExceptions(
                 this.getClass().getMethod("tryGetIt"));
         assertThat(result, hasItem(withValue(equalTo(NOT_FOUND))));
     }
 
     @Test
     public void getResponseStatusesFromExceptionsReturnsEmptyList() throws NoSuchMethodException {
-        List<ResponseStatus> result = exceptionHandlerReader.getResponseStatusesFromExceptions(
+        final List<ResponseStatus> result = exceptionHandlerReader.getResponseStatusesFromExceptions(
                 this.getClass().getMethod("safeToPost"));
         assertThat(result, hasSize(0));
     }
 
     @Test
     public void getResponseStatusFromExceptionHandler() throws NoSuchMethodException {
-        Set<Class<?>> classesToRead = new HashSet<Class<?>>();
+        final Set<Class<?>> classesToRead = new HashSet<Class<?>>();
         classesToRead.add(CustomExceptionHandler.class);
         exceptionHandlerReader.processExceptionHandlers(classesToRead);
-        List<ResponseStatus> result = exceptionHandlerReader.getResponseStatusesFromExceptions(
+        final List<ResponseStatus> result = exceptionHandlerReader.getResponseStatusesFromExceptions(
                 this.getClass().getMethod("overridenInHandler"));
         assertThat(result, hasItem(withValue(equalTo(LOCKED))));
     }
@@ -84,7 +84,7 @@ public class SpringExceptionHandlerReaderTest {
     class CustomExceptionHandler {
         @ExceptionHandler(OverridenInHandlerException.class)
         @ResponseStatus(LOCKED)
-        public void handle(OverridenInHandlerException exception) {
+        public void handle(final OverridenInHandlerException exception) {
         }
     }
 
@@ -96,10 +96,10 @@ public class SpringExceptionHandlerReaderTest {
     class OverridenInHandlerException extends Exception {
     }
 
-    private static Matcher<ResponseStatus> withValue(Matcher<HttpStatus> submatcher) {
+    private static Matcher<ResponseStatus> withValue(final Matcher<HttpStatus> submatcher) {
         return new FeatureMatcher<ResponseStatus, HttpStatus>(submatcher, "", "") {
             @Override
-            protected HttpStatus featureValueOf(ResponseStatus responseStatus) {
+            protected HttpStatus featureValueOf(final ResponseStatus responseStatus) {
                 return responseStatus.value();
             }
         };

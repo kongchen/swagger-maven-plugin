@@ -11,13 +11,13 @@ import java.util.Set;
  */
 public class CustomJaxrsReader extends VendorExtensionsJaxrsReader {
 
-    public CustomJaxrsReader(Swagger swagger, Log LOG) {
+    public CustomJaxrsReader(final Swagger swagger, final Log LOG) {
         super(swagger, LOG);
     }
 
     @Override
-    public Swagger read(Set<Class<?>> classes) {
-        Swagger swagger = super.read(classes);
+    public Swagger read(final Set<Class<?>> classes) {
+        final Swagger swagger = super.read(classes);
         swagger.getInfo().setDescription("Processed with CustomJaxrsReader");
         return swagger;
     }

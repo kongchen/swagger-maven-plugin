@@ -42,10 +42,10 @@ import static net.javacrumbs.jsonunit.core.Option.IGNORING_ARRAY_ORDER;
  * @author chekong on 8/15/14.
  */
 public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
-    private File swaggerOutputDir = new File(getBasedir(), "generated/swagger-ui");
-    private File docOutput = new File(getBasedir(), "generated/document.html");
+    private final File swaggerOutputDir = new File(getBasedir(), "generated/swagger-ui");
+    private final File docOutput = new File(getBasedir(), "generated/document.html");
     private ApiDocumentMojo mojo;
-    private ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper();
     private List<SwaggerExtension> extensions;
 
     @Override
@@ -57,14 +57,14 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
         try {
             FileUtils.deleteDirectory(swaggerOutputDir);
             FileUtils.forceDelete(docOutput);
-        } catch(Exception e) {
+        } catch(final Exception e) {
             //ignore
         }
 
-        File testPom = new File(getBasedir(), "target/test-classes/plugin-config.xml");
+        final File testPom = new File(getBasedir(), "target/test-classes/plugin-config.xml");
         mojo = (ApiDocumentMojo) lookupMojo("generate", testPom);
     }
-    
+
     @Override
     @AfterMethod
     protected void tearDown() throws Exception {
@@ -96,23 +96,23 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
 
     @Test
     public void testInvalidCustomReaderJson() throws Exception {
-        String className = "com.wordnik.nonexisting.Class";
+        final String className = "com.wordnik.nonexisting.Class";
 
         setCustomReader(mojo, className);
         try {
             testGeneratedSwaggerSpecJson();
-        } catch (MojoFailureException e) {
+        } catch (final MojoFailureException e) {
             assertEquals(String.format("Cannot load Swagger API reader: %s", className), e.getMessage());
         }
     }
 
     @Test
     public void testInvalidCustomReaderYaml() throws Exception {
-        String className = "com.wordnik.nonexisting.Class";
+        final String className = "com.wordnik.nonexisting.Class";
         setCustomReader(mojo, className);
         try {
             testGeneratedSwaggerSpecJson();
-        } catch (MojoFailureException e) {
+        } catch (final MojoFailureException e) {
             assertEquals(String.format("Cannot load Swagger API reader: %s", className), e.getMessage());
         }
     }
@@ -134,8 +134,8 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
             while (true) {
                 count++;
 
-                String expect = expectReader.readLine();
-                String actual = actualReader.readLine();
+                final String expect = expectReader.readLine();
+                final String actual = actualReader.readLine();
                 if (expect == null && actual == null) {
                     break;
                 }
@@ -172,8 +172,8 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
     @Test
     public void testGeneratedDocWithJsonExampleValues() throws Exception {
 
-        List<ApiSource> apisources = (List<ApiSource>) getVariableValueFromObject(mojo, "apiSources");
-        ApiSource apiSource = apisources.get(0);
+        final List<ApiSource> apisources = (List<ApiSource>) getVariableValueFromObject(mojo, "apiSources");
+        final ApiSource apiSource = apisources.get(0);
         // Force serialization of example values as json raw values
         apiSource.setJsonExampleValues(true);
         // exclude part of the model when not compliant with jev option (e.g. example expressed as plain string)
@@ -182,11 +182,11 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
         mojo.execute();
 
         // check generated swagger json file
-        JsonNode actualJson = mapper.readTree(new File(swaggerOutputDir, "swagger.json"));
-        JsonNode expectJson = mapper.readTree(this.getClass().getResourceAsStream("/options/jsonExampleValues/expected/swagger.json"));
+        final JsonNode actualJson = mapper.readTree(new File(swaggerOutputDir, "swagger.json"));
+        final JsonNode expectJson = mapper.readTree(this.getClass().getResourceAsStream("/options/jsonExampleValues/expected/swagger.json"));
 
-        JsonNode actualUserNode = actualJson.path("definitions").path("User");
-        JsonNode expectUserNode = expectJson.path("definitions").path("User");
+        final JsonNode actualUserNode = actualJson.path("definitions").path("User");
+        final JsonNode expectUserNode = expectJson.path("definitions").path("User");
 
         // Cannot test full node equality since tags order is not guaranteed in generated json
         Assert.assertEquals(actualUserNode, expectUserNode);
@@ -194,7 +194,7 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
 
     @Test
     public void testNullSwaggerOutput() throws Exception {
-        List<ApiSource> apisources = (List<ApiSource>) getVariableValueFromObject(mojo, "apiSources");
+        final List<ApiSource> apisources = (List<ApiSource>) getVariableValueFromObject(mojo, "apiSources");
         apisources.get(0).setSwaggerDirectory(null);
         setVariableValueToObject(mojo, "apiSources", apisources);
         mojo.execute();
@@ -203,7 +203,7 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
 
     @Test
     public void testNullMustacheOutput() throws Exception {
-        List<ApiSource> apisources = (List<ApiSource>) getVariableValueFromObject(mojo, "apiSources");
+        final List<ApiSource> apisources = (List<ApiSource>) getVariableValueFromObject(mojo, "apiSources");
         apisources.get(0).setTemplatePath(null);
         setVariableValueToObject(mojo, "apiSources", apisources);
         mojo.execute();
@@ -212,9 +212,9 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
 
     @DataProvider
     private Iterator<Object[]> pathProvider() throws Exception {
-        String tempDirPath = createTempDirPath();
+        final String tempDirPath = createTempDirPath();
 
-        List<Object[]> dataToBeReturned = new ArrayList<Object[]>();
+        final List<Object[]> dataToBeReturned = new ArrayList<Object[]>();
         dataToBeReturned.add(new String[]{tempDirPath + "foo" + File.separator + "bar" + File.separator + "test.html"});
         dataToBeReturned.add(new String[]{tempDirPath + File.separator + "bar" + File.separator + "test.html"});
         dataToBeReturned.add(new String[]{tempDirPath + File.separator + "test.html"});
@@ -224,11 +224,11 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
     }
 
     @Test(enabled = false, dataProvider = "pathProvider")
-    public void testExecuteDirectoryCreated(String path) throws Exception {
+    public void testExecuteDirectoryCreated(final String path) throws Exception {
 
         mojo.getApiSources().get(0).setOutputPath(path);
 
-        File file = new File(path);
+        final File file = new File(path);
         mojo.execute();
         Assert.assertTrue(file.exists());
         if (file.getParentFile() != null) {
@@ -252,7 +252,7 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
 
     @Test
     public void testMultipleApiSourcesWithDifferentArtifactName() throws Exception {
-        File testPom = new File(getBasedir(), "src/test/resources/plugin-config-multiple-api-sources.xml");
+        final File testPom = new File(getBasedir(), "src/test/resources/plugin-config-multiple-api-sources.xml");
         mojo = (ApiDocumentMojo) lookupMojo("generate", testPom);
         mojo.execute();
 
@@ -264,31 +264,31 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
         assertGeneratedSwaggerSpecJson("This is a sample.", "/expectedOutput/swagger.json", "swagger.json");
     }
 
-    private void assertGeneratedSwaggerSpecJson(String description, String expectedOutput, String generatedFileName) throws IOException {
-        JsonNode actualJson = mapper.readTree(new File(swaggerOutputDir, generatedFileName));
-        JsonNode expectJson = mapper.readTree(this.getClass().getResourceAsStream(expectedOutput));
+    private void assertGeneratedSwaggerSpecJson(final String description, final String expectedOutput, final String generatedFileName) throws IOException {
+        final JsonNode actualJson = mapper.readTree(new File(swaggerOutputDir, generatedFileName));
+        final JsonNode expectJson = mapper.readTree(this.getClass().getResourceAsStream(expectedOutput));
 
         changeDescription(expectJson, description);
         assertJsonEquals(expectJson, actualJson, Configuration.empty().when(IGNORING_ARRAY_ORDER));
     }
 
 
-    private void executeAndAssertGeneratedSwaggerSpecJson(String description, String expectedOutput) throws MojoExecutionException, MojoFailureException, IOException {
+    private void executeAndAssertGeneratedSwaggerSpecJson(final String description, final String expectedOutput) throws MojoExecutionException, MojoFailureException, IOException {
         mojo.execute();
         assertGeneratedSwaggerSpecJson(description, expectedOutput, "swagger.json");
     }
 
-    private void assertGeneratedSwaggerSpecYaml(String description, String expectedOutput) throws MojoExecutionException, MojoFailureException, IOException {
+    private void assertGeneratedSwaggerSpecYaml(final String description, final String expectedOutput) throws MojoExecutionException, MojoFailureException, IOException {
         mojo.getApiSources().get(0).setOutputFormats("yaml");
         mojo.execute();
 
-        String actualYaml = io.swagger.util.Yaml.pretty().writeValueAsString(
+        final String actualYaml = io.swagger.util.Yaml.pretty().writeValueAsString(
                 new Yaml().load(FileUtils.readFileToString(new File(swaggerOutputDir, "swagger.yaml"))));
-        String expectYaml = io.swagger.util.Yaml.pretty().writeValueAsString(
+        final String expectYaml = io.swagger.util.Yaml.pretty().writeValueAsString(
                 new Yaml().load(this.getClass().getResourceAsStream(expectedOutput)));
 
-        JsonNode actualJson = mapper.readTree(YamlToJson(actualYaml));
-        JsonNode expectJson = mapper.readTree(YamlToJson(expectYaml));
+        final JsonNode actualJson = mapper.readTree(YamlToJson(actualYaml));
+        final JsonNode expectJson = mapper.readTree(YamlToJson(expectYaml));
 
         changeDescription(expectJson, description);
         assertJsonEquals(expectJson, actualJson, Configuration.empty().when(IGNORING_ARRAY_ORDER));

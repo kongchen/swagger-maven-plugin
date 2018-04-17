@@ -20,13 +20,13 @@ public class PetIdToStringModelConverter extends AbstractModelConverter {
     }
 
     @Override
-    public Property resolveProperty(Type type, ModelConverterContext modelConverterContext, Annotation[] annotations, Iterator<ModelConverter> iterator) {
+    public Property resolveProperty(final Type type, final ModelConverterContext modelConverterContext, final Annotation[] annotations, final Iterator<ModelConverter> iterator) {
         try {
-            Type expectedType = _mapper.constructType(Class.forName("com.wordnik.sample.model.PetId"));
+            final Type expectedType = _mapper.constructType(Class.forName("com.wordnik.sample.model.PetId"));
             if (type.equals(expectedType)) {
                 return super.resolveProperty(_mapper.constructType(Class.forName("java.lang.String")), modelConverterContext, annotations, iterator);
             }
-        } catch (ClassNotFoundException e) {
+        } catch (final ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
         return super.resolveProperty(type, modelConverterContext, annotations, iterator);

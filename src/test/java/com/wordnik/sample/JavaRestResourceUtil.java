@@ -20,11 +20,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class JavaRestResourceUtil {
-    public int getInt(int minVal, int maxVal, int defaultValue, String inputString) {
+    public int getInt(final int minVal, final int maxVal, final int defaultValue, final String inputString) {
         int output;
         try {
             output = Integer.parseInt(inputString);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             output = defaultValue;
         }
 
@@ -41,11 +41,11 @@ public class JavaRestResourceUtil {
         return output;
     }
 
-    public long getLong(long minVal, long maxVal, long defaultValue, String inputString) {
+    public long getLong(final long minVal, final long maxVal, final long defaultValue, final String inputString) {
         long output;
         try {
             output = Long.parseLong(inputString);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             output = defaultValue;
         }
 
@@ -62,11 +62,11 @@ public class JavaRestResourceUtil {
         return output;
     }
 
-    public double getDouble(double minVal, double maxVal, double defaultValue, String inputString) {
+    public double getDouble(final double minVal, final double maxVal, final double defaultValue, final String inputString) {
         double output;
         try {
             output = Double.parseDouble(inputString);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             output = defaultValue;
         }
 
@@ -83,7 +83,7 @@ public class JavaRestResourceUtil {
         return output;
     }
 
-    public boolean getBoolean(boolean defaultValue, String booleanString) {
+    public boolean getBoolean(final boolean defaultValue, final String booleanString) {
         boolean output;
 
         //  treat "", "YES" as "true"
@@ -94,17 +94,17 @@ public class JavaRestResourceUtil {
         } else {
             try {
                 output = Boolean.parseBoolean(booleanString);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 output = defaultValue;
             }
         }
         return output;
     }
 
-    public Date getDate(Date defaultValue, String dateString) {
+    public Date getDate(final Date defaultValue, final String dateString) {
         try {
             return new SimpleDateFormat("yyyy-MM-dd").parse(dateString);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             return defaultValue;
         }
     }

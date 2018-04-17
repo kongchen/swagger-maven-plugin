@@ -39,6 +39,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.Size;
+import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -53,7 +54,7 @@ import java.util.Set;
                 })
 })
 
-@RequestMapping(value = "/pet", produces = {"application/json", "application/xml"})
+@RequestMapping(value = "/pet", produces = {MediaType.APPLICATION_JSON, "application/xml"})
 public class PetResource {
 
     static PetData petData = new PetData();
@@ -70,9 +71,9 @@ public class PetResource {
             @ApiResponse(code = 404, message = "Pet not found")})
     public ResponseEntity<Pet> getPetById(
             @ApiParam(value = "ID of pet that needs to be fetched", allowableValues = "range[1,5]", required = true)
-            @PathVariable("petId") Long petId)
+            @PathVariable("petId") final Long petId)
             throws NotFoundException {
-        Pet pet = petData.getPetbyId(petId);
+        final Pet pet = petData.getPetbyId(petId);
         if (pet != null) {
             return new ResponseEntity(pet, HttpStatus.OK);
         } else {
@@ -84,45 +85,45 @@ public class PetResource {
     @ApiOperation(value = "Deletes a pet", nickname = "removePet")
     @ApiResponses(value = {@ApiResponse(code = 400, message = "Invalid pet value")})
     public ResponseEntity deletePet(
-            @RequestHeader("api_key") String apiKey,
+            @RequestHeader("api_key") final String apiKey,
             @ApiParam(value = "Pet id to delete", required = true)
-            @PathVariable("petId") @Size(min = 0, max = Integer.MAX_VALUE) Long petId) {
+            @PathVariable("petId") @Size(min = 0, max = Integer.MAX_VALUE) final Long petId) {
         petData.deletePet(petId);
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @RequestMapping(consumes = {"application/json", "application/xml"}, method = RequestMethod.POST)
+    @RequestMapping(consumes = {MediaType.APPLICATION_JSON, "application/xml"}, method = RequestMethod.POST)
     @ApiOperation(value = "Add a new pet to the store")
     @ApiResponses(value = {@ApiResponse(code = 405, message = "Invalid input")})
     public ResponseEntity<Pet> addPet(
             @ApiParam(value = "Pet object that needs to be added to the store", required = true)
-            @RequestBody Pet pet) {
-        Pet updatedPet = petData.addPet(pet);
+            @RequestBody final Pet pet) {
+        final Pet updatedPet = petData.addPet(pet);
         return new ResponseEntity<Pet>(updatedPet, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/pets", consumes = {"application/json", "application/xml"}, method = RequestMethod.POST)
+    @RequestMapping(value = "/pets", consumes = {MediaType.APPLICATION_JSON, "application/xml"}, method = RequestMethod.POST)
     @ApiOperation(value = "Add multiple pets to the store")
     @ApiResponses(value = {@ApiResponse(code = 405, message = "Invalid input")})
     public ResponseEntity<List<Pet>> addMultiplePets(
             @ApiParam(value = "A list of pet objects that need to be added to the store", required = true)
-            @RequestBody Set<Pet> pets) {
-        List<Pet> createdPets = new ArrayList<Pet>();
-        for (Pet pet : pets) {
+            @RequestBody final Set<Pet> pets) {
+        final List<Pet> createdPets = new ArrayList<Pet>();
+        for (final Pet pet : pets) {
             createdPets.add(petData.addPet(pet));
         }
         return new ResponseEntity<List<Pet>>(createdPets, HttpStatus.OK);
     }
 
-    @RequestMapping(consumes = {"application/json", "application/xml"}, method = RequestMethod.PUT)
+    @RequestMapping(consumes = {MediaType.APPLICATION_JSON, "application/xml"}, method = RequestMethod.PUT)
     @ApiOperation(value = "Update an existing pet")
     @ApiResponses(value = {@ApiResponse(code = 400, message = "Invalid ID supplied"),
             @ApiResponse(code = 404, message = "Pet not found"),
             @ApiResponse(code = 405, message = "Validation exception")})
     public ResponseEntity<Pet> updatePet(
             @ApiParam(value = "Pet object that needs to be added to the store", required = true)
-            @RequestBody Pet pet) {
-        Pet updatedPet = petData.addPet(pet);
+            @RequestBody final Pet pet) {
+        final Pet updatedPet = petData.addPet(pet);
         return new ResponseEntity<Pet>(updatedPet, HttpStatus.OK);
     }
 
@@ -134,7 +135,7 @@ public class PetResource {
     @ApiResponses(value = {@ApiResponse(code = 400, message = "Invalid status value")})
     public List<Pet> findPetsByStatus(
             @ApiParam(value = "Status values that need to be considered for filter", required = true, defaultValue = "available", allowableValues = "available,pending,sold", allowMultiple = true)
-            @RequestParam("status") String status) {
+            @RequestParam("status") final String status) {
         return petData.findPetByStatus(status);
     }
 
@@ -149,7 +150,7 @@ public class PetResource {
     })
     public List<Pet> findPetsByStatuses(
             @ApiParam(value = "Status values that need to be considered for filter", required = true, defaultValue = "available", allowableValues = "available,pending,sold")
-            @RequestParam("status") List<String> statuses) {
+            @RequestParam("status") final List<String> statuses) {
         return petData.findPetByStatus(StringUtils.join(statuses, ","));
     }
 
@@ -162,7 +163,7 @@ public class PetResource {
     @Deprecated
     public List<Pet> findPetsByTags(
             @ApiParam(value = "Tags to filter by", required = true, allowMultiple = true)
-            @RequestParam("tags") String tags) {
+            @RequestParam("tags") final String tags) {
         return petData.findPetByTags(tags);
     }
 
@@ -171,8 +172,8 @@ public class PetResource {
             notes = "If you wish to paginate the results of this API, supply offset and limit query parameters.",
             response = Pet.class,
             responseContainer = "List")
-    public Map<String, Object> getAllPetsPaginated(@ModelAttribute PaginationHelper paginationHelper) {
-        Map<String, Object> map = new HashMap<String, Object>();
+    public Map<String, Object> getAllPetsPaginated(@ModelAttribute final PaginationHelper paginationHelper) {
+        final Map<String, Object> map = new HashMap<String, Object>();
         map.put("limit", paginationHelper.getLimit());
         map.put("offset", paginationHelper.getOffset());
         map.put("results", petData.findPetByStatus("available,sold,pending")); // TODO: implement paginated getter for petData
@@ -182,14 +183,14 @@ public class PetResource {
     @RequestMapping(value = "/{petId}", consumes = {"application/x-www-form-urlencoded"}, method = RequestMethod.POST)
     @ApiOperation(value = "Updates a pet in the store with form data", consumes = "application/x-www-form-urlencoded")
     @ApiResponses(value = {@ApiResponse(code = 405, message = "Invalid input")})
-    public ResponseEntity<com.wordnik.sample.model.ApiResponse> updatePetWithForm(@ModelAttribute UpdatePetRequest updatePetRequest) {
+    public ResponseEntity<com.wordnik.sample.model.ApiResponse> updatePetWithForm(@ModelAttribute final UpdatePetRequest updatePetRequest) {
         System.out.println(updatePetRequest.getName());
         System.out.println(updatePetRequest.getStatus());
         return new ResponseEntity<com.wordnik.sample.model.ApiResponse>(new com.wordnik.sample.model.ApiResponse(200, "SUCCESS"), HttpStatus.OK);
     }
 
     @ApiOperation(value = "Returns pet", response = Pet.class)
-    @RequestMapping(produces = "application/json", method = RequestMethod.GET)
+    @RequestMapping(produces = MediaType.APPLICATION_JSON, method = RequestMethod.GET)
     public Pet get() {
         return new Pet();
     }
@@ -198,7 +199,7 @@ public class PetResource {
     @RequestMapping(value = "/petPing", method = RequestMethod.GET)
     public ResponseEntity<String> petPing(
             @ApiParam(hidden = true, name = "thisShouldBeHidden")
-            @RequestParam(required = false) Map<String, String> hiddenParameter) {
+            @RequestParam(required = false) final Map<String, String> hiddenParameter) {
         return new ResponseEntity<String>("Pet pong", HttpStatus.OK);
     }
 
@@ -224,7 +225,7 @@ public class PetResource {
 
     @ApiOperation(value = "testing")
     @RequestMapping(value = "/testing", method = RequestMethod.GET)
-    public Object testing(@ApiParam(name = "items") @RequestParam(value = "items") String[] items) {
+    public Object testing(@ApiParam(name = "items") @RequestParam(value = "items") final String[] items) {
         return new Object();
     }
 
@@ -232,7 +233,7 @@ public class PetResource {
     @RequestMapping(
             value = "/testingApiImplicitParams/{path-test-name}",
             method = RequestMethod.GET,
-            produces = "application/json")
+            produces = MediaType.APPLICATION_JSON)
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = "header-test-name",
@@ -265,7 +266,7 @@ public class PetResource {
     @RequestMapping(
             value = "/testingFormApiImplicitParam",
             method = RequestMethod.GET,
-            produces = "application/json")
+            produces = MediaType.APPLICATION_JSON)
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = "form-test-name",
@@ -285,7 +286,7 @@ public class PetResource {
     @RequestMapping(
             value = "/testingBasicAuth",
             method = RequestMethod.GET,
-            produces = "application/json")
+            produces = MediaType.APPLICATION_JSON)
     public String testingBasicAuth() {
         return "testingBasicAuth";
     }
@@ -295,7 +296,7 @@ public class PetResource {
     @RequestMapping(
             value = "/testingVendorExtensions",
             method = RequestMethod.GET,
-            produces = "application/json")
+            produces = MediaType.APPLICATION_JSON)
     public String testingVendorExtensions() {
         return null;
     }
@@ -303,7 +304,7 @@ public class PetResource {
     @ApiOperation("testingMergedAnnotations")
     @GetMapping(
             value = "/testingMergedAnnotations",
-            produces = "application/json")
+            produces = MediaType.APPLICATION_JSON)
     public String testingMergedAnnotations() {
         return "it works";
     }

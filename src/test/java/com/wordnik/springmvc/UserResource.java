@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 
 @Api(value = "/user", description = "Operations about user")
-@RequestMapping(value = "/user", produces = {"application/json", "application/xml"})
+@RequestMapping(value = "/user", produces = {MediaType.APPLICATION_JSON, "application/xml"})
 public class UserResource {
     static UserData userData = new UserData();
 
@@ -44,7 +44,7 @@ public class UserResource {
             notes = "This can only be done by the logged in user.",
             position = 1)
     public ResponseEntity createUser(
-            @ApiParam(value = "Created user object", required = true) User user, String arbitraryString) {
+        @ApiParam(value = "Created user object", required = true) final User user, final String arbitraryString) {
         userData.addUser(user);
         return new ResponseEntity(HttpStatus.OK);
     }
@@ -52,8 +52,8 @@ public class UserResource {
     @RequestMapping(value = "/createWithArray", method = RequestMethod.POST)
     @ApiOperation(value = "Creates list of users with given input array",
             position = 2)
-    public ResponseEntity createUsersWithArrayInput(@ApiParam(value = "List of user object", required = true) User[] users) {
-        for (User user : users) {
+    public ResponseEntity createUsersWithArrayInput(@ApiParam(value = "List of user object", required = true) final User[] users) {
+        for (final User user : users) {
             userData.addUser(user);
         }
         return new ResponseEntity(HttpStatus.OK);
@@ -62,8 +62,8 @@ public class UserResource {
     @RequestMapping(value = "/createWithList", method = RequestMethod.POST)
     @ApiOperation(value = "Creates list of users with given input array",
             position = 3)
-    public ResponseEntity createUsersWithListInput(@ApiParam(value = "List of user object", required = true) @RequestBody java.util.List<User> users) {
-        for (User user : users) {
+    public ResponseEntity createUsersWithListInput(@ApiParam(value = "List of user object", required = true) @RequestBody final java.util.List<User> users) {
+        for (final User user : users) {
             userData.addUser(user);
         }
         return new ResponseEntity(HttpStatus.OK);
@@ -78,8 +78,8 @@ public class UserResource {
             @ApiResponse(code = 400, message = "Invalid user supplied"),
             @ApiResponse(code = 404, message = "User not found")})
     public ResponseEntity updateUser(
-            @ApiParam(value = "name that need to be deleted", required = true) @PathVariable("username") String username,
-            @ApiParam(value = "Updated user object", required = true) User user) {
+            @ApiParam(value = "name that need to be deleted", required = true) @PathVariable("username") final String username,
+            @ApiParam(value = "Updated user object", required = true) final User user) {
         userData.addUser(user);
         return new ResponseEntity(HttpStatus.OK);
     }
@@ -92,7 +92,7 @@ public class UserResource {
             @ApiResponse(code = 400, message = "Invalid username supplied"),
             @ApiResponse(code = 404, message = "User not found")})
     public ResponseEntity deleteUser(
-            @ApiParam(value = "The name that needs to be deleted", required = true) @PathVariable("username") String username) {
+            @ApiParam(value = "The name that needs to be deleted", required = true) @PathVariable("username") final String username) {
         userData.removeUser(username);
         return new ResponseEntity(HttpStatus.OK);
     }
@@ -105,9 +105,9 @@ public class UserResource {
             @ApiResponse(code = 400, message = "Invalid username supplied"),
             @ApiResponse(code = 404, message = "User not found")})
     public ResponseEntity<User> getUserByName(
-            @ApiParam(value = "The name that needs to be fetched. Use user1 for testing. ", required = true) @PathVariable("username") String username)
+            @ApiParam(value = "The name that needs to be fetched. Use user1 for testing. ", required = true) @PathVariable("username") final String username)
             throws ApiException {
-        User user = userData.findUserByName(username);
+        final User user = userData.findUserByName(username);
         if (user != null) {
             return new ResponseEntity<User>(user, HttpStatus.OK);
         } else {
@@ -121,8 +121,8 @@ public class UserResource {
             position = 6)
     @ApiResponses(value = {@ApiResponse(code = 400, message = "Invalid username/password supplied")})
     public ResponseEntity<String> loginUser(
-            @ApiParam(value = "The user name for login", required = true) @RequestParam("username") String username,
-            @ApiParam(value = "The password for login in clear text", required = true) @RequestParam("password") String password) {
+            @ApiParam(value = "The user name for login", required = true) @RequestParam("username") final String username,
+            @ApiParam(value = "The password for login in clear text", required = true) @RequestParam("password") final String password) {
         return new ResponseEntity<String>("logged in user session:" + System.currentTimeMillis(), HttpStatus.OK);
     }
 

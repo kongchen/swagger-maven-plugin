@@ -135,20 +135,20 @@ public class ApiSource {
     @Parameter
     private List<String> modelConverters;
 
-    public Set<Class<?>> getValidClasses(Class<? extends Annotation> clazz) {
-        Set<Class<?>> classes = new LinkedHashSet<Class<?>>();
+    public Set<Class<?>> getValidClasses(final Class<? extends Annotation> clazz) {
+        final Set<Class<?>> classes = new LinkedHashSet<Class<?>>();
         if (getLocations() == null) {
-            Set<Class<?>> c = new Reflections("").getTypesAnnotatedWith(clazz, true);
+            final Set<Class<?>> c = new Reflections("").getTypesAnnotatedWith(clazz, true);
             classes.addAll(c);
 
-            Set<Class<?>> inherited = new Reflections("").getTypesAnnotatedWith(clazz);
+            final Set<Class<?>> inherited = new Reflections("").getTypesAnnotatedWith(clazz);
             classes.addAll(inherited);
         } else {
-            for (String location : locations) {
-                Set<Class<?>> c = new Reflections(location).getTypesAnnotatedWith(clazz, true);
+            for (final String location : locations) {
+                final Set<Class<?>> c = new Reflections(location).getTypesAnnotatedWith(clazz, true);
                 classes.addAll(c);
 
-                Set<Class<?>> inherited = new Reflections(location).getTypesAnnotatedWith(clazz);
+                final Set<Class<?>> inherited = new Reflections(location).getTypesAnnotatedWith(clazz);
                 classes.addAll(inherited);
             }
         }
@@ -160,7 +160,7 @@ public class ApiSource {
         return apiModelPropertyAccessExclusions;
     }
 
-    public void setApiModelPropertyExclusions(List<String> apiModelPropertyAccessExclusions) {
+    public void setApiModelPropertyExclusions(final List<String> apiModelPropertyAccessExclusions) {
         this.apiModelPropertyAccessExclusions = apiModelPropertyAccessExclusions;
     }
 
@@ -172,11 +172,11 @@ public class ApiSource {
         return typesToSkip;
     }
 
-    public void setTypesToSkip(List<String> typesToSkip) {
+    public void setTypesToSkip(final List<String> typesToSkip) {
         this.typesToSkip = typesToSkip;
     }
 
-    public void setSecurityDefinitions(List<SecurityDefinition> securityDefinitions) {
+    public void setSecurityDefinitions(final List<SecurityDefinition> securityDefinitions) {
         this.securityDefinitions = securityDefinitions;
     }
 
@@ -188,11 +188,11 @@ public class ApiSource {
     }
 
     private void setInfoFromAnnotation() {
-        Info resultInfo = new Info();
-        for (Class<?> aClass : getValidClasses(SwaggerDefinition.class)) {
-            SwaggerDefinition swaggerDefinition = AnnotationUtils.findAnnotation(aClass, SwaggerDefinition.class);
-            io.swagger.annotations.Info infoAnnotation = swaggerDefinition.info();
-            Info info = new Info().title(infoAnnotation.title())
+        final Info resultInfo = new Info();
+        for (final Class<?> aClass : getValidClasses(SwaggerDefinition.class)) {
+            final SwaggerDefinition swaggerDefinition = AnnotationUtils.findAnnotation(aClass, SwaggerDefinition.class);
+            final io.swagger.annotations.Info infoAnnotation = swaggerDefinition.info();
+            final Info info = new Info().title(infoAnnotation.title())
                     .description(emptyToNull(infoAnnotation.description()))
                     .version(infoAnnotation.version())
                     .termsOfService(emptyToNull(infoAnnotation.termsOfService()))
@@ -203,7 +203,7 @@ public class ApiSource {
         info = resultInfo;
     }
 
-    private Contact from(io.swagger.annotations.Contact contactAnnotation) {
+    private Contact from(final io.swagger.annotations.Contact contactAnnotation) {
         Contact contact = new Contact()
                 .name(emptyToNull(contactAnnotation.name()))
                 .email(emptyToNull(contactAnnotation.email()))
@@ -214,7 +214,7 @@ public class ApiSource {
         return contact;
     }
 
-    private License from(io.swagger.annotations.License licenseAnnotation) {
+    private License from(final io.swagger.annotations.License licenseAnnotation) {
         License license = new License()
                 .name(emptyToNull(licenseAnnotation.name()))
                 .url(emptyToNull(licenseAnnotation.url()));
@@ -225,20 +225,20 @@ public class ApiSource {
     }
 
     private void setBasePathFromAnnotation() {
-        for (Class<?> aClass : getValidClasses(SwaggerDefinition.class)) {
-            SwaggerDefinition swaggerDefinition = AnnotationUtils.findAnnotation(aClass, SwaggerDefinition.class);
+        for (final Class<?> aClass : getValidClasses(SwaggerDefinition.class)) {
+            final SwaggerDefinition swaggerDefinition = AnnotationUtils.findAnnotation(aClass, SwaggerDefinition.class);
             basePath = emptyToNull(swaggerDefinition.basePath());
         }
     }
 
     private void setHostFromAnnotation() {
-        for (Class<?> aClass : getValidClasses(SwaggerDefinition.class)) {
-            SwaggerDefinition swaggerDefinition = AnnotationUtils.findAnnotation(aClass, SwaggerDefinition.class);
+        for (final Class<?> aClass : getValidClasses(SwaggerDefinition.class)) {
+            final SwaggerDefinition swaggerDefinition = AnnotationUtils.findAnnotation(aClass, SwaggerDefinition.class);
             host = emptyToNull(swaggerDefinition.host());
         }
     }
 
-    public void setInfo(Info info) {
+    public void setInfo(final Info info) {
         this.info = info;
     }
 
@@ -246,7 +246,7 @@ public class ApiSource {
         return locations;
     }
 
-    public void setLocations(List<String> locations) {
+    public void setLocations(final List<String> locations) {
         this.locations = locations;
     }
 
@@ -254,7 +254,7 @@ public class ApiSource {
         return templatePath;
     }
 
-    public void setTemplatePath(String templatePath) {
+    public void setTemplatePath(final String templatePath) {
         this.templatePath = templatePath;
     }
 
@@ -262,7 +262,7 @@ public class ApiSource {
         return outputPath;
     }
 
-    public void setOutputPath(String outputPath) {
+    public void setOutputPath(final String outputPath) {
         this.outputPath = outputPath;
     }
 
@@ -270,7 +270,7 @@ public class ApiSource {
         return outputFormats;
     }
 
-    public void setOutputFormats(String outputFormats) {
+    public void setOutputFormats(final String outputFormats) {
         this.outputFormats = outputFormats;
     }
 
@@ -281,7 +281,7 @@ public class ApiSource {
         return basePath;
     }
 
-    public void setBasePath(String basePath) {
+    public void setBasePath(final String basePath) {
         this.basePath = basePath;
     }
 
@@ -289,7 +289,7 @@ public class ApiSource {
         return swaggerDirectory;
     }
 
-    public void setSwaggerDirectory(String swaggerDirectory) {
+    public void setSwaggerDirectory(final String swaggerDirectory) {
         this.swaggerDirectory = swaggerDirectory;
     }
 
@@ -297,7 +297,7 @@ public class ApiSource {
         return swaggerFileName;
     }
 
-    public void setSwaggerFileName(String swaggerFileName) {
+    public void setSwaggerFileName(final String swaggerFileName) {
         this.swaggerFileName = swaggerFileName;
     }
 
@@ -305,11 +305,11 @@ public class ApiSource {
         return attachSwaggerArtifact;
     }
 
-    public void setAttachSwaggerArtifact(boolean attachSwaggerArtifact) {
+    public void setAttachSwaggerArtifact(final boolean attachSwaggerArtifact) {
         this.attachSwaggerArtifact = attachSwaggerArtifact;
     }
 
-    public void setSwaggerUIDocBasePath(String swaggerUIDocBasePath) {
+    public void setSwaggerUIDocBasePath(final String swaggerUIDocBasePath) {
         this.swaggerUIDocBasePath = swaggerUIDocBasePath;
     }
 
@@ -324,7 +324,7 @@ public class ApiSource {
         return host;
     }
 
-    public void setModelSubstitute(String modelSubstitute) {
+    public void setModelSubstitute(final String modelSubstitute) {
         this.modelSubstitute = modelSubstitute;
     }
 
@@ -332,7 +332,7 @@ public class ApiSource {
         return swaggerInternalFilter;
     }
 
-    public void setSwaggerInternalFilter(String swaggerInternalFilter) {
+    public void setSwaggerInternalFilter(final String swaggerInternalFilter) {
         this.swaggerInternalFilter = swaggerInternalFilter;
     }
 
@@ -340,7 +340,7 @@ public class ApiSource {
         return swaggerApiReader;
     }
 
-    public void setSwaggerApiReader(String swaggerApiReader) {
+    public void setSwaggerApiReader(final String swaggerApiReader) {
         this.swaggerApiReader = swaggerApiReader;
     }
 
@@ -348,7 +348,7 @@ public class ApiSource {
 		return swaggerExtensions;
 	}
 
-	public void setSwaggerExtensions(List<String> swaggerExtensions) {
+	public void setSwaggerExtensions(final List<String> swaggerExtensions) {
 		this.swaggerExtensions = swaggerExtensions;
 	}
 
@@ -356,11 +356,11 @@ public class ApiSource {
         return apiSortComparator;
     }
 
-    public void setApiSortComparator(String apiSortComparator) {
+    public void setApiSortComparator(final String apiSortComparator) {
         this.apiSortComparator = apiSortComparator;
     }
 
-    public void setHost(String host) {
+    public void setHost(final String host) {
         this.host = host;
     }
 
@@ -368,7 +368,7 @@ public class ApiSource {
         return schemes;
     }
 
-    public void setSchemes(List<String> schemes) {
+    public void setSchemes(final List<String> schemes) {
         this.schemes = schemes;
     }
 
@@ -380,7 +380,7 @@ public class ApiSource {
         return springmvc;
     }
 
-    public void setSpringmvc(boolean springmvc) {
+    public void setSpringmvc(final boolean springmvc) {
         this.springmvc = springmvc;
     }
 
@@ -388,7 +388,7 @@ public class ApiSource {
         return swaggerSchemaConverter;
     }
 
-    public void setSwaggerSchemaConverter(String swaggerSchemaConverter) {
+    public void setSwaggerSchemaConverter(final String swaggerSchemaConverter) {
         this.swaggerSchemaConverter = swaggerSchemaConverter;
     }
 
@@ -396,7 +396,7 @@ public class ApiSource {
         return jsonExampleValues;
     }
 
-    public void setJsonExampleValues(boolean jsonExampleValues) {
+    public void setJsonExampleValues(final boolean jsonExampleValues) {
         this.jsonExampleValues = jsonExampleValues;
     }
 
@@ -404,7 +404,7 @@ public class ApiSource {
         return useJAXBAnnotationProcessor;
     }
 
-    public void setUseJAXBAnnotationProcessor(boolean useJAXBAnnotationProcessor) {
+    public void setUseJAXBAnnotationProcessor(final boolean useJAXBAnnotationProcessor) {
         this.useJAXBAnnotationProcessor = useJAXBAnnotationProcessor;
     }
 
@@ -412,7 +412,7 @@ public class ApiSource {
         return useJAXBAnnotationProcessorAsPrimary;
     }
 
-    public void setUseJAXBAnnotationProcessorAsPrimary(boolean useJAXBAnnotationProcessorAsPrimary) {
+    public void setUseJAXBAnnotationProcessorAsPrimary(final boolean useJAXBAnnotationProcessorAsPrimary) {
         this.useJAXBAnnotationProcessorAsPrimary = useJAXBAnnotationProcessorAsPrimary;
     }
 
@@ -420,7 +420,7 @@ public class ApiSource {
         return descriptionFile;
     }
 
-    public void setDescriptionFile(File descriptionFile) {
+    public void setDescriptionFile(final File descriptionFile) {
         this.descriptionFile = descriptionFile;
     }
 
@@ -428,11 +428,11 @@ public class ApiSource {
         return modelConverters;
     }
 
-    public void setModelConverters(List<String> modelConverters) {
+    public void setModelConverters(final List<String> modelConverters) {
         this.modelConverters = modelConverters;
     }
 
-    private String emptyToNull(String str) {
+    private String emptyToNull(final String str) {
         return StringUtils.isEmpty(str) ? null : str;
     }
 }

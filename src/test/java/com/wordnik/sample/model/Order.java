@@ -42,7 +42,7 @@ public class Order {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(final long id) {
         this.id = id;
     }
 
@@ -50,7 +50,7 @@ public class Order {
         return complete;
     }
 
-    public void setComplete(boolean complete) {
+    public void setComplete(final boolean complete) {
         this.complete = complete;
     }
 
@@ -59,7 +59,7 @@ public class Order {
         return petId;
     }
 
-    public void setPetId(long petId) {
+    public void setPetId(final long petId) {
         this.petId = petId;
     }
 
@@ -68,7 +68,7 @@ public class Order {
         return quantity;
     }
 
-    public void setQuantity(int quantity) {
+    public void setQuantity(final int quantity) {
         this.quantity = quantity;
     }
 
@@ -78,7 +78,7 @@ public class Order {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(final String status) {
         this.status = status;
     }
 
@@ -87,14 +87,14 @@ public class Order {
         return shipDate;
     }
 
-    public void setShipDate(Date shipDate) {
+    public void setShipDate(final Date shipDate) {
         this.shipDate = shipDate;
     }
 
     @XmlElement(name = "optionalStatus")
     public Optional<String> getOptionalStatus() { return optionalStatus; }
 
-    public void setOptionalStatus(@SuppressWarnings("OptionalUsedAsFieldOrParameterType") Optional<String> optionalStatus) { this.optionalStatus = optionalStatus; }
+    public void setOptionalStatus(@SuppressWarnings("OptionalUsedAsFieldOrParameterType") final Optional<String> optionalStatus) { this.optionalStatus = optionalStatus; }
 
     @ApiModelProperty(name = "internalThing", access = "secret-property")
     public String getInternalThing() {

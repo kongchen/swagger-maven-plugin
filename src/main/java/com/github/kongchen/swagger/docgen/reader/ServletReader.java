@@ -14,12 +14,12 @@ import io.swagger.servlet.Reader;
  */
 public class ServletReader extends AbstractReader implements ClassSwaggerReader {
 
-    public ServletReader(Swagger swagger, Log LOG) {
+    public ServletReader(final Swagger swagger, final Log LOG) {
         super(swagger, LOG);
     }
 
     @Override
-    public Swagger read(Set<Class<?>> classes) throws GenerateException {
+    public Swagger read(final Set<Class<?>> classes) throws GenerateException {
         Reader.read(swagger, classes );
         return swagger;
     }

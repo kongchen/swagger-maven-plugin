@@ -11,9 +11,9 @@ public class SwaggerlessSubresource {
 
     @GET
     @Path("/{name}")
-    public Pet getPetByNameSubresource(@PathParam(value = "name") String name) {
+    public Pet getPetByNameSubresource(@PathParam(value = "name") final String name) {
         // Just create and return a new pet
-        Pet pet = new Pet();
+        final Pet pet = new Pet();
         pet.setName(new PetName(name));
         return pet;
     }

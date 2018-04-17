@@ -38,8 +38,8 @@ public class StoreData {
         orders.add(createOrder(15, 3, 2, new Date(), "placed"));
     }
 
-    public Order findOrderById(long orderId) {
-        for (Order order : orders) {
+    public Order findOrderById(final long orderId) {
+        for (final Order order : orders) {
             if (order.getId() == orderId) {
                 return order;
             }
@@ -47,7 +47,7 @@ public class StoreData {
         return null;
     }
 
-    public Order placeOrder(Order order) {
+    public Order placeOrder(final Order order) {
         if (!orders.isEmpty()) {
             for (int i = orders.size() - 1; i >= 0; i--) {
                 if (orders.get(i).getId() == order.getId()) {
@@ -59,7 +59,7 @@ public class StoreData {
         return order;
     }
 
-    public void deleteOrder(long orderId) {
+    public void deleteOrder(final long orderId) {
         if (!orders.isEmpty()) {
             for (int i = orders.size() - 1; i >= 0; i--) {
                 if (orders.get(i).getId() == orderId) {
@@ -69,8 +69,8 @@ public class StoreData {
         }
     }
 
-    private static Order createOrder(long id, long petId, int quantity, Date shipDate, String status) {
-        Order order = new Order();
+    private static Order createOrder(final long id, final long petId, final int quantity, final Date shipDate, final String status) {
+        final Order order = new Order();
         order.setId(id);
         order.setPetId(petId);
         order.setQuantity(quantity);

@@ -16,15 +16,15 @@ public class SpringMavenDocumentSourceTest
     @Test
     public void testGetValidClasses() throws Exception
     {
-        Log log = new SystemStreamLog();
+        final Log log = new SystemStreamLog();
 
-        ApiSource apiSource = new ApiSource();
+        final ApiSource apiSource = new ApiSource();
         apiSource.setLocations(Collections.singletonList(this.getClass().getPackage().getName()));
         apiSource.setSwaggerDirectory("./");
 
-        SpringMavenDocumentSource springMavenDocumentSource = new SpringMavenDocumentSource(apiSource, log, "UTF-8");
+        final SpringMavenDocumentSource springMavenDocumentSource = new SpringMavenDocumentSource(apiSource, log, "UTF-8");
 
-        Set<Class<?>> validClasses = springMavenDocumentSource.getValidClasses();
+        final Set<Class<?>> validClasses = springMavenDocumentSource.getValidClasses();
 
         Assert.assertEquals(validClasses.size(), 2);
         Assert.assertTrue(validClasses.contains(ExampleController1.class));

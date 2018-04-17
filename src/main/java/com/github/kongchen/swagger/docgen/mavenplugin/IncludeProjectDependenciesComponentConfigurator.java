@@ -30,41 +30,41 @@ import java.util.List;
 public class IncludeProjectDependenciesComponentConfigurator extends AbstractComponentConfigurator {
 
     @Override
-    public void configureComponent(Object component, PlexusConfiguration configuration,
-                                   ExpressionEvaluator expressionEvaluator, ClassRealm containerRealm,
-                                   ConfigurationListener listener)
+    public void configureComponent(final Object component, final PlexusConfiguration configuration,
+                                   final ExpressionEvaluator expressionEvaluator, final ClassRealm containerRealm,
+                                   final ConfigurationListener listener)
             throws ComponentConfigurationException {
         addProjectDependenciesToClassRealm(expressionEvaluator, containerRealm);
 
-        ObjectWithFieldsConverter converter = new ObjectWithFieldsConverter();
+        final ObjectWithFieldsConverter converter = new ObjectWithFieldsConverter();
         converter.processConfiguration(converterLookup, component, containerRealm.getClassLoader(), configuration,
                 expressionEvaluator, listener);
     }
 
-    private void addProjectDependenciesToClassRealm(ExpressionEvaluator expressionEvaluator, ClassRealm containerRealm) throws ComponentConfigurationException {
-        List<String> compileClasspathElements;
+    private void addProjectDependenciesToClassRealm(final ExpressionEvaluator expressionEvaluator, final ClassRealm containerRealm) throws ComponentConfigurationException {
+        final List<String> compileClasspathElements;
         try {
             //noinspection unchecked
             compileClasspathElements = (List<String>) expressionEvaluator.evaluate("${project.compileClasspathElements}");
-        } catch (ExpressionEvaluationException e) {
+        } catch (final ExpressionEvaluationException e) {
             throw new ComponentConfigurationException("There was a problem evaluating: ${project.compileClasspathElements}", e);
         }
 
         // Add the project dependencies to the ClassRealm
         final URL[] urls = buildURLs(compileClasspathElements);
-        for (URL url : urls) {
+        for (final URL url : urls) {
             containerRealm.addConstituent(url);
         }
     }
 
-    private URL[] buildURLs(List<String> runtimeClasspathElements) throws ComponentConfigurationException {
+    private URL[] buildURLs(final List<String> runtimeClasspathElements) throws ComponentConfigurationException {
         // Add the projects classes and dependencies
-        List<URL> urls = new ArrayList<URL>(runtimeClasspathElements.size());
-        for (String element : runtimeClasspathElements) {
+        final List<URL> urls = new ArrayList<URL>(runtimeClasspathElements.size());
+        for (final String element : runtimeClasspathElements) {
             try {
                 final URL url = new File(element).toURI().toURL();
                 urls.add(url);
-            } catch (MalformedURLException e) {
+            } catch (final MalformedURLException e) {
                 throw new ComponentConfigurationException("Unable to access project dependency: " + element, e);
             }
         }
