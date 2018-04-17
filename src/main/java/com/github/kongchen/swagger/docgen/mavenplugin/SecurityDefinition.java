@@ -26,7 +26,7 @@ public class SecurityDefinition {
     private String jsonPath;
 
     public Map<String, SecuritySchemeDefinition> generateSecuritySchemeDefinitions() throws GenerateException {
-        Map<String, SecuritySchemeDefinition> map = new HashMap<String, SecuritySchemeDefinition>();
+        final Map<String, SecuritySchemeDefinition> map = new HashMap<String, SecuritySchemeDefinition>();
 
         List<JsonNode> securityDefinitions = new ArrayList<JsonNode>();
         if (json != null || jsonPath != null) {
@@ -35,8 +35,8 @@ public class SecurityDefinition {
             securityDefinitions.add(new ObjectMapper().valueToTree(this));
         }
 
-        for (JsonNode securityDefinition : securityDefinitions) {
-            SecuritySchemeDefinition ssd = getSecuritySchemeDefinitionByType(securityDefinition.get("type").asText(), securityDefinition);
+        for (final JsonNode securityDefinition : securityDefinitions) {
+            final SecuritySchemeDefinition ssd = getSecuritySchemeDefinitionByType(securityDefinition.get("type").asText(), securityDefinition);
             if (ssd != null) {
                 map.put(securityDefinition.get("name").asText(), ssd);
             }
@@ -46,28 +46,28 @@ public class SecurityDefinition {
     }
 
     private List<JsonNode> loadSecurityDefintionsFromJsonFile() throws GenerateException {
-        List<JsonNode> securityDefinitions = new ArrayList<JsonNode>();
+        final List<JsonNode> securityDefinitions = new ArrayList<JsonNode>();
 
         try {
-            InputStream jsonStream = json != null ? this.getClass().getResourceAsStream(json) : new FileInputStream(jsonPath);
-            JsonNode tree = new ObjectMapper().readTree(jsonStream);
-            Iterator<String> securityDefinitionNameIterator = tree.fieldNames();
+            final InputStream jsonStream = json != null ? this.getClass().getResourceAsStream(json) : new FileInputStream(jsonPath);
+            final JsonNode tree = new ObjectMapper().readTree(jsonStream);
+            final Iterator<String> securityDefinitionNameIterator = tree.fieldNames();
             while (securityDefinitionNameIterator.hasNext()) {
-                String securityDefinitionName = securityDefinitionNameIterator.next();
+                final String securityDefinitionName = securityDefinitionNameIterator.next();
                 JsonNode securityDefinition = tree.get(securityDefinitionName);
                 securityDefinition = ((ObjectNode) securityDefinition).put("name", securityDefinitionName);
                 securityDefinitions.add(securityDefinition);
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new GenerateException(e);
         }
 
         return securityDefinitions;
     }
 
-    private SecuritySchemeDefinition getSecuritySchemeDefinitionByType(String type, JsonNode node) throws GenerateException {
+    private SecuritySchemeDefinition getSecuritySchemeDefinitionByType(final String type, final JsonNode node) throws GenerateException {
         try {
-            ObjectMapper mapper = new ObjectMapper();
+            final ObjectMapper mapper = new ObjectMapper();
             SecuritySchemeDefinition def = null;
             if (type.equals(new OAuth2Definition().getType())) {
                 def = new OAuth2Definition();
@@ -86,7 +86,7 @@ public class SecurityDefinition {
                 }
             }
             return def;
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new GenerateException(e);
         }
     }
@@ -95,7 +95,7 @@ public class SecurityDefinition {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -103,7 +103,7 @@ public class SecurityDefinition {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(final String type) {
         this.type = type;
     }
 
@@ -111,7 +111,7 @@ public class SecurityDefinition {
         return in;
     }
 
-    public void setIn(String in) {
+    public void setIn(final String in) {
         this.in = in;
     }
 }

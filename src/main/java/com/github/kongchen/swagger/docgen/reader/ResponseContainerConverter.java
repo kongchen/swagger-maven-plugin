@@ -8,7 +8,7 @@ import io.swagger.models.properties.Property;
  * Property wrapper for response container.
  */
 class ResponseContainerConverter {
-    Property withResponseContainer(String responseContainer, Property property) {
+    Property withResponseContainer(final String responseContainer, final Property property) {
         if ("list".equalsIgnoreCase(responseContainer)) {
             return new ArrayProperty(property);
         }

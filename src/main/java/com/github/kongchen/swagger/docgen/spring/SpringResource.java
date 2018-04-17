@@ -27,14 +27,14 @@ public class SpringResource {
      * @param clazz        (Class<?>) Controller class
      * @param resourceName resource Name
      */
-    public SpringResource(Class<?> clazz, String resourceName, String resourceKey, String description) {
+    public SpringResource(final Class<?> clazz, final String resourceName, final String resourceKey, final String description) {
         this.controllerClass = clazz;
         this.resourceName = resourceName;
         this.resourceKey = resourceKey;
         this.description = description;
         methods = new ArrayList<Method>();
 
-        String[] controllerRequestMappingValues = SpringUtils.getControllerResquestMapping(controllerClass);
+        final String[] controllerRequestMappingValues = SpringUtils.getControllerResquestMapping(controllerClass);
 
         this.controllerMapping = StringUtils.removeEnd(controllerRequestMappingValues[0], "/");
     }
@@ -43,7 +43,7 @@ public class SpringResource {
         return controllerClass;
     }
 
-    public void setControllerClass(Class<?> controllerClass) {
+    public void setControllerClass(final Class<?> controllerClass) {
         this.controllerClass = controllerClass;
     }
 
@@ -51,11 +51,11 @@ public class SpringResource {
         return methods;
     }
 
-    public void setMethods(List<Method> methods) {
+    public void setMethods(final List<Method> methods) {
         this.methods = methods;
     }
 
-    public void addMethod(Method m) {
+    public void addMethod(final Method m) {
         this.methods.add(m);
     }
 
@@ -63,7 +63,7 @@ public class SpringResource {
         return controllerMapping;
     }
 
-    public void setControllerMapping(String controllerMapping) {
+    public void setControllerMapping(final String controllerMapping) {
         this.controllerMapping = controllerMapping;
     }
 
@@ -71,7 +71,7 @@ public class SpringResource {
         return resourceName;
     }
 
-    public void setResource(String resource) {
+    public void setResource(final String resource) {
         this.resourceName = resource;
     }
 
@@ -83,7 +83,7 @@ public class SpringResource {
         return resourceKey;
     }
 
-    public void setResourceKey(String resourceKey) {
+    public void setResourceKey(final String resourceKey) {
         this.resourceKey = resourceKey;
     }
 
@@ -91,7 +91,7 @@ public class SpringResource {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(final String description) {
         this.description = description;
     }
 

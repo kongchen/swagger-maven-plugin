@@ -16,27 +16,27 @@ import java.util.Map;
  */
 public class TestUtils {
 
-    public static String YamlToJson(String yamlString) {
-        Yaml yaml = new Yaml();
-        Map<String, Object> map = (Map<String, Object>) yaml.load(yamlString);
+    public static String YamlToJson(final String yamlString) {
+        final Yaml yaml = new Yaml();
+        final Map<String, Object> map = (Map<String, Object>) yaml.load(yamlString);
         return new JSONObject(map).toString();
     }
 
     public static String createTempDirPath() throws Exception {
-        File tempFile = File.createTempFile("swagmvn", "test");
-        String path = tempFile.getAbsolutePath();
+        final File tempFile = File.createTempFile("swagmvn", "test");
+        final String path = tempFile.getAbsolutePath();
         tempFile.delete();
         return path;
     }
 
-    public static void setCustomReader(ApiDocumentMojo mojo, String location) {
-        for (ApiSource apiSource : mojo.getApiSources()) {
+    public static void setCustomReader(final ApiDocumentMojo mojo, final String location) {
+        for (final ApiSource apiSource : mojo.getApiSources()) {
             apiSource.setSwaggerApiReader(location);
         }
     }
 
-    public static void changeDescription(JsonNode root, String text) {
-        JsonNode node = root.path("info");
+    public static void changeDescription(final JsonNode root, final String text) {
+        final JsonNode node = root.path("info");
         ((ObjectNode) node).put("description", text);
     }
 }

@@ -21,7 +21,7 @@ import com.google.common.collect.Sets;
  */
 public class SpringMavenDocumentSource extends AbstractDocumentSource {
 
-    public SpringMavenDocumentSource(ApiSource apiSource, Log log, String encoding) throws MojoFailureException {
+    public SpringMavenDocumentSource(final ApiSource apiSource, final Log log, final String encoding) throws MojoFailureException {
         super(log, apiSource);
         if(encoding !=null) {
             this.encoding = encoding;
@@ -30,7 +30,7 @@ public class SpringMavenDocumentSource extends AbstractDocumentSource {
 
     @Override
     protected Set<Class<?>> getValidClasses() {
-        Set result = super.getValidClasses();
+        final Set result = super.getValidClasses();
         result.addAll(apiSource.getValidClasses(RestController.class));
         result.addAll(apiSource.getValidClasses(ControllerAdvice.class));
         return result;
@@ -38,9 +38,9 @@ public class SpringMavenDocumentSource extends AbstractDocumentSource {
 
     @Override
     protected ClassSwaggerReader resolveApiReader() throws GenerateException {
-        String customReaderClassName = apiSource.getSwaggerApiReader();
+        final String customReaderClassName = apiSource.getSwaggerApiReader();
         if (customReaderClassName == null) {
-            SpringMvcApiReader reader = new SpringMvcApiReader(swagger, LOG);
+            final SpringMvcApiReader reader = new SpringMvcApiReader(swagger, LOG);
             reader.setTypesToSkip(this.typesToSkip);
             return reader;
         } else {

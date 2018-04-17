@@ -8,15 +8,15 @@ public class GenerateException extends Exception {
 
     private static final long serialVersionUID = -1641016437077276797L;
 
-    public GenerateException(String errorMessage, Throwable cause) {
+    public GenerateException(final String errorMessage, final Throwable cause) {
         super(errorMessage, cause);
     }
 
-    public GenerateException(String errorMessage) {
+    public GenerateException(final String errorMessage) {
         super(errorMessage);
     }
 
-    public GenerateException(Exception e) {
+    public GenerateException(final Exception e) {
         super(e);
     }
 }

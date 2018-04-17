@@ -40,8 +40,8 @@ import org.yaml.snakeyaml.Yaml;
  * @author chekong on 8/15/14.
  */
 public class SpringMvcTest extends AbstractMojoTestCase {
-    private File swaggerOutputDir = new File(getBasedir(), "generated/swagger-ui-spring");
-    private File docOutput = new File(getBasedir(), "generated/document-spring.html");
+    private final File swaggerOutputDir = new File(getBasedir(), "generated/swagger-ui-spring");
+    private final File docOutput = new File(getBasedir(), "generated/document-spring.html");
     private ApiDocumentMojo mojo;
     private List<SwaggerExtension> extensions;
 
@@ -54,14 +54,14 @@ public class SpringMvcTest extends AbstractMojoTestCase {
         try {
             FileUtils.deleteDirectory(swaggerOutputDir);
             FileUtils.forceDelete(docOutput);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             //ignore
         }
 
-        File testPom = new File(getBasedir(), "target/test-classes/plugin-config-springmvc.xml");
+        final File testPom = new File(getBasedir(), "target/test-classes/plugin-config-springmvc.xml");
         mojo = (ApiDocumentMojo) lookupMojo("generate", testPom);
     }
-    
+
     @Override
     @AfterMethod
     protected void tearDown() throws Exception {
@@ -93,23 +93,23 @@ public class SpringMvcTest extends AbstractMojoTestCase {
 
     @Test
     public void testInvalidCustomReaderJson() throws Exception {
-        String className = "com.wordnik.nonexisting.Class";
+        final String className = "com.wordnik.nonexisting.Class";
 
         setCustomReader(mojo, className);
         try {
             testGeneratedSwaggerSpecJson();
-        } catch (MojoFailureException e) {
+        } catch (final MojoFailureException e) {
             assertEquals(String.format("Cannot load Swagger API reader: %s", className), e.getMessage());
         }
     }
 
     @Test
     public void testInvalidCustomReaderYaml() throws Exception {
-        String className = "com.wordnik.nonexisting.Class";
+        final String className = "com.wordnik.nonexisting.Class";
         setCustomReader(mojo, className);
         try {
             testGeneratedSwaggerSpecJson();
-        } catch (MojoFailureException e) {
+        } catch (final MojoFailureException e) {
             assertEquals(String.format("Cannot load Swagger API reader: %s", className), e.getMessage());
         }
     }
@@ -118,14 +118,14 @@ public class SpringMvcTest extends AbstractMojoTestCase {
     public void testGeneratedDoc() throws Exception {
         mojo.execute();
 
-        BufferedReader actualReader = null;
-        BufferedReader expectReader = null;
+        final BufferedReader actualReader = null;
+        final BufferedReader expectReader = null;
         FileInputStream swaggerJson = null;
         BufferedReader swaggerReader = null;
 
         try {
-            File actual = docOutput;
-            File expected = new File(this.getClass().getResource("/sample-springmvc.html").getFile());
+            final File actual = docOutput;
+            final File expected = new File(this.getClass().getResource("/sample-springmvc.html").getFile());
             FileAssert.assertEquals(expected, actual);
 
             swaggerJson = new FileInputStream(new File(swaggerOutputDir, "swagger.json"));
@@ -158,8 +158,8 @@ public class SpringMvcTest extends AbstractMojoTestCase {
     @Test
     public void testGeneratedDocWithJsonExampleValues() throws Exception {
 
-        List<ApiSource> apisources = (List<ApiSource>) getVariableValueFromObject(mojo, "apiSources");
-        ApiSource apiSource = apisources.get(0);
+        final List<ApiSource> apisources = (List<ApiSource>) getVariableValueFromObject(mojo, "apiSources");
+        final ApiSource apiSource = apisources.get(0);
         // Force serialization of example values as json raw values
         apiSource.setJsonExampleValues(true);
         // exclude part of the model when not compliant with jev option (e.g. example expressed as plain string)
@@ -168,12 +168,12 @@ public class SpringMvcTest extends AbstractMojoTestCase {
         mojo.execute();
 
         // check generated swagger json file
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode actualJson = mapper.readTree(new File(swaggerOutputDir, "swagger.json"));
-        JsonNode expectJson = mapper.readTree(this.getClass().getResourceAsStream("/options/jsonExampleValues/expected/swagger-spring.json"));
+        final ObjectMapper mapper = new ObjectMapper();
+        final JsonNode actualJson = mapper.readTree(new File(swaggerOutputDir, "swagger.json"));
+        final JsonNode expectJson = mapper.readTree(this.getClass().getResourceAsStream("/options/jsonExampleValues/expected/swagger-spring.json"));
 
-        JsonNode actualUserNode = actualJson.path("definitions").path("User");
-        JsonNode expectUserNode = expectJson.path("definitions").path("User");
+        final JsonNode actualUserNode = actualJson.path("definitions").path("User");
+        final JsonNode expectUserNode = expectJson.path("definitions").path("User");
 
         // Cannot test full node equality since tags order is not guaranteed in generated json
         Assert.assertEquals(actualUserNode, expectUserNode);
@@ -181,7 +181,7 @@ public class SpringMvcTest extends AbstractMojoTestCase {
 
     @Test
     public void testNullSwaggerOutput() throws Exception {
-        List<ApiSource> apisources = (List<ApiSource>) getVariableValueFromObject(mojo, "apiSources");
+        final List<ApiSource> apisources = (List<ApiSource>) getVariableValueFromObject(mojo, "apiSources");
         apisources.get(0).setSwaggerDirectory(null);
         setVariableValueToObject(mojo, "apiSources", apisources);
         mojo.execute();
@@ -190,7 +190,7 @@ public class SpringMvcTest extends AbstractMojoTestCase {
 
     @Test
     public void testNullMustacheOutput() throws Exception {
-        List<ApiSource> apisources = (List<ApiSource>) getVariableValueFromObject(mojo, "apiSources");
+        final List<ApiSource> apisources = (List<ApiSource>) getVariableValueFromObject(mojo, "apiSources");
         apisources.get(0).setTemplatePath(null);
         setVariableValueToObject(mojo, "apiSources", apisources);
         mojo.execute();
@@ -199,9 +199,9 @@ public class SpringMvcTest extends AbstractMojoTestCase {
 
     @DataProvider
     private Iterator<Object[]> pathProvider() throws Exception {
-        String tempDirPath = createTempDirPath();
+        final String tempDirPath = createTempDirPath();
 
-        List<Object[]> dataToBeReturned = new ArrayList<Object[]>();
+        final List<Object[]> dataToBeReturned = new ArrayList<Object[]>();
         dataToBeReturned.add(new String[]{tempDirPath + "foo" + File.separator + "bar" + File.separator + "test.html"});
         dataToBeReturned.add(new String[]{tempDirPath + File.separator + "bar" + File.separator + "test.html"});
         dataToBeReturned.add(new String[]{tempDirPath + File.separator + "test.html"});
@@ -211,10 +211,10 @@ public class SpringMvcTest extends AbstractMojoTestCase {
     }
 
     @Test(enabled = false, dataProvider = "pathProvider")
-    public void testExecuteDirectoryCreated(String path) throws Exception {
+    public void testExecuteDirectoryCreated(final String path) throws Exception {
         mojo.getApiSources().get(0).setOutputPath(path);
 
-        File file = new File(path);
+        final File file = new File(path);
         mojo.execute();
         Assert.assertTrue(file.exists());
         if (file.getParentFile() != null) {
@@ -222,28 +222,28 @@ public class SpringMvcTest extends AbstractMojoTestCase {
         }
     }
 
-    private void assertGeneratedSwaggerSpecJson(String description) throws MojoExecutionException, MojoFailureException, IOException {
+    private void assertGeneratedSwaggerSpecJson(final String description) throws MojoExecutionException, MojoFailureException, IOException {
         mojo.execute();
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode actualJson = mapper.readTree(new File(swaggerOutputDir, "swagger.json"));
-        JsonNode expectJson = mapper.readTree(this.getClass().getResourceAsStream("/expectedOutput/swagger-spring.json"));
+        final ObjectMapper mapper = new ObjectMapper();
+        final JsonNode actualJson = mapper.readTree(new File(swaggerOutputDir, "swagger.json"));
+        final JsonNode expectJson = mapper.readTree(this.getClass().getResourceAsStream("/expectedOutput/swagger-spring.json"));
 
         changeDescription(expectJson, description);
         assertJsonEquals(expectJson, actualJson, Configuration.empty().when(IGNORING_ARRAY_ORDER));
     }
 
-    private void assertGeneratedSwaggerSpecYaml(String description) throws MojoExecutionException, MojoFailureException, IOException {
+    private void assertGeneratedSwaggerSpecYaml(final String description) throws MojoExecutionException, MojoFailureException, IOException {
         mojo.getApiSources().get(0).setOutputFormats("yaml");
         mojo.execute();
 
-        String actualYaml = io.swagger.util.Yaml.pretty().writeValueAsString(
+        final String actualYaml = io.swagger.util.Yaml.pretty().writeValueAsString(
                 new Yaml().load(FileUtils.readFileToString(new File(swaggerOutputDir, "swagger.yaml"))));
-        String expectYaml = io.swagger.util.Yaml.pretty().writeValueAsString(
+        final String expectYaml = io.swagger.util.Yaml.pretty().writeValueAsString(
                 new Yaml().load(this.getClass().getResourceAsStream("/expectedOutput/swagger-spring.yaml")));
 
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode actualJson = mapper.readTree(YamlToJson(actualYaml));
-        JsonNode expectJson = mapper.readTree(YamlToJson(expectYaml));
+        final ObjectMapper mapper = new ObjectMapper();
+        final JsonNode actualJson = mapper.readTree(YamlToJson(actualYaml));
+        final JsonNode expectJson = mapper.readTree(YamlToJson(expectYaml));
 
         changeDescription(expectJson, description);
         assertJsonEquals(expectJson, actualJson, Configuration.empty().when(IGNORING_ARRAY_ORDER));

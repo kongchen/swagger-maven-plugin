@@ -41,15 +41,15 @@ import java.util.Set;
 public class SpringSwaggerExtension extends AbstractSwaggerExtension {
 
     @Override
-    public List<Parameter> extractParameters(List<Annotation> annotations, Type type, Set<Type> typesToSkip, Iterator<SwaggerExtension> chain) {
+    public List<Parameter> extractParameters(final List<Annotation> annotations, final Type type, final Set<Type> typesToSkip, final Iterator<SwaggerExtension> chain) {
         if (this.shouldIgnoreType(type, typesToSkip)) {
             return new ArrayList<Parameter>();
         }
 
-        String defaultValue = "";
-        List<Parameter> parameters = new ArrayList<Parameter>();
+        final String defaultValue = "";
+        final List<Parameter> parameters = new ArrayList<Parameter>();
         Parameter parameter = null;
-        for (Annotation annotation : annotations) {
+        for (final Annotation annotation : annotations) {
             if (annotation instanceof ModelAttribute) {
                 parameters.addAll(extractParametersFromModelAttributeAnnotation(annotation, type));
             } else {
@@ -64,74 +64,74 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension {
         return parameters;
     }
 
-    private Parameter extractParameterFromAnnotation(Annotation annotation, String defaultValue, Type type) {
+    private Parameter extractParameterFromAnnotation(final Annotation annotation, final String defaultValue, final Type type) {
         Parameter parameter = null;
 
         if (annotation instanceof RequestParam) {
-            RequestParam requestParam = (RequestParam) annotation;
-            String paramName = StringUtils.defaultIfEmpty(requestParam.value(), requestParam.name());
-            QueryParameter queryParameter = new QueryParameter().name(paramName)
+            final RequestParam requestParam = (RequestParam) annotation;
+            final String paramName = StringUtils.defaultIfEmpty(requestParam.value(), requestParam.name());
+            final QueryParameter queryParameter = new QueryParameter().name(paramName)
                     .required(requestParam.required());
 
             if (!defaultValue.isEmpty()) {
                 queryParameter.setDefaultValue(defaultValue);
             }
-            Property schema = ModelConverters.getInstance().readAsProperty(type);
+            final Property schema = ModelConverters.getInstance().readAsProperty(type);
             if (schema != null) {
                 queryParameter.setProperty(schema);
             }
 
             parameter = queryParameter;
         } else if (annotation instanceof PathVariable) {
-            PathVariable pathVariable = (PathVariable) annotation;
-            String paramName = StringUtils.defaultIfEmpty(pathVariable.value(), pathVariable.name());
-            PathParameter pathParameter = new PathParameter().name(paramName);
+            final PathVariable pathVariable = (PathVariable) annotation;
+            final String paramName = StringUtils.defaultIfEmpty(pathVariable.value(), pathVariable.name());
+            final PathParameter pathParameter = new PathParameter().name(paramName);
             if (!defaultValue.isEmpty()) {
                 pathParameter.setDefaultValue(defaultValue);
             }
-            Property schema = ModelConverters.getInstance().readAsProperty(type);
+            final Property schema = ModelConverters.getInstance().readAsProperty(type);
             if (schema != null) {
                 pathParameter.setProperty(schema);
             }
             parameter = pathParameter;
         } else if (annotation instanceof RequestHeader) {
-            RequestHeader requestHeader = (RequestHeader) annotation;
-            String paramName = StringUtils.defaultIfEmpty(requestHeader.value(), requestHeader.name());
-            HeaderParameter headerParameter = new HeaderParameter().name(paramName)
+            final RequestHeader requestHeader = (RequestHeader) annotation;
+            final String paramName = StringUtils.defaultIfEmpty(requestHeader.value(), requestHeader.name());
+            final HeaderParameter headerParameter = new HeaderParameter().name(paramName)
                     .required(requestHeader.required());
             headerParameter.setDefaultValue(defaultValue);
-            Property schema = ModelConverters.getInstance().readAsProperty(type);
+            final Property schema = ModelConverters.getInstance().readAsProperty(type);
             if (schema != null) {
                 headerParameter.setProperty(schema);
             }
 
             parameter = headerParameter;
         } else if (annotation instanceof CookieValue) {
-            CookieValue cookieValue = (CookieValue) annotation;
-            String paramName = StringUtils.defaultIfEmpty(cookieValue.value(), cookieValue.name());
-            CookieParameter cookieParameter = new CookieParameter().name(paramName)
+            final CookieValue cookieValue = (CookieValue) annotation;
+            final String paramName = StringUtils.defaultIfEmpty(cookieValue.value(), cookieValue.name());
+            final CookieParameter cookieParameter = new CookieParameter().name(paramName)
                     .required(cookieValue.required());
             if (!defaultValue.isEmpty()) {
                 cookieParameter.setDefaultValue(defaultValue);
             }
-            Property schema = ModelConverters.getInstance().readAsProperty(type);
+            final Property schema = ModelConverters.getInstance().readAsProperty(type);
             if (schema != null) {
                 cookieParameter.setProperty(schema);
             }
 
             parameter = cookieParameter;
         } else if (annotation instanceof RequestPart) {
-            RequestPart requestPart = (RequestPart) annotation;
-            String paramName = StringUtils.defaultIfEmpty(requestPart.value(), requestPart.name());
-            FormParameter formParameter = new FormParameter().name(paramName)
+            final RequestPart requestPart = (RequestPart) annotation;
+            final String paramName = StringUtils.defaultIfEmpty(requestPart.value(), requestPart.name());
+            final FormParameter formParameter = new FormParameter().name(paramName)
                     .required(requestPart.required());
 
             if (!defaultValue.isEmpty()) {
                 formParameter.setDefaultValue(defaultValue);
             }
 
-            JavaType ct = constructType(type);
-            Property schema;
+            final JavaType ct = constructType(type);
+            final Property schema;
 
             if (MultipartFile.class.isAssignableFrom(ct.getRawClass())) {
                 schema = new FileProperty();
@@ -152,19 +152,19 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension {
         return parameter;
     }
 
-    private List<Parameter> extractParametersFromModelAttributeAnnotation(Annotation annotation, Type type) {
+    private List<Parameter> extractParametersFromModelAttributeAnnotation(final Annotation annotation, final Type type) {
         if (!(annotation instanceof ModelAttribute)) {
             return null;
         }
 
-        Class<?> cls = TypeUtils.getRawType(type, type);
+        final Class<?> cls = TypeUtils.getRawType(type, type);
 
-        List<Parameter> parameters = new ArrayList<Parameter>();
-        for (PropertyDescriptor propertyDescriptor : BeanUtils.getPropertyDescriptors(cls)) {
+        final List<Parameter> parameters = new ArrayList<Parameter>();
+        for (final PropertyDescriptor propertyDescriptor : BeanUtils.getPropertyDescriptors(cls)) {
             // Get all the valid setter methods inside the bean
-            Method propertyDescriptorSetter = propertyDescriptor.getWriteMethod();
+            final Method propertyDescriptorSetter = propertyDescriptor.getWriteMethod();
             if (propertyDescriptorSetter != null) {
-                ApiParam propertySetterApiParam = AnnotationUtils.findAnnotation(propertyDescriptorSetter, ApiParam.class);
+                final ApiParam propertySetterApiParam = AnnotationUtils.findAnnotation(propertyDescriptorSetter, ApiParam.class);
                 if (propertySetterApiParam == null) {
                     // If we find a setter that doesn't have @ApiParam annotation, then skip it
                     continue;
@@ -173,15 +173,15 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension {
                 // Here we have a bean setter method that is annotted with @ApiParam, but we still
                 // need to know what type of parameter to create. In order to do this, we look for
                 // any annotation attached to the first method parameter of the setter fucntion.
-                Annotation[][] methodAnnotations = propertyDescriptorSetter.getParameterAnnotations();
+                final Annotation[][] methodAnnotations = propertyDescriptorSetter.getParameterAnnotations();
                 if (methodAnnotations == null || methodAnnotations.length == 0) {
                     continue;
                 }
 
-                String defaultValue = "";
+                final String defaultValue = "";
                 Parameter propertySetterExtractedParameter = null;
-                for (Annotation firstMethodParameterAnnotation : methodAnnotations[0]) {
-                    Class parameterClass = propertyDescriptor.getPropertyType();
+                for (final Annotation firstMethodParameterAnnotation : methodAnnotations[0]) {
+                    final Class parameterClass = propertyDescriptor.getPropertyType();
                     propertySetterExtractedParameter = this.extractParameterFromAnnotation(
                             firstMethodParameterAnnotation, defaultValue, parameterClass);
                     if (propertySetterExtractedParameter != null) {
@@ -191,11 +191,11 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension {
                 }
 
                 if (propertySetterExtractedParameter == null) {
-                    QueryParameter queryParameter = new QueryParameter().name(propertyDescriptor.getDisplayName())
+                    final QueryParameter queryParameter = new QueryParameter().name(propertyDescriptor.getDisplayName())
                             .description(propertySetterApiParam.value())
                             .required(propertySetterApiParam.required());
                     queryParameter.setAccess(propertySetterApiParam.access());
-                    Property schema = ModelConverters.getInstance()
+                    final Property schema = ModelConverters.getInstance()
                             .readAsProperty(propertyDescriptor.getPropertyType());
                     if (schema != null) {
                         queryParameter.setProperty(schema);
@@ -214,8 +214,8 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension {
     }
 
     @Override
-    public boolean shouldIgnoreType(Type type, Set<Type> typesToSkip) {
-        Class<?> cls = TypeUtils.getRawType(type, type);
+    public boolean shouldIgnoreType(final Type type, final Set<Type> typesToSkip) {
+        final Class<?> cls = TypeUtils.getRawType(type, type);
         return cls != null && cls.getName().startsWith("org.springframework") &&
                 !cls.getName().equals("org.springframework.web.multipart.MultipartFile");
     }

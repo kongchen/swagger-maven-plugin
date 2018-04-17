@@ -40,9 +40,9 @@ public class MyResourceImpl extends MyResourceAbstract<String> {
      * @see com.wordnik.jaxrs.MyResource#getPetsById(java.lang.Long, java.lang.Long)
 	 */
     @Override
-    public Response getPetsById(Long startId, Long endId)
+    public Response getPetsById(final Long startId, final Long endId)
             throws com.wordnik.sample.exception.NotFoundException {
-        Pet pet = petData.getPetbyId(startId);
+        final Pet pet = petData.getPetbyId(startId);
         if (pet != null) {
             return Response.ok().entity(pet).build();
         } else {
@@ -67,16 +67,16 @@ public class MyResourceImpl extends MyResourceAbstract<String> {
     @Path("{firstParamConcrete}/properties")
     @Override
     public Response testParamInheritance(
-            @PathParam("firstParamConcrete") String firstParam,
-            String secondParam,
-            String thirdParam) {
+        @PathParam("firstParamConcrete") final String firstParam,
+        final String secondParam,
+        final String thirdParam) {
         return Response.ok().build();
     }
 
     @POST
     @ApiOperation(value = "Insert a response", notes = "This is a contrived example")
     @Override
-    public Response insertResource(@ApiParam(value = "Resource to insert", required = true) String resource) {
+    public Response insertResource(@ApiParam(value = "Resource to insert", required = true) final String resource) {
         return Response.ok().build();
     }
 }

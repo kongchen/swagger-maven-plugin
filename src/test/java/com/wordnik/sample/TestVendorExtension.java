@@ -30,7 +30,7 @@ public class TestVendorExtension extends AbstractSwaggerExtension {
         final TestVendorAnnotation annotation = method.getAnnotation(TestVendorAnnotation.class);
         if (annotation != null) {
 
-            Map<String, Response> map = new HashMap<String, Response>(operation.getResponses());
+            final Map<String, Response> map = new HashMap<String, Response>(operation.getResponses());
             final Response value = new Response();
             value.setDescription(RESPONSE_DESCRIPTION);
             map.put(RESPONSE_STATUS_401, value);

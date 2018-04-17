@@ -61,8 +61,8 @@ public class PetData {
                 "url1", "url2"}, new String[]{"tag3", "tag4"}, "available"));
     }
 
-    public Pet getPetbyId(long petId) {
-        for (Pet pet : pets) {
+    public Pet getPetbyId(final long petId) {
+        for (final Pet pet : pets) {
             if (pet.getId().value() == petId) {
                 return pet;
             }
@@ -70,10 +70,10 @@ public class PetData {
         return null;
     }
 
-    public void deletePet(long petId) {
+    public void deletePet(final long petId) {
         if (!pets.isEmpty()) {
             for (int i = pets.size(); i >= 0; i++) {
-                Pet pet = pets.get(i);
+                final Pet pet = pets.get(i);
                 if (pet.getId().value() == petId) {
                     pets.remove(i);
                 }
@@ -81,11 +81,11 @@ public class PetData {
         }
     }
 
-    public List<Pet> findPetByStatus(String status) {
-        String[] statues = status.split(",");
-        List<Pet> result = new ArrayList<Pet>();
-        for (Pet pet : pets) {
-            for (String s : statues) {
+    public List<Pet> findPetByStatus(final String status) {
+        final String[] statues = status.split(",");
+        final List<Pet> result = new ArrayList<Pet>();
+        for (final Pet pet : pets) {
+            for (final String s : statues) {
                 if (s.equals(pet.getStatus())) {
                     result.add(pet);
                 }
@@ -94,13 +94,13 @@ public class PetData {
         return result;
     }
 
-    public List<Pet> findPetByTags(String tags) {
-        String[] tagList = tags.split(",");
-        List<Pet> result = new ArrayList<Pet>();
-        for (Pet pet : pets) {
+    public List<Pet> findPetByTags(final String tags) {
+        final String[] tagList = tags.split(",");
+        final List<Pet> result = new ArrayList<Pet>();
+        for (final Pet pet : pets) {
             if (pet.getTags() != null) {
-                for (Tag tag : pet.getTags()) {
-                    for (String tagListString : tagList) {
+                for (final Tag tag : pet.getTags()) {
+                    for (final String tagListString : tagList) {
                         if (tagListString.equals(tag.getName())) {
                             result.add(pet);
                         }
@@ -115,7 +115,7 @@ public class PetData {
 		return Collections.unmodifiableList(pets);
 	}
 
-    public Pet addPet(Pet pet) {
+    public Pet addPet(final Pet pet) {
         if (pet.getId().value() == 0) {
             long maxId = 0;
             for (int i = pets.size() - 1; i >= 0; i--) {
@@ -136,23 +136,23 @@ public class PetData {
         return pet;
     }
 
-    static Pet createPet(long id, Category cat, String name, String[] urls,
-                         String[] tags, String status) {
-        Pet pet = new Pet();
+    static Pet createPet(final long id, final Category cat, final String name, final String[] urls,
+                         final String[] tags, final String status) {
+        final Pet pet = new Pet();
         pet.setId(new PetId(id));
         pet.setCategory(cat);
         pet.setName(new PetName(name));
         if (urls != null) {
-            List<String> urlObjs = new ArrayList<String>();
+            final List<String> urlObjs = new ArrayList<String>();
             Collections.addAll(urlObjs, urls);
             pet.setPhotoUrls(urlObjs);
         }
-        List<Tag> tagObjs = new ArrayList<Tag>();
+        final List<Tag> tagObjs = new ArrayList<Tag>();
         int i = 0;
         if (tags != null) {
-            for (String tagString : tags) {
+            for (final String tagString : tags) {
                 i = i + 1;
-                Tag tag = new Tag();
+                final Tag tag = new Tag();
                 tag.setId(i);
                 tag.setName(tagString);
                 tagObjs.add(tag);
@@ -163,8 +163,8 @@ public class PetData {
         return pet;
     }
 
-    static Category createCategory(long id, String name) {
-        Category category = new Category();
+    static Category createCategory(final long id, final String name) {
+        final Category category = new Category();
         category.setId(id);
         category.setName(name);
         return category;

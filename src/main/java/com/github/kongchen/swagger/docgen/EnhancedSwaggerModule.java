@@ -10,7 +10,7 @@ public class EnhancedSwaggerModule extends SimpleModule {
     }
 
     @Override
-    public void setupModule(SetupContext context) {
+    public void setupModule(final SetupContext context) {
         super.setupModule(context);
         context.insertAnnotationIntrospector(new EnhancedSwaggerAnnotationIntrospector());
     }

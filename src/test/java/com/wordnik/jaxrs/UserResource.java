@@ -69,7 +69,7 @@ public class UserResource {
             notes = "This can only be done by the logged in user.",
             position = 1)
     public Response createUser(
-            @ApiParam(value = "Created user object", required = true) User user) {
+            @ApiParam(value = "Created user object", required = true) final User user) {
         userData.addUser(user);
         return Response.ok().entity("").build();
     }
@@ -78,8 +78,8 @@ public class UserResource {
     @Path("/createWithArray")
     @ApiOperation(value = "Creates list of users with given input array",
             position = 2)
-    public Response createUsersWithArrayInput(@ApiParam(value = "List of user object", required = true) User[] users) {
-        for (User user : users) {
+    public Response createUsersWithArrayInput(@ApiParam(value = "List of user object", required = true) final User[] users) {
+        for (final User user : users) {
             userData.addUser(user);
         }
         return Response.ok().entity("").build();
@@ -89,8 +89,8 @@ public class UserResource {
     @Path("/createWithList")
     @ApiOperation(value = "Creates list of users with given input array",
             position = 3)
-    public Response createUsersWithListInput(@ApiParam(value = "List of user object", required = true) java.util.List<User> users) {
-        for (User user : users) {
+    public Response createUsersWithListInput(@ApiParam(value = "List of user object", required = true) final java.util.List<User> users) {
+        for (final User user : users) {
             userData.addUser(user);
         }
         return Response.ok().entity("").build();
@@ -105,8 +105,8 @@ public class UserResource {
             @ApiResponse(code = 400, message = "Invalid user supplied"),
             @ApiResponse(code = 404, message = "User not found")})
     public Response updateUser(
-            @ApiParam(value = "name that need to be deleted", required = true) @PathParam("username") String username,
-            @ApiParam(value = "Updated user object", required = true) User user) {
+            @ApiParam(value = "name that need to be deleted", required = true) @PathParam("username") final String username,
+            @ApiParam(value = "Updated user object", required = true) final User user) {
         userData.addUser(user);
         return Response.ok().entity("").build();
     }
@@ -120,7 +120,7 @@ public class UserResource {
             @ApiResponse(code = 400, message = "Invalid username supplied"),
             @ApiResponse(code = 404, message = "User not found")})
     public Response deleteUser(
-            @ApiParam(value = "The name that needs to be deleted", required = true) @PathParam("username") String username) {
+            @ApiParam(value = "The name that needs to be deleted", required = true) @PathParam("username") final String username) {
         userData.removeUser(username);
         return Response.ok().entity("").build();
     }
@@ -134,9 +134,9 @@ public class UserResource {
             @ApiResponse(code = 400, message = "Invalid username supplied"),
             @ApiResponse(code = 404, message = "User not found")})
     public Response getUserByName(
-            @ApiParam(value = "The name that needs to be fetched. Use user1 for testing. ", required = true) @PathParam("username") String username)
+            @ApiParam(value = "The name that needs to be fetched. Use user1 for testing. ", required = true) @PathParam("username") final String username)
             throws ApiException {
-        User user = userData.findUserByName(username);
+        final User user = userData.findUserByName(username);
         if (user != null) {
             return Response.ok().entity(user).build();
         } else {
@@ -151,8 +151,8 @@ public class UserResource {
             position = 6)
     @ApiResponses(value = {@ApiResponse(code = 400, message = "Invalid username/password supplied")})
     public Response loginUser(
-            @ApiParam(value = "The user name for login", required = true) @QueryParam("username") String username,
-            @ApiParam(value = "The password for login in clear text", required = true) @QueryParam("password") String password) {
+            @ApiParam(value = "The user name for login", required = true) @QueryParam("username") final String username,
+            @ApiParam(value = "The password for login in clear text", required = true) @QueryParam("password") final String password) {
         return Response.ok()
                 .entity("logged in user session:" + System.currentTimeMillis())
                 .build();

@@ -33,7 +33,7 @@ public class ApiResponse {
     public ApiResponse() {
     }
 
-    public ApiResponse(int code, String message) {
+    public ApiResponse(final int code, final String message) {
         this.code = code;
         switch (code) {
             case ERROR:
@@ -63,7 +63,7 @@ public class ApiResponse {
         return code;
     }
 
-    public void setCode(int code) {
+    public void setCode(final int code) {
         this.code = code;
     }
 
@@ -71,7 +71,7 @@ public class ApiResponse {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(final String type) {
         this.type = type;
     }
 
@@ -79,7 +79,7 @@ public class ApiResponse {
         return message;
     }
 
-    public void setMessage(String message) {
+    public void setMessage(final String message) {
         this.message = message;
     }
 }

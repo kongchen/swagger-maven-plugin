@@ -17,9 +17,9 @@
 package com.wordnik.sample.exception;
 
 public class NotFoundException extends ApiException {
-    private int code;
+    private final int code;
 
-    public NotFoundException(int code, String msg) {
+    public NotFoundException(final int code, final String msg) {
         super(code, msg);
         this.code = code;
     }

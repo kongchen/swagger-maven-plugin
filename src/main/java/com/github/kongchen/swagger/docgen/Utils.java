@@ -23,13 +23,13 @@ public class Utils {
 
     private static final java.lang.String CLASSPATH = "classpath:";
 
-    public static TemplatePath parseTemplateUrl(String templatePath) throws GenerateException {
+    public static TemplatePath parseTemplateUrl(final String templatePath) throws GenerateException {
         if (templatePath == null) {
             return null;
         }
-        TemplatePath tp;
+        final TemplatePath tp;
         if (templatePath.startsWith(CLASSPATH)) {
-            String resPath = templatePath.substring(CLASSPATH.length());
+            final String resPath = templatePath.substring(CLASSPATH.length());
             tp = extractTemplateObject(resPath);
             tp.loader = new ClassPathTemplateLoader(tp.prefix, tp.suffix);
         } else {
@@ -40,18 +40,18 @@ public class Utils {
         return tp;
     }
 
-    private static TemplatePath extractTemplateObject(String resPath) throws GenerateException {
-        TemplatePath tp = new TemplatePath();
+    private static TemplatePath extractTemplateObject(final String resPath) throws GenerateException {
+        final TemplatePath tp = new TemplatePath();
         String prefix = "";
         String suffix = "";
         String name = "";
 
-        int prefixidx = resPath.lastIndexOf("/");
+        final int prefixidx = resPath.lastIndexOf("/");
         if (prefixidx != -1) {
             prefix = resPath.substring(0, prefixidx + 1);
         }
 
-        int extidx = resPath.lastIndexOf(".");
+        final int extidx = resPath.lastIndexOf(".");
         if (extidx != -1) {
             suffix = resPath.substring(extidx);
             if (extidx < prefix.length()) {
@@ -66,28 +66,28 @@ public class Utils {
         return tp;
     }
 
-    public static void sortSwagger(Swagger swagger) throws GenerateException {
+    public static void sortSwagger(final Swagger swagger) throws GenerateException {
         if (swagger == null || swagger.getPaths() == null) {
             return;
         }
 
-        TreeMap<String, Path> sortedMap = new TreeMap<String, Path>();
+        final TreeMap<String, Path> sortedMap = new TreeMap<String, Path>();
         if (swagger.getPaths() == null) {
             return;
         }
         sortedMap.putAll(swagger.getPaths());
         swagger.paths(sortedMap);
 
-        for (Path path : swagger.getPaths().values()) {
-            String methods[] = {"Get", "Delete", "Post", "Put", "Options", "Patch"};
-            for (String m : methods) {
+        for (final Path path : swagger.getPaths().values()) {
+            final String[] methods = {"Get", "Delete", "Post", "Put", "Options", "Patch"};
+            for (final String m : methods) {
                 sortResponses(path, m);
             }
         }
 
         //reorder definitions
         if (swagger.getDefinitions() != null) {
-            TreeMap<String, Model> defs = new TreeMap<String, Model>();
+            final TreeMap<String, Model> defs = new TreeMap<String, Model>();
             defs.putAll(swagger.getDefinitions());
             swagger.setDefinitions(defs);
         }
@@ -103,22 +103,22 @@ public class Utils {
 
     }
 
-    private static void sortResponses(Path path, String method) throws GenerateException {
+    private static void sortResponses(final Path path, final String method) throws GenerateException {
         try {
-            Method m = Path.class.getDeclaredMethod("get" + method);
-            Operation op = (Operation) m.invoke(path);
+            final Method m = Path.class.getDeclaredMethod("get" + method);
+            final Operation op = (Operation) m.invoke(path);
             if (op == null) {
                 return;
             }
-            Map<String, Response> responses = op.getResponses();
-            TreeMap<String, Response> res = new TreeMap<String, Response>();
+            final Map<String, Response> responses = op.getResponses();
+            final TreeMap<String, Response> res = new TreeMap<String, Response>();
             res.putAll(responses);
             op.setResponses(res);
-        } catch (NoSuchMethodException e) {
+        } catch (final NoSuchMethodException e) {
             throw new GenerateException(e);
-        } catch (InvocationTargetException e) {
+        } catch (final InvocationTargetException e) {
             throw new GenerateException(e);
-        } catch (IllegalAccessException e) {
+        } catch (final IllegalAccessException e) {
             throw new GenerateException(e);
         }
     }

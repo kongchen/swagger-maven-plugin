@@ -15,12 +15,12 @@ import io.swagger.models.Swagger;
  */
 public class SwaggerReader extends AbstractReader implements ClassSwaggerReader {
 
-    public SwaggerReader(Swagger swagger, Log LOG) {
+    public SwaggerReader(final Swagger swagger, final Log LOG) {
         super(swagger, LOG);
     }
 
     @Override
-    public Swagger read(Set<Class<?>> classes) throws GenerateException {
+    public Swagger read(final Set<Class<?>> classes) throws GenerateException {
         return new Reader(swagger).read(classes);
     }
 

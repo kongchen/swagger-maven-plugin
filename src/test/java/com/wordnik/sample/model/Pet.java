@@ -38,7 +38,7 @@ public class Pet {
         return id;
     }
 
-    public void setId(PetId id) {
+    public void setId(final PetId id) {
         this.id = id;
     }
 
@@ -47,7 +47,7 @@ public class Pet {
         return category;
     }
 
-    public void setCategory(Category category) {
+    public void setCategory(final Category category) {
         this.category = category;
     }
 
@@ -57,7 +57,7 @@ public class Pet {
         return name;
     }
 
-    public void setName(PetName name) {
+    public void setName(final PetName name) {
         this.name = name;
     }
 
@@ -67,7 +67,7 @@ public class Pet {
         return photoUrls;
     }
 
-    public void setPhotoUrls(List<String> photoUrls) {
+    public void setPhotoUrls(final List<String> photoUrls) {
         this.photoUrls = photoUrls;
     }
 
@@ -77,7 +77,7 @@ public class Pet {
         return tags;
     }
 
-    public void setTags(List<Tag> tags) {
+    public void setTags(final List<Tag> tags) {
         this.tags = tags;
     }
 
@@ -87,7 +87,7 @@ public class Pet {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(final String status) {
         this.status = status;
     }
 }

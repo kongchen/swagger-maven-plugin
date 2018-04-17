@@ -59,11 +59,11 @@ public abstract class AbstractDocumentSource {
     private final String swaggerPath;
     private final String modelSubstitute;
     private final boolean jsonExampleValues;
-    private ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper();
     private boolean isSorted = false;
     protected String encoding = "UTF-8";
 
-    public AbstractDocumentSource(Log log, ApiSource apiSource) throws MojoFailureException {
+    public AbstractDocumentSource(final Log log, final ApiSource apiSource) throws MojoFailureException {
         LOG = log;
         this.outputPath = apiSource.getOutputPath();
         this.templatePath = apiSource.getTemplatePath();
@@ -73,7 +73,7 @@ public abstract class AbstractDocumentSource {
 
         swagger = new Swagger();
         if (apiSource.getSchemes() != null) {
-            for (String scheme : apiSource.getSchemes()) {
+            for (final String scheme : apiSource.getSchemes()) {
                 swagger.scheme(Scheme.forValue(scheme));
             }
         }
@@ -81,10 +81,10 @@ public abstract class AbstractDocumentSource {
         // read description from file
         if (apiSource.getDescriptionFile() != null) {
             try {
-                InputStream is = new FileInputStream(apiSource.getDescriptionFile());
+                final InputStream is = new FileInputStream(apiSource.getDescriptionFile());
                 apiSource.getInfo().setDescription(IOUtils.toString(is));
                 is.close();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 throw new MojoFailureException(e.getMessage(), e);
             }
         }
@@ -97,7 +97,7 @@ public abstract class AbstractDocumentSource {
     }
 
     public void loadDocuments() throws GenerateException {
-        ClassSwaggerReader reader = resolveApiReader();
+        final ClassSwaggerReader reader = resolveApiReader();
 
         loadSwaggerExtensions(apiSource);
 
@@ -108,18 +108,18 @@ public abstract class AbstractDocumentSource {
         swagger = doFilter(swagger);
     }
 
-    private Swagger doFilter(Swagger swagger) throws GenerateException {
-        String filterClassName = apiSource.getSwaggerInternalFilter();
+    private Swagger doFilter(final Swagger swagger) throws GenerateException {
+        final String filterClassName = apiSource.getSwaggerInternalFilter();
         if (filterClassName != null) {
             try {
                 LOG.debug(String.format("Setting filter configuration: %s", filterClassName));
                 FilterFactory.setFilter((SwaggerSpecFilter) Class.forName(filterClassName).newInstance());
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 throw new GenerateException("Cannot load: " + filterClassName, e);
             }
         }
 
-        SwaggerSpecFilter filter = FilterFactory.getFilter();
+        final SwaggerSpecFilter filter = FilterFactory.getFilter();
         if (filter == null) {
             return swagger;
         }
@@ -131,14 +131,14 @@ public abstract class AbstractDocumentSource {
                 new HashMap<String, List<String>>());
     }
 
-    private Swagger addSecurityDefinitions(final Swagger swagger, ApiSource apiSource) throws GenerateException {
-        Swagger result = swagger;
+    private Swagger addSecurityDefinitions(final Swagger swagger, final ApiSource apiSource) throws GenerateException {
+        final Swagger result = swagger;
         if (apiSource.getSecurityDefinitions() == null) {
             return result;
         }
-        Map<String, SecuritySchemeDefinition> definitions = new TreeMap<String, SecuritySchemeDefinition>();
-        for (SecurityDefinition sd : apiSource.getSecurityDefinitions()) {
-            for (Map.Entry<String, SecuritySchemeDefinition> entry : sd.generateSecuritySchemeDefinitions().entrySet()) {
+        final Map<String, SecuritySchemeDefinition> definitions = new TreeMap<String, SecuritySchemeDefinition>();
+        for (final SecurityDefinition sd : apiSource.getSecurityDefinitions()) {
+            for (final Map.Entry<String, SecuritySchemeDefinition> entry : sd.generateSecuritySchemeDefinitions().entrySet()) {
                 definitions.put(entry.getKey(), entry.getValue());
             }
         }
@@ -150,18 +150,18 @@ public abstract class AbstractDocumentSource {
      * The reader may modify the extensions list, therefore add the additional swagger extensions
      * after the instantiation of the reader
      */
-    private void loadSwaggerExtensions(ApiSource apiSource) throws GenerateException {
+    private void loadSwaggerExtensions(final ApiSource apiSource) throws GenerateException {
         if (apiSource.getSwaggerExtensions() != null) {
-            List<SwaggerExtension> extensions = SwaggerExtensions.getExtensions();
+            final List<SwaggerExtension> extensions = SwaggerExtensions.getExtensions();
             extensions.addAll(resolveSwaggerExtensions());
         }
     }
 
-    public void toSwaggerDocuments(String uiDocBasePath, String outputFormats, String encoding) throws GenerateException {
+    public void toSwaggerDocuments(final String uiDocBasePath, final String outputFormats, final String encoding) throws GenerateException {
         toSwaggerDocuments(uiDocBasePath, outputFormats, null, encoding);
     }
 
-    public void toSwaggerDocuments(String uiDocBasePath, String outputFormats, String fileName, String encoding) throws GenerateException {
+    public void toSwaggerDocuments(final String uiDocBasePath, final String outputFormats, String fileName, final String encoding) throws GenerateException {
         mapper.configure(SerializationFeature.WRITE_EMPTY_JSON_ARRAYS, false);
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
@@ -176,7 +176,7 @@ public abstract class AbstractDocumentSource {
             Utils.sortSwagger(swagger);
             isSorted = true;
         }
-        File dir = new File(swaggerPath);
+        final File dir = new File(swaggerPath);
         if (dir.isFile()) {
             throw new GenerateException(String.format("Swagger-outputDirectory[%s] must be a directory!", swaggerPath));
         }
@@ -184,7 +184,7 @@ public abstract class AbstractDocumentSource {
         if (!dir.exists()) {
             try {
                 FileUtils.forceMkdir(dir);
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 throw new GenerateException(String.format("Create Swagger-outputDirectory[%s] failed.", swaggerPath));
             }
         }
@@ -194,36 +194,36 @@ public abstract class AbstractDocumentSource {
         }
         try {
             if (outputFormats != null) {
-                for (String format : outputFormats.split(",")) {
+                for (final String format : outputFormats.split(",")) {
                     try {
-                        Output output = Output.valueOf(format.toLowerCase());
+                        final Output output = Output.valueOf(format.toLowerCase());
                         switch (output) {
                             case json:
-                                ObjectWriter jsonWriter = mapper.writer(new DefaultPrettyPrinter().withoutSpacesInObjectEntries());
+                                final ObjectWriter jsonWriter = mapper.writer(new DefaultPrettyPrinter().withoutSpacesInObjectEntries());
                                 FileUtils.write(new File(dir, fileName + ".json"), jsonWriter.writeValueAsString(swagger), encoding);
                                 break;
                             case yaml:
                                 FileUtils.write(new File(dir, fileName + ".yaml"), Yaml.pretty().writeValueAsString(swagger), encoding);
                                 break;
                         }
-                    } catch (Exception e) {
+                    } catch (final Exception e) {
                         throw new GenerateException(String.format("Declared output format [%s] is not supported.", format));
                     }
                 }
             } else {
                 // Default to json
-                ObjectWriter jsonWriter = mapper.writer(new DefaultPrettyPrinter());
+                final ObjectWriter jsonWriter = mapper.writer(new DefaultPrettyPrinter());
                 FileUtils.write(new File(dir, fileName + ".json"), jsonWriter.writeValueAsString(swagger), encoding);
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new GenerateException(e);
         }
     }
 
     public void loadModelModifier() throws GenerateException, IOException {
-        ObjectMapper objectMapper = Json.mapper();
+        final ObjectMapper objectMapper = Json.mapper();
         if (apiSource.isUseJAXBAnnotationProcessor()) {
-            JaxbAnnotationModule jaxbAnnotationModule = new JaxbAnnotationModule();
+            final JaxbAnnotationModule jaxbAnnotationModule = new JaxbAnnotationModule();
             if (apiSource.isUseJAXBAnnotationProcessorAsPrimary()) {
                 jaxbAnnotationModule.setPriority(Priority.PRIMARY);
             } else {
@@ -235,9 +235,9 @@ public abstract class AbstractDocumentSource {
             // must be registered only if we use JaxbAnnotationModule before. Why?
             objectMapper.registerModule(new EnhancedSwaggerModule());
         }
-        ModelModifier modelModifier = new ModelModifier(objectMapper);
+        final ModelModifier modelModifier = new ModelModifier(objectMapper);
 
-        List<String> apiModelPropertyAccessExclusions = apiSource.getApiModelPropertyAccessExclusions();
+        final List<String> apiModelPropertyAccessExclusions = apiSource.getApiModelPropertyAccessExclusions();
         if (apiModelPropertyAccessExclusions != null && !apiModelPropertyAccessExclusions.isEmpty()) {
             modelModifier.setApiModelPropertyAccessExclusions(apiModelPropertyAccessExclusions);
         }
@@ -248,14 +248,14 @@ public abstract class AbstractDocumentSource {
                 reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream(this.modelSubstitute)));
                 String line = reader.readLine();
                 while (line != null) {
-                    String[] classes = line.split(":");
+                    final String[] classes = line.split(":");
                     if (classes.length != 2) {
                         throw new GenerateException("Bad format of override model file, it should be ${actualClassName}:${expectClassName}");
                     }
                     modelModifier.addModelSubstitute(classes[0].trim(), classes[1].trim());
                     line = reader.readLine();
                 }
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 throw new GenerateException(e);
             } finally {
                 if (reader != null) {
@@ -273,7 +273,7 @@ public abstract class AbstractDocumentSource {
             return;
         }
 
-        for (String modelConverter : modelConverters) {
+        for (final String modelConverter : modelConverters) {
             try {
                 final Class<?> modelConverterClass = Class.forName(modelConverter);
                 if (ModelConverter.class.isAssignableFrom(modelConverterClass)) {
@@ -282,38 +282,38 @@ public abstract class AbstractDocumentSource {
                 } else {
                     throw new MojoExecutionException(String.format("Class %s has to be a subclass of %s", modelConverterClass.getName(), ModelConverter.class));
                 }
-            } catch (ClassNotFoundException e) {
+            } catch (final ClassNotFoundException e) {
                 throw new MojoExecutionException(String.format("Could not find custom model converter %s", modelConverter), e);
-            } catch (InstantiationException e) {
+            } catch (final InstantiationException e) {
                 throw new MojoExecutionException(String.format("Unable to instantiate custom model converter %s", modelConverter), e);
-            } catch (IllegalAccessException e) {
+            } catch (final IllegalAccessException e) {
                 throw new MojoExecutionException(String.format("Unable to instantiate custom model converter %s", modelConverter), e);
             }
         }
     }
 
     public void loadTypesToSkip() throws GenerateException {
-        List<String> typesToSkip = apiSource.getTypesToSkip();
+        final List<String> typesToSkip = apiSource.getTypesToSkip();
         if (typesToSkip == null) {
             return;
         }
-        for (String typeToSkip : typesToSkip) {
+        for (final String typeToSkip : typesToSkip) {
             try {
-                Type type = Class.forName(typeToSkip);
+                final Type type = Class.forName(typeToSkip);
                 this.typesToSkip.add(type);
-            } catch (ClassNotFoundException e) {
+            } catch (final ClassNotFoundException e) {
                 throw new GenerateException(e);
             }
         }
     }
 
-    protected File createFile(File dir, String outputResourcePath) throws IOException {
-        File serviceFile;
-        int i = outputResourcePath.lastIndexOf("/");
+    protected File createFile(final File dir, final String outputResourcePath) throws IOException {
+        final File serviceFile;
+        final int i = outputResourcePath.lastIndexOf("/");
         if (i != -1) {
-            String fileName = outputResourcePath.substring(i + 1);
-            String subDir = outputResourcePath.substring(0, i);
-            File finalDirectory = new File(dir, subDir);
+            final String fileName = outputResourcePath.substring(i + 1);
+            final String subDir = outputResourcePath.substring(0, i);
+            final File finalDirectory = new File(dir, subDir);
             finalDirectory.mkdirs();
             serviceFile = new File(finalDirectory, fileName);
         } else {
@@ -334,30 +334,30 @@ public abstract class AbstractDocumentSource {
         LOG.info("Writing doc to " + outputPath + "...");
 
         try {
-            FileOutputStream fileOutputStream = new FileOutputStream(outputPath);
-            OutputStreamWriter writer = new OutputStreamWriter(fileOutputStream, Charset.forName("UTF-8"));
+            final FileOutputStream fileOutputStream = new FileOutputStream(outputPath);
+            final OutputStreamWriter writer = new OutputStreamWriter(fileOutputStream, Charset.forName("UTF-8"));
 
-            TemplatePath tp = Utils.parseTemplateUrl(templatePath);
+            final TemplatePath tp = Utils.parseTemplateUrl(templatePath);
 
-            Handlebars handlebars = new Handlebars(tp.loader);
+            final Handlebars handlebars = new Handlebars(tp.loader);
             initHandlebars(handlebars);
 
-            Template template = handlebars.compile(tp.name);
+            final Template template = handlebars.compile(tp.name);
 
             template.apply(swagger, writer);
             writer.close();
             LOG.info("Done!");
-        } catch (MalformedURLException e) {
+        } catch (final MalformedURLException e) {
             throw new GenerateException(e);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new GenerateException(e);
         }
     }
 
-    private void initHandlebars(Handlebars handlebars) {
+    private void initHandlebars(final Handlebars handlebars) {
         handlebars.registerHelper("ifeq", new Helper<String>() {
             @Override
-            public CharSequence apply(String value, Options options) throws IOException {
+            public CharSequence apply(final String value, final Options options) throws IOException {
                 if (value == null || options.param(0) == null) {
                     return options.inverse();
                 }
@@ -370,11 +370,11 @@ public abstract class AbstractDocumentSource {
 
         handlebars.registerHelper("basename", new Helper<String>() {
             @Override
-            public CharSequence apply(String value, Options options) throws IOException {
+            public CharSequence apply(final String value, final Options options) throws IOException {
                 if (value == null) {
                     return null;
                 }
-                int lastSlash = value.lastIndexOf("/");
+                final int lastSlash = value.lastIndexOf("/");
                 if (lastSlash == -1) {
                     return value;
                 } else {
@@ -411,14 +411,14 @@ public abstract class AbstractDocumentSource {
      * @throws GenerateException if the swagger extensions could not be created / resolved
      */
     protected List<SwaggerExtension> resolveSwaggerExtensions() throws GenerateException {
-        List<String> clazzes = apiSource.getSwaggerExtensions();
-        List<SwaggerExtension> resolved = new ArrayList<SwaggerExtension>();
+        final List<String> clazzes = apiSource.getSwaggerExtensions();
+        final List<SwaggerExtension> resolved = new ArrayList<SwaggerExtension>();
         if (clazzes != null) {
-            for (String clazz : clazzes) {
-                SwaggerExtension extension;
+            for (final String clazz : clazzes) {
+                final SwaggerExtension extension;
                 try {
                     extension = (SwaggerExtension) Class.forName(clazz).newInstance();
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     throw new GenerateException("Cannot load Swagger extension: " + clazz, e);
                 }
                 resolved.add(extension);
@@ -427,17 +427,17 @@ public abstract class AbstractDocumentSource {
         return resolved;
     }
 
-    protected ClassSwaggerReader getCustomApiReader(String customReaderClassName) throws GenerateException {
+    protected ClassSwaggerReader getCustomApiReader(final String customReaderClassName) throws GenerateException {
         try {
             LOG.info("Reading custom API reader: " + customReaderClassName);
-            Class<?> clazz = Class.forName(customReaderClassName);
+            final Class<?> clazz = Class.forName(customReaderClassName);
             if (AbstractReader.class.isAssignableFrom(clazz)) {
-                Constructor<?> constructor = clazz.getConstructor(Swagger.class, Log.class);
+                final Constructor<?> constructor = clazz.getConstructor(Swagger.class, Log.class);
                 return (ClassSwaggerReader) constructor.newInstance(swagger, LOG);
             } else {
                 return (ClassSwaggerReader) clazz.newInstance();
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new GenerateException("Cannot load Swagger API reader: " + customReaderClassName, e);
         }
     }
