@@ -1,12 +1,8 @@
 package com.github.kongchen.swagger.docgen.spring;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.github.kongchen.swagger.docgen.util.SpringUtils;
-
-import edu.emory.mathcs.backport.java.util.Arrays;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
