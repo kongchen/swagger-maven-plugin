@@ -1,17 +1,11 @@
 package com.github.kongchen.swagger.docgen.spring;
 
 import com.fasterxml.jackson.databind.JavaType;
-import com.google.common.collect.Lists;
 import io.swagger.annotations.ApiParam;
 import io.swagger.converter.ModelConverters;
 import io.swagger.jaxrs.ext.AbstractSwaggerExtension;
 import io.swagger.jaxrs.ext.SwaggerExtension;
-import io.swagger.models.parameters.CookieParameter;
-import io.swagger.models.parameters.FormParameter;
-import io.swagger.models.parameters.HeaderParameter;
-import io.swagger.models.parameters.Parameter;
-import io.swagger.models.parameters.PathParameter;
-import io.swagger.models.parameters.QueryParameter;
+import io.swagger.models.parameters.*;
 import io.swagger.models.properties.ArrayProperty;
 import io.swagger.models.properties.FileProperty;
 import io.swagger.models.properties.Property;
@@ -19,19 +13,17 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author chekong on 15/4/27.
@@ -62,10 +54,7 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension {
         if (!parameters.isEmpty()) {
             return parameters;
         }
-        if (chain.hasNext()) {
-            return chain.next().extractParameters(annotations, type, typesToSkip, chain);
-        }
-        return Lists.newArrayList();
+        return super.extractParameters(annotations, type, typesToSkip, chain);
     }
 
     private Parameter extractParameterFromAnnotation(Annotation annotation, String defaultValue, Type type) {

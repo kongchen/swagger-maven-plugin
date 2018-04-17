@@ -11,19 +11,8 @@ import org.apache.commons.lang3.reflect.TypeUtils;
 
 import javax.ws.rs.BeanParam;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AccessibleObject;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.lang.reflect.*;
+import java.util.*;
 
 /**
  * This extension extracts the parameters inside a {@code @BeanParam} by
@@ -75,10 +64,7 @@ public class BeanParamInjectParamExtention extends AbstractSwaggerExtension {
                 return extractParameters(cls, typesToSkip);
             }
         }
-        if (chain.hasNext()) {
-            return chain.next().extractParameters(annotations, type, typesToSkip, chain);
-        }
-        return Lists.newArrayList();
+        return super.extractParameters(annotations, type, typesToSkip, chain);
     }
 
     private List<Parameter> extractParameters(Class<?> cls, Set<Type> typesToSkip) {
