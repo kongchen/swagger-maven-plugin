@@ -1,5 +1,6 @@
 package com.github.kongchen.swagger.docgen.jaxrs;
 
+import com.sun.jersey.multipart.FormDataParam;
 import io.swagger.converter.ModelConverters;
 import io.swagger.jaxrs.ext.AbstractSwaggerExtension;
 import io.swagger.jaxrs.ext.SwaggerExtension;
@@ -120,6 +121,22 @@ public class JaxrsParameterExtension extends AbstractSwaggerExtension {
             parameter = cookieParameter;
         } else if (annotation instanceof FormParam) {
             FormParam param = (FormParam) annotation;
+            FormParameter formParameter = new FormParameter().name(param.value());
+            if (!defaultValue.isEmpty()) {
+                formParameter.setDefaultValue(defaultValue);
+            }
+            Property schema = ModelConverters.getInstance().readAsProperty(type);
+            if (schema != null) {
+                formParameter.setProperty(schema);
+            }
+
+            String parameterType = formParameter.getType();
+            if (parameterType == null || parameterType.equals("ref") || parameterType.equals("array")) {
+                formParameter.setType("string");
+            }
+            parameter = formParameter;
+        } else if (annotation instanceof FormDataParam) {
+            FormDataParam param = (FormDataParam) annotation;
             FormParameter formParameter = new FormParameter().name(param.value());
             if (!defaultValue.isEmpty()) {
                 formParameter.setDefaultValue(defaultValue);
