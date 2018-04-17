@@ -49,6 +49,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import static javax.ws.rs.core.MediaType.APPLICATION_XML;
+import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 
 @Path("/pet")
 @Api(value = "/pet", description = "Operations about pets", authorizations = {
@@ -58,7 +60,7 @@ import javax.ws.rs.core.Response;
                         @AuthorizationScope(scope = "read:pets", description = "read your pets")
                 })
 })
-@Produces({"application/json", "application/xml"})
+@Produces({MediaType.APPLICATION_JSON, APPLICATION_XML})
 public class PetResource {
     static PetData petData = new PetData();
     static JavaRestResourceUtil ru = new JavaRestResourceUtil();
@@ -116,7 +118,7 @@ public class PetResource {
     }
 
     @POST
-    @Consumes({"application/json", "application/xml"})
+    @Consumes({MediaType.APPLICATION_JSON, "application/xml"})
     @ApiOperation(value = "Add a new pet to the store")
     @ApiResponses(value = {@ApiResponse(code = 405, message = "Invalid input")})
     public Response addPet(
@@ -126,7 +128,7 @@ public class PetResource {
     }
 
     @PUT
-    @Consumes({"application/json", "application/xml"})
+    @Consumes({MediaType.APPLICATION_JSON, "application/xml"})
     @ApiOperation(value = "Update an existing pet")
     @ApiResponses(value = {@ApiResponse(code = 400, message = "Invalid ID supplied"),
             @ApiResponse(code = 404, message = "Pet not found"),
@@ -225,7 +227,7 @@ public class PetResource {
 
     @ApiOperation(value = "Returns pet", response = Pet.class)
     @GET
-    @Produces("application/json")
+    @Produces(MediaType.APPLICATION_JSON)
     public Pet get(@ApiParam(hidden = true, name = "hiddenParameter") @QueryParam("hiddenParameter") String hiddenParameter) {
         return new Pet();
     }
@@ -233,7 +235,7 @@ public class PetResource {
     @ApiOperation(value = "Test pet as json string in query", response = Pet.class)
     @GET
     @Path("/test")
-    @Produces("application/json")
+    @Produces(MediaType.APPLICATION_JSON)
     public Pet test(
             @ApiParam(value = "describe Pet in json here")
             @QueryParam("pet") Pet pet) {
@@ -242,7 +244,7 @@ public class PetResource {
 
     @GET
     @Path("/test/extensions")
-    @Produces("text/plain")
+    @Produces(TEXT_PLAIN)
     @ApiOperation(value = "testExtensions",
             extensions = {
                     @Extension(name = "firstExtension", properties = {
@@ -259,7 +261,7 @@ public class PetResource {
     @ApiOperation(value = "Test apiimplicitparams", response = Pet.class)
     @GET
     @Path("/test/apiimplicitparams/{path-test-name}")
-    @Produces("application/json")
+    @Produces(MediaType.APPLICATION_JSON)
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = "header-test-name",
@@ -291,7 +293,7 @@ public class PetResource {
     @ApiOperation(value = "Test testFormApiImplicitParams", response = Pet.class)
     @GET
     @Path("/test/testFormApiImplicitParams")
-    @Produces("application/json")
+    @Produces(MediaType.APPLICATION_JSON)
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = "form-test-name",
@@ -308,7 +310,7 @@ public class PetResource {
 
     @ApiOperation(value = "testingHiddenApiOperation", hidden = true)
     @GET
-    @Produces("application/json")
+    @Produces(MediaType.APPLICATION_JSON)
     public String testingHiddenApiOperation() {
         return "testingHiddenApiOperation";
     }

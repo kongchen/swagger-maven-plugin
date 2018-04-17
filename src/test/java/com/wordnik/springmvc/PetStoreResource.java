@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-@RequestMapping(value = "/store", produces = { "application/json", "application/xml" })
+@RequestMapping(value = "/store", produces = { MediaType.APPLICATION_JSON, "application/xml" })
 @Api(value = "/store", description = "Operations about store")
 public class PetStoreResource {
     static StoreData storeData = new StoreData();

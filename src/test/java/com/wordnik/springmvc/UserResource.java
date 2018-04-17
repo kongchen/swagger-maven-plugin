@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 
 @Api(value = "/user", description = "Operations about user")
-@RequestMapping(value = "/user", produces = {"application/json", "application/xml"})
+@RequestMapping(value = "/user", produces = {MediaType.APPLICATION_JSON, "application/xml"})
 public class UserResource {
     static UserData userData = new UserData();
 

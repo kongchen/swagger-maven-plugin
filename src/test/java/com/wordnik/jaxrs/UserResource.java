@@ -39,7 +39,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 
 @SwaggerDefinition(
         host = "www.example.com:8080",
@@ -58,7 +60,7 @@ import javax.ws.rs.core.Response;
 )
 @Path("/user")
 @Api(value = "/user")
-@Produces({"application/json", "application/xml"})
+@Produces({MediaType.APPLICATION_JSON, APPLICATION_XML})
 public class UserResource {
     static UserData userData = new UserData();
 

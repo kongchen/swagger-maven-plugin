@@ -37,10 +37,12 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 
 @Path("/store")
 @Api(value = "/store")
-@Produces({"application/json", "application/xml"})
+@Produces({APPLICATION_JSON, APPLICATION_XML})
 public class PetStoreResource {
     static StoreData storeData = new StoreData();
     static JavaRestResourceUtil ru = new JavaRestResourceUtil();
