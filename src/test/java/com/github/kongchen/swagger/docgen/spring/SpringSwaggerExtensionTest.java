@@ -36,7 +36,8 @@ public class SpringSwaggerExtensionTest {
     private static class SomeResource {
         @ModelAttribute
         public void get() {
-
+            // no implementation needed. Method is only for the test cases, so that the annotation ModelAttribute
+            // can easily be retrieved and used
         }
     }
 }

@@ -35,7 +35,8 @@ public class JaxrsParameterExtensionTest {
     private static class SomeResource {
         @QueryParam("lang")
         public void get(String lang) {
-
+            // no implementation needed. Method is only for the test cases, so that the annotation QueryParam
+            // can easily be retrieved and used
         }
     }
 }
