@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-
+import javax.ws.rs.core.MediaType;
 
 @Api(value = "/user", description = "Operations about user")
 @RequestMapping(value = "/user", produces = {MediaType.APPLICATION_JSON, "application/xml"})
