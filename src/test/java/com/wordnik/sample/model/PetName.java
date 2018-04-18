@@ -10,12 +10,12 @@ public class PetName {
     private final String name;
 
     @JsonCreator
-    public static PetName fromString(@JsonProperty("name") String name) {
+    public static PetName fromString(@JsonProperty("name") final String name) {
 
         return new PetName(name);
     }
 
-    public PetName(String name) {
+    public PetName(final String name) {
         this.name = name;
     }
 

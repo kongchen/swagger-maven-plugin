@@ -17,9 +17,9 @@
 package com.wordnik.sample.exception;
 
 public class ApiException extends Exception {
-    private int code;
+    private final int code;
 
-    public ApiException(int code, String msg) {
+    public ApiException(final int code, final String msg) {
         super(msg);
         this.code = code;
     }

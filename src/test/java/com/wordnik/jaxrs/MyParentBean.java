@@ -17,7 +17,7 @@ public class MyParentBean {
         return myParentheader;
     }
 
-    public void setMyParentheader(String myParentheader) {
+    public void setMyParentheader(final String myParentheader) {
         this.myParentheader = myParentheader;
     }
 

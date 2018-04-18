@@ -18,7 +18,7 @@ import java.util.Set;
  */
 public class MavenDocumentSource extends AbstractDocumentSource {
 
-    public MavenDocumentSource(ApiSource apiSource, Log log, String encoding) throws MojoFailureException {
+    public MavenDocumentSource(final ApiSource apiSource, final Log log, final String encoding) throws MojoFailureException {
         super(log, apiSource);
         if(encoding !=null) {
             this.encoding = encoding;
@@ -34,9 +34,9 @@ public class MavenDocumentSource extends AbstractDocumentSource {
 
     @Override
     protected ClassSwaggerReader resolveApiReader() throws GenerateException {
-        String customReaderClassName = apiSource.getSwaggerApiReader();
+        final String customReaderClassName = apiSource.getSwaggerApiReader();
         if (customReaderClassName == null) {
-            JaxrsReader reader = new JaxrsReader(swagger, LOG);
+            final JaxrsReader reader = new JaxrsReader(swagger, LOG);
             reader.setTypesToSkip(this.typesToSkip);
             return reader;
         } else {

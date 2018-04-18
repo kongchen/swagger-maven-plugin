@@ -15,7 +15,7 @@ import io.swagger.jackson.AbstractModelConverter;
  */
 public class ModelConverterHelper extends AbstractModelConverter implements ModelConverter {
 
-    public ModelConverterHelper(ObjectMapper mapper) {
+    public ModelConverterHelper(final ObjectMapper mapper) {
         super(mapper);
     }
 }

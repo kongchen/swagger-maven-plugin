@@ -29,27 +29,27 @@ import java.util.Map;
  * @author chekong on 15/5/19.
  */
 public class ModelModifier extends ModelResolver {
-    private Map<JavaType, JavaType> modelSubtitutes = new HashMap<JavaType, JavaType>();
+    private final Map<JavaType, JavaType> modelSubtitutes = new HashMap<JavaType, JavaType>();
     private List<String> apiModelPropertyAccessExclusions = new ArrayList<String>();
 
-    private static Logger LOGGER = LoggerFactory.getLogger(ModelModifier.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ModelModifier.class);
 
-    public ModelModifier(ObjectMapper mapper) {
+    public ModelModifier(final ObjectMapper mapper) {
         super(mapper);
     }
 
-    public void addModelSubstitute(String fromClass, String toClass) throws GenerateException {
+    public void addModelSubstitute(final String fromClass, final String toClass) throws GenerateException {
         JavaType type = null;
         JavaType toType = null;
         try {
             type = _mapper.constructType(Class.forName(fromClass));
-        } catch (ClassNotFoundException e) {
+        } catch (final ClassNotFoundException e) {
             LOGGER.warn(String.format("Problem with loading class: %s. Mapping from: %s to: %s will be ignored.",
                     fromClass, fromClass, toClass));
         }
         try {
             toType = _mapper.constructType(Class.forName(toClass));
-        } catch (ClassNotFoundException e) {
+        } catch (final ClassNotFoundException e) {
             LOGGER.warn(String.format("Problem with loading class: %s. Mapping from: %s to: %s will be ignored.",
                     toClass, fromClass, toClass));
         }
@@ -62,14 +62,14 @@ public class ModelModifier extends ModelResolver {
         return apiModelPropertyAccessExclusions;
     }
 
-    public void setApiModelPropertyAccessExclusions(List<String> apiModelPropertyAccessExclusions) {
+    public void setApiModelPropertyAccessExclusions(final List<String> apiModelPropertyAccessExclusions) {
         this.apiModelPropertyAccessExclusions = apiModelPropertyAccessExclusions;
     }
 
     @Override
-    public Property resolveProperty(Type type, ModelConverterContext context, Annotation[] annotations, Iterator<ModelConverter> chain) {
+    public Property resolveProperty(final Type type, final ModelConverterContext context, final Annotation[] annotations, final Iterator<ModelConverter> chain) {
     	// for method parameter types we get here Type but we need JavaType
-    	JavaType javaType = toJavaType(type);
+    	final JavaType javaType = toJavaType(type);
         if (modelSubtitutes.containsKey(javaType)) {
             return super.resolveProperty(modelSubtitutes.get(javaType), context, annotations, chain);
         } else if (chain.hasNext()) {
@@ -81,9 +81,9 @@ public class ModelModifier extends ModelResolver {
     }
 
     @Override
-    public Model resolve(Type type, ModelConverterContext context, Iterator<ModelConverter> chain) {
+    public Model resolve(final Type type, final ModelConverterContext context, final Iterator<ModelConverter> chain) {
     	// for method parameter types we get here Type but we need JavaType
-    	JavaType javaType = toJavaType(type);
+    	final JavaType javaType = toJavaType(type);
         if (modelSubtitutes.containsKey(javaType)) {
             return super.resolve(modelSubtitutes.get(javaType), context, chain);
         } else {
@@ -92,24 +92,24 @@ public class ModelModifier extends ModelResolver {
     }
 
     @Override
-    public Model resolve(JavaType type, ModelConverterContext context, Iterator<ModelConverter> chain) {
-        Model model = super.resolve(type, context, chain);
+    public Model resolve(final JavaType type, final ModelConverterContext context, final Iterator<ModelConverter> chain) {
+        final Model model = super.resolve(type, context, chain);
 
         // If there are no @ApiModelPropety exclusions configured, return the untouched model
         if (apiModelPropertyAccessExclusions == null || apiModelPropertyAccessExclusions.isEmpty()) {
             return model;
         }
 
-        Class<?> cls = type.getRawClass();
+        final Class<?> cls = type.getRawClass();
 
-        for (Method method : cls.getDeclaredMethods()) {
-            ApiModelProperty apiModelPropertyAnnotation = AnnotationUtils.findAnnotation(method, ApiModelProperty.class);
+        for (final Method method : cls.getDeclaredMethods()) {
+            final ApiModelProperty apiModelPropertyAnnotation = AnnotationUtils.findAnnotation(method, ApiModelProperty.class);
 
             processProperty(apiModelPropertyAnnotation, model);
         }
 
-        for (Field field : FieldUtils.getAllFields(cls)) {
-            ApiModelProperty apiModelPropertyAnnotation = AnnotationUtils.getAnnotation(field, ApiModelProperty.class);
+        for (final Field field : FieldUtils.getAllFields(cls)) {
+            final ApiModelProperty apiModelPropertyAnnotation = AnnotationUtils.getAnnotation(field, ApiModelProperty.class);
 
             processProperty(apiModelPropertyAnnotation, model);
         }
@@ -123,13 +123,13 @@ public class ModelModifier extends ModelResolver {
      * @param apiModelPropertyAnnotation annotation
      * @param model model with properties
      */
-    private void processProperty(ApiModelProperty apiModelPropertyAnnotation, Model model) {
+    private void processProperty(final ApiModelProperty apiModelPropertyAnnotation, final Model model) {
         if (apiModelPropertyAnnotation == null) {
             return;
         }
 
-        String apiModelPropertyAccess = apiModelPropertyAnnotation.access();
-        String apiModelPropertyName = apiModelPropertyAnnotation.name();
+        final String apiModelPropertyAccess = apiModelPropertyAnnotation.access();
+        final String apiModelPropertyName = apiModelPropertyAnnotation.name();
 
         // If the @ApiModelProperty is not populated with both #name and #access, skip it
         if (apiModelPropertyAccess.isEmpty() || apiModelPropertyName.isEmpty()) {
@@ -148,8 +148,8 @@ public class ModelModifier extends ModelResolver {
      * @param type object to convert
      * @return object converted to {@link JavaType}
      */
-    private JavaType toJavaType(Type type) {
-		JavaType typeToFind;
+    private JavaType toJavaType(final Type type) {
+		final JavaType typeToFind;
     	if (type instanceof JavaType) {
     		typeToFind = (JavaType) type;
     	} else {

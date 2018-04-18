@@ -11,16 +11,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class SwaggerlessResource {
 
     @RequestMapping(value = "/swaggerless/{petId}", method = RequestMethod.GET)
-    public Pet getPetByName(@PathVariable(value = "name") String name) {
+    public Pet getPetByName(@PathVariable(value = "name") final String name) {
         // Just create and return a new pet
-        Pet pet = new Pet();
+        final Pet pet = new Pet();
         pet.setName(new PetName(name));
         return pet;
     }
 
-    public Pet notAnEndpoint(@PathVariable(value = "name") String name) {
+    public Pet notAnEndpoint(@PathVariable(value = "name") final String name) {
         // Just create and return a new pet
-        Pet pet = new Pet();
+        final Pet pet = new Pet();
         pet.setName(new PetName(name));
         return pet;
     }

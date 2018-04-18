@@ -46,7 +46,7 @@ public class ApiDocumentMojo extends AbstractMojo {
      */
     @Parameter(property = "swagger.skip", defaultValue = "false")
     private boolean skipSwaggerGeneration;
-    
+
     @Parameter(property="file.encoding")
     private String encoding;
 
@@ -54,7 +54,7 @@ public class ApiDocumentMojo extends AbstractMojo {
         return apiSources;
     }
 
-    public void setApiSources(List<ApiSource> apiSources) {
+    public void setApiSources(final List<ApiSource> apiSources) {
         this.apiSources = apiSources;
     }
 
@@ -84,9 +84,9 @@ public class ApiDocumentMojo extends AbstractMojo {
 
         try {
             getLog().debug(apiSources.toString());
-            for (ApiSource apiSource : apiSources) {
+            for (final ApiSource apiSource : apiSources) {
                 validateConfiguration(apiSource);
-                AbstractDocumentSource documentSource = apiSource.isSpringmvc()
+                final AbstractDocumentSource documentSource = apiSource.isSpringmvc()
                         ? new SpringMavenDocumentSource(apiSource, getLog(), projectEncoding)
                         : new MavenDocumentSource(apiSource, getLog(), projectEncoding);
 
@@ -95,7 +95,7 @@ public class ApiDocumentMojo extends AbstractMojo {
                 documentSource.loadModelConverters();
                 documentSource.loadDocuments();
                 if (apiSource.getOutputPath() != null) {
-                    File outputDirectory = new File(apiSource.getOutputPath()).getParentFile();
+                    final File outputDirectory = new File(apiSource.getOutputPath()).getParentFile();
                     if (outputDirectory != null && !outputDirectory.exists()) {
                         if (!outputDirectory.mkdirs()) {
                             throw new MojoExecutionException("Create directory[" +
@@ -106,7 +106,7 @@ public class ApiDocumentMojo extends AbstractMojo {
                 if (apiSource.getTemplatePath() != null) {
                     documentSource.toDocuments();
                 }
-                String swaggerFileName = getSwaggerFileName(apiSource.getSwaggerFileName());
+                final String swaggerFileName = getSwaggerFileName(apiSource.getSwaggerFileName());
                 documentSource.toSwaggerDocuments(
                         apiSource.getSwaggerUIDocBasePath() == null
                                 ? apiSource.getBasePath()
@@ -115,21 +115,21 @@ public class ApiDocumentMojo extends AbstractMojo {
 
 
                 if (apiSource.isAttachSwaggerArtifact() && apiSource.getSwaggerDirectory() != null && project != null) {
-                    String outputFormats = apiSource.getOutputFormats();
+                    final String outputFormats = apiSource.getOutputFormats();
                     if (outputFormats != null) {
-                        for (String format : outputFormats.split(",")) {
-                            String classifier = swaggerFileName.equals("swagger")
+                        for (final String format : outputFormats.split(",")) {
+                            final String classifier = swaggerFileName.equals("swagger")
                                     ? getSwaggerDirectoryName(apiSource.getSwaggerDirectory())
                                     : swaggerFileName;
-                            File swaggerFile = new File(apiSource.getSwaggerDirectory(), swaggerFileName + "." + format.toLowerCase());
+                            final File swaggerFile = new File(apiSource.getSwaggerDirectory(), swaggerFileName + "." + format.toLowerCase());
                             projectHelper.attachArtifact(project, format.toLowerCase(), classifier, swaggerFile);
                         }
                     }
                 }
             }
-        } catch (GenerateException e) {
+        } catch (final GenerateException e) {
             throw new MojoFailureException(e.getMessage(), e);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new MojoExecutionException(e.getMessage(), e);
         }
     }
@@ -140,7 +140,7 @@ public class ApiDocumentMojo extends AbstractMojo {
      * @param apiSource
      * @throws GenerateException
      */
-    private void validateConfiguration(ApiSource apiSource) throws GenerateException {
+    private void validateConfiguration(final ApiSource apiSource) throws GenerateException {
         if (apiSource == null) {
             throw new GenerateException("You do not configure any apiSource!");
         } else if (apiSource.getInfo() == null) {
@@ -166,27 +166,27 @@ public class ApiDocumentMojo extends AbstractMojo {
 
     private boolean useSwaggerSpec11() {
         try {
-            Class<?> tryClass = Class.forName("com.wordnik.swagger.annotations.ApiErrors");
+            final Class<?> tryClass = Class.forName("com.wordnik.swagger.annotations.ApiErrors");
             return true;
-        } catch (ClassNotFoundException e) {
+        } catch (final ClassNotFoundException e) {
             return false;
         }
     }
 
     private boolean useSwaggerSpec13() {
         try {
-            Class<?> tryClass = Class.forName("com.wordnik.swagger.model.ApiListing");
+            final Class<?> tryClass = Class.forName("com.wordnik.swagger.model.ApiListing");
             return true;
-        } catch (ClassNotFoundException e) {
+        } catch (final ClassNotFoundException e) {
             return false;
         }
     }
-    
-    private String getSwaggerFileName(String swaggerFileName) {
+
+    private String getSwaggerFileName(final String swaggerFileName) {
         return swaggerFileName == null || "".equals(swaggerFileName.trim()) ? "swagger" : swaggerFileName;
     }
 
-    private String getSwaggerDirectoryName(String swaggerDirectory) {
+    private String getSwaggerDirectoryName(final String swaggerDirectory) {
         return new File(swaggerDirectory).getName();
     }
 

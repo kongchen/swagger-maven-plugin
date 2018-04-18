@@ -37,10 +37,12 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 
 @Path("/store")
 @Api(value = "/store")
-@Produces({"application/json", "application/xml"})
+@Produces({APPLICATION_JSON, APPLICATION_XML})
 public class PetStoreResource {
     static StoreData storeData = new StoreData();
     static JavaRestResourceUtil ru = new JavaRestResourceUtil();
@@ -53,10 +55,10 @@ public class PetStoreResource {
     @ApiResponses(value = {@ApiResponse(code = 400, message = "Invalid ID supplied"),
             @ApiResponse(code = 404, message = "Order not found")})
     public Response getOrderById(
-            @ApiParam(hidden = true, value = "this is a hidden parameter", required = false) @QueryParam("hiddenParam") String hiddenParam,
-            @ApiParam(value = "ID of pet that needs to be fetched", allowableValues = "range[1,5]", required = true) @PathParam("orderId") String orderId)
+            @ApiParam(hidden = true, value = "this is a hidden parameter", required = false) @QueryParam("hiddenParam") final String hiddenParam,
+            @ApiParam(value = "ID of pet that needs to be fetched", allowableValues = "range[1,5]", required = true) @PathParam("orderId") final String orderId)
             throws NotFoundException {
-        Order order = storeData.findOrderById(ru.getLong(0, 10000, 0, orderId));
+        final Order order = storeData.findOrderById(ru.getLong(0, 10000, 0, orderId));
         if (order != null) {
             return Response.ok().entity(order).build();
         } else {
@@ -73,11 +75,11 @@ public class PetStoreResource {
             @ApiResponse(code = 404, message = "Order not found") })
     public Response getOrdersById(
             @ApiParam(value = "IDs of pets that needs to be fetched",
-                    required = true) @PathParam("orderIds") List<String> orderIds)
+                    required = true) @PathParam("orderIds") final List<String> orderIds)
             throws com.wordnik.sample.exception.NotFoundException {
-        List<Order> orders = Lists.newArrayList();
-        for (String orderId : orderIds) {
-            Order order = storeData.findOrderById(ru.getLong(0, 10000, 0, orderId));
+        final List<Order> orders = Lists.newArrayList();
+        for (final String orderId : orderIds) {
+            final Order order = storeData.findOrderById(ru.getLong(0, 10000, 0, orderId));
             if (order != null) {
                 orders.add(order);
             } else {
@@ -94,7 +96,7 @@ public class PetStoreResource {
     @ApiResponses({@ApiResponse(code = 400, message = "Invalid Order")})
     public Order placeOrder(
             @ApiParam(value = "order placed for purchasing the pet",
-                    required = true) Order order) {
+                    required = true) final Order order) {
         storeData.placeOrder(order);
         return storeData.placeOrder(order);
     }
@@ -130,7 +132,7 @@ public class PetStoreResource {
     @ApiResponses(value = {@ApiResponse(code = 400, message = "Invalid ID supplied"),
             @ApiResponse(code = 404, message = "Order not found")})
     public Response deleteOrder(
-            @ApiParam(value = "ID of the order that needs to be deleted", allowableValues = "range[1,infinity]", required = true) @PathParam("orderId") String orderId) {
+            @ApiParam(value = "ID of the order that needs to be deleted", allowableValues = "range[1,infinity]", required = true) @PathParam("orderId") final String orderId) {
         storeData.deleteOrder(ru.getLong(0, 10000, 0, orderId));
         return Response.ok().entity("").build();
     }

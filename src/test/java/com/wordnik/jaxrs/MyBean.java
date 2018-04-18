@@ -38,10 +38,10 @@ public class MyBean extends MyParentBean {
 
     @QueryParam(value = "listValue")
     private List<String> listValue;
-    
+
     @BeanParam
     private MyNestedBean nestedBean;
-    
+
     /**
      * This field is to test that bean params using constructor injection behave
      * correctly. It's also nested just to avoid adding too much test code.
@@ -52,7 +52,7 @@ public class MyBean extends MyParentBean {
     @ApiParam(value = "testIntegerAllowableValues", defaultValue = "25", allowableValues = "25, 50, 100")
     @QueryParam("testIntegerAllowableValues")
     public Integer testIntegerAllowableValues;
-    
+
     /**
      * This field's allowableValues, required, pattern, and defaultValue should
      * be derived based on its JAX-RS and validation annotations.
@@ -69,7 +69,7 @@ public class MyBean extends MyParentBean {
         return myHeader;
     }
 
-    public void setmyHeader(String myHeader) {
+    public void setmyHeader(final String myHeader) {
         this.myHeader = myHeader;
     }
 
@@ -77,7 +77,7 @@ public class MyBean extends MyParentBean {
         return petId;
     }
 
-    public void setPetId(String petId) {
+    public void setPetId(final String petId) {
         this.petId = petId;
     }
 
@@ -85,7 +85,7 @@ public class MyBean extends MyParentBean {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -93,7 +93,7 @@ public class MyBean extends MyParentBean {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(final String status) {
         this.status = status;
     }
 
@@ -101,7 +101,7 @@ public class MyBean extends MyParentBean {
         return intValue;
     }
 
-    public void setIntValue(int intValue) {
+    public void setIntValue(final int intValue) {
         this.intValue = intValue;
     }
 
@@ -109,31 +109,31 @@ public class MyBean extends MyParentBean {
         return listValue;
     }
 
-    public void setListValue(List<String> listValue) {
+    public void setListValue(final List<String> listValue) {
         this.listValue = listValue;
     }
 
     public MyNestedBean getNestedBean() {
         return nestedBean;
     }
-    
-    public void setNestedBean(MyNestedBean nestedBean) {
+
+    public void setNestedBean(final MyNestedBean nestedBean) {
         this.nestedBean = nestedBean;
     }
-    
+
     public MyConstructorInjectedNestedBean getConstructorInjectedNestedBean() {
         return constructorInjectedNestedBean;
     }
-    
-    public void setConstructorInjectedNestedBean(MyConstructorInjectedNestedBean constructorInjectedNestedBean) {
+
+    public void setConstructorInjectedNestedBean(final MyConstructorInjectedNestedBean constructorInjectedNestedBean) {
         this.constructorInjectedNestedBean = constructorInjectedNestedBean;
     }
-    
+
     public int getConstrainedField() {
         return constrainedField;
     }
-    
-    public void setConstrainedField(int constrainedField) {
+
+    public void setConstrainedField(final int constrainedField) {
         this.constrainedField = constrainedField;
     }
 }

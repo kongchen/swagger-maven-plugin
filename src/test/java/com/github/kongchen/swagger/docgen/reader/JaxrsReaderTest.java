@@ -46,21 +46,21 @@ public class JaxrsReaderTest {
 
     @Test
     public void ignoreClassIfNoApiAnnotation() {
-        Swagger result = reader.read(NotAnnotatedApi.class);
+        final Swagger result = reader.read(NotAnnotatedApi.class);
 
         assertEmptySwaggerResponse(result);
     }
 
     @Test
     public void ignoreApiIfHiddenAttributeIsTrue() {
-        Swagger result = reader.read(HiddenApi.class);
+        final Swagger result = reader.read(HiddenApi.class);
 
         assertEmptySwaggerResponse(result);
     }
 
     @Test
     public void includeApiIfHiddenParameterIsTrueAndApiHiddenAttributeIsTrue() {
-        Swagger result = reader.read(HiddenApi.class, "", null, true, new String[0], new String[0], new HashMap<String, Tag>(), new ArrayList<Parameter>());
+        final Swagger result = reader.read(HiddenApi.class, "", null, true, new String[0], new String[0], new HashMap<String, Tag>(), new ArrayList<Parameter>());
 
         assertNotNull(result, "No Swagger object created");
         assertFalse(result.getTags().isEmpty(), "Should contain api tags");
@@ -69,36 +69,36 @@ public class JaxrsReaderTest {
 
     @Test
     public void discoverApiOperation() {
-        Tag expectedTag = new Tag();
+        final Tag expectedTag = new Tag();
         expectedTag.name("atag");
-        Swagger result = reader.read(AnApi.class);
+        final Swagger result = reader.read(AnApi.class);
 
         assertSwaggerResponseContents(expectedTag, result);
     }
 
     @Test
     public void createNewSwaggerInstanceIfNoneProvided() {
-        JaxrsReader nullReader = new JaxrsReader(null, log);
-        Tag expectedTag = new Tag();
+        final JaxrsReader nullReader = new JaxrsReader(null, log);
+        final Tag expectedTag = new Tag();
         expectedTag.name("atag");
-        Swagger result = nullReader.read(AnApi.class);
+        final Swagger result = nullReader.read(AnApi.class);
 
         assertSwaggerResponseContents(expectedTag, result);
     }
 
-    private void assertEmptySwaggerResponse(Swagger result) {
+    private void assertEmptySwaggerResponse(final Swagger result) {
         assertNotNull(result, "No Swagger object created");
         assertNull(result.getTags(), "Should not have any tags");
         assertNull(result.getPaths(), "Should not have any paths");
     }
 
-    private void assertSwaggerResponseContents(Tag expectedTag, Swagger result) {
+    private void assertSwaggerResponseContents(final Tag expectedTag, final Swagger result) {
         assertNotNull(result, "No Swagger object created");
         assertFalse(result.getTags().isEmpty(), "Should contain api tags");
         assertTrue(result.getTags().contains(expectedTag), "Expected tag missing");
         assertFalse(result.getPaths().isEmpty(), "Should contain operation paths");
         assertTrue(result.getPaths().containsKey("/apath"), "Path missing from paths map");
-        io.swagger.models.Path path = result.getPaths().get("/apath");
+        final io.swagger.models.Path path = result.getPaths().get("/apath");
         assertFalse(path.getOperations().isEmpty(), "Should be a get operation");
     }
 

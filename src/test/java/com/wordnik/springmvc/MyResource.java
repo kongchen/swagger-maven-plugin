@@ -6,10 +6,11 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import javax.ws.rs.core.MediaType;
 import java.util.List;
 
 @Api(description = "Operations about pets")
-@RequestMapping(value = "/myResourceImpl", produces = {"application/json", "application/xml"})
+@RequestMapping(value = "/myResourceImpl", produces = {MediaType.APPLICATION_JSON, "application/xml"})
 public interface MyResource {
 
     //contrived example test case for swagger-maven-plugin issue #505

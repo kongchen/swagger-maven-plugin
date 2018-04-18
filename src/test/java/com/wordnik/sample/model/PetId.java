@@ -6,7 +6,7 @@ package com.wordnik.sample.model;
 public class PetId {
     private final long id;
 
-    public PetId(long id) {
+    public PetId(final long id) {
         this.id = id;
     }
 

@@ -4,11 +4,11 @@ import java.util.List;
 
 public class PagedList<T> {
 
-	private int pageNumber;
-	private int totalItems;
-	private List<T> items;
+	private final int pageNumber;
+	private final int totalItems;
+	private final List<T> items;
 
-	public PagedList(int pageNumber, int totalItems, List<T> itemsOnPage) {
+	public PagedList(final int pageNumber, final int totalItems, final List<T> itemsOnPage) {
 		this.pageNumber = pageNumber;
 		this.totalItems = totalItems;
 		this.items = itemsOnPage;

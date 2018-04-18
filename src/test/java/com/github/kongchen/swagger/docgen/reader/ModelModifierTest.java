@@ -30,28 +30,28 @@ public class ModelModifierTest {
 
     @Test
     public void testProcessFieldInParentClass() throws Exception {
-        ModelModifier modelModifier =  new ModelModifier(new ObjectMapper());
+        final ModelModifier modelModifier =  new ModelModifier(new ObjectMapper());
         modelModifier.setApiModelPropertyAccessExclusions(Arrays.asList("public"));
 
-        JavaType type = SimpleType.constructUnsafe(B.class);
-        ModelConverterContext context = new ModelConverterContextImpl(new ModelConverter() {
+        final JavaType type = SimpleType.constructUnsafe(B.class);
+        final ModelConverterContext context = new ModelConverterContextImpl(new ModelConverter() {
             @Override
-            public Property resolveProperty(Type type, ModelConverterContext modelConverterContext, Annotation[] annotations, Iterator<ModelConverter> iterator) {
+            public Property resolveProperty(final Type type, final ModelConverterContext modelConverterContext, final Annotation[] annotations, final Iterator<ModelConverter> iterator) {
                 return null;
             }
 
             @Override
-            public Model resolve(Type type, ModelConverterContext modelConverterContext, Iterator<ModelConverter> iterator) {
-                ArrayModel model = new ArrayModel();
-                Map<String, Property> properties = new HashMap<String, Property>();
+            public Model resolve(final Type type, final ModelConverterContext modelConverterContext, final Iterator<ModelConverter> iterator) {
+                final ArrayModel model = new ArrayModel();
+                final Map<String, Property> properties = new HashMap<String, Property>();
                 properties.put("sample1", new StringProperty());
                 properties.put("sample2", new StringProperty());
                 model.setProperties(properties);
                 return model;
             }
         });
-        Iterator<ModelConverter> chain = null;
-        Model model = modelModifier.resolve(type, context, chain);
+        final Iterator<ModelConverter> chain = null;
+        final Model model = modelModifier.resolve(type, context, chain);
         Assert.assertFalse(model.getProperties().containsKey("sample1"));
         Assert.assertTrue(model.getProperties().containsKey("sample2"));
     }
