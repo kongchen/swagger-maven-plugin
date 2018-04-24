@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <groupId>org.sonatype.oss</groupId>
-        <artifactId>oss-parent</artifactId>
-        <version>7</version>
-    </parent>
-
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.kongchen</groupId>
     <artifactId>swagger-maven-plugin</artifactId>
@@ -57,11 +51,18 @@
     </contributors>
 
     <properties>
-        <maven.version>2.2.1</maven.version>
-        <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
+        <!-- Settings -->
         <java.version>1.6</java.version>
-        <swagger.version>1.5.18</swagger.version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
         <github.global.server>github</github.global.server>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <sonatypeOssDistMgmtSnapshotsUrl>https://oss.sonatype.org/content/repositories/snapshots/</sonatypeOssDistMgmtSnapshotsUrl>
+
+        <!-- Dependency versions -->
+        <maven.version>2.2.1</maven.version>
+        <swagger.version>1.5.18</swagger.version>
         <jackson.version>2.8.9</jackson.version>
         <log4j.version>1.2.16</log4j.version>
         <handlebars.version>1.3.2</handlebars.version>
@@ -74,6 +75,16 @@
         <springframework.version>4.3.7.RELEASE</springframework.version>
         <commons-lang3.version>3.5</commons-lang3.version>
         <junit-addons.version>1.4</junit-addons.version>
+
+        <!-- Plugin versions -->
+        <version.maven-release-plugin>2.5.3</version.maven-release-plugin>
+        <version.plexus-component-metadata>1.5.5</version.plexus-component-metadata>
+        <version.maven-compiler-plugin>2.3.2</version.maven-compiler-plugin>
+        <version.maven-plugin-plugin>3.3</version.maven-plugin-plugin>
+        <version.animal-sniffer-plugin>1.14</version.animal-sniffer-plugin>
+        <version.maven-source-plugin>2.1.2</version.maven-source-plugin>
+        <version.maven-javadoc-plugin>2.7</version.maven-javadoc-plugin>
+        <version.maven-gpg-plugin>1.1</version.maven-gpg-plugin>
     </properties>
 
     <dependencies>
@@ -187,6 +198,7 @@
             <version>${jackson.version}</version>
         </dependency>
 
+        <!-- Test dependencies -->
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
@@ -239,17 +251,16 @@
     </dependencies>
 
     <build>
-
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
-                <version>2.5.3</version>
+                <version>${version.maven-release-plugin}</version>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.plexus</groupId>
                 <artifactId>plexus-component-metadata</artifactId>
-                <version>1.5.5</version>
+                <version>${version.plexus-component-metadata}</version>
                 <executions>
                     <execution>
                         <goals>
@@ -261,17 +272,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
-                <configuration>
-                    <encoding>UTF-8</encoding>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-                </configuration>
+                <version>${version.maven-compiler-plugin}</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-plugin-plugin</artifactId>
-                <version>3.3</version>
+                <version>${version.maven-plugin-plugin}</version>
                 <configuration>
                     <!-- see http://jira.codehaus.org/browse/MNG-5346 -->
                     <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
@@ -295,7 +301,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>animal-sniffer-maven-plugin</artifactId>
-                <version>1.14</version>
+                <version>${version.animal-sniffer-plugin}</version>
                 <configuration>
                     <signature>
                         <groupId>org.codehaus.mojo.signature</groupId>
@@ -316,4 +322,81 @@
         </plugins>
     </build>
 
+    <profiles>
+        <profile>
+            <id>sonatype-oss-release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>${version.maven-source-plugin}</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>${version.maven-javadoc-plugin}</version>
+                        <configuration>
+                            <taglets>
+                                <taglet>
+                                    <tagletClass>org.codehaus.plexus.javadoc.PlexusComponentTaglet</tagletClass>
+                                    <tagletArtifact>
+                                        <groupId>org.codehaus.plexus</groupId>
+                                        <artifactId>plexus-javadoc</artifactId>
+                                        <version>1.0</version>
+                                    </tagletArtifact>
+                                </taglet>
+                                <taglet>
+                                    <tagletClass>org.codehaus.plexus.javadoc.PlexusConfigurationTaglet</tagletClass>
+                                    <tagletArtifact>
+                                        <groupId>org.codehaus.plexus</groupId>
+                                        <artifactId>plexus-javadoc</artifactId>
+                                        <version>1.0</version>
+                                    </tagletArtifact>
+                                </taglet>
+                                <taglet>
+                                    <tagletClass>org.codehaus.plexus.javadoc.PlexusRequirementTaglet</tagletClass>
+                                    <tagletArtifact>
+                                        <groupId>org.codehaus.plexus</groupId>
+                                        <artifactId>plexus-javadoc</artifactId>
+                                        <version>1.0</version>
+                                    </tagletArtifact>
+                                </taglet>
+                            </taglets>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>sonatype-nexus-snapshots</id>
+            <name>Sonatype Nexus Snapshots</name>
+            <url>${sonatypeOssDistMgmtSnapshotsUrl}</url>
+        </snapshotRepository>
+        <repository>
+            <id>sonatype-nexus-staging</id>
+            <name>Nexus Release Repository</name>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
 </project>

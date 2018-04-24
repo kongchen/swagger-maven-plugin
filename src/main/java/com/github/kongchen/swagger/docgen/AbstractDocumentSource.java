@@ -398,7 +398,7 @@ public abstract class AbstractDocumentSource {
     /**
      * Returns the set of classes which should be included in the scanning.
      *
-     * @return Set<Class<?>> containing all valid classes
+     * @return Set containing all valid classes
      */
     protected Set<Class<?>> getValidClasses() {
         return apiSource.getValidClasses(Api.class);
@@ -407,7 +407,7 @@ public abstract class AbstractDocumentSource {
     /**
      * Resolves all {@link SwaggerExtension} instances configured to be added to the Swagger configuration.
      *
-     * @return Collection<SwaggerExtension> which should be added to the swagger configuration
+     * @return List of {@link SwaggerExtension} which should be added to the swagger configuration
      * @throws GenerateException if the swagger extensions could not be created / resolved
      */
     protected List<SwaggerExtension> resolveSwaggerExtensions() throws GenerateException {
