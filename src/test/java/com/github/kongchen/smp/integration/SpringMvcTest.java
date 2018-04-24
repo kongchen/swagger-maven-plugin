@@ -2,29 +2,13 @@ package com.github.kongchen.smp.integration;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import static com.github.kongchen.smp.integration.utils.TestUtils.YamlToJson;
-import static com.github.kongchen.smp.integration.utils.TestUtils.changeDescription;
-import static com.github.kongchen.smp.integration.utils.TestUtils.createTempDirPath;
-import static com.github.kongchen.smp.integration.utils.TestUtils.setCustomReader;
 import com.github.kongchen.swagger.docgen.mavenplugin.ApiDocumentMojo;
 import com.github.kongchen.swagger.docgen.mavenplugin.ApiSource;
-
+import com.google.common.base.CharMatcher;
+import com.google.common.io.Files;
 import io.swagger.jaxrs.ext.SwaggerExtension;
 import io.swagger.jaxrs.ext.SwaggerExtensions;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import junitx.framework.FileAssert;
-import static net.javacrumbs.jsonunit.JsonAssert.assertJsonEquals;
 import net.javacrumbs.jsonunit.core.Configuration;
-import static net.javacrumbs.jsonunit.core.Option.IGNORING_ARRAY_ORDER;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -34,7 +18,19 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
+
+import java.io.*;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
+import static com.github.kongchen.smp.integration.utils.TestUtils.*;
+import static net.javacrumbs.jsonunit.JsonAssert.assertJsonEquals;
+import static net.javacrumbs.jsonunit.core.Option.IGNORING_ARRAY_ORDER;
 
 /**
  * @author chekong on 8/15/14.
@@ -61,7 +57,7 @@ public class SpringMvcTest extends AbstractMojoTestCase {
         File testPom = new File(getBasedir(), "target/test-classes/plugin-config-springmvc.xml");
         mojo = (ApiDocumentMojo) lookupMojo("generate", testPom);
     }
-    
+
     @Override
     @AfterMethod
     protected void tearDown() throws Exception {
@@ -118,33 +114,27 @@ public class SpringMvcTest extends AbstractMojoTestCase {
     public void testGeneratedDoc() throws Exception {
         mojo.execute();
 
-        BufferedReader actualReader = null;
-        BufferedReader expectReader = null;
         FileInputStream swaggerJson = null;
         BufferedReader swaggerReader = null;
 
         try {
             File actual = docOutput;
             File expected = new File(this.getClass().getResource("/sample-springmvc.html").getFile());
-            FileAssert.assertEquals(expected, actual);
+            String exptectedFileContent = CharMatcher.breakingWhitespace().removeFrom(Files.toString(expected, Charset.forName("UTF-8")));
+            String actualFileContent = CharMatcher.breakingWhitespace().removeFrom(Files.toString(actual, Charset.forName("UTF-8")));
+            assertEquals(exptectedFileContent, actualFileContent);
 
             swaggerJson = new FileInputStream(new File(swaggerOutputDir, "swagger.json"));
             swaggerReader = new BufferedReader(new InputStreamReader(swaggerJson));
             String s = swaggerReader.readLine();
             while (s != null) {
                 if (s.contains("\"parameters\" : [ ],")) {
-                    assertFalse("should not have null parameters", true);
+                    fail("should not have null parameters");
                 }
                 s = swaggerReader.readLine();
             }
 
         } finally {
-            if (actualReader != null) {
-                actualReader.close();
-            }
-            if (expectReader != null) {
-                expectReader.close();
-            }
             if (swaggerJson != null) {
                 swaggerJson.close();
             }
@@ -236,10 +226,12 @@ public class SpringMvcTest extends AbstractMojoTestCase {
         mojo.getApiSources().get(0).setOutputFormats("yaml");
         mojo.execute();
 
-        String actualYaml = io.swagger.util.Yaml.pretty().writeValueAsString(
-                new Yaml().load(FileUtils.readFileToString(new File(swaggerOutputDir, "swagger.yaml"))));
-        String expectYaml = io.swagger.util.Yaml.pretty().writeValueAsString(
-                new Yaml().load(this.getClass().getResourceAsStream("/expectedOutput/swagger-spring.yaml")));
+        DumperOptions options = new DumperOptions();
+        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+        options.setPrettyFlow(true);
+        Yaml yaml = new Yaml(options);
+        String actualYaml = yaml.dump(yaml.load(FileUtils.readFileToString(new File(swaggerOutputDir, "swagger.yaml"))));
+        String expectYaml = yaml.dump(yaml.load(this.getClass().getResourceAsStream("/expectedOutput/swagger-spring.yaml")));
 
         ObjectMapper mapper = new ObjectMapper();
         JsonNode actualJson = mapper.readTree(YamlToJson(actualYaml));
