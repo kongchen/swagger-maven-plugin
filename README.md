@@ -75,7 +75,7 @@ Import the plugin in your project by adding following configuration in your `plu
 | `jsonExampleValues` | If `true`, all example values in `@ApiModelProperty` will be handled as json raw values. This is useful for creating valid examples in the generated json for all property types, including non-string ones. |
 | `modelConverters` | List of custom implementations of `io.swagger.converter.ModelConverter` that should be used when generating the swagger files. | 
 | `swaggerExtensions` | List of custom implementations of `io.swagger.jaxrs.ext.SwaggerExtension` that should be used when generating the swagger files. | 
-
+| `features`    | List of ConfigFeature enums that are supported by ObjectMapper.configure - the feature is set to true. https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#features) here, see more details [below](#features)|
 # <a id="templatefile">Template File</a>
 
 If you'd like to generate a template-driven static document, such as markdown or HTML documentation, you'll need to specify a [handlebars](https://github.com/jknack/handlebars.java) template file in ```templatePath```.
@@ -246,6 +246,19 @@ or `custom.json` by adding the following to your pom.xml:
 
 The above setting attaches the generated file to Maven for install/deploy purpose with `swagger-ui`as classifier and `json` as type
 
+# <a id="features">Object Mapper Configuration Features</a>
+
+Set's known enum configs to true.
+
+```
+<configuration>
+...
+   <features>
+       <feature>com.fasterxml.jackson.databind.SerializationFeature.WRITE_ENUMS_USING_TO_STRING</feature>
+   </features>
+...
+</configuration>
+```
 
 
 # Example
