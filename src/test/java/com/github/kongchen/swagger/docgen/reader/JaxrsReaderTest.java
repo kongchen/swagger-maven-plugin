@@ -1,30 +1,38 @@
 package com.github.kongchen.swagger.docgen.reader;
 
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertNull;
-import static org.testng.Assert.assertTrue;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Response;
+
+import org.apache.maven.plugin.logging.Log;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.jaxrs.ext.SwaggerExtension;
 import io.swagger.jaxrs.ext.SwaggerExtensions;
+import io.swagger.models.Operation;
 import io.swagger.models.Swagger;
 import io.swagger.models.Tag;
+import io.swagger.models.parameters.HeaderParameter;
 import io.swagger.models.parameters.Parameter;
-import org.apache.maven.plugin.logging.Log;
+import io.swagger.models.parameters.QueryParameter;
+import io.swagger.models.parameters.RefParameter;
 
-import org.mockito.Mock;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Response;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertNull;
+import static org.testng.Assert.assertTrue;
 
 public class JaxrsReaderTest {
     @Mock
@@ -102,6 +110,31 @@ public class JaxrsReaderTest {
         assertFalse(path.getOperations().isEmpty(), "Should be a get operation");
     }
 
+    @Test
+    public void createCommonParameters() {
+        reader = new JaxrsReader(new Swagger(), Mockito.mock(Log.class));
+        Swagger result = reader.read(CommonParametersApi.class);
+        Parameter headerParam = result.getParameter("headerParam");
+        assertTrue(headerParam instanceof HeaderParameter);
+        Parameter queryParam = result.getParameter("queryParam");
+        assertTrue(queryParam instanceof QueryParameter);
+
+        result = reader.read(CommonParametersApiWithPathAnnotation.class);
+        Operation get = result.getPath("/apath").getGet();
+        List<Parameter> parameters = get.getParameters();
+        for (Parameter parameter : parameters) {
+            assertTrue(parameter instanceof RefParameter);
+        }
+    }
+
+    @Test
+    public void ignoreCommonParametersWithPathAnnotation() {
+        reader = new JaxrsReader(new Swagger(), Mockito.mock(Log.class));
+        Swagger result = reader.read(CommonParametersApiWithPathAnnotation.class);
+        assertNull(result.getParameter("headerParam"));
+        assertNull(result.getParameter("queryParam"));
+    }
+
     @Api(tags = "atag")
     @Path("/apath")
     static class AnApi {
@@ -124,5 +157,25 @@ public class JaxrsReaderTest {
 
     @Path("/apath")
     static class NotAnnotatedApi {
+    }
+
+    @Api
+    static class CommonParametersApi {
+        @HeaderParam("headerParam")
+        String headerParam;
+
+        @QueryParam("queryParam")
+        String queryParam;
+    }
+
+    @Api
+    @Path("/apath")
+    static class CommonParametersApiWithPathAnnotation {
+        @GET
+        public Response getOperation(
+            @HeaderParam("headerParam") String headerParam,
+            @QueryParam("queryParam") String queryParam) {
+            return Response.ok().build();
+        }
     }
 }

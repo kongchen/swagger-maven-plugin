@@ -1,6 +1,7 @@
 package com.github.kongchen.swagger.docgen.reader;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -30,7 +31,6 @@ import org.springframework.core.annotation.AnnotationUtils;
 
 import com.github.kongchen.swagger.docgen.jaxrs.BeanParamInjectParamExtention;
 import com.github.kongchen.swagger.docgen.jaxrs.JaxrsParameterExtension;
-
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponses;
@@ -48,8 +48,10 @@ import io.swagger.models.SecurityRequirement;
 import io.swagger.models.Swagger;
 import io.swagger.models.Tag;
 import io.swagger.models.parameters.Parameter;
+import io.swagger.models.parameters.RefParameter;
 import io.swagger.models.properties.Property;
 import io.swagger.models.properties.RefProperty;
+import io.swagger.models.refs.RefType;
 import io.swagger.util.ReflectionUtils;
 
 public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
@@ -110,7 +112,9 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         List<SecurityRequirement> securities = getSecurityRequirements(api);
         Map<String, Tag> discoveredTags = scanClasspathForTags();
 
-        // merge consumes, pro duces
+        // merge consumes, produces
+
+        readCommonParameters(cls);
 
         // look for method-level annotated properties
 
@@ -192,6 +196,26 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
             }
         }
         return filteredMethods;
+    }
+
+    private void readCommonParameters(Class<?> cls) {
+        Path path = AnnotationUtils.findAnnotation(cls, Path.class);
+        if (path != null) {
+            return;
+        }
+
+        Field[] fields = cls.getDeclaredFields();
+        if (fields != null) {
+            for (Field field : fields) {
+                Annotation[] annotations = field.getAnnotations();
+                if (annotations != null && annotations.length > 0) {
+                    List<Parameter> params = getParameters(cls, Arrays.asList(annotations));
+                    for (Parameter param : params) {
+                        swagger.addParameter(param.getName(), param);
+                    }
+                }
+            }
+        }
     }
 
     private void updateTagDescriptions(Map<String, Tag> discoveredTags) {
@@ -419,7 +443,13 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
             List<Parameter> parameters = getParameters(type, annotations);
 
             for (Parameter parameter : parameters) {
-                operation.parameter(parameter);
+                Parameter commonParameter = swagger.getParameter(parameter.getName());
+                if (commonParameter != null && parameter.getIn().equals(commonParameter.getIn())) {
+                    Parameter refParameter = new RefParameter(RefType.PARAMETER.getInternalPrefix() + commonParameter.getName());
+                    operation.parameter(refParameter);
+                } else {
+                    operation.parameter(parameter);
+                }
             }
         }
         if (operation.getResponses() == null) {
