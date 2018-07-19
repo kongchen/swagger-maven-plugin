@@ -42,9 +42,14 @@ public class SpringMavenDocumentSource extends AbstractDocumentSource {
         if (customReaderClassName == null) {
             SpringMvcApiReader reader = new SpringMvcApiReader(swagger, LOG);
             reader.setTypesToSkip(this.typesToSkip);
+            reader.setUseEnhancedOperationId(this.apiSource.isUseEnhancedOperationId());
             return reader;
         } else {
-            return getCustomApiReader(customReaderClassName);
+            ClassSwaggerReader customApiReader = getCustomApiReader(customReaderClassName);
+            if (customApiReader instanceof SpringMvcApiReader) {
+                ((SpringMvcApiReader)customApiReader).setUseEnhancedOperationId(this.apiSource.isUseEnhancedOperationId());
+            }
+            return customApiReader;
         }
     }
 

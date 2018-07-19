@@ -134,6 +134,9 @@ public class ApiSource {
 
     @Parameter
     private List<String> modelConverters;
+    
+    @Parameter
+    private boolean useEnhancedOperationId = false;
 
     public Set<Class<?>> getValidClasses(Class<? extends Annotation> clazz) {
         Set<Class<?>> classes = new LinkedHashSet<Class<?>>();
@@ -430,6 +433,14 @@ public class ApiSource {
 
     public void setModelConverters(List<String> modelConverters) {
         this.modelConverters = modelConverters;
+    }
+
+    public boolean isUseEnhancedOperationId() {
+        return useEnhancedOperationId;
+    }
+
+    public void setUseEnhancedOperationId(boolean useEnhancedOperationId) {
+        this.useEnhancedOperationId = useEnhancedOperationId;
     }
 
     private String emptyToNull(String str) {
