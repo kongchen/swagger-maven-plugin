@@ -2,6 +2,7 @@ package com.github.kongchen.swagger.docgen.mavenplugin;
 
 import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
 import com.github.kongchen.swagger.docgen.GenerateException;
+import io.swagger.util.Json;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -15,6 +16,7 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.util.List;
 
 /**
@@ -31,6 +33,12 @@ public class ApiDocumentMojo extends AbstractMojo {
      */
     @Parameter
     private List<ApiSource> apiSources;
+
+    /**
+     * A set of feature enums which should be enabled on the JSON object mapper
+     */
+    @Parameter
+    private List<String> features;
 
 
     @Parameter(defaultValue = "${project}", readonly = true)
@@ -84,6 +92,16 @@ public class ApiDocumentMojo extends AbstractMojo {
 
         try {
             getLog().debug(apiSources.toString());
+
+            for (String feature : features) {
+                int i=  feature.lastIndexOf(".");
+                Class clazz = Class.forName(feature.substring(0,i));
+                Enum e = Enum.valueOf(clazz,feature.substring(i+1));
+                getLog().info("setting " + e.getDeclaringClass().toString() + "." + e.name() + "");
+                Method method = Json.mapper().getClass().getMethod("configure",e.getClass(),boolean.class);
+                method.invoke(Json.mapper(),e,true);
+            }
+            
             for (ApiSource apiSource : apiSources) {
                 validateConfiguration(apiSource);
                 AbstractDocumentSource documentSource = apiSource.isSpringmvc()
