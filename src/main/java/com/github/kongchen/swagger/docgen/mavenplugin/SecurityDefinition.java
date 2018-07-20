@@ -2,16 +2,17 @@ package com.github.kongchen.swagger.docgen.mavenplugin;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.kongchen.swagger.docgen.GenerateException;
 import io.swagger.models.auth.ApiKeyAuthDefinition;
 import io.swagger.models.auth.BasicAuthDefinition;
 import io.swagger.models.auth.OAuth2Definition;
 import io.swagger.models.auth.SecuritySchemeDefinition;
+import org.apache.commons.lang3.reflect.FieldUtils;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -41,12 +42,38 @@ public class SecurityDefinition {
         for (Map.Entry<String, JsonNode> securityDefinition : securityDefinitions.entrySet()) {
             JsonNode definition = securityDefinition.getValue();
             SecuritySchemeDefinition ssd = getSecuritySchemeDefinitionByType(definition.get("type").asText(), definition);
+            tryFillNameField(ssd, securityDefinition.getKey());
+
             if (ssd != null) {
                 map.put(securityDefinition.getKey(), ssd);
             }
         }
 
         return map;
+    }
+
+    /**
+     * <p>Try to fill the name property of some authentication definition, if no user defined value was set.</p>
+     * <p>If the current value of the name property is empty, this will fill it to be the same as the name of the
+     * security definition.</br>
+     * If no {@link Field} named "name" is found inside the given SecuritySchemeDefinition, no action will be taken.
+     *
+     * @param ssd security scheme
+     * @param value value to set the name to
+     */
+    private void tryFillNameField(SecuritySchemeDefinition ssd, String value) {
+        if (ssd == null) {
+            return;
+        }
+
+        Field nameField = FieldUtils.getField(ssd.getClass(), "name", true);
+        try {
+            if (nameField != null && nameField.get(ssd) == null) {
+                nameField.set(ssd, value);
+            }
+        } catch (IllegalAccessException e) {
+            // ignored
+        }
     }
 
     private Map<String, JsonNode> loadSecurityDefintionsFromJsonFile() throws GenerateException {
@@ -60,12 +87,7 @@ public class SecurityDefinition {
                 Map.Entry<String, JsonNode> field = fields.next();
                 JsonNode securityDefinition = field.getValue();
 
-                if (!securityDefinition.hasNonNull("name")) {
-                    ObjectNode modifieableNode = (ObjectNode) securityDefinition;
-                    securityDefinition = modifieableNode.put("name", field.getKey());
-                }
-
-                securityDefinitions.put(field.getKey(), field.getValue());
+                securityDefinitions.put(field.getKey(), securityDefinition);
             }
         } catch (IOException e) {
             throw new GenerateException(e);
@@ -122,5 +144,13 @@ public class SecurityDefinition {
 
     public void setIn(String in) {
         this.in = in;
+    }
+
+    public String getJson() {
+        return json;
+    }
+
+    public void setJson(String json) {
+        this.json = json;
     }
 }
