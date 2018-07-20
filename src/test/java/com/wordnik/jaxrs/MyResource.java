@@ -13,7 +13,7 @@ import java.util.List;
 
 @Api(description = "Operations about pets")
 @Produces({"application/json", "application/xml"})
-public interface MyResource {
+public interface MyResource<T> {
 
 	//contrived example test case for swagger-maven-plugin issue #358
 	@GET
@@ -45,4 +45,5 @@ public interface MyResource {
             @PathParam("secondParamInterface") String secondParam,
             @QueryParam("thirdParamInterface") String thirdParam);
 
+    Response insertResource(T resource);
 }

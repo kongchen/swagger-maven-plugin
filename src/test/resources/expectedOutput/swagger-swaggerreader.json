@@ -81,7 +81,26 @@
             "description" : "Pet not found"
           }
         }
-      }
+      },
+      "post" : {
+        "summary" : "Insert a response",
+        "description" : "This is a contrived example",
+        "operationId" : "insertResource",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Resource to insert",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+            }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+            }
+          }
+        }
     },
     "/myResourceImpl/list" : {
       "get" : {
@@ -620,9 +639,15 @@
           "required" : false,
           "type" : "array",
           "items" : {
-            "type" : "object"
+            "type" : "string"
           },
           "collectionFormat" : "multi"
+        }, {
+          "name" : "myNestedBeanHeader",
+          "in" : "header",
+          "description" : "Header from nested bean",
+          "required" : false,
+          "type" : "string"
         }, {
           "name" : "testIntegerAllowableValues",
           "in" : "query",
@@ -632,6 +657,16 @@
           "default" : 25,
           "format" : "int32",
           "enum" : [ 25, 50, 100 ]
+        }, {
+            "name": "constrainedField",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "minimum": 25,
+            "maximum": 75,
+            "default": 55,
+            "pattern": "[0-9]5",
+            "format": "int32"
         } ],
         "responses" : {
           "405" : {
@@ -1178,6 +1213,9 @@
     },
     "MyBean" : {
       "type" : "object",
+      "required" : [
+        "constrainedField"
+      ],
       "properties" : {
         "myParentheader" : {
           "type" : "string"
@@ -1201,11 +1239,39 @@
             "type" : "string"
           }
         },
+        "nestedBean" : {
+          "$ref" : "#/definitions/MyNestedBean"
+        },
+        "constructorInjectedNestedBean" : {
+          "$ref" : "#/definitions/MyConstructorInjectedNestedBean"
+        },
         "testIntegerAllowableValues" : {
           "type" : "integer",
           "format" : "int32"
         },
+        "constrainedField" : {
+          "type" : "integer",
+          "minimum" : 25,
+          "maximum" : 75,
+          "format" : "int32"
+        },
         "myheader" : {
+          "type" : "string"
+        }
+      }
+    },
+    "MyNestedBean" : {
+      "type" : "object",
+      "properties" : {
+        "myNestedBeanHeader" : {
+          "type" : "string"
+        }
+      }
+    },
+    "MyConstructorInjectedNestedBean" : {
+      "type" : "object",
+      "properties" : {
+        "constructorInjectedHeader" : {
           "type" : "string"
         }
       }
@@ -1372,7 +1438,8 @@
           "type" : "string"
         },
         "phone" : {
-          "type" : "string"
+          "type" : "string",
+          "x-test": "value"
         },
         "userStatus" : {
           "type" : "integer",

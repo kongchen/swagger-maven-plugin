@@ -14,6 +14,7 @@ info:
 host: "www.example.com:8080"
 basePath: "/api"
 tags:
+- name: "Resource-V1"
 - name: "pet"
   description: "Operations about pets"
 - name: "store"
@@ -68,6 +69,23 @@ paths:
           description: "Invalid ID supplied"
         404:
           description: "Pet not found"
+    post:
+      summary: "Insert a response"
+      description: "This is a contrived example"
+      operationId: "insertResource"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Resource to insert"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        default:
+          description: "successful operation"
   /myResourceImpl/list:
     get:
       summary: "Get a list of items"
@@ -614,6 +632,17 @@ paths:
         items:
           type: "string"
         collectionFormat: "multi"
+      - name: "myNestedBeanHeader"
+        in: "header"
+        description: "Header from nested bean"
+        required: false
+        type: "string"
+      - name: "constructorInjectedHeader"
+        in: "header"
+        description: "Header injected at constructor"
+        required: false
+        type: "string"
+        default: "foo"
       - name: "testIntegerAllowableValues"
         in: "query"
         description: "testIntegerAllowableValues"
@@ -625,6 +654,15 @@ paths:
         - 25
         - 50
         - 100
+      - name: "constrainedField"
+        in: "query"
+        required: true
+        type: "integer"
+        minimum: 25
+        maximum: 75
+        default: 55
+        pattern: "[0-9]5"
+        format: "int32"
       - name: "myParentHeader"
         in: "header"
         description: "Header from parent"
@@ -712,6 +750,17 @@ paths:
         items:
           type: "string"
         collectionFormat: "multi"
+      - name: "myNestedBeanHeader"
+        in: "header"
+        description: "Header from nested bean"
+        required: false
+        type: "string"
+      - name: "constructorInjectedHeader"
+        in: "header"
+        description: "Header injected at constructor"
+        required: false
+        type: "string"
+        default: "foo"
       - name: "testIntegerAllowableValues"
         in: "query"
         description: "testIntegerAllowableValues"
@@ -723,6 +772,15 @@ paths:
         - 25
         - 50
         - 100
+      - name: "constrainedField"
+        in: "query"
+        required: true
+        type: "integer"
+        minimum: 25
+        maximum: 75
+        default: 55
+        pattern: "[0-9]5"
+        format: "int32"
       - name: "myParentHeader"
         in: "header"
         description: "Header from parent"
@@ -1091,6 +1149,63 @@ paths:
           description: "Invalid username supplied"
         404:
           description: "User not found"
+  /v1.0/sub:
+    get:
+      tags:
+      - "Resource-V1"
+      summary: "List of users"
+      description: "Get user list"
+      operationId: "getUsers"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "Successful operation"
+      security:
+      - api_key: []
+    put:
+      tags:
+      - "Resource-V1"
+      summary: "Update User"
+      description: ""
+      operationId: "updateUser"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "User to be updated"
+        required: true
+        schema:
+          $ref: "#/definitions/User"
+      responses:
+        200:
+          description: "Successful operation"
+      security:
+      - api_key: []
+  /v1.0/sub/{username}:
+    get:
+      tags:
+      - "Resource-V1"
+      summary: "Fetch a user by username"
+      description: ""
+      operationId: "getUserByName"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "username"
+        in: "path"
+        description: "Username of user that needs to be fetched"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/User"
+      security:
+      - api_key: []
 securityDefinitions:
   api_key:
     type: "apiKey"
@@ -1257,6 +1372,7 @@ definitions:
         type: "string"
       phone:
         type: "string"
+        x-test: "value"
       userStatus:
         type: "integer"
         format: "int32"

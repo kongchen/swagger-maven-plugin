@@ -281,6 +281,68 @@ This is a contrived example
 
 
 
+### POST
+
+
+<a id="insertResource">Insert a response</a>
+
+This is a contrived example
+
+
+
+
+
+
+
+#### Request
+
+
+
+##### Parameters
+
+<table border="1">
+    <tr>
+        <th>Name</th>
+        <th>Located in</th>
+        <th>Required</th>
+        <th>Description</th>
+        <th>Default</th>
+        <th>Schema</th>
+    </tr>
+
+
+
+    <tr>
+        <th>body</th>
+        <td>body</td>
+        <td>yes</td>
+        <td>Resource to insert</td>
+        <td> - </td>
+
+        <td>
+
+
+        </td>
+
+    </tr>
+
+
+</table>
+
+
+
+#### Response
+
+**Content-Type: ** application/json, application/xml
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| default    | successful operation |  - |
+
+
+
+
 
 
 
@@ -1738,10 +1800,49 @@ Returns a pet when ID &lt; 10.  ID &gt; 10 or nonintegers will simulate API erro
 </tr>
 
 <tr>
+    <th>myNestedBeanHeader</th>
+    <td>header</td>
+    <td>no</td>
+    <td>Header from nested bean</td>
+    <td> - </td>
+
+
+            <td>string </td>
+
+
+</tr>
+
+<tr>
+    <th>constructorInjectedHeader</th>
+    <td>header</td>
+    <td>no</td>
+    <td>Header injected at constructor</td>
+    <td> - </td>
+
+
+            <td>string </td>
+
+
+</tr>
+
+<tr>
     <th>testIntegerAllowableValues</th>
     <td>query</td>
     <td>no</td>
     <td>testIntegerAllowableValues</td>
+    <td> - </td>
+
+
+            <td>integer (int32)</td>
+
+
+</tr>
+
+<tr>
+    <th>constrainedField</th>
+    <td>query</td>
+    <td>yes</td>
+    <td> (**Pattern**: `[0-9]5`)</td>
     <td> - </td>
 
 
@@ -1999,10 +2100,49 @@ Returns a pet when ID &lt; 10.  ID &gt; 10 or nonintegers will simulate API erro
 </tr>
 
 <tr>
+    <th>myNestedBeanHeader</th>
+    <td>header</td>
+    <td>no</td>
+    <td>Header from nested bean</td>
+    <td> - </td>
+
+
+            <td>string </td>
+
+
+</tr>
+
+<tr>
+    <th>constructorInjectedHeader</th>
+    <td>header</td>
+    <td>no</td>
+    <td>Header injected at constructor</td>
+    <td> - </td>
+
+
+            <td>string </td>
+
+
+</tr>
+
+<tr>
     <th>testIntegerAllowableValues</th>
     <td>query</td>
     <td>no</td>
     <td>testIntegerAllowableValues</td>
+    <td> - </td>
+
+
+            <td>integer (int32)</td>
+
+
+</tr>
+
+<tr>
+    <th>constrainedField</th>
+    <td>query</td>
+    <td>yes</td>
+    <td> (**Pattern**: `[0-9]5`)</td>
     <td> - </td>
 
 
@@ -2655,9 +2795,9 @@ For valid response try integer IDs with value &lt;= 5 or &gt; 10. Other values w
     <td></td>
     <td> - </td>
 
-    
+
             <td>string </td>
-    
+
 
 </tr>
 
@@ -2732,9 +2872,9 @@ For valid response try integer IDs with value &lt;= 5 or &gt; 10. Other values w
     <td></td>
     <td> - </td>
 
-    
+
             <td>string </td>
-    
+
 
 </tr>
 
@@ -3353,6 +3493,216 @@ This can only be done by the logged in user.
 |-------------|-------------|----------------|
 | 400    | Invalid username supplied |  - |
 | 404    | User not found |  - |
+
+
+
+
+
+
+
+
+
+
+
+
+## /v1.0/sub
+
+
+### GET
+
+<a id="getUsers">List of users</a>
+
+Get user list
+
+
+
+
+#### Security
+
+
+
+
+* api_key
+
+
+
+
+#### Request
+
+
+
+##### Parameters
+
+
+
+
+
+
+#### Response
+
+**Content-Type: ** application/json
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 200    | Successful operation |  - |
+
+
+
+
+
+### PUT
+
+<a id="updateUser">Update User</a>
+
+
+
+
+
+
+#### Security
+
+
+
+
+* api_key
+
+
+
+
+#### Request
+
+
+
+##### Parameters
+
+<table border="1">
+    <tr>
+        <th>Name</th>
+        <th>Located in</th>
+        <th>Required</th>
+        <th>Description</th>
+        <th>Default</th>
+        <th>Schema</th>
+    </tr>
+
+
+
+<tr>
+    <th>body</th>
+    <td>body</td>
+    <td>yes</td>
+    <td>User to be updated</td>
+    <td> - </td>
+
+    <td>
+    
+    <a href="#/definitions/User">User</a> 
+    </td>
+
+</tr>
+
+
+</table>
+
+
+
+#### Response
+
+**Content-Type: ** application/json
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 200    | Successful operation |  - |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## /v1.0/sub/{username}
+
+
+### GET
+
+<a id="getUserByName">Fetch a user by username</a>
+
+
+
+
+
+
+#### Security
+
+
+
+
+* api_key
+
+
+
+
+#### Request
+
+
+
+##### Parameters
+
+<table border="1">
+    <tr>
+        <th>Name</th>
+        <th>Located in</th>
+        <th>Required</th>
+        <th>Description</th>
+        <th>Default</th>
+        <th>Schema</th>
+    </tr>
+
+
+
+<tr>
+    <th>username</th>
+    <td>path</td>
+    <td>yes</td>
+    <td>Username of user that needs to be fetched</td>
+    <td> - </td>
+
+    
+            <td>string </td>
+    
+
+</tr>
+
+
+</table>
+
+
+
+#### Response
+
+**Content-Type: ** application/json
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 200    | Successful operation | <a href="#/definitions/User">User</a>|
+
+
+
+
+
+
 
 
 

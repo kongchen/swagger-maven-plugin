@@ -1392,6 +1392,7 @@ definitions:
         type: "string"
       phone:
         type: "string"
+        x-test: "value"
       userStatus:
         type: "integer"
         format: "int32"
