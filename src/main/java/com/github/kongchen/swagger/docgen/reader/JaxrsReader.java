@@ -205,14 +205,12 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         }
 
         Field[] fields = cls.getDeclaredFields();
-        if (fields != null) {
-            for (Field field : fields) {
-                Annotation[] annotations = field.getAnnotations();
-                if (annotations != null && annotations.length > 0) {
-                    List<Parameter> params = getParameters(cls, Arrays.asList(annotations));
-                    for (Parameter param : params) {
-                        swagger.addParameter(param.getName(), param);
-                    }
+        for (Field field : fields) {
+            Annotation[] annotations = field.getAnnotations();
+            if (annotations.length > 0) {
+                List<Parameter> params = getParameters(cls, Arrays.asList(annotations));
+                for (Parameter param : params) {
+                    swagger.addParameter(param.getName(), param);
                 }
             }
         }

@@ -162,20 +162,20 @@ public class JaxrsReaderTest {
     @Api
     static class CommonParametersApi {
         @HeaderParam("headerParam")
-        String headerParam;
+        public String headerParam;
 
         @QueryParam("queryParam")
-        String queryParam;
+        public String queryParam;
     }
 
     @Api
     @Path("/apath")
     static class CommonParametersApiWithPathAnnotation {
         @HeaderParam("headerParam")
-        String headerParam;
+        public String headerParam;
 
         @QueryParam("queryParam")
-        String queryParam;
+        public String queryParam;
     }
 
     @Api
