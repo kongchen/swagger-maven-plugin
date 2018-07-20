@@ -24,7 +24,7 @@ import io.swagger.jaxrs.ext.SwaggerExtension;
 import io.swagger.jaxrs.ext.SwaggerExtensions;
 import net.javacrumbs.jsonunit.core.Configuration;
 
-public class EnhancedOperationIdTest extends AbstractMojoTestCase {
+public class SpringMvcEnhancedOperationIdTest extends AbstractMojoTestCase {
     private File swaggerOutputDir = new File(getBasedir(), "generated/swagger-ui-spring-enhanced-operation-id");
     private ApiDocumentMojo mojo;
     private List<SwaggerExtension> extensions;

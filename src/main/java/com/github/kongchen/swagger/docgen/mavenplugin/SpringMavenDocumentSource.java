@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
 import com.github.kongchen.swagger.docgen.GenerateException;
+import com.github.kongchen.swagger.docgen.reader.AbstractReader;
 import com.github.kongchen.swagger.docgen.reader.ClassSwaggerReader;
 import com.github.kongchen.swagger.docgen.reader.SpringMvcApiReader;
 import com.google.common.collect.Sets;
@@ -46,8 +47,8 @@ public class SpringMavenDocumentSource extends AbstractDocumentSource {
             return reader;
         } else {
             ClassSwaggerReader customApiReader = getCustomApiReader(customReaderClassName);
-            if (customApiReader instanceof SpringMvcApiReader) {
-                ((SpringMvcApiReader)customApiReader).setUseEnhancedOperationId(this.apiSource.isUseEnhancedOperationId());
+            if (customApiReader instanceof AbstractReader) {
+                ((AbstractReader)customApiReader).setUseEnhancedOperationId(this.apiSource.isUseEnhancedOperationId());
             }
             return customApiReader;
         }

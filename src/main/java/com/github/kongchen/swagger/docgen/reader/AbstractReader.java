@@ -35,6 +35,8 @@ public abstract class AbstractReader {
     protected Swagger swagger;
     private Set<Type> typesToSkip = new HashSet<Type>();
 
+    protected boolean useEnhancedOperationId = false;
+
     public Set<Type> getTypesToSkip() {
         return typesToSkip;
     }
@@ -501,6 +503,21 @@ public abstract class AbstractReader {
             extension.decorateOperation(operation, method, chain);
         }
     }
+    
+    protected String getOperationId(Method method, String httpMethod) {
+        if (isUseEnhancedOperationId()) {
+            return method.getDeclaringClass().getSimpleName() + "_" + method.getName() + "_" + httpMethod;
+        } else {
+            return method.getName();
+        }
+    }
 
+    public boolean isUseEnhancedOperationId() {
+        return useEnhancedOperationId;
+    }
+
+    public void setUseEnhancedOperationId(boolean useEnhancedOperationId) {
+        this.useEnhancedOperationId  = useEnhancedOperationId;
+    }
 }
 
