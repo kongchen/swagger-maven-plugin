@@ -12,7 +12,9 @@ import io.swagger.models.auth.SecuritySchemeDefinition;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * @author chekong on 15/5/5.
@@ -28,35 +30,42 @@ public class SecurityDefinition {
     public Map<String, SecuritySchemeDefinition> generateSecuritySchemeDefinitions() throws GenerateException {
         Map<String, SecuritySchemeDefinition> map = new HashMap<String, SecuritySchemeDefinition>();
 
-        List<JsonNode> securityDefinitions = new ArrayList<JsonNode>();
+        Map<String, JsonNode> securityDefinitions = new HashMap<String, JsonNode>();
         if (json != null || jsonPath != null) {
             securityDefinitions = loadSecurityDefintionsFromJsonFile();
         } else {
-            securityDefinitions.add(new ObjectMapper().valueToTree(this));
+            JsonNode tree = new ObjectMapper().valueToTree(this);
+            securityDefinitions.put(tree.get("name").asText(), tree);
         }
 
-        for (JsonNode securityDefinition : securityDefinitions) {
-            SecuritySchemeDefinition ssd = getSecuritySchemeDefinitionByType(securityDefinition.get("type").asText(), securityDefinition);
+        for (Map.Entry<String, JsonNode> securityDefinition : securityDefinitions.entrySet()) {
+            JsonNode definition = securityDefinition.getValue();
+            SecuritySchemeDefinition ssd = getSecuritySchemeDefinitionByType(definition.get("type").asText(), definition);
             if (ssd != null) {
-                map.put(securityDefinition.get("name").asText(), ssd);
+                map.put(securityDefinition.getKey(), ssd);
             }
         }
 
         return map;
     }
 
-    private List<JsonNode> loadSecurityDefintionsFromJsonFile() throws GenerateException {
-        List<JsonNode> securityDefinitions = new ArrayList<JsonNode>();
+    private Map<String, JsonNode> loadSecurityDefintionsFromJsonFile() throws GenerateException {
+        Map<String, JsonNode> securityDefinitions = new HashMap<String, JsonNode>();
 
         try {
             InputStream jsonStream = json != null ? this.getClass().getResourceAsStream(json) : new FileInputStream(jsonPath);
             JsonNode tree = new ObjectMapper().readTree(jsonStream);
-            Iterator<String> securityDefinitionNameIterator = tree.fieldNames();
-            while (securityDefinitionNameIterator.hasNext()) {
-                String securityDefinitionName = securityDefinitionNameIterator.next();
-                JsonNode securityDefinition = tree.get(securityDefinitionName);
-                securityDefinition = ((ObjectNode) securityDefinition).put("name", securityDefinitionName);
-                securityDefinitions.add(securityDefinition);
+            Iterator<Map.Entry<String, JsonNode>> fields = tree.fields();
+            while(fields.hasNext()) {
+                Map.Entry<String, JsonNode> field = fields.next();
+                JsonNode securityDefinition = field.getValue();
+
+                if (!securityDefinition.hasNonNull("name")) {
+                    ObjectNode modifieableNode = (ObjectNode) securityDefinition;
+                    securityDefinition = modifieableNode.put("name", field.getKey());
+                }
+
+                securityDefinitions.put(field.getKey(), field.getValue());
             }
         } catch (IOException e) {
             throw new GenerateException(e);
