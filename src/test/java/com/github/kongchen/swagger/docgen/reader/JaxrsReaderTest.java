@@ -119,7 +119,7 @@ public class JaxrsReaderTest {
         Parameter queryParam = result.getParameter("queryParam");
         assertTrue(queryParam instanceof QueryParameter);
 
-        result = reader.read(CommonParametersApiWithPathAnnotation.class);
+        result = reader.read(ReferenceCommonParametersApi.class);
         Operation get = result.getPath("/apath").getGet();
         List<Parameter> parameters = get.getParameters();
         for (Parameter parameter : parameters) {
@@ -171,6 +171,16 @@ public class JaxrsReaderTest {
     @Api
     @Path("/apath")
     static class CommonParametersApiWithPathAnnotation {
+        @HeaderParam("headerParam")
+        String headerParam;
+
+        @QueryParam("queryParam")
+        String queryParam;
+    }
+
+    @Api
+    @Path("/apath")
+    static class ReferenceCommonParametersApi {
         @GET
         public Response getOperation(
             @HeaderParam("headerParam") String headerParam,
