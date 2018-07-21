@@ -53,6 +53,7 @@ import io.swagger.models.parameters.BodyParameter;
 import io.swagger.models.parameters.Parameter;
 import io.swagger.models.properties.Property;
 import io.swagger.models.properties.RefProperty;
+import io.swagger.util.BaseReaderUtils;
 import io.swagger.util.ReflectionUtils;
 
 public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
@@ -301,17 +302,8 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
             defaultResponseHeaders = parseResponseHeaders(apiOperation.responseHeaders());
             operation.summary(apiOperation.value()).description(apiOperation.notes());
 
-            Set<Map<String, Object>> customExtensions = parseCustomExtensions(apiOperation.extensions());
-            if (customExtensions != null) {
-                for (Map<String, Object> extension : customExtensions) {
-                    if (extension == null) {
-                        continue;
-                    }
-                    for (Map.Entry<String, Object> map : extension.entrySet()) {
-                        operation.setVendorExtension(map.getKey().startsWith("x-") ? map.getKey() : "x-" + map.getKey(), map.getValue());
-                    }
-                }
-            }
+            Map<String, Object> customExtensions = BaseReaderUtils.parseExtensions(apiOperation.extensions());
+            operation.setVendorExtensions(customExtensions);
 
             if (!apiOperation.response().equals(Void.class) && !apiOperation.response().equals(void.class)) {
                 responseClassType = apiOperation.response();

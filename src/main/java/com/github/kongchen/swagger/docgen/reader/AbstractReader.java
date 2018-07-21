@@ -528,7 +528,7 @@ public abstract class AbstractReader {
             extension.decorateOperation(operation, method, chain);
         }
     }
-    
+
     protected String getOperationId(Method method, String httpMethod) {
         if (isUseEnhancedOperationId()) {
             return method.getDeclaringClass().getSimpleName() + "_" + method.getName() + "_" + httpMethod;

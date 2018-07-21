@@ -1,28 +1,24 @@
 package com.github.kongchen.swagger.docgen.mavenplugin;
 
-import java.io.File;
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-
+import io.swagger.annotations.SwaggerDefinition;
+import io.swagger.models.Contact;
+import io.swagger.models.Info;
+import io.swagger.models.License;
+import io.swagger.util.BaseReaderUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.reflections.Reflections;
 import org.springframework.core.annotation.AnnotationUtils;
 
-import io.swagger.annotations.SwaggerDefinition;
-import io.swagger.models.Contact;
-import io.swagger.models.Info;
-import io.swagger.models.License;
+import java.io.File;
+import java.lang.annotation.Annotation;
+import java.util.*;
 
 /**
  * User: kongchen
  * Date: 3/7/13
  */
 public class ApiSource {
-
     /**
      * Java classes containing Swagger's annotation <code>@Api</code>, or Java packages containing those classes
      * can be configured here.
@@ -195,12 +191,19 @@ public class ApiSource {
         for (Class<?> aClass : getValidClasses(SwaggerDefinition.class)) {
             SwaggerDefinition swaggerDefinition = AnnotationUtils.findAnnotation(aClass, SwaggerDefinition.class);
             io.swagger.annotations.Info infoAnnotation = swaggerDefinition.info();
+
             Info info = new Info().title(infoAnnotation.title())
                     .description(emptyToNull(infoAnnotation.description()))
                     .version(infoAnnotation.version())
                     .termsOfService(emptyToNull(infoAnnotation.termsOfService()))
                     .license(from(infoAnnotation.license()))
                     .contact(from(infoAnnotation.contact()));
+
+            Map<String, Object> customExtensions = BaseReaderUtils.parseExtensions(infoAnnotation.extensions());
+            for (Map.Entry<String, Object> extension : customExtensions.entrySet()) {
+                resultInfo.setVendorExtension(extension.getKey(), extension.getValue());
+            }
+
             resultInfo.mergeWith(info);
         }
         info = resultInfo;
