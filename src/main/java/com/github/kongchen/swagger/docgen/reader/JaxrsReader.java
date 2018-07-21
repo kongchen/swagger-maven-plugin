@@ -1,56 +1,32 @@
 package com.github.kongchen.swagger.docgen.reader;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.HEAD;
-import javax.ws.rs.HttpMethod;
-import javax.ws.rs.OPTIONS;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-
+import com.github.kongchen.swagger.docgen.jaxrs.BeanParamInjectParamExtention;
+import com.github.kongchen.swagger.docgen.jaxrs.JaxrsParameterExtension;
+import io.swagger.annotations.*;
+import io.swagger.converter.ModelConverters;
+import io.swagger.jaxrs.ext.SwaggerExtension;
+import io.swagger.jaxrs.ext.SwaggerExtensions;
+import io.swagger.jersey.SwaggerJerseyJaxrs;
+import io.swagger.models.*;
+import io.swagger.models.Tag;
+import io.swagger.models.parameters.Parameter;
+import io.swagger.models.properties.Property;
+import io.swagger.models.properties.RefProperty;
+import io.swagger.util.BaseReaderUtils;
+import io.swagger.util.ReflectionUtils;
 import org.apache.maven.plugin.logging.Log;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.AnnotationUtils;
 
-import com.github.kongchen.swagger.docgen.jaxrs.BeanParamInjectParamExtention;
-import com.github.kongchen.swagger.docgen.jaxrs.JaxrsParameterExtension;
-
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.Authorization;
-import io.swagger.annotations.AuthorizationScope;
-import io.swagger.annotations.SwaggerDefinition;
-import io.swagger.converter.ModelConverters;
-import io.swagger.jaxrs.ext.SwaggerExtension;
-import io.swagger.jaxrs.ext.SwaggerExtensions;
-import io.swagger.jersey.SwaggerJerseyJaxrs;
-import io.swagger.models.Model;
-import io.swagger.models.Operation;
-import io.swagger.models.Response;
-import io.swagger.models.SecurityRequirement;
-import io.swagger.models.Swagger;
-import io.swagger.models.Tag;
-import io.swagger.models.parameters.Parameter;
-import io.swagger.models.properties.Property;
-import io.swagger.models.properties.RefProperty;
-import io.swagger.util.ReflectionUtils;
+import javax.ws.rs.*;
+import javax.ws.rs.HttpMethod;
+import javax.ws.rs.Path;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.util.*;
 
 public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
     private static final Logger LOGGER = LoggerFactory.getLogger(JaxrsReader.class);
@@ -68,7 +44,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
     public List<Parameter> getParameters(Type type, List<Annotation> annotations, Set<Type> typesToSkip) {
         return super.getParameters(type, annotations, typesToSkip);
     }
-  
+
     @Override
     protected void updateExtensionChain() {
     	List<SwaggerExtension> extensions = new ArrayList<SwaggerExtension>();
@@ -124,12 +100,12 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
                 continue;
             }
             Path methodPath = AnnotationUtils.findAnnotation(method, Path.class);
-            
+
             String parentPathValue = String.valueOf(parentPath);
             //is method default handler within a subresource
             if(apiPath == null && methodPath == null && parentPath != null && readHidden){
                 final String updatedMethodPath = String.valueOf(parentPath);
-                Path path = new Path(){                  
+                Path path = new Path(){
                     @Override
                     public String value(){
                         return updatedMethodPath;
@@ -296,17 +272,8 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
             defaultResponseHeaders = parseResponseHeaders(apiOperation.responseHeaders());
             operation.summary(apiOperation.value()).description(apiOperation.notes());
 
-            Set<Map<String, Object>> customExtensions = parseCustomExtensions(apiOperation.extensions());
-            if (customExtensions != null) {
-                for (Map<String, Object> extension : customExtensions) {
-                    if (extension == null) {
-                        continue;
-                    }
-                    for (Map.Entry<String, Object> map : extension.entrySet()) {
-                        operation.setVendorExtension(map.getKey().startsWith("x-") ? map.getKey() : "x-" + map.getKey(), map.getValue());
-                    }
-                }
-            }
+            Map<String, Object> customExtensions = BaseReaderUtils.parseExtensions(apiOperation.extensions());
+            operation.setVendorExtensions(customExtensions);
 
             if (!apiOperation.response().equals(Void.class) && !apiOperation.response().equals(void.class)) {
                 responseClassType = apiOperation.response();
