@@ -28,15 +28,17 @@ public class ApiSourceTest {
 
     @Test
     public void testGetInfo0VendorExtensions() {
+        Map<String, Object> logo = new HashMap<String, Object>();
+        logo.put("logo", "logo url");
+        logo.put("description", "This is our logo.");
+
+        Map<String, Object> website = new HashMap<String, Object>();
+        website.put("website", "website url");
+        website.put("description", "This is our website.");
+
         Map<String, Object> expectedExtensions = new HashMap<String, Object>();
-        expectedExtensions.put("x-logo", new HashMap<String, Object>(){{
-            put("logo", "logo url");
-            put("description", "This is our logo.");
-        }});
-        expectedExtensions.put("x-website", new HashMap<String, Object>(){{
-            put("website", "website url");
-            put("description", "This is our website.");
-        }});
+        expectedExtensions.put("x-logo", logo);
+        expectedExtensions.put("x-website", website);
 
 
         Set<Class<?>> validClasses = Sets.newHashSet(ApiSourceTestClass.class);
