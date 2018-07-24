@@ -204,6 +204,19 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
             return;
         }
 
+        List<Method> filteredMethods = getFilteredMethods(cls);
+        for (Method method : filteredMethods) {
+            path = AnnotationUtils.findAnnotation(method, Path.class);
+            if (path != null) {
+                return;
+            }
+
+            String httpMethod = extractOperationMethod(null, method, SwaggerExtensions.chain());
+            if (httpMethod != null) {
+                return;
+            }
+        }
+
         Field[] fields = cls.getDeclaredFields();
         for (Field field : fields) {
             Annotation[] annotations = field.getAnnotations();

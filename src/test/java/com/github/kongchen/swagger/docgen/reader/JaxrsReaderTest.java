@@ -17,6 +17,11 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.jaxrs.ext.SwaggerExtension;
@@ -28,6 +33,7 @@ import io.swagger.models.parameters.HeaderParameter;
 import io.swagger.models.parameters.Parameter;
 import io.swagger.models.parameters.QueryParameter;
 import io.swagger.models.parameters.RefParameter;
+import net.javacrumbs.jsonunit.JsonAssert;
 
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
@@ -111,7 +117,7 @@ public class JaxrsReaderTest {
     }
 
     @Test
-    public void createCommonParameters() {
+    public void createCommonParameters() throws Exception {
         reader = new JaxrsReader(new Swagger(), Mockito.mock(Log.class));
         Swagger result = reader.read(CommonParametersApi.class);
         Parameter headerParam = result.getParameter("headerParam");
@@ -125,12 +131,24 @@ public class JaxrsReaderTest {
         for (Parameter parameter : parameters) {
             assertTrue(parameter instanceof RefParameter);
         }
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        ObjectWriter jsonWriter = mapper.writer(new DefaultPrettyPrinter());
+        String json = jsonWriter.writeValueAsString(result);
+        JsonNode expectJson = mapper.readTree(this.getClass().getResourceAsStream("/expectedOutput/swagger-common-parameters.json"));
+        JsonAssert.assertJsonEquals(expectJson, json);
     }
 
     @Test
-    public void ignoreCommonParametersWithPathAnnotation() {
+    public void ignoreCommonParameters() {
         reader = new JaxrsReader(new Swagger(), Mockito.mock(Log.class));
         Swagger result = reader.read(CommonParametersApiWithPathAnnotation.class);
+        assertNull(result.getParameter("headerParam"));
+        assertNull(result.getParameter("queryParam"));
+
+        reader = new JaxrsReader(new Swagger(), Mockito.mock(Log.class));
+        result = reader.read(CommonParametersApiWithMethod.class);
         assertNull(result.getParameter("headerParam"));
         assertNull(result.getParameter("queryParam"));
     }
@@ -166,6 +184,20 @@ public class JaxrsReaderTest {
 
         @QueryParam("queryParam")
         public String queryParam;
+    }
+
+    @Api
+    static class CommonParametersApiWithMethod {
+        @HeaderParam("headerParam")
+        public String headerParam;
+
+        @QueryParam("queryParam")
+        public String queryParam;
+
+        @GET
+        public Response getOperation() {
+            return Response.ok().build();
+        }
     }
 
     @Api
