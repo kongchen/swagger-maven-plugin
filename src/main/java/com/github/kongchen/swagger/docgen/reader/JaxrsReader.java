@@ -198,6 +198,18 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         return filteredMethods;
     }
 
+    /**
+     * Returns true when the swagger object already contains a common parameter
+     * with the same name and type as the passed parameter.
+     * 
+     * @param parameter The parameter to check.
+     * @return true if the swagger object already contains a common parameter with the same name and type
+     */
+    private boolean hasCommonParameter(Parameter parameter) {
+        Parameter commonParameter = swagger.getParameter(parameter.getName());
+        return commonParameter != null && parameter.getIn().equals(commonParameter.getIn());
+    }
+
     private void readCommonParameters(Class<?> cls) {
         Path path = AnnotationUtils.findAnnotation(cls, Path.class);
         if (path != null) {
@@ -223,6 +235,11 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
             if (annotations.length > 0) {
                 List<Parameter> params = getParameters(cls, Arrays.asList(annotations));
                 for (Parameter param : params) {
+                    if (hasCommonParameter(param)) {
+                        String msg = "[" + cls.getCanonicalName() + "] Redefining common parameter '" + param.getName()
+                            + "' already defined elsewhere";
+                        throw new RuntimeException(msg);
+                    }
                     swagger.addParameter(param.getName(), param);
                 }
             }
@@ -454,9 +471,8 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
             List<Parameter> parameters = getParameters(type, annotations);
 
             for (Parameter parameter : parameters) {
-                Parameter commonParameter = swagger.getParameter(parameter.getName());
-                if (commonParameter != null && parameter.getIn().equals(commonParameter.getIn())) {
-                    Parameter refParameter = new RefParameter(RefType.PARAMETER.getInternalPrefix() + commonParameter.getName());
+                if (hasCommonParameter(parameter)) {
+                    Parameter refParameter = new RefParameter(RefType.PARAMETER.getInternalPrefix() + parameter.getName());
                     operation.parameter(refParameter);
                 } else {
                     operation.parameter(parameter);

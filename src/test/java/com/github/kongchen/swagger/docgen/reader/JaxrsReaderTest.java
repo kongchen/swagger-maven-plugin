@@ -153,6 +153,20 @@ public class JaxrsReaderTest {
         assertNull(result.getParameter("queryParam"));
     }
 
+    @Test
+    public void detectDuplicateCommonParameter() {
+        Swagger swagger = new Swagger();
+        reader = new JaxrsReader(swagger, Mockito.mock(Log.class));
+        reader.read(CommonParametersApi.class);
+        Exception exception = null;
+        try {
+            reader.read(CommonParametersApi.class);
+        } catch (Exception e) {
+            exception = e;
+        }
+        assertNotNull(exception);
+    }
+
     @Api(tags = "atag")
     @Path("/apath")
     static class AnApi {
