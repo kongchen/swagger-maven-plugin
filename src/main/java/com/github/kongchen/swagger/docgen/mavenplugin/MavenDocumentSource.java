@@ -39,12 +39,12 @@ public class MavenDocumentSource extends AbstractDocumentSource {
         if (customReaderClassName == null) {
             JaxrsReader reader = new JaxrsReader(swagger, LOG);
             reader.setTypesToSkip(this.typesToSkip);
-            reader.setUseEnhancedOperationId(this.apiSource.isUseEnhancedOperationId());
+            reader.setOperationIdFormat(this.apiSource.getOperationIdFormat());
             return reader;
         } else {
             ClassSwaggerReader customApiReader = getCustomApiReader(customReaderClassName);
             if (customApiReader instanceof AbstractReader) {
-                ((AbstractReader)customApiReader).setUseEnhancedOperationId(this.apiSource.isUseEnhancedOperationId());
+                ((AbstractReader)customApiReader).setOperationIdFormat(this.apiSource.getOperationIdFormat());
             }
             return customApiReader;
 

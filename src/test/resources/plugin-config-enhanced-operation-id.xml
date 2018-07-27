@@ -9,7 +9,7 @@
                     <apiSources>
                         <apiSource>
                             <springmvc>false</springmvc>
-                            <useEnhancedOperationId>true</useEnhancedOperationId>
+                            <operationIdFormat>{{className}}_{{methodName}}_{{httpMethod}}</operationIdFormat>
                             <locations>
                                 <location>com.wordnik.jaxrs</location>
                             </locations>
