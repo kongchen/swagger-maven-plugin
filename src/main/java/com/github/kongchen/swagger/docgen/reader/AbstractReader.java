@@ -21,6 +21,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 
 import org.apache.commons.lang3.reflect.TypeUtils;
+import org.apache.commons.lang3.text.StrBuilder;
 import org.apache.maven.plugin.logging.Log;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -78,7 +79,12 @@ public abstract class AbstractReader {
     protected Swagger swagger;
     private Set<Type> typesToSkip = new HashSet<>();
 
-    protected boolean useEnhancedOperationId = false;
+    protected String operationIdFormat;
+    
+    /**
+     * Supported parameters: {{packageName}}.{{className}}_{{methodName}}_{{httpMethod}}
+     */
+    public static final String OPERATION_ID_FORMAT_DEFAULT = "{{methodName}}";
 
     public Set<Type> getTypesToSkip() {
         return typesToSkip;
@@ -530,19 +536,29 @@ public abstract class AbstractReader {
     }
 
     protected String getOperationId(Method method, String httpMethod) {
-        if (isUseEnhancedOperationId()) {
-            return method.getDeclaringClass().getSimpleName() + "_" + method.getName() + "_" + httpMethod;
-        } else {
-            return method.getName();
-        }
+  		if (this.operationIdFormat == null) {
+  			this.operationIdFormat = OPERATION_ID_FORMAT_DEFAULT;
+  		}
+  		
+  		String packageName = method.getDeclaringClass().getPackage().getName();
+  		String className = method.getDeclaringClass().getSimpleName();
+  		String methodName = method.getName();
+        
+  		StrBuilder sb = new StrBuilder(this.operationIdFormat);
+  		sb.replaceAll("{{packageName}}", packageName);
+  		sb.replaceAll("{{className}}", className);
+  		sb.replaceAll("{{methodName}}", methodName);
+  		sb.replaceAll("{{httpMethod}}", httpMethod);
+  		
+  		return sb.toString();
     }
 
-    public boolean isUseEnhancedOperationId() {
-        return useEnhancedOperationId;
-    }
+	public String getOperationIdFormat() {
+		return operationIdFormat;
+	}
 
-    public void setUseEnhancedOperationId(boolean useEnhancedOperationId) {
-        this.useEnhancedOperationId  = useEnhancedOperationId;
-    }
+	public void setOperationIdFormat(String operationIdFormat) {
+		this.operationIdFormat = operationIdFormat;
+	}
 }
 

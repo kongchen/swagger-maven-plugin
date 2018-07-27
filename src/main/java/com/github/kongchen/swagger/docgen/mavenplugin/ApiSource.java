@@ -132,7 +132,7 @@ public class ApiSource {
     private List<String> modelConverters;
     
     @Parameter
-    private boolean useEnhancedOperationId = false;
+    private String operationIdFormat;
 
     public Set<Class<?>> getValidClasses(Class<? extends Annotation> clazz) {
         Set<Class<?>> classes = new LinkedHashSet<Class<?>>();
@@ -438,15 +438,15 @@ public class ApiSource {
         this.modelConverters = modelConverters;
     }
 
-    public boolean isUseEnhancedOperationId() {
-        return useEnhancedOperationId;
-    }
+    public String getOperationIdFormat() {
+		return operationIdFormat;
+	}
 
-    public void setUseEnhancedOperationId(boolean useEnhancedOperationId) {
-        this.useEnhancedOperationId = useEnhancedOperationId;
-    }
+	public void setOperationIdFormat(String operationIdFormat) {
+		this.operationIdFormat = operationIdFormat;
+	}
 
-    private String emptyToNull(String str) {
+	private String emptyToNull(String str) {
         return StringUtils.isEmpty(str) ? null : str;
     }
 }

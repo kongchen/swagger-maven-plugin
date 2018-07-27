@@ -9,7 +9,7 @@
                     <apiSources>
                         <apiSource>
                             <springmvc>true</springmvc>
-                            <useEnhancedOperationId>true</useEnhancedOperationId>
+                            <operationIdFormat>{{className}}_{{methodName}}_{{httpMethod}}</operationIdFormat>
                             <locations>
                                 <location>com.wordnik.springmvc</location>
                             </locations>
