@@ -6,6 +6,8 @@
 package com.github.kongchen.swagger.docgen.reader;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.module.kotlin.KotlinModule;
+
 import io.swagger.converter.ModelConverter;
 import io.swagger.jackson.AbstractModelConverter;
 
@@ -16,6 +18,6 @@ import io.swagger.jackson.AbstractModelConverter;
 public class ModelConverterHelper extends AbstractModelConverter implements ModelConverter {
 
     public ModelConverterHelper(ObjectMapper mapper) {
-        super(mapper);
+        super(mapper.registerModule(new KotlinModule()));
     }
 }

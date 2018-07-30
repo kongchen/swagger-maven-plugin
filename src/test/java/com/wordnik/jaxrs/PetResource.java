@@ -16,7 +16,6 @@
 
 package com.wordnik.jaxrs;
 
-import com.sun.jersey.api.core.InjectParam;
 import com.wordnik.sample.JavaRestResourceUtil;
 import com.wordnik.sample.data.PetData;
 import com.wordnik.sample.model.Pet;
@@ -44,6 +43,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -201,7 +201,7 @@ public class PetResource {
     @ApiResponses(value = {
             @ApiResponse(code = 405, message = "Invalid input")})
     public Response updatePetWithFormViaInjectParam(
-            @InjectParam MyBean myBean) {
+            @Context MyBean myBean) {
         System.out.println(myBean.getName());
         System.out.println(myBean.getStatus());
         return Response.ok().entity(new com.wordnik.sample.model.ApiResponse(200, "SUCCESS")).build();

@@ -9,7 +9,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.kongchen</groupId>
     <artifactId>swagger-maven-plugin</artifactId>
-    <version>3.1.4</version>
+    <version>3.1.4-YC</version>
     <packaging>maven-plugin</packaging>
     <name>Swagger Maven Plugin</name>
     <description>
@@ -27,7 +27,7 @@
         <connection>scm:git:git@github.com:kongchen/swagger-maven-plugin.git</connection>
         <url>scm:git:git@github.com:kongchen/swagger-maven-plugin.git</url>
         <developerConnection>scm:git:git@github.com:kongchen/swagger-maven-plugin.git</developerConnection>
-        <tag>swagger-maven-plugin-3.1.4</tag>
+        <tag>swagger-maven-plugin-3.1.4-YC</tag>
     </scm>
 
     <developers>
@@ -51,9 +51,9 @@
         <maven.version>2.2.1</maven.version>
         <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
         <java.version>1.6</java.version>
-        <swagger.version>1.5.9</swagger.version>
+        <swagger.version>1.5.20</swagger.version>
         <github.global.server>github</github.global.server>
-        <jackson.version>1.9.13</jackson.version>
+        <jackson.version>2.9.6</jackson.version>
         <log4j.version>1.2.16</log4j.version>
         <handlebars.version>1.3.2</handlebars.version>
         <testng.version>6.8.8</testng.version>
@@ -63,10 +63,35 @@
         <reflections.version>0.9.10</reflections.version>
         <maven-testing-harness.version>1.3</maven-testing-harness.version>
         <springframework.version>4.0.5.RELEASE</springframework.version>
-        <commons-lang3.version>[3.4,4.0)</commons-lang3.version>
-        <junit-addons.version>[1.4,2.0)</junit-addons.version>
+        <commons-lang3.version>3.7</commons-lang3.version>
+        <junit-addons.version>1.4</junit-addons.version>
     </properties>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.fasterxml.jackson.dataformat</groupId>
+                <artifactId>jackson-dataformat-yaml</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.beust</groupId>
+                <artifactId>jcommander</artifactId>
+                <version>1.48</version>
+            </dependency>
+        </dependencies>
+
+    </dependencyManagement>
     <dependencies>
         <dependency>
             <groupId>org.apache.maven</groupId>
@@ -138,7 +163,7 @@
         </dependency>
         <dependency>
             <groupId>io.swagger</groupId>
-            <artifactId>swagger-jersey-jaxrs</artifactId>
+            <artifactId>swagger-jersey2-jaxrs</artifactId>
             <version>${swagger.version}</version>
         </dependency>
         <dependency>
@@ -158,13 +183,13 @@
             <version>${springframework.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-core-asl</artifactId>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-jaxb-annotations</artifactId>
             <version>${jackson.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-mapper-asl</artifactId>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-kotlin</artifactId>
             <version>${jackson.version}</version>
         </dependency>
         <dependency>

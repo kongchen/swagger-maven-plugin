@@ -1,20 +1,5 @@
 package com.github.kongchen.swagger.docgen.jaxrs;
 
-import com.sun.jersey.api.core.InjectParam;
-import com.sun.jersey.core.header.FormDataContentDisposition;
-import io.swagger.annotations.ApiParam;
-import io.swagger.jaxrs.ext.AbstractSwaggerExtension;
-import io.swagger.jaxrs.ext.SwaggerExtension;
-import io.swagger.models.parameters.AbstractSerializableParameter;
-import io.swagger.models.parameters.Parameter;
-import io.swagger.models.parameters.SerializableParameter;
-import io.swagger.models.properties.PropertyBuilder;
-import io.swagger.util.AllowableValues;
-import io.swagger.util.AllowableValuesUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.reflect.TypeUtils;
-
-import javax.ws.rs.BeanParam;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
@@ -27,6 +12,23 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.ws.rs.BeanParam;
+import javax.ws.rs.core.Context;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.reflect.TypeUtils;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+
+import io.swagger.annotations.ApiParam;
+import io.swagger.jaxrs.ext.AbstractSwaggerExtension;
+import io.swagger.jaxrs.ext.SwaggerExtension;
+import io.swagger.models.parameters.AbstractSerializableParameter;
+import io.swagger.models.parameters.Parameter;
+import io.swagger.models.parameters.SerializableParameter;
+import io.swagger.models.properties.PropertyBuilder;
+import io.swagger.util.AllowableValues;
+import io.swagger.util.AllowableValuesUtils;
 
 /**
  * @author chekong on 15/5/9.
@@ -44,7 +46,7 @@ public class BeanParamInjectParamExtention extends AbstractSwaggerExtension {
             return output;
         }
         for (Annotation annotation : annotations) {
-            if (annotation instanceof BeanParam || annotation instanceof InjectParam) {
+            if (annotation instanceof BeanParam || annotation instanceof Context) {
                 return extractParameters(cls);
             }
         }

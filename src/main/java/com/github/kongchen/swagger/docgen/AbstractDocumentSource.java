@@ -1,33 +1,5 @@
 package com.github.kongchen.swagger.docgen;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
-import com.github.jknack.handlebars.Handlebars;
-import com.github.jknack.handlebars.Helper;
-import com.github.jknack.handlebars.Options;
-import com.github.jknack.handlebars.Template;
-import com.github.jknack.handlebars.helper.StringHelpers;
-import com.github.jknack.handlebars.io.TemplateLoader;
-import com.github.kongchen.swagger.docgen.mavenplugin.ApiSource;
-import com.github.kongchen.swagger.docgen.reader.AbstractReader;
-import com.github.kongchen.swagger.docgen.reader.ClassSwaggerReader;
-import com.github.kongchen.swagger.docgen.reader.ModelModifier;
-import io.swagger.converter.ModelConverter;
-import io.swagger.converter.ModelConverters;
-import io.swagger.models.Scheme;
-import io.swagger.models.Swagger;
-import io.swagger.models.properties.Property;
-import io.swagger.util.Json;
-import io.swagger.util.Yaml;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -43,7 +15,43 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
+import com.fasterxml.jackson.module.kotlin.KotlinAnnotationIntrospector;
+import com.fasterxml.jackson.module.kotlin.KotlinModule;
+import com.fasterxml.jackson.module.kotlin.KotlinNamesAnnotationIntrospector;
+import com.fasterxml.jackson.module.kotlin.ReflectionCache;
+import com.github.jknack.handlebars.Handlebars;
+import com.github.jknack.handlebars.Helper;
+import com.github.jknack.handlebars.Options;
+import com.github.jknack.handlebars.Template;
+import com.github.jknack.handlebars.helper.StringHelpers;
+import com.github.jknack.handlebars.io.TemplateLoader;
+import com.github.kongchen.swagger.docgen.mavenplugin.ApiSource;
+import com.github.kongchen.swagger.docgen.reader.AbstractReader;
+import com.github.kongchen.swagger.docgen.reader.ClassSwaggerReader;
+import com.github.kongchen.swagger.docgen.reader.ModelModifier;
+
+import io.swagger.converter.ModelConverter;
+import io.swagger.converter.ModelConverters;
+import io.swagger.models.Scheme;
+import io.swagger.models.Swagger;
+import io.swagger.models.properties.Property;
+import io.swagger.util.Json;
+import io.swagger.util.Yaml;
 
 /**
  * @author chekong 05/13/2013
@@ -97,7 +105,7 @@ public abstract class AbstractDocumentSource {
 
 
     public abstract void loadDocuments() throws GenerateException;
-    
+
     public void toSwaggerDocuments(String uiDocBasePath, String outputFormats) throws GenerateException {
         toSwaggerDocuments(uiDocBasePath, outputFormats, null);
     }
@@ -168,6 +176,20 @@ public abstract class AbstractDocumentSource {
             objectMapper.registerModule(new JaxbAnnotationModule());
         }
         ModelModifier modelModifier = new ModelModifier(objectMapper);
+	final KotlinModule module = new KotlinModule();
+
+	// Ugly but works.
+	objectMapper.registerModule(module);
+	objectMapper.registerModule(
+		new SimpleModule("introspectorOverride", Version.unknownVersion()) {
+		    @SuppressWarnings("KotlinInternalInJava")
+		    @Override
+		    public void setupModule(SetupContext context) {
+			context.insertAnnotationIntrospector(new KotlinNamesAnnotationIntrospector(module, new ReflectionCache(512)));
+			context.insertAnnotationIntrospector(new KotlinAnnotationIntrospector(context));
+		    }
+		}
+	);
 
         List<String> apiModelPropertyAccessExclusions = apiSource.getApiModelPropertyAccessExclusions();
         if (apiModelPropertyAccessExclusions != null && !apiModelPropertyAccessExclusions.isEmpty()) {
