@@ -5,6 +5,21 @@ import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import javax.ws.rs.ApplicationPath;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.Response;
+
+import org.apache.maven.plugin.logging.Log;
+import org.mockito.Mock;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.jaxrs.ext.SwaggerExtension;
@@ -12,19 +27,6 @@ import io.swagger.jaxrs.ext.SwaggerExtensions;
 import io.swagger.models.Swagger;
 import io.swagger.models.Tag;
 import io.swagger.models.parameters.Parameter;
-import org.apache.maven.plugin.logging.Log;
-
-import org.mockito.Mock;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Response;
 
 public class JaxrsReaderTest {
     @Mock
@@ -73,7 +75,16 @@ public class JaxrsReaderTest {
         expectedTag.name("atag");
         Swagger result = reader.read(AnApi.class);
 
-        assertSwaggerResponseContents(expectedTag, result);
+        assertSwaggerResponseContents(expectedTag, result, false);
+    }
+
+    @Test
+    public void discoverApiOperation2() {
+        Tag expectedTag = new Tag();
+        expectedTag.name("atag");
+        Swagger result = reader.read(AnotherApi.class);
+
+        assertSwaggerResponseContents(expectedTag, result, true);
     }
 
     @Test
@@ -83,7 +94,8 @@ public class JaxrsReaderTest {
         expectedTag.name("atag");
         Swagger result = nullReader.read(AnApi.class);
 
-        assertSwaggerResponseContents(expectedTag, result);
+        assertSwaggerResponseContents(expectedTag, result, false);
+
     }
 
     private void assertEmptySwaggerResponse(Swagger result) {
@@ -92,19 +104,37 @@ public class JaxrsReaderTest {
         assertNull(result.getPaths(), "Should not have any paths");
     }
 
-    private void assertSwaggerResponseContents(Tag expectedTag, Swagger result) {
+    private void assertSwaggerResponseContents(Tag expectedTag, Swagger result, boolean usesApplicationPath) {
         assertNotNull(result, "No Swagger object created");
         assertFalse(result.getTags().isEmpty(), "Should contain api tags");
         assertTrue(result.getTags().contains(expectedTag), "Expected tag missing");
         assertFalse(result.getPaths().isEmpty(), "Should contain operation paths");
-        assertTrue(result.getPaths().containsKey("/apath"), "Path missing from paths map");
-        io.swagger.models.Path path = result.getPaths().get("/apath");
-        assertFalse(path.getOperations().isEmpty(), "Should be a get operation");
+        if (usesApplicationPath) {
+            assertTrue(result.getPaths().containsKey("/anapplicationpath/apath"), "ApplicationPath with Path missing from paths map");
+            io.swagger.models.Path path = result.getPaths().get("/anapplicationpath/apath");
+            assertFalse(path.getOperations().isEmpty(), "Should be a get operation");
+        }
+        else {
+            assertTrue(result.getPaths().containsKey("/apath"), "Path missing from paths map");
+            io.swagger.models.Path path = result.getPaths().get("/apath");
+            assertFalse(path.getOperations().isEmpty(), "Should be a get operation");
+        }
     }
 
     @Api(tags = "atag")
     @Path("/apath")
     static class AnApi {
+        @ApiOperation(value = "Get a model.")
+        @GET
+        public Response getOperation() {
+            return Response.ok().build();
+        }
+    }
+
+    @Api(tags = "atag")
+    @ApplicationPath("/anapplicationpath")
+    @Path("/apath")
+    static class AnotherApi {
         @ApiOperation(value = "Get a model.")
         @GET
         public Response getOperation() {

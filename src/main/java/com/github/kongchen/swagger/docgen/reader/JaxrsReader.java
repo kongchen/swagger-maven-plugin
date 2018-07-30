@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -68,14 +69,14 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
     public List<Parameter> getParameters(Type type, List<Annotation> annotations, Set<Type> typesToSkip) {
         return super.getParameters(type, annotations, typesToSkip);
     }
-  
+
     @Override
     protected void updateExtensionChain() {
-    	List<SwaggerExtension> extensions = new ArrayList<SwaggerExtension>();
-    	extensions.add(new BeanParamInjectParamExtention(this));
+        List<SwaggerExtension> extensions = new ArrayList<SwaggerExtension>();
+        extensions.add(new BeanParamInjectParamExtention(this));
         extensions.add(new SwaggerJerseyJaxrs());
         extensions.add(new JaxrsParameterExtension());
-    	SwaggerExtensions.setExtensions(extensions);
+        SwaggerExtensions.setExtensions(extensions);
     }
 
     @Override
@@ -99,6 +100,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
             swagger = new Swagger();
         }
         Api api = AnnotationUtils.findAnnotation(cls, Api.class);
+        ApplicationPath apiApplicationPath = AnnotationUtils.findAnnotation(cls, ApplicationPath.class);
         Path apiPath = AnnotationUtils.findAnnotation(cls, Path.class);
 
         // only read if allowing hidden apis OR api is not marked as hidden
@@ -124,12 +126,12 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
                 continue;
             }
             Path methodPath = AnnotationUtils.findAnnotation(method, Path.class);
-            
+
             String parentPathValue = String.valueOf(parentPath);
             //is method default handler within a subresource
             if(apiPath == null && methodPath == null && parentPath != null && readHidden){
                 final String updatedMethodPath = String.valueOf(parentPath);
-                Path path = new Path(){                  
+                Path path = new Path() {
                     @Override
                     public String value(){
                         return updatedMethodPath;
@@ -143,7 +145,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
                 methodPath = path;
                 parentPathValue = null;
             }
-            String operationPath = getPath(apiPath, methodPath, parentPathValue);
+            String operationPath = getPath(apiApplicationPath, apiPath, methodPath, parentPathValue);
             if (operationPath != null) {
                 Map<String, String> regexMap = new HashMap<String, String>();
                 operationPath = parseOperationPath(operationPath, regexMap);
@@ -234,8 +236,8 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         return (responseClass != null) && (httpMethod == null) && (AnnotationUtils.findAnnotation(method, Path.class) != null);
     }
 
-    private String getPath(Path classLevelPath, Path methodLevelPath, String parentPath) {
-        if (classLevelPath == null && methodLevelPath == null) {
+    private String getPath(ApplicationPath classLevelApplicationPath, Path classLevelPath, Path methodLevelPath, String parentPath) {
+        if (classLevelApplicationPath == null && classLevelPath == null && methodLevelPath == null) {
             return null;
         }
         StringBuilder stringBuilder = new StringBuilder();
@@ -249,8 +251,25 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
 
             stringBuilder.append(parentPath);
         }
+        if (classLevelApplicationPath != null && !classLevelApplicationPath.value().equals("/")) {
+            String classApplicationPath = classLevelApplicationPath.value();
+            if (!classApplicationPath.startsWith("/") && !stringBuilder.toString().endsWith("/")) {
+                stringBuilder.append("/");
+            }
+            if (classApplicationPath.endsWith("/")) {
+                classApplicationPath = classApplicationPath.substring(0, classApplicationPath.length() - 1);
+            }
+            stringBuilder.append(classApplicationPath);
+        }
         if (classLevelPath != null) {
-            stringBuilder.append(classLevelPath.value());
+            String classPath = classLevelPath.value();
+            if (!classPath.startsWith("/") && !stringBuilder.toString().endsWith("/")) {
+                stringBuilder.append("/");
+            }
+            if (classPath.endsWith("/")) {
+                classPath = classPath.substring(0, classPath.length() - 1);
+            }
+            stringBuilder.append(classPath);
         }
         if (methodLevelPath != null && !methodLevelPath.value().equals("/")) {
             String methodPath = methodLevelPath.value();
@@ -434,37 +453,36 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         return operation;
     }
 
-	public static Annotation[][] findParamAnnotations(Method method) {
-		Annotation[][] paramAnnotation = method.getParameterAnnotations();
+    public static Annotation[][] findParamAnnotations(Method method) {
+        Annotation[][] paramAnnotation = method.getParameterAnnotations();
 
-		Method overriddenMethod = ReflectionUtils.getOverriddenMethod(method);
-		while(overriddenMethod != null) {
-			paramAnnotation = merge(overriddenMethod.getParameterAnnotations(), paramAnnotation);
-			overriddenMethod = ReflectionUtils.getOverriddenMethod(overriddenMethod);
-		}
-		return paramAnnotation;
-	}
+        Method overriddenMethod = ReflectionUtils.getOverriddenMethod(method);
+        while (overriddenMethod != null) {
+            paramAnnotation = merge(overriddenMethod.getParameterAnnotations(), paramAnnotation);
+            overriddenMethod = ReflectionUtils.getOverriddenMethod(overriddenMethod);
+        }
+        return paramAnnotation;
+    }
 
 
     private static Annotation[][] merge(Annotation[][] overriddenMethodParamAnnotation,
-			Annotation[][] currentParamAnnotations) {
-    	Annotation[][] mergedAnnotations = new Annotation[overriddenMethodParamAnnotation.length][];
+            Annotation[][] currentParamAnnotations) {
+        Annotation[][] mergedAnnotations = new Annotation[overriddenMethodParamAnnotation.length][];
 
-    	for(int i=0; i<overriddenMethodParamAnnotation.length; i++) {
-    		mergedAnnotations[i] = merge(overriddenMethodParamAnnotation[i], currentParamAnnotations[i]);
-    	}
-		return mergedAnnotations;
-	}
+        for (int i = 0; i < overriddenMethodParamAnnotation.length; i++) {
+            mergedAnnotations[i] = merge(overriddenMethodParamAnnotation[i], currentParamAnnotations[i]);
+        }
+        return mergedAnnotations;
+    }
 
-	private static Annotation[] merge(Annotation[] annotations,
-			Annotation[] annotations2) {
-		List<Annotation> mergedAnnotations = new ArrayList<Annotation>();
-		mergedAnnotations.addAll(Arrays.asList(annotations));
-		mergedAnnotations.addAll(Arrays.asList(annotations2));
-		return mergedAnnotations.toArray(new Annotation[0]);
-	}
+    private static Annotation[] merge(Annotation[] annotations, Annotation[] annotations2) {
+        List<Annotation> mergedAnnotations = new ArrayList<Annotation>();
+        mergedAnnotations.addAll(Arrays.asList(annotations));
+        mergedAnnotations.addAll(Arrays.asList(annotations2));
+        return mergedAnnotations.toArray(new Annotation[0]);
+    }
 
-	public String extractOperationMethod(ApiOperation apiOperation, Method method, Iterator<SwaggerExtension> chain) {
+    public String extractOperationMethod(ApiOperation apiOperation, Method method, Iterator<SwaggerExtension> chain) {
         if (apiOperation != null && !apiOperation.httpMethod().isEmpty()) {
             return apiOperation.httpMethod().toLowerCase();
         } else if (AnnotationUtils.findAnnotation(method, GET.class) != null) {
