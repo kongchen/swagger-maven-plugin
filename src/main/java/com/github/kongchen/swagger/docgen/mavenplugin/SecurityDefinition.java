@@ -2,13 +2,11 @@ package com.github.kongchen.swagger.docgen.mavenplugin;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.kongchen.swagger.docgen.GenerateException;
 import io.swagger.models.auth.ApiKeyAuthDefinition;
 import io.swagger.models.auth.BasicAuthDefinition;
 import io.swagger.models.auth.OAuth2Definition;
 import io.swagger.models.auth.SecuritySchemeDefinition;
-import javafx.util.Pair;
 
 import java.io.FileInputStream;
 import java.io.IOException;
