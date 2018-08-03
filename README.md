@@ -74,7 +74,9 @@ Import the plugin in your project by adding following configuration in your `plu
 | `apiModelPropertyAccessExclusions` | Allows the exclusion of specified `@ApiModelProperty` fields. This can be used to hide certain model properties from the swagger spec. More details [below](#apiModelPropertyAccessExclusions)|
 | `jsonExampleValues` | If `true`, all example values in `@ApiModelProperty` will be handled as json raw values. This is useful for creating valid examples in the generated json for all property types, including non-string ones. |
 | `modelConverters` | List of custom implementations of `io.swagger.converter.ModelConverter` that should be used when generating the swagger files. | 
-| `swaggerExtensions` | List of custom implementations of `io.swagger.jaxrs.ext.SwaggerExtension` that should be used when generating the swagger files. | 
+| `swaggerExtensions` | List of custom implementations of `io.swagger.jaxrs.ext.SwaggerExtension` that should be used when generating the swagger files. |
+| `operationIdFormat` | Format of `operationId` used in Swagger spec. For historical reasons default is Java method name. Since 3.1.8, for new APIs suggested format is: `{{className}}_{{methodName}}_{{httpMethod}}`. `{{packageName}}` token is also supported. | 
+
 
 # <a id="templatefile">Template File</a>
 
@@ -319,6 +321,7 @@ There's a [sample here](https://github.com/swagger-maven-plugin/swagger-maven-ex
                 <swaggerExtensions>
                     <swaggerExtension>com.example.VendorExtension</swaggerExtension>
                 </swaggerExtensions>
+                <operationIdFormat>{{className}}_{{methodName}}_{{httpMethod}}</operationIdFormat>
             </apiSource>
         </apiSources>
     </configuration>
