@@ -82,7 +82,8 @@ public abstract class AbstractReader {
     protected String operationIdFormat;
     
     /**
-     * Supported parameters: {{packageName}}.{{className}}_{{methodName}}_{{httpMethod}}
+     * Supported parameters: {{packageName}}, {{className}}, {{methodName}}, {{httpMethod}}
+     * Suggested default value is: "{{className}}_{{methodName}}_{{httpMethod}}"
      */
     public static final String OPERATION_ID_FORMAT_DEFAULT = "{{methodName}}";
 
