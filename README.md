@@ -248,13 +248,16 @@ The above setting attaches the generated file to Maven for install/deploy purpos
 
 # <a id="features">Object Mapper Configuration Features</a>
 
-Set's known enum configs to true.
+Enables the static Json.mapper config, by setting the feature of a known enum to true.
+
+N.B. Inner class fully qualified domain names are using $
 
 ```
 <configuration>
 ...
    <features>
        <feature>com.fasterxml.jackson.databind.SerializationFeature.WRITE_ENUMS_USING_TO_STRING</feature>
+       <feature>com.fasterxml.jackson.core.JsonParser$Feature.ALLOW_NUMERIC_LEADING_ZEROS</feature>
    </features>
 ...
 </configuration>
@@ -332,6 +335,9 @@ There's a [sample here](https://github.com/swagger-maven-plugin/swagger-maven-ex
                 <swaggerExtensions>
                     <swaggerExtension>com.example.VendorExtension</swaggerExtension>
                 </swaggerExtensions>
+                <features>
+                    <feature>com.fasterxml.jackson.databind.SerializationFeature.WRITE_ENUMS_USING_TO_STRING</feature>
+                </features>
             </apiSource>
         </apiSources>
     </configuration>
