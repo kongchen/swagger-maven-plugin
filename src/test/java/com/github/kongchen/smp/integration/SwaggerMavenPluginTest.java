@@ -318,7 +318,7 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
             mojo.execute();
             fail();
         } catch (Exception x) {
-            Logger.getAnonymousLogger().log(Level.INFO,x.getMessage(),x);
+            Logger.getAnonymousLogger().log(Level.FINE,x.getMessage(),x);
             assertTrue(Json.mapper().isEnabled(SerializationFeature.WRITE_ENUMS_USING_TO_STRING));
             assertTrue(x.getMessage().contains("com.fasterxml.jackson.core.JsonParser.Feature"));
             assertNotNull(x.getCause());
