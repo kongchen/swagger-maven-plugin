@@ -38,6 +38,8 @@ import static com.github.kongchen.smp.integration.utils.TestUtils.changeDescript
 import static com.github.kongchen.smp.integration.utils.TestUtils.createTempDirPath;
 import static com.github.kongchen.smp.integration.utils.TestUtils.setCustomReader;
 import io.swagger.util.Json;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import static net.javacrumbs.jsonunit.JsonAssert.assertJsonEquals;
 import static net.javacrumbs.jsonunit.core.Option.IGNORING_ARRAY_ORDER;
 
@@ -45,6 +47,7 @@ import static net.javacrumbs.jsonunit.core.Option.IGNORING_ARRAY_ORDER;
  * @author chekong on 8/15/14.
  */
 public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
+
     private File swaggerOutputDir = new File(getBasedir(), "generated/swagger-ui");
     private File docOutput = new File(getBasedir(), "generated/document.html");
     private ApiDocumentMojo mojo;
@@ -315,7 +318,7 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
             mojo.execute();
             fail();
         } catch (Exception x) {
-            x.printStackTrace();
+            Logger.getAnonymousLogger().log(Level.INFO,x.getMessage(),x);
             assertTrue(Json.mapper().isEnabled(SerializationFeature.WRITE_ENUMS_USING_TO_STRING));
             assertTrue(x.getMessage().contains("com.fasterxml.jackson.core.JsonParser.Feature"));
             assertNotNull(x.getCause());
