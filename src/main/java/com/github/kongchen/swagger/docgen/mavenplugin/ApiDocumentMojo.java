@@ -98,7 +98,7 @@ public class ApiDocumentMojo extends AbstractMojo {
                     int i=  feature.lastIndexOf(".");
                     Class clazz = Class.forName(feature.substring(0,i));
                     Enum e = Enum.valueOf(clazz,feature.substring(i+1));
-                    getLog().info("setting " + e.getDeclaringClass().toString() + "." + e.name() + "");
+                    getLog().debug("setting " + e.getDeclaringClass().toString() + "." + e.name() + "");
                     Method method = Json.mapper().getClass().getMethod("configure",e.getClass(),boolean.class);
                     method.invoke(Json.mapper(),e,true);
                 }
