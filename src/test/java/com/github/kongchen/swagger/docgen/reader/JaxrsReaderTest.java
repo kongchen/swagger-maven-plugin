@@ -95,6 +95,17 @@ public class JaxrsReaderTest {
         assertSwaggerResponseContents(expectedTag, result);
     }
 
+    @Test
+    public void handleOctetStreamAndByteArray() {
+        Swagger result = reader.read(AnApiWithOctetStream.class);
+        io.swagger.models.Path path = result.getPaths().get("/apath/add");
+        assertNotNull(path, "Expecting to find a path ..");
+        assertNotNull(path.getPost(), ".. with post opertion ..");
+        assertNotNull(path.getPost().getConsumes().contains("application/octet-stream"), ".. and with octect-stream consumer.");
+        assertTrue(path.getPost().getParameters().get(0) instanceof BodyParameter, "The parameter is a body parameter ..");
+        assertFalse(((BodyParameter) path.getPost().getParameters().get(0)).getSchema() instanceof ArrayModel, " .. and the schema is NOT an ArrayModel");
+    }
+
     private void assertEmptySwaggerResponse(Swagger result) {
         assertNotNull(result, "No Swagger object created");
         assertNull(result.getTags(), "Should not have any tags");
