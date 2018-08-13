@@ -5,26 +5,34 @@ import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.jaxrs.ext.SwaggerExtension;
-import io.swagger.jaxrs.ext.SwaggerExtensions;
-import io.swagger.models.Swagger;
-import io.swagger.models.Tag;
-import io.swagger.models.parameters.Parameter;
-import org.apache.maven.plugin.logging.Log;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import org.apache.maven.plugin.logging.Log;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Response;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.jaxrs.ext.SwaggerExtension;
+import io.swagger.jaxrs.ext.SwaggerExtensions;
+import io.swagger.models.ArrayModel;
+import io.swagger.models.Swagger;
+import io.swagger.models.Tag;
+import io.swagger.models.parameters.BodyParameter;
+import io.swagger.models.parameters.Parameter;
 
 public class JaxrsReaderTest {
     @Mock
@@ -36,6 +44,7 @@ public class JaxrsReaderTest {
 
     @BeforeMethod
     public void setup() {
+        MockitoAnnotations.initMocks(this);
         reader = new JaxrsReader(new Swagger(), log);
     }
 
@@ -124,5 +133,18 @@ public class JaxrsReaderTest {
 
     @Path("/apath")
     static class NotAnnotatedApi {
+    }
+
+    @Api(value = "v1")
+    @Path("/apath")
+    static class AnApiWithOctetStream {
+        @POST
+        @Path("/add")
+        @ApiOperation(value = "Add content")
+        @Consumes(MediaType.APPLICATION_OCTET_STREAM)
+        public void addOperation(
+                @ApiParam(value = "content", required = true, type = "string", format = "byte")
+                    final byte[] content) {
+        }
     }
 }
