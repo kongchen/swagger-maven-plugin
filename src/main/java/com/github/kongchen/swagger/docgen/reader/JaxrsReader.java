@@ -434,7 +434,6 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
 
     public static Annotation[][] findParamAnnotations(Method method) {
         Annotation[][] paramAnnotation = method.getParameterAnnotations();
-
         Method overriddenMethod = ReflectionUtils.getOverriddenMethod(method);
         while(overriddenMethod != null) {
             paramAnnotation = merge(overriddenMethod.getParameterAnnotations(), paramAnnotation);
@@ -517,6 +516,4 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
 
         return null;
     }
-
-
 }
