@@ -169,7 +169,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
                 apiConsumes = updateOperationConsumes(parentConsumes, apiConsumes, operation);
                 apiProduces = updateOperationProduces(parentProduces, apiProduces, operation);
 
-                handleSubResource(apiConsumes, httpMethod, apiProduces, tags, method, operationPath, operation);
+                handleSubResource(apiConsumes, httpMethod, apiProduces, tags, method, apiOperation, operationPath, operation);
 
                 // can't continue without a valid http method
                 httpMethod = (httpMethod == null) ? parentMethod : httpMethod;
@@ -222,9 +222,13 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         return tags;
     }
 
-    private void handleSubResource(String[] apiConsumes, String httpMethod, String[] apiProduces, Map<String, Tag> tags, Method method, String operationPath, Operation operation) {
+    private void handleSubResource(String[] apiConsumes, String httpMethod, String[] apiProduces, Map<String, Tag> tags, Method method, ApiOperation apiOperation, String operationPath, Operation operation) {
         if (isSubResource(httpMethod, method)) {
             Class<?> responseClass = method.getReturnType();
+            if (apiOperation != null && !apiOperation.response().equals(Void.class) && !apiOperation.response().equals(void.class)) {
+                responseClass = apiOperation.response();
+            }
+            LOGGER.debug("handling sub-resource method " + method.toString() + " -> " + responseClass);
             read(responseClass, operationPath, httpMethod, true, apiConsumes, apiProduces, tags, operation.getParameters());
         }
     }
