@@ -18,6 +18,8 @@ import org.apache.maven.project.MavenProjectHelper;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * User: kongchen
@@ -100,25 +102,12 @@ public class ApiDocumentMojo extends AbstractMojo {
             getLog().debug(apiSources.toString());
 
             if (enabledFeatures!=null) {
-                for (String feature : enabledFeatures) {
-                    int i=  feature.lastIndexOf(".");
-                    Class clazz = Class.forName(feature.substring(0,i));
-                    Enum e = Enum.valueOf(clazz,feature.substring(i+1));
-                    getLog().debug("enabling " + e.getDeclaringClass().toString() + "." + e.name() + "");
-                    Method method = Json.mapper().getClass().getMethod("configure",e.getClass(),boolean.class);
-                    method.invoke(Json.mapper(),e,true);
-                }
+                configureFeatures(enabledFeatures,true);
+                
             }
 
             if (disabledFeatures!=null) {
-                for (String feature : disabledFeatures) {
-                    int i=  feature.lastIndexOf(".");
-                    Class clazz = Class.forName(feature.substring(0,i));
-                    Enum e = Enum.valueOf(clazz,feature.substring(i+1));
-                    getLog().debug("disabling " + e.getDeclaringClass().toString() + "." + e.name() + "");
-                    Method method = Json.mapper().getClass().getMethod("configure",e.getClass(),boolean.class);
-                    method.invoke(Json.mapper(),e,false);
-                }
+                configureFeatures(disabledFeatures,false);
             }
             
             for (ApiSource apiSource : apiSources) {
@@ -225,6 +214,17 @@ public class ApiDocumentMojo extends AbstractMojo {
 
     private String getSwaggerDirectoryName(String swaggerDirectory) {
         return new File(swaggerDirectory).getName();
+    }
+
+    private void configureFeatures(List<String> features, boolean enabled) throws Exception {
+        for (String feature : features) {
+            int i=  feature.lastIndexOf(".");
+            Class clazz = Class.forName(feature.substring(0,i));
+            Enum e = Enum.valueOf(clazz,feature.substring(i+1));
+            getLog().debug("enabling " + e.getDeclaringClass().toString() + "." + e.name() + "");
+            Method method = Json.mapper().getClass().getMethod("configure",e.getClass(),boolean.class);
+            method.invoke(Json.mapper(),e,enabled);
+        }
     }
 
 }
