@@ -75,7 +75,8 @@ Import the plugin in your project by adding following configuration in your `plu
 | `jsonExampleValues` | If `true`, all example values in `@ApiModelProperty` will be handled as json raw values. This is useful for creating valid examples in the generated json for all property types, including non-string ones. |
 | `modelConverters` | List of custom implementations of `io.swagger.converter.ModelConverter` that should be used when generating the swagger files. | 
 | `swaggerExtensions` | List of custom implementations of `io.swagger.jaxrs.ext.SwaggerExtension` that should be used when generating the swagger files. | 
-| `features`    | List of ConfigFeature enums that are supported by ObjectMapper.configure - the feature is set to true. https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#features) here, see more details [below](#features)|
+| `enabledFeatures`    | List of ConfigFeature enums that are supported by ObjectMapper.configure - the feature is set to true. https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#features) here, see more details [below](#features)|
+| `disabledFeatures`    | List of ConfigFeature enums that are supported by ObjectMapper.configure - the feature is set to false. https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#features) here, see more details [below](#features)|
 # <a id="templatefile">Template File</a>
 
 If you'd like to generate a template-driven static document, such as markdown or HTML documentation, you'll need to specify a [handlebars](https://github.com/jknack/handlebars.java) template file in ```templatePath```.
@@ -248,18 +249,21 @@ The above setting attaches the generated file to Maven for install/deploy purpos
 
 # <a id="features">Object Mapper Configuration Features</a>
 
-Enables the static Json.mapper config, by setting the feature of a known enum to true.
+Enables or disables the static Json.mapper config, by setting the feature of a known enum to true or false respectively.
 
 N.B. Inner class fully qualified domain names are using $
 
 ```
 <configuration>
 ...
-   <features>
+   <enabledFeatures>
        <feature>com.fasterxml.jackson.databind.SerializationFeature.WRITE_ENUMS_USING_TO_STRING</feature>
        <feature>com.fasterxml.jackson.core.JsonParser$Feature.ALLOW_NUMERIC_LEADING_ZEROS</feature>
-   </features>
+   </enabledFeatures>
 ...
+    <disabledFeatures>
+        <feature>com.fasterxml.jackson.databind.SerializationFeature.FAIL_ON_EMPTY_BEANS</feature>
+    </disabledFeatures>
 </configuration>
 ```
 

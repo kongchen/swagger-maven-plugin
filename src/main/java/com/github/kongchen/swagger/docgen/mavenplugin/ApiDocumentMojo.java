@@ -38,7 +38,13 @@ public class ApiDocumentMojo extends AbstractMojo {
      * A set of feature enums which should be enabled on the JSON object mapper
      */
     @Parameter
-    private List<String> features;
+    private List<String> enabledFeatures;
+
+    /**
+     * A set of feature enums which should be enabled on the JSON object mapper
+     */
+    @Parameter
+    private List<String> disabledFeatures;
 
 
     @Parameter(defaultValue = "${project}", readonly = true)
@@ -93,14 +99,25 @@ public class ApiDocumentMojo extends AbstractMojo {
         try {
             getLog().debug(apiSources.toString());
 
-            if (features!=null) {
-                for (String feature : features) {
+            if (enabledFeatures!=null) {
+                for (String feature : enabledFeatures) {
                     int i=  feature.lastIndexOf(".");
                     Class clazz = Class.forName(feature.substring(0,i));
                     Enum e = Enum.valueOf(clazz,feature.substring(i+1));
-                    getLog().debug("setting " + e.getDeclaringClass().toString() + "." + e.name() + "");
+                    getLog().debug("enabling " + e.getDeclaringClass().toString() + "." + e.name() + "");
                     Method method = Json.mapper().getClass().getMethod("configure",e.getClass(),boolean.class);
                     method.invoke(Json.mapper(),e,true);
+                }
+            }
+
+            if (disabledFeatures!=null) {
+                for (String feature : disabledFeatures) {
+                    int i=  feature.lastIndexOf(".");
+                    Class clazz = Class.forName(feature.substring(0,i));
+                    Enum e = Enum.valueOf(clazz,feature.substring(i+1));
+                    getLog().debug("disabling " + e.getDeclaringClass().toString() + "." + e.name() + "");
+                    Method method = Json.mapper().getClass().getMethod("configure",e.getClass(),boolean.class);
+                    method.invoke(Json.mapper(),e,false);
                 }
             }
             
