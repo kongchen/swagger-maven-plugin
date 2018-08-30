@@ -255,7 +255,8 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         Operation operation = new Operation();
         ApiOperation apiOperation = AnnotationUtils.findAnnotation(method, ApiOperation.class);
 
-        String operationId = method.getName();
+        String operationId = getOperationId(method, httpMethod);
+        
         String responseContainer = null;
 
         Type responseClassType = null;
@@ -401,7 +402,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         return operation;
     }
 
-	public static Annotation[][] findParamAnnotations(Method method) {
+    public static Annotation[][] findParamAnnotations(Method method) {
 		Annotation[][] paramAnnotation = method.getParameterAnnotations();
 
 		Method overriddenMethod = ReflectionUtils.getOverriddenMethod(method);

@@ -130,6 +130,9 @@ public class ApiSource {
 
     @Parameter
     private List<String> modelConverters;
+    
+    @Parameter
+    private String operationIdFormat;
 
     public Set<Class<?>> getValidClasses(Class<? extends Annotation> clazz) {
         Set<Class<?>> classes = new LinkedHashSet<Class<?>>();
@@ -435,7 +438,15 @@ public class ApiSource {
         this.modelConverters = modelConverters;
     }
 
-    private String emptyToNull(String str) {
+    public String getOperationIdFormat() {
+		return operationIdFormat;
+	}
+
+	public void setOperationIdFormat(String operationIdFormat) {
+		this.operationIdFormat = operationIdFormat;
+	}
+
+	private String emptyToNull(String str) {
         return StringUtils.isEmpty(str) ? null : str;
     }
 }

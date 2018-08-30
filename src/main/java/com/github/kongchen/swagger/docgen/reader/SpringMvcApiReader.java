@@ -116,7 +116,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
                 //http method
                 for (RequestMethod requestMethod : requestMapping.method()) {
                     String httpMethod = requestMethod.toString().toLowerCase();
-                    Operation operation = parseMethod(method);
+                    Operation operation = parseMethod(method, requestMethod);
 
                     updateOperationParameters(new ArrayList<Parameter>(), regexMap, operation);
 
@@ -140,7 +140,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         return swagger;
     }
 
-    private Operation parseMethod(Method method) {
+    private Operation parseMethod(Method method, RequestMethod requestMethod) {
         int responseCode = 200;
         Operation operation = new Operation();
 
@@ -149,7 +149,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         List<String> produces = new ArrayList<String>();
         List<String> consumes = new ArrayList<String>();
         String responseContainer = null;
-        String operationId = method.getName();
+        String operationId = getOperationId(method, requestMethod.name());
         Map<String, Property> defaultResponseHeaders = null;
 
         ApiOperation apiOperation = findMergedAnnotation(method, ApiOperation.class);
@@ -423,5 +423,4 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
 
         return resourceMap;
     }
-
 }
