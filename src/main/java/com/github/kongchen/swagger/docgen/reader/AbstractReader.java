@@ -138,34 +138,6 @@ public abstract class AbstractReader {
         return responseHeaders;
     }
 
-    protected Set<Map<String, Object>> parseCustomExtensions(Extension[] extensions) {
-        if (extensions == null) {
-            return Collections.emptySet();
-        }
-        Set<Map<String, Object>> resultSet = new HashSet<Map<String, Object>>();
-        for (Extension extension : extensions) {
-            if (extension == null) {
-                continue;
-            }
-            Map<String, Object> extensionProperties = new HashMap<String, Object>();
-            for (ExtensionProperty extensionProperty : extension.properties()) {
-                String name = extensionProperty.name();
-                if (!name.isEmpty()) {
-                    String value = extensionProperty.value();
-                    extensionProperties.put(name, value);
-                }
-            }
-            if (!extension.name().isEmpty()) {
-                Map<String, Object> wrapper = new HashMap<String, Object>();
-                wrapper.put(extension.name(), extensionProperties);
-                resultSet.add(wrapper);
-            } else {
-                resultSet.add(extensionProperties);
-            }
-        }
-        return resultSet;
-    }
-
     protected void updatePath(String operationPath, String httpMethod, Operation operation) {
         if (httpMethod == null) {
             return;
