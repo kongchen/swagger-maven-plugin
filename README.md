@@ -38,10 +38,20 @@ Import the plugin in your project by adding following configuration in your `plu
 					</apiSource>
 				</apiSources>
 			</configuration>
+			<executions>
+				<execution>
+					<phase>compile</phase>
+					<goals>
+						<goal>generate</goal>
+					</goals>
+				</execution>
+			</executions>
 		</plugin>
 	</plugins>
 </build>
 ```
+
+The `executions` block is used to specify the phase of the build lifecycle you want the plugin to be executed in.
 
 # Configuration for `configuration`
 
@@ -398,3 +408,9 @@ To exclude `javax.ws.rs:jsr311-api:jar:1.1.1:compile` from `swagger-jaxrs_2.10`:
 </dependency>
 ```
 
+
+## 3. Building from source
+To build from source and run tests, you should:
+```
+mvn install
+```
