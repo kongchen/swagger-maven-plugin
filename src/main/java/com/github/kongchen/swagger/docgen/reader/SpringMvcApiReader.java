@@ -80,9 +80,11 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
 
         String[] controllerProduces = new String[0];
         String[] controllerConsumes = new String[0];
+        RequestMethod[] controllerMethods = new RequestMethod[0];
         if (controllerRM != null) {
             controllerConsumes = controllerRM.consumes();
             controllerProduces = controllerRM.produces();
+            controllerMethods = controllerRM.method();
         }
 
         if (controller.isAnnotationPresent(Api.class)) {
@@ -113,8 +115,13 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
                 Map<String, String> regexMap = new HashMap<String, String>();
                 String operationPath = parseOperationPath(path, regexMap);
 
+                RequestMethod[] requestMethods = requestMapping.method();
+                if (requestMethods.length == 0) {
+                    requestMethods = controllerMethods;
+                }
+
                 //http method
-                for (RequestMethod requestMethod : requestMapping.method()) {
+                for (RequestMethod requestMethod : requestMethods) {
                     String httpMethod = requestMethod.toString().toLowerCase();
                     Operation operation = parseMethod(method, requestMethod);
 
@@ -350,6 +357,8 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
     //Helper method for loadDocuments()
     private Map<String, SpringResource> analyzeController(Class<?> controllerClazz, Map<String, SpringResource> resourceMap, String description) {
 	String[] controllerRequestMappingValues = SpringUtils.getControllerResquestMapping(controllerClazz);
+        RequestMapping controllerRequestMapping = AnnotatedElementUtils.findMergedAnnotation(controllerClazz, RequestMapping.class);
+        RequestMethod[] controllerRequestMethods = controllerRequestMapping == null ? new RequestMethod[0] : controllerRequestMapping.method();
 
         // Iterate over all value attributes of the class-level RequestMapping annotation
         for (String controllerRequestMappingValue : controllerRequestMappingValues) {
@@ -359,6 +368,9 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
                 // Look for method-level @RequestMapping annotation
                 if (methodRequestMapping != null) {
                     RequestMethod[] requestMappingRequestMethods = methodRequestMapping.method();
+                    if (requestMappingRequestMethods.length == 0) {
+                        requestMappingRequestMethods = controllerRequestMethods;
+                    }
 
                     // For each method-level @RequestMapping annotation, iterate over HTTP Verb
                     for (RequestMethod requestMappingRequestMethod : requestMappingRequestMethods) {
