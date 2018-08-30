@@ -1,6 +1,7 @@
 package com.github.kongchen.swagger.docgen.spring;
 
 import com.fasterxml.jackson.databind.JavaType;
+
 import io.swagger.annotations.ApiParam;
 import io.swagger.converter.ModelConverters;
 import io.swagger.jaxrs.ext.AbstractSwaggerExtension;
@@ -9,8 +10,11 @@ import io.swagger.models.parameters.*;
 import io.swagger.models.properties.ArrayProperty;
 import io.swagger.models.properties.FileProperty;
 import io.swagger.models.properties.Property;
+import io.swagger.models.properties.StringProperty;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.TypeUtils;
+import org.apache.maven.plugin.logging.Log;
 import org.springframework.beans.BeanUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -29,6 +34,12 @@ import java.util.Set;
  * @author chekong on 15/4/27.
  */
 public class SpringSwaggerExtension extends AbstractSwaggerExtension {
+
+    private Log log;
+    
+    public SpringSwaggerExtension(Log log) {
+        this.log = log;
+    }
 
     @Override
     public List<Parameter> extractParameters(List<Annotation> annotations, Type type, Set<Type> typesToSkip, Iterator<SwaggerExtension> chain) {
@@ -69,7 +80,8 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension {
             if (!defaultValue.isEmpty()) {
                 queryParameter.setDefaultValue(defaultValue);
             }
-            Property schema = ModelConverters.getInstance().readAsProperty(type);
+            
+            Property schema = readAsPropertyIfPrimitive(type);
             if (schema != null) {
                 queryParameter.setProperty(schema);
             }
@@ -82,7 +94,7 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension {
             if (!defaultValue.isEmpty()) {
                 pathParameter.setDefaultValue(defaultValue);
             }
-            Property schema = ModelConverters.getInstance().readAsProperty(type);
+            Property schema = readAsPropertyIfPrimitive(type);
             if (schema != null) {
                 pathParameter.setProperty(schema);
             }
@@ -93,7 +105,7 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension {
             HeaderParameter headerParameter = new HeaderParameter().name(paramName)
                     .required(requestHeader.required());
             headerParameter.setDefaultValue(defaultValue);
-            Property schema = ModelConverters.getInstance().readAsProperty(type);
+            Property schema = readAsPropertyIfPrimitive(type);
             if (schema != null) {
                 headerParameter.setProperty(schema);
             }
@@ -107,7 +119,7 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension {
             if (!defaultValue.isEmpty()) {
                 cookieParameter.setDefaultValue(defaultValue);
             }
-            Property schema = ModelConverters.getInstance().readAsProperty(type);
+            Property schema = readAsPropertyIfPrimitive(type);
             if (schema != null) {
                 cookieParameter.setProperty(schema);
             }
@@ -145,6 +157,40 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension {
         return parameter;
     }
 
+    private Property readAsPropertyIfPrimitive(Type type) {
+        if (com.github.kongchen.swagger.docgen.util.TypeUtils.isPrimitive(type)) {
+            return ModelConverters.getInstance().readAsProperty(type);  
+        } else {
+            String msg = String.format("Can't use non-primitive type: %s as request parameter", type);
+            log.error(msg);
+            
+            // fallback to string if type is simple wrapper for String to support legacy code
+            JavaType ct = constructType(type);
+            if (isSimpleWrapperForString(ct.getRawClass())) {
+                log.warn(String.format("Non-primitive type: %s used as string for request parameter", type));
+                return new StringProperty();
+            }
+        }
+        return null;
+    }
+
+    private boolean isSimpleWrapperForString(Class<?> clazz) {
+        try {
+            Constructor<?>[] constructors = clazz.getConstructors();
+            if (constructors.length <= 2) {
+                if (constructors.length == 1) {
+                    return clazz.getConstructor(String.class) != null;
+                } else if (constructors.length == 2) {
+                    return clazz.getConstructor(String.class) != null && clazz.getConstructor() != null;
+                }
+            }
+            return false;
+        } catch (NoSuchMethodException e) {
+            // ignore
+            return false;
+        }
+    }
+    
     private List<Parameter> extractParametersFromModelAttributeAnnotation(Annotation annotation, Type type) {
         if (!(annotation instanceof ModelAttribute)) {
             return null;
