@@ -354,6 +354,10 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         // Iterate over all value attributes of the class-level RequestMapping annotation
         for (String controllerRequestMappingValue : controllerRequestMappingValues) {
             for (Method method : controllerClazz.getMethods()) {
+                // Skip methods introduced by compiler
+                if (method.isSynthetic()) {
+                    continue;
+                }
                 RequestMapping methodRequestMapping = findMergedAnnotation(method, RequestMapping.class);
 
                 // Look for method-level @RequestMapping annotation
