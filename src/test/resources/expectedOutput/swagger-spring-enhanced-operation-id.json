@@ -392,6 +392,22 @@
         }
       }
     },
+    "/getWithParam" : {
+      "get" : {
+        "operationId" : "KotlinController_getWithParam_GET",
+        "parameters" : [ {
+          "name" : "optionalParam",
+          "in" : "query",
+          "required" : true,
+          "type" : "boolean"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
     "/myResourceImpl/list" : {
       "get" : {
         "summary" : "Get a list of items",
