@@ -18,13 +18,15 @@ import java.util.*;
  * @author chekong on 15/5/5.
  */
 public class SecurityDefinition {
+    private static final String SECURITY_DEFINITION_NAME = "securityDefinitionName";
+
     private String name;
     private String type;
     private String in;
     private String description;
     private String json;
     private String jsonPath;
-    private String key;
+    private String securityDefinitionName;
 
     public Map<String, SecuritySchemeDefinition> generateSecuritySchemeDefinitions() throws GenerateException {
         Map<String, SecuritySchemeDefinition> map = new HashMap<String, SecuritySchemeDefinition>();
@@ -39,7 +41,7 @@ public class SecurityDefinition {
         for (JsonNode securityDefinition : securityDefinitions) {
             SecuritySchemeDefinition ssd = getSecuritySchemeDefinitionByType(securityDefinition.get("type").asText(), securityDefinition);
             if (ssd != null) {
-                String fieldDescriptor = securityDefinition.findValue("key")!=null ? "key" : "name";
+                String fieldDescriptor = securityDefinition.findValue(SECURITY_DEFINITION_NAME)!=null ? SECURITY_DEFINITION_NAME : "name";
                 map.put(securityDefinition.get(fieldDescriptor).asText(), ssd);
             }
         }
@@ -60,7 +62,7 @@ public class SecurityDefinition {
         	 	if(securityDefinition.findValue("name")==null) {
 	                securityDefinition = ((ObjectNode) securityDefinition).put("name", securityDefinitionName);
 		        }
-                securityDefinition = ((ObjectNode) securityDefinition).put("key", securityDefinitionName);
+                securityDefinition = ((ObjectNode) securityDefinition).put(SECURITY_DEFINITION_NAME, securityDefinitionName);
                 securityDefinitions.add(securityDefinition);
             }
         } catch (IOException e) {
