@@ -2,16 +2,17 @@ package com.github.kongchen.swagger.docgen.mavenplugin;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.kongchen.swagger.docgen.GenerateException;
 import io.swagger.models.auth.ApiKeyAuthDefinition;
 import io.swagger.models.auth.BasicAuthDefinition;
 import io.swagger.models.auth.OAuth2Definition;
 import io.swagger.models.auth.SecuritySchemeDefinition;
 
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.io.InputStream;
+import java.util.*;
 
 /**
  * @author chekong on 15/5/5.
@@ -19,32 +20,49 @@ import java.util.Map;
 public class SecurityDefinition {
     private String name;
     private String type;
+    private String in;
     private String description;
     private String json;
+    private String jsonPath;
 
-    public Map<String, SecuritySchemeDefinition> getDefinitions() throws GenerateException {
+    public Map<String, SecuritySchemeDefinition> generateSecuritySchemeDefinitions() throws GenerateException {
         Map<String, SecuritySchemeDefinition> map = new HashMap<String, SecuritySchemeDefinition>();
-        if (name != null && type != null) {
-            map.put(name, getSecuritySchemeDefinitionByNameAndType());
-        } else if (json != null) {
-            try {
-                JsonNode tree = new ObjectMapper().readTree(this.getClass().getResourceAsStream(json));
-                Iterator<String> fit = tree.fieldNames();
-                while (fit.hasNext()) {
-                    String field = fit.next();
-                    JsonNode node = tree.get(field);
-                    String type = node.get("type").asText();
-                    SecuritySchemeDefinition ssd = getSecuritySchemeDefinitionByType(type, node);
-                    if (ssd != null) {
-                        map.put(field, ssd);
-                    }
-                }
-            } catch (IOException e) {
-                throw new GenerateException(e);
-            }
 
+        List<JsonNode> securityDefinitions = new ArrayList<JsonNode>();
+        if (json != null || jsonPath != null) {
+            securityDefinitions = loadSecurityDefintionsFromJsonFile();
+        } else {
+            securityDefinitions.add(new ObjectMapper().valueToTree(this));
         }
+
+        for (JsonNode securityDefinition : securityDefinitions) {
+            SecuritySchemeDefinition ssd = getSecuritySchemeDefinitionByType(securityDefinition.get("type").asText(), securityDefinition);
+            if (ssd != null) {
+                map.put(securityDefinition.get("name").asText(), ssd);
+            }
+        }
+
         return map;
+    }
+
+    private List<JsonNode> loadSecurityDefintionsFromJsonFile() throws GenerateException {
+        List<JsonNode> securityDefinitions = new ArrayList<JsonNode>();
+
+        try {
+            InputStream jsonStream = json != null ? this.getClass().getResourceAsStream(json) : new FileInputStream(jsonPath);
+            JsonNode tree = new ObjectMapper().readTree(jsonStream);
+            Iterator<String> securityDefinitionNameIterator = tree.fieldNames();
+            while (securityDefinitionNameIterator.hasNext()) {
+                String securityDefinitionName = securityDefinitionNameIterator.next();
+                JsonNode securityDefinition = tree.get(securityDefinitionName);
+                securityDefinition = ((ObjectNode) securityDefinition).put("name", securityDefinitionName);
+                securityDefinitions.add(securityDefinition);
+            }
+        } catch (IOException e) {
+            throw new GenerateException(e);
+        }
+
+        return securityDefinitions;
     }
 
     private SecuritySchemeDefinition getSecuritySchemeDefinitionByType(String type, JsonNode node) throws GenerateException {
@@ -73,58 +91,6 @@ public class SecurityDefinition {
         }
     }
 
-    private SecuritySchemeDefinition getSecuritySchemeDefinitionByNameAndType() throws GenerateException {
-        final String _type = type;
-        final String _description = description;
-        SecuritySchemeDefinition def = new SecuritySchemeDefinition() {
-            private String type = _type;
-            private String description = _description;
-            private Map<String, Object> vendorExtensions;
-
-            @Override
-            public String getType() {
-                return type;
-            }
-
-            @Override
-            public void setType(String type) {
-                this.type = type;
-            }
-
-            @Override
-            public Map<String, Object> getVendorExtensions() {
-                return vendorExtensions;
-            }
-
-            @Override
-            public void setVendorExtension(String key, Object value) {
-                vendorExtensions.put(key, value);
-            }
-
-            @Override
-            public String getDescription() {
-                return description;
-            }
-
-            @Override
-            public void setDescription(String description) {
-                this.description = description;
-            }
-        };
-
-        JsonNode node = new ObjectMapper().valueToTree(def);
-        return getSecuritySchemeDefinitionByType(type, node);
-    }
-
-
-    public String getJson() {
-        return json;
-    }
-
-    public void setJson(String json) {
-        this.json = json;
-    }
-
     public String getName() {
         return name;
     }
@@ -139,5 +105,13 @@ public class SecurityDefinition {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getIn() {
+        return in;
+    }
+
+    public void setIn(String in) {
+        this.in = in;
     }
 }

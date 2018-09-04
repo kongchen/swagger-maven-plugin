@@ -4,23 +4,21 @@ import io.swagger.annotations.SwaggerDefinition;
 import io.swagger.models.Contact;
 import io.swagger.models.Info;
 import io.swagger.models.License;
+import io.swagger.util.BaseReaderUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.reflections.Reflections;
 import org.springframework.core.annotation.AnnotationUtils;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * User: kongchen
  * Date: 3/7/13
  */
 public class ApiSource {
-
     /**
      * Java classes containing Swagger's annotation <code>@Api</code>, or Java packages containing those classes
      * can be configured here.
@@ -36,6 +34,9 @@ public class ApiSource {
      */
     @Parameter
     private String basePath;
+
+    @Parameter(defaultValue = "false")
+    private boolean removeBasePathFromEndpoints;
 
     /**
      * The host (name or ip) serving the API.
@@ -61,12 +62,12 @@ public class ApiSource {
     @Parameter
     private String outputPath;
 
-    @Parameter
+    @Parameter(defaultValue = "json")
     private String outputFormats;
 
     @Parameter
     private String swaggerDirectory;
-    
+
     @Parameter
     private String swaggerFileName;
 
@@ -96,11 +97,21 @@ public class ApiSource {
     @Parameter
     private String swaggerApiReader;
 
+    /**
+     * List of full qualified class names of SwaggerExtension implementations to be
+     * considered for the generation
+     */
+    @Parameter
+    private List<String> swaggerExtensions;
+
     @Parameter
     private boolean springmvc;
 
     @Parameter
     private boolean useJAXBAnnotationProcessor;
+
+    @Parameter
+    private boolean useJAXBAnnotationProcessorAsPrimary = true;
 
     @Parameter
     private String swaggerSchemaConverter;
@@ -122,25 +133,32 @@ public class ApiSource {
 
     @Parameter
     private List<String> modelConverters;
+    
+    @Parameter
+    private boolean skipInheritingClasses = false;
+    
+    @Parameter
+    private String operationIdFormat;
 
     public Set<Class<?>> getValidClasses(Class<? extends Annotation> clazz) {
         Set<Class<?>> classes = new LinkedHashSet<Class<?>>();
+        
+        List<String> prefixes = new ArrayList<String>();
         if (getLocations() == null) {
-            Set<Class<?>> c = new Reflections("").getTypesAnnotatedWith(clazz, true);
+            prefixes.add("");
+        } else {
+            prefixes.addAll(getLocations());
+        }
+        
+        for (String location : prefixes) {
+            Set<Class<?>> c = new Reflections(location).getTypesAnnotatedWith(clazz, true);
             classes.addAll(c);
 
-            Set<Class<?>> inherited = new Reflections("").getTypesAnnotatedWith(clazz);
-            classes.addAll(inherited);
-        } else {
-            for (String location : locations) {
-                Set<Class<?>> c = new Reflections(location).getTypesAnnotatedWith(clazz, true);
-                classes.addAll(c);
-
+            if (!skipInheritingClasses) {
                 Set<Class<?>> inherited = new Reflections(location).getTypesAnnotatedWith(clazz);
                 classes.addAll(inherited);
             }
         }
-
         return classes;
     }
 
@@ -180,41 +198,56 @@ public class ApiSource {
         for (Class<?> aClass : getValidClasses(SwaggerDefinition.class)) {
             SwaggerDefinition swaggerDefinition = AnnotationUtils.findAnnotation(aClass, SwaggerDefinition.class);
             io.swagger.annotations.Info infoAnnotation = swaggerDefinition.info();
+
             Info info = new Info().title(infoAnnotation.title())
-                    .description(infoAnnotation.description())
+                    .description(emptyToNull(infoAnnotation.description()))
                     .version(infoAnnotation.version())
-                    .termsOfService(infoAnnotation.termsOfService())
+                    .termsOfService(emptyToNull(infoAnnotation.termsOfService()))
                     .license(from(infoAnnotation.license()))
                     .contact(from(infoAnnotation.contact()));
+
+            Map<String, Object> customExtensions = BaseReaderUtils.parseExtensions(infoAnnotation.extensions());
+            for (Map.Entry<String, Object> extension : customExtensions.entrySet()) {
+                resultInfo.setVendorExtension(extension.getKey(), extension.getValue());
+            }
+
             resultInfo.mergeWith(info);
         }
         info = resultInfo;
     }
 
     private Contact from(io.swagger.annotations.Contact contactAnnotation) {
-        return new Contact()
-                .name(contactAnnotation.name())
-                .email(contactAnnotation.email())
-                .url(contactAnnotation.url());
+        Contact contact = new Contact()
+                .name(emptyToNull(contactAnnotation.name()))
+                .email(emptyToNull(contactAnnotation.email()))
+                .url(emptyToNull(contactAnnotation.url()));
+        if (contact.getName() == null && contact.getEmail() == null && contact.getUrl() == null) {
+            contact = null;
+        }
+        return contact;
     }
 
     private License from(io.swagger.annotations.License licenseAnnotation) {
-        return new License()
-                .name(licenseAnnotation.name())
-                .url(licenseAnnotation.url());
+        License license = new License()
+                .name(emptyToNull(licenseAnnotation.name()))
+                .url(emptyToNull(licenseAnnotation.url()));
+        if (license.getName() == null && license.getUrl() == null) {
+            license = null;
+        }
+        return license;
     }
 
     private void setBasePathFromAnnotation() {
         for (Class<?> aClass : getValidClasses(SwaggerDefinition.class)) {
             SwaggerDefinition swaggerDefinition = AnnotationUtils.findAnnotation(aClass, SwaggerDefinition.class);
-            basePath = swaggerDefinition.basePath();
+            basePath = emptyToNull(swaggerDefinition.basePath());
         }
     }
 
     private void setHostFromAnnotation() {
         for (Class<?> aClass : getValidClasses(SwaggerDefinition.class)) {
             SwaggerDefinition swaggerDefinition = AnnotationUtils.findAnnotation(aClass, SwaggerDefinition.class);
-            host = swaggerDefinition.host();
+            host = emptyToNull(swaggerDefinition.host());
         }
     }
 
@@ -272,7 +305,7 @@ public class ApiSource {
     public void setSwaggerDirectory(String swaggerDirectory) {
         this.swaggerDirectory = swaggerDirectory;
     }
-    
+
     public String getSwaggerFileName() {
         return swaggerFileName;
     }
@@ -324,7 +357,15 @@ public class ApiSource {
         this.swaggerApiReader = swaggerApiReader;
     }
 
-    public String getApiSortComparator() {
+    public List<String> getSwaggerExtensions() {
+		return swaggerExtensions;
+	}
+
+	public void setSwaggerExtensions(List<String> swaggerExtensions) {
+		this.swaggerExtensions = swaggerExtensions;
+	}
+
+	public String getApiSortComparator() {
         return apiSortComparator;
     }
 
@@ -380,6 +421,14 @@ public class ApiSource {
         this.useJAXBAnnotationProcessor = useJAXBAnnotationProcessor;
     }
 
+    public boolean isUseJAXBAnnotationProcessorAsPrimary() {
+        return useJAXBAnnotationProcessorAsPrimary;
+    }
+
+    public void setUseJAXBAnnotationProcessorAsPrimary(boolean useJAXBAnnotationProcessorAsPrimary) {
+        this.useJAXBAnnotationProcessorAsPrimary = useJAXBAnnotationProcessorAsPrimary;
+    }
+
     public File getDescriptionFile() {
         return descriptionFile;
     }
@@ -394,6 +443,26 @@ public class ApiSource {
 
     public void setModelConverters(List<String> modelConverters) {
         this.modelConverters = modelConverters;
+    }
+
+    public String getOperationIdFormat() {
+		return operationIdFormat;
+	}
+
+	public void setOperationIdFormat(String operationIdFormat) {
+		this.operationIdFormat = operationIdFormat;
+	}
+
+	private String emptyToNull(String str) {
+        return StringUtils.isEmpty(str) ? null : str;
+    }
+
+    public Boolean getRemoveBasePathFromEndpoints() {
+        return removeBasePathFromEndpoints;
+    }
+
+    public void setRemoveBasePathFromEndpoints(Boolean removeBasePathFromEndpoints) {
+        this.removeBasePathFromEndpoints = removeBasePathFromEndpoints;
     }
 }
 

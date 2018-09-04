@@ -1,32 +1,28 @@
 package com.github.kongchen.swagger.docgen.spring;
 
 import com.fasterxml.jackson.databind.JavaType;
+
 import io.swagger.annotations.ApiParam;
 import io.swagger.converter.ModelConverters;
 import io.swagger.jaxrs.ext.AbstractSwaggerExtension;
 import io.swagger.jaxrs.ext.SwaggerExtension;
-import io.swagger.models.parameters.CookieParameter;
-import io.swagger.models.parameters.FormParameter;
-import io.swagger.models.parameters.HeaderParameter;
-import io.swagger.models.parameters.Parameter;
-import io.swagger.models.parameters.PathParameter;
-import io.swagger.models.parameters.QueryParameter;
+import io.swagger.models.parameters.*;
 import io.swagger.models.properties.ArrayProperty;
 import io.swagger.models.properties.FileProperty;
 import io.swagger.models.properties.Property;
+import io.swagger.models.properties.StringProperty;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.TypeUtils;
+import org.apache.maven.plugin.logging.Log;
 import org.springframework.beans.BeanUtils;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -38,6 +34,12 @@ import java.util.Set;
  * @author chekong on 15/4/27.
  */
 public class SpringSwaggerExtension extends AbstractSwaggerExtension {
+
+    private Log log;
+    
+    public SpringSwaggerExtension(Log log) {
+        this.log = log;
+    }
 
     @Override
     public List<Parameter> extractParameters(List<Annotation> annotations, Type type, Set<Type> typesToSkip, Iterator<SwaggerExtension> chain) {
@@ -60,7 +62,10 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension {
             }
         }
 
-        return parameters;
+        if (!parameters.isEmpty()) {
+            return parameters;
+        }
+        return super.extractParameters(annotations, type, typesToSkip, chain);
     }
 
     private Parameter extractParameterFromAnnotation(Annotation annotation, String defaultValue, Type type) {
@@ -68,13 +73,15 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension {
 
         if (annotation instanceof RequestParam) {
             RequestParam requestParam = (RequestParam) annotation;
-            QueryParameter queryParameter = new QueryParameter().name(requestParam.value())
+            String paramName = StringUtils.defaultIfEmpty(requestParam.value(), requestParam.name());
+            QueryParameter queryParameter = new QueryParameter().name(paramName)
                     .required(requestParam.required());
 
             if (!defaultValue.isEmpty()) {
                 queryParameter.setDefaultValue(defaultValue);
             }
-            Property schema = ModelConverters.getInstance().readAsProperty(type);
+            
+            Property schema = readAsPropertyIfPrimitive(type);
             if (schema != null) {
                 queryParameter.setProperty(schema);
             }
@@ -82,21 +89,23 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension {
             parameter = queryParameter;
         } else if (annotation instanceof PathVariable) {
             PathVariable pathVariable = (PathVariable) annotation;
-            PathParameter pathParameter = new PathParameter().name(pathVariable.value());
+            String paramName = StringUtils.defaultIfEmpty(pathVariable.value(), pathVariable.name());
+            PathParameter pathParameter = new PathParameter().name(paramName);
             if (!defaultValue.isEmpty()) {
                 pathParameter.setDefaultValue(defaultValue);
             }
-            Property schema = ModelConverters.getInstance().readAsProperty(type);
+            Property schema = readAsPropertyIfPrimitive(type);
             if (schema != null) {
                 pathParameter.setProperty(schema);
             }
             parameter = pathParameter;
         } else if (annotation instanceof RequestHeader) {
             RequestHeader requestHeader = (RequestHeader) annotation;
-            HeaderParameter headerParameter = new HeaderParameter().name(requestHeader.value())
+            String paramName = StringUtils.defaultIfEmpty(requestHeader.value(), requestHeader.name());
+            HeaderParameter headerParameter = new HeaderParameter().name(paramName)
                     .required(requestHeader.required());
             headerParameter.setDefaultValue(defaultValue);
-            Property schema = ModelConverters.getInstance().readAsProperty(type);
+            Property schema = readAsPropertyIfPrimitive(type);
             if (schema != null) {
                 headerParameter.setProperty(schema);
             }
@@ -104,12 +113,13 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension {
             parameter = headerParameter;
         } else if (annotation instanceof CookieValue) {
             CookieValue cookieValue = (CookieValue) annotation;
-            CookieParameter cookieParameter = new CookieParameter().name(cookieValue.value())
+            String paramName = StringUtils.defaultIfEmpty(cookieValue.value(), cookieValue.name());
+            CookieParameter cookieParameter = new CookieParameter().name(paramName)
                     .required(cookieValue.required());
             if (!defaultValue.isEmpty()) {
                 cookieParameter.setDefaultValue(defaultValue);
             }
-            Property schema = ModelConverters.getInstance().readAsProperty(type);
+            Property schema = readAsPropertyIfPrimitive(type);
             if (schema != null) {
                 cookieParameter.setProperty(schema);
             }
@@ -117,7 +127,8 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension {
             parameter = cookieParameter;
         } else if (annotation instanceof RequestPart) {
             RequestPart requestPart = (RequestPart) annotation;
-            FormParameter formParameter = new FormParameter().name(requestPart.value())
+            String paramName = StringUtils.defaultIfEmpty(requestPart.value(), requestPart.name());
+            FormParameter formParameter = new FormParameter().name(paramName)
                     .required(requestPart.required());
 
             if (!defaultValue.isEmpty()) {
@@ -146,6 +157,40 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension {
         return parameter;
     }
 
+    private Property readAsPropertyIfPrimitive(Type type) {
+        if (com.github.kongchen.swagger.docgen.util.TypeUtils.isPrimitive(type)) {
+            return ModelConverters.getInstance().readAsProperty(type);  
+        } else {
+            String msg = String.format("Can't use non-primitive type: %s as request parameter", type);
+            log.error(msg);
+            
+            // fallback to string if type is simple wrapper for String to support legacy code
+            JavaType ct = constructType(type);
+            if (isSimpleWrapperForString(ct.getRawClass())) {
+                log.warn(String.format("Non-primitive type: %s used as string for request parameter", type));
+                return new StringProperty();
+            }
+        }
+        return null;
+    }
+
+    private boolean isSimpleWrapperForString(Class<?> clazz) {
+        try {
+            Constructor<?>[] constructors = clazz.getConstructors();
+            if (constructors.length <= 2) {
+                if (constructors.length == 1) {
+                    return clazz.getConstructor(String.class) != null;
+                } else if (constructors.length == 2) {
+                    return clazz.getConstructor(String.class) != null && clazz.getConstructor() != null;
+                }
+            }
+            return false;
+        } catch (NoSuchMethodException e) {
+            // ignore
+            return false;
+        }
+    }
+    
     private List<Parameter> extractParametersFromModelAttributeAnnotation(Annotation annotation, Type type) {
         if (!(annotation instanceof ModelAttribute)) {
             return null;
@@ -210,7 +255,7 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension {
     @Override
     public boolean shouldIgnoreType(Type type, Set<Type> typesToSkip) {
         Class<?> cls = TypeUtils.getRawType(type, type);
-        return cls.getName().startsWith("org.springframework") &&
+        return cls != null && cls.getName().startsWith("org.springframework") &&
                 !cls.getName().equals("org.springframework.web.multipart.MultipartFile");
     }
 }

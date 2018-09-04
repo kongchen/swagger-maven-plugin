@@ -1,12 +1,7 @@
 package com.github.kongchen.swagger.docgen.spring;
 
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.web.bind.annotation.RequestMapping;
-
 import com.github.kongchen.swagger.docgen.util.SpringUtils;
-
-import edu.emory.mathcs.backport.java.util.Arrays;
+import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -24,8 +19,11 @@ public class SpringResource {
     private String description;
 
     /**
-     * @param clazz        (Class<?>) Controller class
+     *
+     * @param clazz        Controller class
      * @param resourceName resource Name
+     * @param resourceKey key containing the controller package, class controller class name, and controller-level @RequestMapping#value
+     * @param description description of the contrroller
      */
     public SpringResource(Class<?> clazz, String resourceName, String resourceKey, String description) {
         this.controllerClass = clazz;

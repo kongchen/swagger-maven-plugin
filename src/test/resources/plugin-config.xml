@@ -22,6 +22,11 @@
                                     <type>basic</type>
                                 </securityDefinition>
                                 <securityDefinition>
+                                    <name>api_key_2</name>
+                                    <type>apiKey</type>
+                                    <in>header</in>
+                                </securityDefinition>
+                                <securityDefinition>
                                     <json>/securityDefinition.json</json>
                                 </securityDefinition>
                             </securityDefinitions>
@@ -42,6 +47,9 @@
                                 <apiModelPropertyAccessExclusion>another-secret-property</apiModelPropertyAccessExclusion>
                                 <apiModelPropertyAccessExclusion>exclude-when-jev-option-not-set</apiModelPropertyAccessExclusion>
                             </apiModelPropertyAccessExclusions>
+                            <swaggerExtensions>
+                                <swaggerExtension>com.wordnik.sample.VendorExtensionWithoutReader</swaggerExtension>
+                            </swaggerExtensions>
                         </apiSource>
                     </apiSources>
                 </configuration>

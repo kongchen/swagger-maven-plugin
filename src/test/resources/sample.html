@@ -58,6 +58,33 @@ This is a sample.
 
 
 
+### api_key_2
+
+
+
+<table>
+        <tr>
+            <th>type</th>
+            <th colspan="2">apiKey</th>
+        </tr>
+
+
+        <tr>
+            <th>name</th>
+            <th colspan="2">api_key_2</th>
+        </tr>
+
+
+        <tr>
+            <th>in</th>
+            <th colspan="2">HEADER</th>
+        </tr>
+
+</table>
+
+
+
+
 ### basicAuth
 
 
@@ -247,6 +274,223 @@ This is a contrived example
 | 200    | successful operation | <a href="#/definitions/Pet">Pet</a>|
 | 400    | Invalid ID supplied |  - |
 | 404    | Pet not found |  - |
+
+
+
+
+
+
+
+### POST
+
+
+<a id="insertResource">Insert a response</a>
+
+This is a contrived example
+
+
+
+
+
+
+
+#### Request
+
+
+
+##### Parameters
+
+<table border="1">
+    <tr>
+        <th>Name</th>
+        <th>Located in</th>
+        <th>Required</th>
+        <th>Description</th>
+        <th>Default</th>
+        <th>Schema</th>
+    </tr>
+
+
+
+    <tr>
+        <th>body</th>
+        <td>body</td>
+        <td>yes</td>
+        <td>Resource to insert</td>
+        <td> - </td>
+
+        <td>
+
+
+        </td>
+
+    </tr>
+
+
+</table>
+
+
+
+#### Response
+
+**Content-Type: ** application/json, application/xml
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| default    | successful operation |  - |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## /myResourceImpl/list
+
+
+### GET
+
+<a id="getListOfItems">Get a list of items</a>
+
+This is a contrived example
+
+
+
+
+
+
+
+#### Request
+
+
+
+##### Parameters
+
+
+
+
+
+
+#### Response
+
+**Content-Type: ** application/json, application/xml
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 200    | successful operation | Array[<a href="#/definitions/ListItem">ListItem</a>]|
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## /myResourceImpl/{firstParamConcrete}/properties
+
+
+### GET
+
+<a id="testParamInheritance">Get a response</a>
+
+This is a contrived example
+
+
+
+
+
+
+
+#### Request
+
+
+
+##### Parameters
+
+<table border="1">
+    <tr>
+        <th>Name</th>
+        <th>Located in</th>
+        <th>Required</th>
+        <th>Description</th>
+        <th>Default</th>
+        <th>Schema</th>
+    </tr>
+
+
+
+<tr>
+    <th>firstParamConcrete</th>
+    <td>path</td>
+    <td>yes</td>
+    <td></td>
+    <td> - </td>
+
+
+            <td>string </td>
+
+
+</tr>
+
+<tr>
+    <th>secondParamAbstract</th>
+    <td>query</td>
+    <td>yes</td>
+    <td></td>
+    <td> - </td>
+
+
+            <td>string </td>
+
+
+</tr>
+
+<tr>
+    <th>thirdParamInterface</th>
+    <td>query</td>
+    <td>no</td>
+    <td></td>
+    <td> - </td>
+
+
+            <td>string </td>
+
+
+</tr>
+
+
+</table>
+
+
+
+#### Response
+
+**Content-Type: ** application/json, application/xml
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| default    | successful operation |  - |
 
 
 
@@ -455,6 +699,93 @@ This is a contrived example
 | Status Code | Reason      | Response Model |
 |-------------|-------------|----------------|
 | 405    | Invalid input |  - |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## /pet/findAll
+
+
+### GET
+
+<a id="findAllPaginated">Finds all Pets</a>
+
+Returns a paginated list of all the Pets.
+
+
+
+
+#### Security
+
+
+
+
+* petstore_auth
+   * write:pets
+   * read:pets
+
+
+
+
+#### Request
+
+
+
+##### Parameters
+
+<table border="1">
+    <tr>
+        <th>Name</th>
+        <th>Located in</th>
+        <th>Required</th>
+        <th>Description</th>
+        <th>Default</th>
+        <th>Schema</th>
+    </tr>
+
+
+
+<tr>
+    <th>pageNumber</th>
+    <td>query</td>
+    <td>yes</td>
+    <td>pageNumber</td>
+    <td> - </td>
+
+
+            <td>integer (int32)</td>
+
+
+</tr>
+
+
+</table>
+
+
+
+#### Response
+
+**Content-Type: ** application/json, application/xml
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 200    | successful operation | <a href="#/definitions/PagedListPet">PagedListPet</a>|
+| 400    | Invalid page number value |  - |
+
+
+
 
 
 
@@ -1247,6 +1578,7 @@ Muliple tags can be provided with comma seperated strings. Use tag1, tag2, tag3 
 | Status Code | Reason      | Response Model |
 |-------------|-------------|----------------|
 | 401    | Some vendor error description |  - |
+| 501    | Some vendor error description added using swaggerExtension |  - |
 | default    | successful operation |  - |
 
 
@@ -1468,15 +1800,54 @@ Returns a pet when ID &lt; 10.  ID &gt; 10 or nonintegers will simulate API erro
 </tr>
 
 <tr>
+    <th>myNestedBeanHeader</th>
+    <td>header</td>
+    <td>no</td>
+    <td>Header from nested bean</td>
+    <td> - </td>
+
+
+            <td>string </td>
+
+
+</tr>
+
+<tr>
+    <th>constructorInjectedHeader</th>
+    <td>header</td>
+    <td>no</td>
+    <td>Header injected at constructor</td>
+    <td> - </td>
+
+
+            <td>string </td>
+
+
+</tr>
+
+<tr>
     <th>testIntegerAllowableValues</th>
     <td>query</td>
     <td>no</td>
     <td>testIntegerAllowableValues</td>
     <td> - </td>
 
-    
+
             <td>integer (int32)</td>
-    
+
+
+</tr>
+
+<tr>
+    <th>constrainedField</th>
+    <td>query</td>
+    <td>yes</td>
+    <td> (**Pattern**: `[0-9]5`)</td>
+    <td> - </td>
+
+
+            <td>integer (int32)</td>
+
 
 </tr>
 
@@ -1729,15 +2100,54 @@ Returns a pet when ID &lt; 10.  ID &gt; 10 or nonintegers will simulate API erro
 </tr>
 
 <tr>
+    <th>myNestedBeanHeader</th>
+    <td>header</td>
+    <td>no</td>
+    <td>Header from nested bean</td>
+    <td> - </td>
+
+
+            <td>string </td>
+
+
+</tr>
+
+<tr>
+    <th>constructorInjectedHeader</th>
+    <td>header</td>
+    <td>no</td>
+    <td>Header injected at constructor</td>
+    <td> - </td>
+
+
+            <td>string </td>
+
+
+</tr>
+
+<tr>
     <th>testIntegerAllowableValues</th>
     <td>query</td>
     <td>no</td>
     <td>testIntegerAllowableValues</td>
     <td> - </td>
 
-    
+
             <td>integer (int32)</td>
-    
+
+
+</tr>
+
+<tr>
+    <th>constrainedField</th>
+    <td>query</td>
+    <td>yes</td>
+    <td> (**Pattern**: `[0-9]5`)</td>
+    <td> - </td>
+
+
+            <td>integer (int32)</td>
+
 
 </tr>
 
@@ -2329,6 +2739,160 @@ For valid response try integer IDs with value &lt;= 5 or &gt; 10. Other values w
 | Status Code | Reason      | Response Model |
 |-------------|-------------|----------------|
 | 200    | Successful request - see response for &#x27;pong&#x27; | string|
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## /swaggerless/subresource/{name}
+
+
+### GET
+
+<a id="getPetByNameSubresource"></a>
+
+
+
+
+
+
+
+
+
+#### Request
+
+
+
+##### Parameters
+
+<table border="1">
+    <tr>
+        <th>Name</th>
+        <th>Located in</th>
+        <th>Required</th>
+        <th>Description</th>
+        <th>Default</th>
+        <th>Schema</th>
+    </tr>
+
+
+
+<tr>
+    <th>name</th>
+    <td>path</td>
+    <td>yes</td>
+    <td></td>
+    <td> - </td>
+
+
+            <td>string </td>
+
+
+</tr>
+
+
+</table>
+
+
+
+#### Response
+
+
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 200    | successful operation | <a href="#/definitions/Pet">Pet</a>|
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## /swaggerless/{petId}
+
+
+### GET
+
+<a id="getPetByName"></a>
+
+
+
+
+
+
+
+
+
+#### Request
+
+
+
+##### Parameters
+
+<table border="1">
+    <tr>
+        <th>Name</th>
+        <th>Located in</th>
+        <th>Required</th>
+        <th>Description</th>
+        <th>Default</th>
+        <th>Schema</th>
+    </tr>
+
+
+
+<tr>
+    <th>name</th>
+    <td>path</td>
+    <td>yes</td>
+    <td></td>
+    <td> - </td>
+
+
+            <td>string </td>
+
+
+</tr>
+
+
+</table>
+
+
+
+#### Response
+
+
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 200    | successful operation | <a href="#/definitions/Pet">Pet</a>|
+
+
 
 
 
@@ -2941,6 +3505,216 @@ This can only be done by the logged in user.
 
 
 
+## /v1.0/sub
+
+
+### GET
+
+<a id="getUsers">List of users</a>
+
+Get user list
+
+
+
+
+#### Security
+
+
+
+
+* api_key
+
+
+
+
+#### Request
+
+
+
+##### Parameters
+
+
+
+
+
+
+#### Response
+
+**Content-Type: ** application/json
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 200    | Successful operation |  - |
+
+
+
+
+
+### PUT
+
+<a id="updateUser">Update User</a>
+
+
+
+
+
+
+#### Security
+
+
+
+
+* api_key
+
+
+
+
+#### Request
+
+
+
+##### Parameters
+
+<table border="1">
+    <tr>
+        <th>Name</th>
+        <th>Located in</th>
+        <th>Required</th>
+        <th>Description</th>
+        <th>Default</th>
+        <th>Schema</th>
+    </tr>
+
+
+
+<tr>
+    <th>body</th>
+    <td>body</td>
+    <td>yes</td>
+    <td>User to be updated</td>
+    <td> - </td>
+
+    <td>
+    
+    <a href="#/definitions/User">User</a> 
+    </td>
+
+</tr>
+
+
+</table>
+
+
+
+#### Response
+
+**Content-Type: ** application/json
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 200    | Successful operation |  - |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## /v1.0/sub/{username}
+
+
+### GET
+
+<a id="getUserByName">Fetch a user by username</a>
+
+
+
+
+
+
+#### Security
+
+
+
+
+* api_key
+
+
+
+
+#### Request
+
+
+
+##### Parameters
+
+<table border="1">
+    <tr>
+        <th>Name</th>
+        <th>Located in</th>
+        <th>Required</th>
+        <th>Description</th>
+        <th>Default</th>
+        <th>Schema</th>
+    </tr>
+
+
+
+<tr>
+    <th>username</th>
+    <td>path</td>
+    <td>yes</td>
+    <td>Username of user that needs to be fetched</td>
+    <td> - </td>
+
+    
+            <td>string </td>
+    
+
+</tr>
+
+
+</table>
+
+
+
+#### Response
+
+**Content-Type: ** application/json
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 200    | Successful operation | <a href="#/definitions/User">User</a>|
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # Definitions
 
@@ -2974,6 +3748,32 @@ This can only be done by the logged in user.
 
 
                     string
+
+            </td>
+            <td>optional</td>
+            <td>-</td>
+            <td></td>
+        </tr>
+
+</table>
+
+## <a name="/definitions/ListItem">ListItem</a>
+
+<table border="1">
+    <tr>
+        <th>name</th>
+        <th>type</th>
+        <th>required</th>
+        <th>description</th>
+        <th>example</th>
+    </tr>
+
+        <tr>
+            <td>id</td>
+            <td>
+
+
+                    integer (int64)
 
             </td>
             <td>optional</td>
@@ -3078,6 +3878,112 @@ This can only be done by the logged in user.
 
 
                 string
+
+            </td>
+            <td>optional</td>
+            <td>-</td>
+            <td></td>
+        </tr>
+
+</table>
+
+## <a name="/definitions/PagedList">PagedList</a>
+
+<table border="1">
+    <tr>
+        <th>name</th>
+        <th>type</th>
+        <th>required</th>
+        <th>description</th>
+        <th>example</th>
+    </tr>
+
+        <tr>
+            <td>pageNumber</td>
+            <td>
+
+
+                    integer (int32)
+
+            </td>
+            <td>optional</td>
+            <td>-</td>
+            <td></td>
+        </tr>
+
+        <tr>
+            <td>totalItems</td>
+            <td>
+
+
+                    integer (int32)
+
+            </td>
+            <td>optional</td>
+            <td>-</td>
+            <td></td>
+        </tr>
+
+        <tr>
+            <td>items</td>
+            <td>
+
+
+                    array[object]
+
+            </td>
+            <td>optional</td>
+            <td>-</td>
+            <td></td>
+        </tr>
+
+</table>
+
+## <a name="/definitions/PagedListPet">PagedListPet</a>
+
+<table border="1">
+    <tr>
+        <th>name</th>
+        <th>type</th>
+        <th>required</th>
+        <th>description</th>
+        <th>example</th>
+    </tr>
+
+        <tr>
+            <td>pageNumber</td>
+            <td>
+
+
+                    integer (int32)
+
+            </td>
+            <td>optional</td>
+            <td>-</td>
+            <td></td>
+        </tr>
+
+        <tr>
+            <td>totalItems</td>
+            <td>
+
+
+                    integer (int32)
+
+            </td>
+            <td>optional</td>
+            <td>-</td>
+            <td></td>
+        </tr>
+
+        <tr>
+            <td>items</td>
+            <td>
+
+
+                    array[<a href="#/definitions/Pet">Pet</a>]
+
+
 
             </td>
             <td>optional</td>

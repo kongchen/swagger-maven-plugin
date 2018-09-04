@@ -1,21 +1,17 @@
 package com.github.kongchen.swagger.docgen.mavenplugin;
 
-import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
-import com.github.kongchen.swagger.docgen.GenerateException;
-import com.github.kongchen.swagger.docgen.reader.ClassSwaggerReader;
-import com.github.kongchen.swagger.docgen.reader.SpringMvcApiReader;
-import io.swagger.annotations.Api;
-import io.swagger.config.FilterFactory;
-import io.swagger.core.filter.SpecFilter;
-import io.swagger.core.filter.SwaggerSpecFilter;
-import io.swagger.models.auth.SecuritySchemeDefinition;
+import java.util.Set;
+
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
+import com.github.kongchen.swagger.docgen.GenerateException;
+import com.github.kongchen.swagger.docgen.reader.AbstractReader;
+import com.github.kongchen.swagger.docgen.reader.ClassSwaggerReader;
+import com.github.kongchen.swagger.docgen.reader.SpringMvcApiReader;
 
 /**
  * @author tedleman
@@ -24,7 +20,6 @@ import java.util.TreeMap;
  * 05/13/2013
  */
 public class SpringMavenDocumentSource extends AbstractDocumentSource {
-    private final SpecFilter specFilter = new SpecFilter();
 
     public SpringMavenDocumentSource(ApiSource apiSource, Log log, String encoding) throws MojoFailureException {
         super(log, apiSource);
@@ -34,46 +29,28 @@ public class SpringMavenDocumentSource extends AbstractDocumentSource {
     }
 
     @Override
-    public void loadDocuments() throws GenerateException {
-        if (apiSource.getSwaggerInternalFilter() != null) {
-            try {
-                LOG.info("Setting filter configuration: " + apiSource.getSwaggerInternalFilter());
-                FilterFactory.setFilter((SwaggerSpecFilter) Class.forName(apiSource.getSwaggerInternalFilter()).newInstance());
-            } catch (Exception e) {
-                throw new GenerateException("Cannot load: " + apiSource.getSwaggerInternalFilter(), e);
-            }
-        }
-
-        swagger = resolveApiReader().read(apiSource.getValidClasses(Api.class));
-        
-        if(apiSource.getSecurityDefinitions() != null) {
-            for (SecurityDefinition sd : apiSource.getSecurityDefinitions()) {
-                for (Map.Entry<String, SecuritySchemeDefinition> entry : sd.getDefinitions().entrySet()) {
-                    swagger.addSecurityDefinition(entry.getKey(), entry.getValue());
-                }
-            }
-            // sort security defs to make output consistent
-            Map<String, SecuritySchemeDefinition> defs = swagger.getSecurityDefinitions();
-            Map<String, SecuritySchemeDefinition> sortedDefs = new TreeMap<String, SecuritySchemeDefinition>();
-            sortedDefs.putAll(defs);
-            swagger.setSecurityDefinitions(sortedDefs);
-        }
-
-        if (FilterFactory.getFilter() != null) {
-            swagger = new SpecFilter().filter(swagger, FilterFactory.getFilter(),
-                    new HashMap<String, List<String>>(), new HashMap<String, String>(),
-                    new HashMap<String, List<String>>());
-        }
+    protected Set<Class<?>> getValidClasses() {
+        Set result = super.getValidClasses();
+        result.addAll(apiSource.getValidClasses(RestController.class));
+        result.addAll(apiSource.getValidClasses(ControllerAdvice.class));
+        return result;
     }
 
-    private ClassSwaggerReader resolveApiReader() throws GenerateException {
+    @Override
+    protected ClassSwaggerReader resolveApiReader() throws GenerateException {
         String customReaderClassName = apiSource.getSwaggerApiReader();
         if (customReaderClassName == null) {
             SpringMvcApiReader reader = new SpringMvcApiReader(swagger, LOG);
             reader.setTypesToSkip(this.typesToSkip);
+            reader.setOperationIdFormat(this.apiSource.getOperationIdFormat());
             return reader;
         } else {
-            return getCustomApiReader(customReaderClassName);
+            ClassSwaggerReader customApiReader = getCustomApiReader(customReaderClassName);
+            if (customApiReader instanceof AbstractReader) {
+                ((AbstractReader)customApiReader).setOperationIdFormat(this.apiSource.getOperationIdFormat());
+            }
+            return customApiReader;
         }
     }
+
 }

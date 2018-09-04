@@ -1,6 +1,7 @@
 # Swagger Maven Plugin 
 [![Build Status](https://travis-ci.org/kongchen/swagger-maven-plugin.png)](https://travis-ci.org/kongchen/swagger-maven-plugin)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.kongchen/swagger-maven-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.kongchen/swagger-maven-plugin)
+[![Coverage Status](https://coveralls.io/repos/github/kongchen/swagger-maven-plugin/badge.svg?branch=master)](https://coveralls.io/github/kongchen/swagger-maven-plugin?branch=master)
 
 This plugin enables your Swagger-annotated project to generate **Swagger specs** and **customizable, templated static documents** during the maven build phase. Unlike swagger-core, swagger-maven-plugin does not actively serve the spec with the rest of the application; it generates the spec as a build artifact to be used in downstream Swagger tooling.
 
@@ -12,15 +13,13 @@ This plugin enables your Swagger-annotated project to generate **Swagger specs**
 * Use [Handlebars](http://handlebarsjs.com/) as template to customize the static document.
 
 # Versions
-- [3.1.0](https://github.com/kongchen/swagger-maven-plugin/) supports Swagger Spec [2.0](https://github
-.com/swagger-api/swagger-spec/blob/master/versions/2.0.md), support JAX-RS & SpingMVC. (**ACTIVE!**)
-- [3.0.1](https://github.com/kongchen/swagger-maven-plugin/tree/swagger-core_com.wordnik_namespaces/) supports Swagger Spec [2.0](https://github
-.com/swagger-api/swagger-spec/blob/master/versions/2.0.md), support JAX-RS & SpingMVC. (**ACTIVE!**)
+- [3.1.0](https://github.com/kongchen/swagger-maven-plugin/) supports Swagger Spec [2.0](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md), support JAX-RS & SpingMVC. (**ACTIVE!**)
+- [3.0.1](https://github.com/kongchen/swagger-maven-plugin/tree/swagger-core_com.wordnik_namespaces/) supports Swagger Spec [2.0](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md), support JAX-RS & SpingMVC. (**ACTIVE!**)
 - [2.3.4](https://github.com/kongchen/swagger-maven-plugin/tree/spec1.2) supports Swagger Spec [1.2](https://github.com/swagger-api/swagger-spec/blob/master/versions/1.2.md), support JAX-RS & SpringMVC. (**Lazily maintained**)
 - [1.1.1](https://github.com/kongchen/swagger-maven-plugin/tree/1.1.1) supports Swagger Spec 1.1. (**No longer maintained**)
 
 ## Upgrading from 3.0.1 to 3.1.0+
-Version 3.1.0+ of this plugin depends on the repackaged/rebranded io.swagger.swagger-core dependency, which is formerly known as com.wordnik.swagger-core. If you use 3.1.0+, you must use the swagger-core dependency in the io.swagger namespace instead of the com.wordnik namespace, which is deprecated. You may see an example of migrating a project from 3.0.1 to 3.1.0 in the [swagger-maven-plugin example project](https://github.com/swagger-maven-plugin/swagger-maven-example/commit/3d6bfa06d638d0855edc04816d4e35bff4a5e771#diff-600376dffeb79835ede4a0b285078036).
+Version 3.1.0+ of this plugin depends on the re-packaged/re-branded io.swagger.swagger-core dependency, which is formerly known as com.wordnik.swagger-core. If you use 3.1.0+, you must use the swagger-core dependency in the io.swagger namespace instead of the com.wordnik namespace, which is deprecated. You may see an example of migrating a project from 3.0.1 to 3.1.0 in the [swagger-maven-plugin example project](https://github.com/swagger-maven-plugin/swagger-maven-example/commit/3d6bfa06d638d0855edc04816d4e35bff4a5e771#diff-600376dffeb79835ede4a0b285078036).
 
 
 # Usage
@@ -40,16 +39,26 @@ Import the plugin in your project by adding following configuration in your `plu
 					</apiSource>
 				</apiSources>
 			</configuration>
+			<executions>
+				<execution>
+					<phase>compile</phase>
+					<goals>
+						<goal>generate</goal>
+					</goals>
+				</execution>
+			</executions>
 		</plugin>
 	</plugins>
 </build>
 ```
 
+The `executions` block is used to specify the phase of the build lifecycle you want the plugin to be executed in.
+
 # Configuration for `configuration`
 
 | **name** | **description** |
 |------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `skipSwaggerGeneration` | If `true`, swagger generation will be skipped. Default is `false`. |
+| `skipSwaggerGeneration` | If `true`, swagger generation will be skipped. Default is `false`. User property is `swagger.skip`. |
 | `apiSources` | List of `apiSource` elements. One `apiSource` can be considered as a version of APIs of your service. You can specify several `apiSource` elements, though generally one is enough. |
 
 # Configuration for `apiSource`
@@ -57,9 +66,9 @@ Import the plugin in your project by adding following configuration in your `plu
 | **name** | **description** |
 |------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `springmvc` | Tell the plugin your project is a JAX-RS(`false`) or a SpringMvc(`true`) project |
-| `locations` **required**| Classes containing Swagger's annotation ```@Api```, or packages containing those classes can be configured here. Multiple values must be separated by commas. Example: `<locations>com.github.kongchen.swagger.sample.wordnik.resource,com.github.kongchen.swagger.sample.wordnik.resource2</locations>` |
-| `schemes` | The transfer protocol of the API. Values MUST be from the list: `"http"`, `"https"`, `"ws"`, `"wss"`. Multiple values must be separated by commas. Example: `<schemes>http,https</schemes>` |
-| `host` | The host (name or ip) serving the API. This MUST be the host only and does not include the scheme nor sub-paths. It MAY include a port.  The host does not support [path templating](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#pathTemplating).|
+| `locations` **required**| Classes containing Swagger's annotation ```@Api```, or packages containing those classes can be configured here. Each item must be located inside a <location> tag. Example: `<locations><location>com.github.kongchen.swagger.sample.wordnik.resource</location><location>com.github.kongchen.swagger.sample.wordnik.resource2</location></locations>` |
+| `schemes` | The transfer protocol of the API. Values MUST be from the list: `"http"`, `"https"`, `"ws"`, `"wss"`. Each value must be located inside its own `<scheme>` tag. Example: `<schemes><scheme>http</scheme><scheme>https</scheme></schemes>` |
+| `host` | The host (name or IP) serving the API. This MUST be the host only and does not include the scheme nor sub-paths. It MAY include a port.  The host does not support [path templating](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#pathTemplating).|
 | `basePath` | The base path on which the API is served, which is relative to the host. The value MUST start with a leading slash (/). The basePath does not support [path templating](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#pathTemplating). |
 | `descriptionFile` | A Path to file with description to be set to Swagger Spec 2.0's [info Object](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#infoObject) |
 | `info` **required**| The basic information of the api, using same definition as Swagger Spec 2.0's [info Object](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#infoObject) |
@@ -69,13 +78,16 @@ Import the plugin in your project by adding following configuration in your `plu
 | `outputFormats` | The format types of the generated swagger spec. Valid values are `json`, `yaml` or both `json,yaml`. The `json` format is default.|
 | `swaggerDirectory` | The directory of generated `swagger.json` file. If null, no `swagger.json` will be generated. |
 | `swaggerFileName` | The filename of generated `filename.json` file. If null, `swagger.json` will be generated. |
-| `swaggerApiReader` | If not null, the value should be a full name of the class implementing `com.github.kongchen.swagger.docgen.reader.ClassSwaggerReader`. This allows you to flexibly implement/override the reader's implementation. Default is `com.github.kongchen.swagger.docgen.reader.JaxrsReader` |
+| `swaggerApiReader` | If not null, the value should be a full name of the class implementing `com.github.kongchen.swagger.docgen.reader.ClassSwaggerReader`. This allows you to flexibly implement/override the reader's implementation. `com.github.kongchen.swagger.docgen.reader.SwaggerReader` can be used to strictly use the official Swagger reader in order to generate the exact same output as Swagger''s runtime generation (with all its bugs). Default is `com.github.kongchen.swagger.docgen.reader.JaxrsReader`.  |
 | `attachSwaggerArtifact` | If enabled, the generated `swagger.json` file will be attached as a maven artifact. The `swaggerDirectory`'s name will be used as an artifact classifier. Default is `false`. |
 | `modelSubstitute` | The model substitute file's path, see more details [below](#model-substitution)|
 | `typesToSkip` | Nodes of class names to explicitly skip during parameter processing. More details [below](#typesToSkip)|
 | `apiModelPropertyAccessExclusions` | Allows the exclusion of specified `@ApiModelProperty` fields. This can be used to hide certain model properties from the swagger spec. More details [below](#apiModelPropertyAccessExclusions)|
 | `jsonExampleValues` | If `true`, all example values in `@ApiModelProperty` will be handled as json raw values. This is useful for creating valid examples in the generated json for all property types, including non-string ones. |
 | `modelConverters` | List of custom implementations of `io.swagger.converter.ModelConverter` that should be used when generating the swagger files. | 
+| `swaggerExtensions` | List of custom implementations of `io.swagger.jaxrs.ext.SwaggerExtension` that should be used when generating the swagger files. |
+| `operationIdFormat` | Format of `operationId` used in Swagger spec. For historical reasons default is Java method name. Since 3.1.8, for new APIs suggested format is: `{{className}}_{{methodName}}_{{httpMethod}}`. `{{packageName}}` token is also supported. | 
+
 
 # <a id="templatefile">Template File</a>
 
@@ -99,7 +111,7 @@ There's a [standalone project](https://github.com/kongchen/api-doc-template) for
 
 # <a id="securityDefinitions">Security Definitions</a>
 
-There're 3 types of security definitions according to Swagger Spec: `basic`, `apiKey` and `oauth2`.
+There are 3 types of security definitions according to Swagger Spec: `basic`, `apiKey` and `oauth2`.
 
 You can define multi definitions here, but you should fully follow [the spec](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#securitySchemeObject).
 
@@ -119,7 +131,16 @@ or define several definitions in a json file and specify the json path like this
     <json>/securityDefinition.json</json>
 </securityDefinition>
 ```
+
 The file will be read by `getClass().getResourceAsStream`, so please note the path you configured.
+
+Alternatively, specify the __absolute__ file path to the json definition file: 
+
+```xml
+<securityDefinition>
+    <jsonPath>${basedir}/securityDefinition.json</jsonPath>
+</securityDefinition>
+```
 
 The `securityDefinition.json` file should also follow the spec, one sample file like this:
 
@@ -142,7 +163,7 @@ The `securityDefinition.json` file should also follow the spec, one sample file 
 }
 ```
 # <a id="modelSubstitute">Model Substitution</a>
-Throughout the course of working with Swagger, you may find that you need to substitute non-primitive objects for primitive objects. This is called model substituion, and it is supported by swagger-maven-plugin. In order to configure model substitution, you'll need to create a model substitute file. This file is a simple text file containing `n` lines, where each line tells swagger-maven-plugin to substitutes a model class with the supplied substitute. These two classes should be seperated by a colone (`:`).
+Throughout the course of working with Swagger, you may find that you need to substitute non-primitive objects for primitive objects. This is called model substitution, and it is supported by swagger-maven-plugin. In order to configure model substitution, you'll need to create a model substitute file. This file is a simple text file containing `n` lines, where each line tells swagger-maven-plugin to substitutes a model class with the supplied substitute. These two classes should be separated by a colon (`:`).
 
 ## Sample model substitution
 
@@ -308,6 +329,10 @@ There's a [sample here](https://github.com/swagger-maven-plugin/swagger-maven-ex
                 <swaggerApiReader>com.wordnik.swagger.jaxrs.reader.DefaultJaxrsApiReader</swaggerApiReader>
                 <attachSwaggerArtifact>true</attachSwaggerArtifact>
                 <modelConverters>io.swagger.validator.BeanValidator</modelConverters>
+                <swaggerExtensions>
+                    <swaggerExtension>com.example.VendorExtension</swaggerExtension>
+                </swaggerExtensions>
+                <operationIdFormat>{{className}}_{{methodName}}_{{httpMethod}}</operationIdFormat>
             </apiSource>
         </apiSources>
     </configuration>
@@ -338,7 +363,7 @@ There's a [sample here](https://github.com/swagger-maven-plugin/swagger-maven-ex
 # FAQ
 
 ## 1. SNAPSHOT Version
-SNAPSHOT versions are available for verifing issues and new features. If you would like to try to verify the fixed issues or the new added features, you may need to add a `pluginRepository` node in your `pom.xml`:
+SNAPSHOT versions are available for verifying issues and new features. If you would like to try to verify the fixed issues or the new added features, you may need to add a `pluginRepository` node in your `pom.xml`:
 
 ```
 <pluginRepositories>
@@ -357,7 +382,7 @@ SNAPSHOT versions are available for verifing issues and new features. If you wou
 
 
 ## 2. Dependency conflicts
-If you have package depedency conflict issues, such as jackson, joda-time, or [jsr311-api](https://github.com/kongchen/swagger-maven-plugin/issues/81).
+If you have package dependency conflict issues, such as jackson, joda-time, or [jsr311-api](https://github.com/kongchen/swagger-maven-plugin/issues/81).
 Run
 
 ```
@@ -384,3 +409,9 @@ To exclude `javax.ws.rs:jsr311-api:jar:1.1.1:compile` from `swagger-jaxrs_2.10`:
 </dependency>
 ```
 
+
+## 3. Building from source
+To build from source and run tests, you should:
+```
+mvn install
+```

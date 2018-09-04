@@ -2,7 +2,10 @@ package com.wordnik.jaxrs;
 
 import io.swagger.annotations.ApiParam;
 
+import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.ws.rs.*;
 import java.util.List;
 
@@ -29,13 +32,38 @@ public class MyBean extends MyParentBean {
     @HeaderParam("intValue")
     private int intValue;
 
+    @ApiParam(value = "hidden", hidden = true)
+    @QueryParam(value = "hiddenValue")
+    private String hiddenValue;
+
     @QueryParam(value = "listValue")
     private List<String> listValue;
+    
+    @BeanParam
+    private MyNestedBean nestedBean;
+    
+    /**
+     * This field is to test that bean params using constructor injection behave
+     * correctly. It's also nested just to avoid adding too much test code.
+     */
+    @BeanParam
+    private MyConstructorInjectedNestedBean constructorInjectedNestedBean;
 
     @ApiParam(value = "testIntegerAllowableValues", defaultValue = "25", allowableValues = "25, 50, 100")
     @QueryParam("testIntegerAllowableValues")
-    @DefaultValue("25")
     public Integer testIntegerAllowableValues;
+    
+    /**
+     * This field's allowableValues, required, pattern, and defaultValue should
+     * be derived based on its JAX-RS and validation annotations.
+     */
+    @QueryParam("constrainedField")
+    @Min(25L)
+    @Max(75L)
+    @NotNull
+    @Pattern(regexp = "[0-9]5")
+    @DefaultValue("55")
+    private int constrainedField;
 
     public String getMyheader() {
         return myHeader;
@@ -85,4 +113,27 @@ public class MyBean extends MyParentBean {
         this.listValue = listValue;
     }
 
+    public MyNestedBean getNestedBean() {
+        return nestedBean;
+    }
+    
+    public void setNestedBean(MyNestedBean nestedBean) {
+        this.nestedBean = nestedBean;
+    }
+    
+    public MyConstructorInjectedNestedBean getConstructorInjectedNestedBean() {
+        return constructorInjectedNestedBean;
+    }
+    
+    public void setConstructorInjectedNestedBean(MyConstructorInjectedNestedBean constructorInjectedNestedBean) {
+        this.constructorInjectedNestedBean = constructorInjectedNestedBean;
+    }
+    
+    public int getConstrainedField() {
+        return constrainedField;
+    }
+    
+    public void setConstrainedField(int constrainedField) {
+        this.constrainedField = constrainedField;
+    }
 }

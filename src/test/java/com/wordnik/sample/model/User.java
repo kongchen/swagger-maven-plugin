@@ -17,6 +17,8 @@
 package com.wordnik.sample.model;
 
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.Extension;
+import io.swagger.annotations.ExtensionProperty;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -98,6 +100,7 @@ public class User {
     }
 
     @XmlElement(name = "phone")
+    @ApiModelProperty(name = "phone", extensions = @Extension(properties = @ExtensionProperty(name = "test", value = "value")))
     public String getPhone() {
         return phone;
     }

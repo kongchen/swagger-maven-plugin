@@ -14,6 +14,8 @@ info:
 host: "www.example.com:8080"
 basePath: "/api"
 tags:
+- name: "echo"
+  description: "Set of simple endpoints that return whatever value you pass in"
 - name: "pet"
   description: "Operations about pets"
 - name: "store"
@@ -35,6 +37,291 @@ paths:
           description: "successful operation"
           schema:
             type: "string"
+  /echo/cookieValueExpectCookieName:
+    get:
+      tags:
+      - "echo"
+      summary: ""
+      description: ""
+      operationId: "cookieValueExpectCookieName"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "cookieValueName"
+        in: "cookie"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "string"
+  /echo/cookieValueExpectCookieValue:
+    get:
+      tags:
+      - "echo"
+      summary: ""
+      description: ""
+      operationId: "cookieValueExpectCookieValue"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "cookieValueValue"
+        in: "cookie"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "string"
+  /echo/cookieValueExpectParameterName:
+    get:
+      tags:
+      - "echo"
+      summary: ""
+      description: ""
+      operationId: "cookieValueExpectParameterName"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "parameterName"
+        in: "cookie"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "string"
+  /echo/pathVariableExpectParameterName/{parameterName}:
+    get:
+      tags:
+      - "echo"
+      summary: ""
+      description: ""
+      operationId: "pathVariableExpectParameterName"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "parameterName"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "string"
+  /echo/pathVariableExpectVariableName/{parameterName}:
+    get:
+      tags:
+      - "echo"
+      summary: ""
+      description: ""
+      operationId: "pathVariableExpectVariableName"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "pathVariableName"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "string"
+  /echo/pathVariableExpectVariableValue/{parameterName}:
+    get:
+      tags:
+      - "echo"
+      summary: ""
+      description: ""
+      operationId: "pathVariableExpectVariableValue"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "pathVariableValue"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "string"
+  /echo/requestHeaderExpectHeaderName:
+    get:
+      tags:
+      - "echo"
+      summary: ""
+      description: ""
+      operationId: "requestHeaderExpectHeaderName"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "requestHeaderName"
+        in: "header"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "string"
+  /echo/requestHeaderExpectHeaderValue:
+    get:
+      tags:
+      - "echo"
+      summary: ""
+      description: ""
+      operationId: "requestHeaderExpectHeaderValue"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "requestHeaderValue"
+        in: "header"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "string"
+  /echo/requestHeaderExpectParameterName:
+    get:
+      tags:
+      - "echo"
+      summary: ""
+      description: ""
+      operationId: "requestHeaderExpectParameterName"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "parameterName"
+        in: "header"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "string"
+  /echo/requestParamExpectParamName:
+    get:
+      tags:
+      - "echo"
+      summary: ""
+      description: ""
+      operationId: "requestParamExpectParamName"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "requestParamName"
+        in: "query"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "string"
+  /echo/requestParamExpectParamValue:
+    get:
+      tags:
+      - "echo"
+      summary: ""
+      description: ""
+      operationId: "requestParamExpectParamValue"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "requestParamValue"
+        in: "query"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "string"
+  /echo/requestParamExpectParameterName:
+    get:
+      tags:
+      - "echo"
+      summary: ""
+      description: ""
+      operationId: "requestParamExpectParameterName"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "parameterName"
+        in: "query"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "string"
+  /echo/requestPartExpectParameterName:
+    get:
+      tags:
+      - "echo"
+      summary: ""
+      description: ""
+      operationId: "requestPartExpectParameterName"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "parameterName"
+        in: "formData"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "string"
+  /echo/requestPartExpectPartName:
+    get:
+      tags:
+      - "echo"
+      summary: ""
+      description: ""
+      operationId: "requestPartExpectPartName"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "requestPartName"
+        in: "formData"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "string"
+  /echo/requestPartExpectPartValue:
+    get:
+      tags:
+      - "echo"
+      summary: ""
+      description: ""
+      operationId: "requestPartExpectPartValue"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "requestPartValue"
+        in: "formData"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "string"
   /testingEmptyRootPathResource:
     get:
       summary: "testingEmptyRootPathResource"
@@ -46,6 +333,22 @@ paths:
           description: "successful operation"
           schema:
             type: "string"
+  /myResourceImpl/list:
+    get:
+      summary: "Get a list of items"
+      description: "This is a contrived example"
+      operationId: "getListOfItems"
+      produces:
+      - "application/json"
+      - "application/xml"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/ListItem"
   /pet:
     get:
       tags:
@@ -453,6 +756,27 @@ paths:
             type: "string"
         401:
           description: "Some vendor error description"
+        501:
+          description: "Some vendor error description added using swaggerExtension"
+      security:
+      - petstore_auth:
+        - "write:pets"
+        - "read:pets"
+  /pet/testingMergedAnnotations:
+    get:
+      tags:
+      - "pet"
+      summary: "testingMergedAnnotations"
+      description: ""
+      operationId: "testingMergedAnnotations"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "string"
       security:
       - petstore_auth:
         - "write:pets"
@@ -706,6 +1030,19 @@ paths:
           description: "successful operation"
           schema:
             type: "string"
+  /swaggerless/{petId}:
+    get:
+      operationId: "getPetByName"
+      parameters:
+      - name: "name"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Pet"
   /user:
     post:
       tags:
@@ -940,10 +1277,24 @@ definitions:
       id:
         type: "integer"
         format: "int64"
+        xml:
+          namespace: "http://com.wordnik/sample/model/category"
       name:
         type: "string"
+        xml:
+          namespace: "http://com.wordnik/sample/model/category"
     xml:
       name: "Category"
+      namespace: "http://com.wordnik/sample/model/category"
+  ListItem:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+    xml:
+      name: "ListItem"
+      namespace: "http://com.wordnik/sample/model"
   Order:
     type: "object"
     properties:
@@ -972,6 +1323,7 @@ definitions:
         type: "string"
     xml:
       name: "Order"
+      namespace: "http://com.wordnik/sample/model"
   Pet:
     type: "object"
     required:
@@ -1010,6 +1362,7 @@ definitions:
         - "sold"
     xml:
       name: "Pet"
+      namespace: "http://com.wordnik/sample/model"
   Tag:
     type: "object"
     properties:
@@ -1020,6 +1373,7 @@ definitions:
         type: "string"
     xml:
       name: "Tag"
+      namespace: "http://com.wordnik/sample/model"
   User:
     type: "object"
     properties:
@@ -1038,6 +1392,7 @@ definitions:
         type: "string"
       phone:
         type: "string"
+        x-test: "value"
       userStatus:
         type: "integer"
         format: "int32"
@@ -1045,3 +1400,4 @@ definitions:
         description: "User Status"
     xml:
       name: "User"
+      namespace: "http://com.wordnik/sample/model"

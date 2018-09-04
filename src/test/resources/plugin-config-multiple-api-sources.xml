@@ -1,0 +1,157 @@
+<project>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.github.kongchen</groupId>
+                <artifactId>swagger-maven-plugin</artifactId>
+                <version>3.0-M2-SNAPSHOT</version>
+                <configuration>
+                    <apiSources>
+                        <apiSource>
+                            <springmvc>false</springmvc>
+                            <locations>
+                                <location>com.wordnik.jaxrs</location>
+                            </locations>
+                            <schemes>
+                                <scheme>http</scheme>
+                                <scheme>https</scheme>
+                            </schemes>
+                            <securityDefinitions>
+                                <securityDefinition>
+                                    <name>basicAuth</name>
+                                    <type>basic</type>
+                                </securityDefinition>
+                                <securityDefinition>
+                                    <name>api_key_2</name>
+                                    <type>apiKey</type>
+                                    <in>header</in>
+                                </securityDefinition>
+                                <securityDefinition>
+                                    <json>/securityDefinition.json</json>
+                                </securityDefinition>
+                            </securityDefinitions>
+                            <!-- Support classpath or file absolute path here.
+                            1) classpath e.g: "classpath:/markdown.hbs", "classpath:/templates/hello.html"
+                            2) file e.g: "${basedir}/src/main/resources/markdown.hbs",
+                                "${basedir}/src/main/resources/template/hello.html" -->
+                            <templatePath>classpath:/templates/strapdown.html.hbs</templatePath>
+                            <outputPath>${basedir}/generated/document.html</outputPath>
+                            <swaggerFileName>custom-file-name-one</swaggerFileName>
+                            <outputFormats>json</outputFormats>
+                            <swaggerDirectory>${basedir}/generated/swagger-ui</swaggerDirectory>
+                            <swaggerApiReader>com.wordnik.jaxrs.VendorExtensionsJaxrsReader</swaggerApiReader>
+                            <attachSwaggerArtifact>true</attachSwaggerArtifact>
+                            <swaggerUIDocBasePath>http://www.example.com/restapi/doc</swaggerUIDocBasePath>
+                            <modelSubstitute>/override.map</modelSubstitute>
+                            <apiModelPropertyAccessExclusions>
+                                <apiModelPropertyAccessExclusion>secret-property</apiModelPropertyAccessExclusion>
+                                <apiModelPropertyAccessExclusion>another-secret-property</apiModelPropertyAccessExclusion>
+                                <apiModelPropertyAccessExclusion>exclude-when-jev-option-not-set</apiModelPropertyAccessExclusion>
+                            </apiModelPropertyAccessExclusions>
+                            <swaggerExtensions>
+                            	<swaggerExtension>com.wordnik.sample.VendorExtensionWithoutReader</swaggerExtension>
+                            </swaggerExtensions>
+                        </apiSource>
+                        <apiSource>
+                            <springmvc>false</springmvc>
+                            <locations>
+                                <location>com.wordnik.jaxrs</location>
+                            </locations>
+                            <schemes>
+                                <scheme>http</scheme>
+                                <scheme>https</scheme>
+                            </schemes>
+                            <securityDefinitions>
+                                <securityDefinition>
+                                    <name>basicAuth</name>
+                                    <type>basic</type>
+                                </securityDefinition>
+                                <securityDefinition>
+                                    <name>api_key_2</name>
+                                    <type>apiKey</type>
+                                    <in>header</in>
+                                </securityDefinition>
+                                <securityDefinition>
+                                    <jsonPath>${basedir}/src/test/resources/securityDefinition.json</jsonPath>
+                                </securityDefinition>
+                            </securityDefinitions>
+                            <!-- Support classpath or file absolute path here.
+                            1) classpath e.g: "classpath:/markdown.hbs", "classpath:/templates/hello.html"
+                            2) file e.g: "${basedir}/src/main/resources/markdown.hbs",
+                                "${basedir}/src/main/resources/template/hello.html" -->
+                            <templatePath>classpath:/templates/strapdown.html.hbs</templatePath>
+                            <outputPath>${basedir}/generated/document.html</outputPath>
+                            <swaggerFileName>custom-file-name-two</swaggerFileName>
+                            <outputFormats>json</outputFormats>
+                            <swaggerDirectory>${basedir}/generated/swagger-ui</swaggerDirectory>
+                            <swaggerApiReader>com.wordnik.jaxrs.VendorExtensionsJaxrsReader</swaggerApiReader>
+                            <attachSwaggerArtifact>true</attachSwaggerArtifact>
+                            <swaggerUIDocBasePath>http://www.example.com/restapi/doc</swaggerUIDocBasePath>
+                            <modelSubstitute>/override.map</modelSubstitute>
+                            <apiModelPropertyAccessExclusions>
+                                <apiModelPropertyAccessExclusion>secret-property</apiModelPropertyAccessExclusion>
+                                <apiModelPropertyAccessExclusion>another-secret-property</apiModelPropertyAccessExclusion>
+                                <apiModelPropertyAccessExclusion>exclude-when-jev-option-not-set</apiModelPropertyAccessExclusion>
+                            </apiModelPropertyAccessExclusions>
+                            <swaggerExtensions>
+                            	<swaggerExtension>com.wordnik.sample.VendorExtensionWithoutReader</swaggerExtension>
+                            </swaggerExtensions>
+                        </apiSource>
+                        <apiSource>
+                            <springmvc>false</springmvc>
+                            <locations>
+                                <location>com.wordnik.jaxrs</location>
+                            </locations>
+                            <schemes>
+                                <scheme>http</scheme>
+                                <scheme>https</scheme>
+                            </schemes>
+                            <securityDefinitions>
+                                <securityDefinition>
+                                    <name>basicAuth</name>
+                                    <type>basic</type>
+                                </securityDefinition>
+                                <securityDefinition>
+                                    <name>api_key_2</name>
+                                    <type>apiKey</type>
+                                    <in>header</in>
+                                </securityDefinition>
+                                <securityDefinition>
+                                    <json>/securityDefinition.json</json>
+                                </securityDefinition>
+                            </securityDefinitions>
+                            <!-- Support classpath or file absolute path here.
+                            1) classpath e.g: "classpath:/markdown.hbs", "classpath:/templates/hello.html"
+                            2) file e.g: "${basedir}/src/main/resources/markdown.hbs",
+                                "${basedir}/src/main/resources/template/hello.html" -->
+                            <templatePath>classpath:/templates/strapdown.html.hbs</templatePath>
+                            <outputPath>${basedir}/generated/document.html</outputPath>
+                            <outputFormats>json</outputFormats>
+                            <swaggerDirectory>${basedir}/generated/swagger-ui</swaggerDirectory>
+                            <swaggerApiReader>com.wordnik.jaxrs.VendorExtensionsJaxrsReader</swaggerApiReader>
+                            <attachSwaggerArtifact>true</attachSwaggerArtifact>
+                            <swaggerUIDocBasePath>http://www.example.com/restapi/doc</swaggerUIDocBasePath>
+                            <modelSubstitute>/override.map</modelSubstitute>
+                            <apiModelPropertyAccessExclusions>
+                                <apiModelPropertyAccessExclusion>secret-property</apiModelPropertyAccessExclusion>
+                                <apiModelPropertyAccessExclusion>another-secret-property</apiModelPropertyAccessExclusion>
+                                <apiModelPropertyAccessExclusion>exclude-when-jev-option-not-set</apiModelPropertyAccessExclusion>
+                            </apiModelPropertyAccessExclusions>
+                            <swaggerExtensions>
+                            	<swaggerExtension>com.wordnik.sample.VendorExtensionWithoutReader</swaggerExtension>
+                            </swaggerExtensions>
+                        </apiSource>
+                    </apiSources>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

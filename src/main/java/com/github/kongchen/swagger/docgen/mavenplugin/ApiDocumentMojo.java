@@ -22,7 +22,7 @@ import java.util.List;
  * Date: 3/7/13
  */
 @Mojo(name = "generate", defaultPhase = LifecyclePhase.COMPILE, configurator = "include-project-dependencies",
-        requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME)
+        requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME, threadSafe = true)
 public class ApiDocumentMojo extends AbstractMojo {
 
     /**
@@ -44,9 +44,9 @@ public class ApiDocumentMojo extends AbstractMojo {
     /**
      * A flag indicating if the generation should be skipped.
      */
-    @Parameter(defaultValue = "false")
+    @Parameter(property = "swagger.skip", defaultValue = "false")
     private boolean skipSwaggerGeneration;
-    
+
     @Parameter(property="file.encoding")
     private String encoding;
 
@@ -94,15 +94,9 @@ public class ApiDocumentMojo extends AbstractMojo {
                 documentSource.loadModelModifier();
                 documentSource.loadModelConverters();
                 documentSource.loadDocuments();
-                if (apiSource.getOutputPath() != null) {
-                    File outputDirectory = new File(apiSource.getOutputPath()).getParentFile();
-                    if (outputDirectory != null && !outputDirectory.exists()) {
-                        if (!outputDirectory.mkdirs()) {
-                            throw new MojoExecutionException("Create directory[" +
-                                    apiSource.getOutputPath() + "] for output failed.");
-                        }
-                    }
-                }
+
+                createOutputDirs(apiSource.getOutputPath());
+
                 if (apiSource.getTemplatePath() != null) {
                     documentSource.toDocuments();
                 }
@@ -111,14 +105,15 @@ public class ApiDocumentMojo extends AbstractMojo {
                         apiSource.getSwaggerUIDocBasePath() == null
                                 ? apiSource.getBasePath()
                                 : apiSource.getSwaggerUIDocBasePath(),
-                        apiSource.getOutputFormats(), swaggerFileName, encoding);
-
+                        apiSource.getOutputFormats(), swaggerFileName, projectEncoding);
 
                 if (apiSource.isAttachSwaggerArtifact() && apiSource.getSwaggerDirectory() != null && project != null) {
                     String outputFormats = apiSource.getOutputFormats();
                     if (outputFormats != null) {
                         for (String format : outputFormats.split(",")) {
-                            String classifier = new File(apiSource.getSwaggerDirectory()).getName();
+                            String classifier = swaggerFileName.equals("swagger")
+                                    ? getSwaggerDirectoryName(apiSource.getSwaggerDirectory())
+                                    : swaggerFileName;
                             File swaggerFile = new File(apiSource.getSwaggerDirectory(), swaggerFileName + "." + format.toLowerCase());
                             projectHelper.attachArtifact(project, format.toLowerCase(), classifier, swaggerFile);
                         }
@@ -129,6 +124,18 @@ public class ApiDocumentMojo extends AbstractMojo {
             throw new MojoFailureException(e.getMessage(), e);
         } catch (Exception e) {
             throw new MojoExecutionException(e.getMessage(), e);
+        }
+    }
+
+    private void createOutputDirs(String outputPath) throws MojoExecutionException {
+        if (outputPath != null) {
+            File outputDirectory = new File(outputPath).getParentFile();
+            if (outputDirectory != null && !outputDirectory.exists()) {
+                if (!outputDirectory.mkdirs()) {
+                    throw new MojoExecutionException(
+                            String.format("Create directory [%s] for output failed.", outputPath));
+                }
+            }
         }
     }
 
@@ -179,8 +186,13 @@ public class ApiDocumentMojo extends AbstractMojo {
             return false;
         }
     }
-    
+
     private String getSwaggerFileName(String swaggerFileName) {
         return swaggerFileName == null || "".equals(swaggerFileName.trim()) ? "swagger" : swaggerFileName;
     }
+
+    private String getSwaggerDirectoryName(String swaggerDirectory) {
+        return new File(swaggerDirectory).getName();
+    }
+
 }
