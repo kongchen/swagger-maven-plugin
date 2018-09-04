@@ -96,7 +96,7 @@ public class Utils {
         if (swagger.getTags() != null) {
             Collections.sort(swagger.getTags(), new Comparator<Tag>() {
                 public int compare(final Tag a, final Tag b) {
-                    return a.toString().compareTo(b.toString());
+                    return a.toString().toLowerCase().compareTo(b.toString().toLowerCase());
                 }
             });
         }
