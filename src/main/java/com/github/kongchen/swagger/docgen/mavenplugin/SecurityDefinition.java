@@ -2,7 +2,6 @@ package com.github.kongchen.swagger.docgen.mavenplugin;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.kongchen.swagger.docgen.GenerateException;
 import io.swagger.models.auth.ApiKeyAuthDefinition;
 import io.swagger.models.auth.BasicAuthDefinition;
@@ -28,25 +27,29 @@ public class SecurityDefinition {
     public Map<String, SecuritySchemeDefinition> generateSecuritySchemeDefinitions() throws GenerateException {
         Map<String, SecuritySchemeDefinition> map = new HashMap<String, SecuritySchemeDefinition>();
 
-        List<JsonNode> securityDefinitions = new ArrayList<JsonNode>();
+        Map<String, JsonNode> securityDefinitions = new HashMap<String, JsonNode>();
         if (json != null || jsonPath != null) {
             securityDefinitions = loadSecurityDefintionsFromJsonFile();
         } else {
-            securityDefinitions.add(new ObjectMapper().valueToTree(this));
+            JsonNode node = new ObjectMapper().valueToTree(this);
+            securityDefinitions.put(node.get("name").asText(), node);
         }
 
-        for (JsonNode securityDefinition : securityDefinitions) {
-            SecuritySchemeDefinition ssd = getSecuritySchemeDefinitionByType(securityDefinition.get("type").asText(), securityDefinition);
+        for (Map.Entry<String, JsonNode> securityDefinition : securityDefinitions.entrySet()) {
+            SecuritySchemeDefinition ssd =
+                getSecuritySchemeDefinitionByType(
+                    securityDefinition.getValue().get("type").asText(),
+                    securityDefinition.getValue());
             if (ssd != null) {
-                map.put(securityDefinition.get("name").asText(), ssd);
+                map.put(securityDefinition.getKey(), ssd);
             }
         }
 
         return map;
     }
 
-    private List<JsonNode> loadSecurityDefintionsFromJsonFile() throws GenerateException {
-        List<JsonNode> securityDefinitions = new ArrayList<JsonNode>();
+    private Map<String, JsonNode> loadSecurityDefintionsFromJsonFile() throws GenerateException {
+        Map<String, JsonNode> securityDefinitions = new HashMap<String, JsonNode>();
 
         try {
             InputStream jsonStream = json != null ? this.getClass().getResourceAsStream(json) : new FileInputStream(jsonPath);
@@ -55,8 +58,8 @@ public class SecurityDefinition {
             while (securityDefinitionNameIterator.hasNext()) {
                 String securityDefinitionName = securityDefinitionNameIterator.next();
                 JsonNode securityDefinition = tree.get(securityDefinitionName);
-                securityDefinition = ((ObjectNode) securityDefinition).put("name", securityDefinitionName);
-                securityDefinitions.add(securityDefinition);
+        //        securityDefinition = ((ObjectNode) securityDefinition).put("name", securityDefinitionName);
+                securityDefinitions.put(securityDefinitionName, securityDefinition);
             }
         } catch (IOException e) {
             throw new GenerateException(e);
