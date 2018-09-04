@@ -46,7 +46,7 @@ public class ApiDocumentMojo extends AbstractMojo {
      */
     @Parameter(property = "swagger.skip", defaultValue = "false")
     private boolean skipSwaggerGeneration;
-    
+
     @Parameter(property="file.encoding")
     private String encoding;
 
@@ -94,15 +94,9 @@ public class ApiDocumentMojo extends AbstractMojo {
                 documentSource.loadModelModifier();
                 documentSource.loadModelConverters();
                 documentSource.loadDocuments();
-                if (apiSource.getOutputPath() != null) {
-                    File outputDirectory = new File(apiSource.getOutputPath()).getParentFile();
-                    if (outputDirectory != null && !outputDirectory.exists()) {
-                        if (!outputDirectory.mkdirs()) {
-                            throw new MojoExecutionException("Create directory[" +
-                                    apiSource.getOutputPath() + "] for output failed.");
-                        }
-                    }
-                }
+
+                createOutputDirs(apiSource.getOutputPath());
+
                 if (apiSource.getTemplatePath() != null) {
                     documentSource.toDocuments();
                 }
@@ -112,7 +106,6 @@ public class ApiDocumentMojo extends AbstractMojo {
                                 ? apiSource.getBasePath()
                                 : apiSource.getSwaggerUIDocBasePath(),
                         apiSource.getOutputFormats(), swaggerFileName, projectEncoding);
-
 
                 if (apiSource.isAttachSwaggerArtifact() && apiSource.getSwaggerDirectory() != null && project != null) {
                     String outputFormats = apiSource.getOutputFormats();
@@ -131,6 +124,18 @@ public class ApiDocumentMojo extends AbstractMojo {
             throw new MojoFailureException(e.getMessage(), e);
         } catch (Exception e) {
             throw new MojoExecutionException(e.getMessage(), e);
+        }
+    }
+
+    private void createOutputDirs(String outputPath) throws MojoExecutionException {
+        if (outputPath != null) {
+            File outputDirectory = new File(outputPath).getParentFile();
+            if (outputDirectory != null && !outputDirectory.exists()) {
+                if (!outputDirectory.mkdirs()) {
+                    throw new MojoExecutionException(
+                            String.format("Create directory [%s] for output failed.", outputPath));
+                }
+            }
         }
     }
 
@@ -181,7 +186,7 @@ public class ApiDocumentMojo extends AbstractMojo {
             return false;
         }
     }
-    
+
     private String getSwaggerFileName(String swaggerFileName) {
         return swaggerFileName == null || "".equals(swaggerFileName.trim()) ? "swagger" : swaggerFileName;
     }
