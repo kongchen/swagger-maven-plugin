@@ -24,6 +24,7 @@ public class SecurityDefinition {
     private String description;
     private String json;
     private String jsonPath;
+    private String key;
 
     public Map<String, SecuritySchemeDefinition> generateSecuritySchemeDefinitions() throws GenerateException {
         Map<String, SecuritySchemeDefinition> map = new HashMap<String, SecuritySchemeDefinition>();
@@ -38,7 +39,8 @@ public class SecurityDefinition {
         for (JsonNode securityDefinition : securityDefinitions) {
             SecuritySchemeDefinition ssd = getSecuritySchemeDefinitionByType(securityDefinition.get("type").asText(), securityDefinition);
             if (ssd != null) {
-                map.put(securityDefinition.get("name").asText(), ssd);
+                String fieldDescriptor = securityDefinition.findValue("key")!=null ? "key" : "name";
+                map.put(securityDefinition.get(fieldDescriptor).asText(), ssd);
             }
         }
 
@@ -55,7 +57,10 @@ public class SecurityDefinition {
             while (securityDefinitionNameIterator.hasNext()) {
                 String securityDefinitionName = securityDefinitionNameIterator.next();
                 JsonNode securityDefinition = tree.get(securityDefinitionName);
-                securityDefinition = ((ObjectNode) securityDefinition).put("name", securityDefinitionName);
+        	 	if(securityDefinition.findValue("name")==null) {
+	                securityDefinition = ((ObjectNode) securityDefinition).put("name", securityDefinitionName);
+		        }
+                securityDefinition = ((ObjectNode) securityDefinition).put("key", securityDefinitionName);
                 securityDefinitions.add(securityDefinition);
             }
         } catch (IOException e) {
