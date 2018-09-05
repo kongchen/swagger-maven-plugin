@@ -75,8 +75,8 @@ Import the plugin in your project by adding following configuration in your `plu
 | `jsonExampleValues` | If `true`, all example values in `@ApiModelProperty` will be handled as json raw values. This is useful for creating valid examples in the generated json for all property types, including non-string ones. |
 | `modelConverters` | List of custom implementations of `io.swagger.converter.ModelConverter` that should be used when generating the swagger files. | 
 | `swaggerExtensions` | List of custom implementations of `io.swagger.jaxrs.ext.SwaggerExtension` that should be used when generating the swagger files. | 
-| `enabledFeatures`    | List of ConfigFeature enums that are supported by ObjectMapper.configure - the feature is set to true. https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#features) here, see more details [below](#features)|
-| `disabledFeatures`    | List of ConfigFeature enums that are supported by ObjectMapper.configure - the feature is set to false. https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#features) here, see more details [below](#features)|
+| `enabledObjectMapperFeatures`    | List of ConfigFeature enums that are supported by ObjectMapper.configure - the feature is set to true. https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#features) here, see more details [below](#features)|
+| `disabledObjectMapperFeatures`    | List of ConfigFeature enums that are supported by ObjectMapper.configure - the feature is set to false. https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#features) here, see more details [below](#features)|
 # <a id="templatefile">Template File</a>
 
 If you'd like to generate a template-driven static document, such as markdown or HTML documentation, you'll need to specify a [handlebars](https://github.com/jknack/handlebars.java) template file in ```templatePath```.
@@ -256,14 +256,14 @@ N.B. Inner class fully qualified domain names are using $
 ```
 <configuration>
 ...
-   <enabledFeatures>
+   <enabledObjectMapperFeatures>
        <feature>com.fasterxml.jackson.databind.SerializationFeature.WRITE_ENUMS_USING_TO_STRING</feature>
        <feature>com.fasterxml.jackson.core.JsonParser$Feature.ALLOW_NUMERIC_LEADING_ZEROS</feature>
-   </enabledFeatures>
+   </enabledObjectMapperFeatures>
 ...
-    <disabledFeatures>
+    <disabledObjectMapperFeatures>
         <feature>com.fasterxml.jackson.databind.SerializationFeature.FAIL_ON_EMPTY_BEANS</feature>
-    </disabledFeatures>
+    </disabledObjectMapperFeatures>
 </configuration>
 ```
 
@@ -339,9 +339,13 @@ There's a [sample here](https://github.com/swagger-maven-plugin/swagger-maven-ex
                 <swaggerExtensions>
                     <swaggerExtension>com.example.VendorExtension</swaggerExtension>
                 </swaggerExtensions>
-                <features>
+                <enabledObjectMapperFeatures>
                     <feature>com.fasterxml.jackson.databind.SerializationFeature.WRITE_ENUMS_USING_TO_STRING</feature>
-                </features>
+                    <feature>com.fasterxml.jackson.core.JsonParser$Feature.ALLOW_NUMERIC_LEADING_ZEROS</feature>
+                </enabledObjectMapperFeatures>
+                <disabledObjectMapperFeatures>
+                    <feature>com.fasterxml.jackson.databind.SerializationFeature.FAIL_ON_EMPTY_BEANS</feature>
+                </disabledObjectMapperFeatures>
             </apiSource>
         </apiSources>
     </configuration>

@@ -40,13 +40,13 @@ public class ApiDocumentMojo extends AbstractMojo {
      * A set of feature enums which should be enabled on the JSON object mapper
      */
     @Parameter
-    private List<String> enabledFeatures;
+    private List<String> enabledObjectMapperFeatures;
 
     /**
      * A set of feature enums which should be enabled on the JSON object mapper
      */
     @Parameter
-    private List<String> disabledFeatures;
+    private List<String> disabledObjectMapperFeatures;
 
 
     @Parameter(defaultValue = "${project}", readonly = true)
@@ -101,13 +101,13 @@ public class ApiDocumentMojo extends AbstractMojo {
         try {
             getLog().debug(apiSources.toString());
 
-            if (enabledFeatures!=null) {
-                configureFeatures(enabledFeatures,true);
+            if (enabledObjectMapperFeatures!=null) {
+                configureObjectMapperFeatures(enabledObjectMapperFeatures,true);
                 
             }
 
-            if (disabledFeatures!=null) {
-                configureFeatures(disabledFeatures,false);
+            if (disabledObjectMapperFeatures!=null) {
+                configureObjectMapperFeatures(disabledObjectMapperFeatures,false);
             }
             
             for (ApiSource apiSource : apiSources) {
@@ -216,7 +216,7 @@ public class ApiDocumentMojo extends AbstractMojo {
         return new File(swaggerDirectory).getName();
     }
 
-    private void configureFeatures(List<String> features, boolean enabled) throws Exception {
+    private void configureObjectMapperFeatures(List<String> features, boolean enabled) throws Exception {
         for (String feature : features) {
             int i=  feature.lastIndexOf(".");
             Class clazz = Class.forName(feature.substring(0,i));
