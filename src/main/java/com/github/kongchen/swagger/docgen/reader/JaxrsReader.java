@@ -1,32 +1,60 @@
 package com.github.kongchen.swagger.docgen.reader;
 
-import com.github.kongchen.swagger.docgen.jaxrs.BeanParamInjectParamExtention;
-import com.github.kongchen.swagger.docgen.jaxrs.JaxrsParameterExtension;
-import io.swagger.annotations.*;
-import io.swagger.converter.ModelConverters;
-import io.swagger.jaxrs.ext.SwaggerExtension;
-import io.swagger.jaxrs.ext.SwaggerExtensions;
-import io.swagger.jersey.SwaggerJerseyJaxrs;
-import io.swagger.models.*;
-import io.swagger.models.Tag;
-import io.swagger.models.parameters.Parameter;
-import io.swagger.models.properties.Property;
-import io.swagger.models.properties.RefProperty;
-import io.swagger.util.BaseReaderUtils;
-import io.swagger.util.ReflectionUtils;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.HEAD;
+import javax.ws.rs.HttpMethod;
+import javax.ws.rs.OPTIONS;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+
 import org.apache.maven.plugin.logging.Log;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.AnnotationUtils;
 
-import javax.ws.rs.*;
-import javax.ws.rs.HttpMethod;
-import javax.ws.rs.Path;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-import java.util.*;
+import com.github.kongchen.swagger.docgen.jaxrs.BeanParamInjectParamExtention;
+import com.github.kongchen.swagger.docgen.jaxrs.JaxrsParameterExtension;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.Authorization;
+import io.swagger.annotations.AuthorizationScope;
+import io.swagger.annotations.SwaggerDefinition;
+import io.swagger.converter.ModelConverters;
+import io.swagger.jaxrs.ext.SwaggerExtension;
+import io.swagger.jaxrs.ext.SwaggerExtensions;
+import io.swagger.jersey.SwaggerJerseyJaxrs;
+import io.swagger.models.ArrayModel;
+import io.swagger.models.Model;
+import io.swagger.models.ModelImpl;
+import io.swagger.models.Operation;
+import io.swagger.models.Response;
+import io.swagger.models.SecurityRequirement;
+import io.swagger.models.Swagger;
+import io.swagger.models.Tag;
+import io.swagger.models.parameters.BodyParameter;
+import io.swagger.models.parameters.Parameter;
+import io.swagger.models.properties.Property;
+import io.swagger.models.properties.RefProperty;
+import io.swagger.util.BaseReaderUtils;
+import io.swagger.util.ReflectionUtils;
 
 public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
     private static final Logger LOGGER = LoggerFactory.getLogger(JaxrsReader.class);
@@ -47,11 +75,11 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
 
     @Override
     protected void updateExtensionChain() {
-    	List<SwaggerExtension> extensions = new ArrayList<SwaggerExtension>();
-    	extensions.add(new BeanParamInjectParamExtention(this));
+        List<SwaggerExtension> extensions = new ArrayList<>();
+        extensions.add(new BeanParamInjectParamExtention(this));
         extensions.add(new SwaggerJerseyJaxrs());
         extensions.add(new JaxrsParameterExtension());
-    	SwaggerExtensions.setExtensions(extensions);
+        SwaggerExtensions.setExtensions(extensions);
     }
 
     @Override
@@ -70,7 +98,8 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         return read(cls, "", null, false, new String[0], new String[0], new HashMap<String, Tag>(), new ArrayList<Parameter>());
     }
 
-    protected Swagger read(Class<?> cls, String parentPath, String parentMethod, boolean readHidden, String[] parentConsumes, String[] parentProduces, Map<String, Tag> parentTags, List<Parameter> parentParameters) {
+    protected Swagger read(Class<?> cls, String parentPath, String parentMethod, boolean readHidden, String[] parentConsumes,
+            String[] parentProduces, Map<String, Tag> parentTags, List<Parameter> parentParameters) {
         if (swagger == null) {
             swagger = new Swagger();
         }
@@ -121,7 +150,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
             }
             String operationPath = getPath(apiPath, methodPath, parentPathValue);
             if (operationPath != null) {
-                Map<String, String> regexMap = new HashMap<String, String>();
+                Map<String, String> regexMap = new HashMap<>();
                 operationPath = parseOperationPath(operationPath, regexMap);
 
                 String httpMethod = extractOperationMethod(apiOperation, method, SwaggerExtensions.chain());
@@ -161,7 +190,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
 
     private List<Method> getFilteredMethods(Class<?> cls) {
         Method[] methods = cls.getMethods();
-        List<Method> filteredMethods = new ArrayList<Method>();
+        List<Method> filteredMethods = new ArrayList<>();
         for (Method method : methods) {
             if (!method.isBridge()) {
                 filteredMethods.add(method);
@@ -182,7 +211,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
     }
 
     private Map<String, Tag> scanClasspathForTags() {
-        Map<String, Tag> tags = new HashMap<String, Tag>();
+        Map<String, Tag> tags = new HashMap<>();
         for (Class<?> aClass: new Reflections("").getTypesAnnotatedWith(SwaggerDefinition.class)) {
             SwaggerDefinition swaggerDefinition = AnnotationUtils.findAnnotation(aClass, SwaggerDefinition.class);
 
@@ -260,7 +289,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         ApiOperation apiOperation = AnnotationUtils.findAnnotation(method, ApiOperation.class);
 
         String operationId = getOperationId(method, httpMethod);
-        
+
         String responseContainer = null;
 
         Type responseClassType = null;
@@ -286,7 +315,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
             if (!apiOperation.responseContainer().isEmpty()) {
                 responseContainer = apiOperation.responseContainer();
             }
-            List<SecurityRequirement> securities = new ArrayList<SecurityRequirement>();
+            List<SecurityRequirement> securities = new ArrayList<>();
             for (Authorization auth : apiOperation.authorizations()) {
                 if (!auth.value().isEmpty()) {
                     SecurityRequirement security = new SecurityRequirement();
@@ -391,6 +420,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
             List<Parameter> parameters = getParameters(type, annotations);
 
             for (Parameter parameter : parameters) {
+                parameter = replaceArrayModelForOctetStream(operation, parameter);
                 operation.parameter(parameter);
             }
         }
@@ -407,36 +437,56 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
     }
 
     public static Annotation[][] findParamAnnotations(Method method) {
-		Annotation[][] paramAnnotation = method.getParameterAnnotations();
+        Annotation[][] paramAnnotation = method.getParameterAnnotations();
 
-		Method overriddenMethod = ReflectionUtils.getOverriddenMethod(method);
-		while(overriddenMethod != null) {
-			paramAnnotation = merge(overriddenMethod.getParameterAnnotations(), paramAnnotation);
-			overriddenMethod = ReflectionUtils.getOverriddenMethod(overriddenMethod);
-		}
-		return paramAnnotation;
-	}
+        Method overriddenMethod = ReflectionUtils.getOverriddenMethod(method);
+        while(overriddenMethod != null) {
+            paramAnnotation = merge(overriddenMethod.getParameterAnnotations(), paramAnnotation);
+            overriddenMethod = ReflectionUtils.getOverriddenMethod(overriddenMethod);
+        }
+        return paramAnnotation;
+    }
 
 
     private static Annotation[][] merge(Annotation[][] overriddenMethodParamAnnotation,
-			Annotation[][] currentParamAnnotations) {
-    	Annotation[][] mergedAnnotations = new Annotation[overriddenMethodParamAnnotation.length][];
+            Annotation[][] currentParamAnnotations) {
+        Annotation[][] mergedAnnotations = new Annotation[overriddenMethodParamAnnotation.length][];
 
-    	for(int i=0; i<overriddenMethodParamAnnotation.length; i++) {
-    		mergedAnnotations[i] = merge(overriddenMethodParamAnnotation[i], currentParamAnnotations[i]);
-    	}
-		return mergedAnnotations;
-	}
+        for(int i=0; i<overriddenMethodParamAnnotation.length; i++) {
+            mergedAnnotations[i] = merge(overriddenMethodParamAnnotation[i], currentParamAnnotations[i]);
+        }
+        return mergedAnnotations;
+    }
 
-	private static Annotation[] merge(Annotation[] annotations,
-			Annotation[] annotations2) {
-		List<Annotation> mergedAnnotations = new ArrayList<Annotation>();
-		mergedAnnotations.addAll(Arrays.asList(annotations));
-		mergedAnnotations.addAll(Arrays.asList(annotations2));
-		return mergedAnnotations.toArray(new Annotation[0]);
-	}
+    private static Annotation[] merge(Annotation[] annotations,
+            Annotation[] annotations2) {
+        List<Annotation> mergedAnnotations = new ArrayList<>();
+        mergedAnnotations.addAll(Arrays.asList(annotations));
+        mergedAnnotations.addAll(Arrays.asList(annotations2));
+        return mergedAnnotations.toArray(new Annotation[0]);
+    }
 
-	public String extractOperationMethod(ApiOperation apiOperation, Method method, Iterator<SwaggerExtension> chain) {
+    private Parameter replaceArrayModelForOctetStream(Operation operation, Parameter parameter) {
+        if (parameter instanceof BodyParameter
+                && operation.getConsumes() != null
+                && operation.getConsumes().contains("application/octet-stream")) {
+            BodyParameter bodyParam = (BodyParameter) parameter;
+            Model schema = bodyParam.getSchema();
+            if (schema instanceof ArrayModel) {
+                ArrayModel arrayModel = (ArrayModel) schema;
+                Property items = arrayModel.getItems();
+                if (items != null && items.getFormat() == "byte" && items.getType() == "string") {
+                    ModelImpl model = new ModelImpl();
+                    model.setFormat("byte");
+                    model.setType("string");
+                    bodyParam.setSchema(model);
+                }
+            }
+        }
+        return parameter;
+    }
+
+    public String extractOperationMethod(ApiOperation apiOperation, Method method, Iterator<SwaggerExtension> chain) {
         if (apiOperation != null && !apiOperation.httpMethod().isEmpty()) {
             return apiOperation.httpMethod().toLowerCase();
         } else if (AnnotationUtils.findAnnotation(method, GET.class) != null) {
