@@ -117,7 +117,7 @@ public abstract class AbstractReader {
     }
 
     protected List<SecurityRequirement> getSecurityRequirements(Api api) {
-        List<SecurityRequirement> securities = new ArrayList<SecurityRequirement>();
+        List<SecurityRequirement> securities = new ArrayList<>();
         if(api == null) {
             return securities;
         }
@@ -166,7 +166,7 @@ public abstract class AbstractReader {
                 continue;
             }
             if (responseHeaders == null) {
-                responseHeaders = new HashMap<String, Property>();
+                responseHeaders = new HashMap<>();
             }
             Class<?> cls = header.response();
 
@@ -219,7 +219,7 @@ public abstract class AbstractReader {
     }
 
     protected Set<Tag> extractTags(Api api) {
-        Set<Tag> output = new LinkedHashSet<Tag>();
+        Set<Tag> output = new LinkedHashSet<>();
         if(api == null) {
             return output;
         }
@@ -260,7 +260,7 @@ public abstract class AbstractReader {
 
     protected Map<String, Tag> updateTagsForApi(Map<String, Tag> parentTags, Api api) {
         // the value will be used as a tag for 2.0 UNLESS a Tags annotation is present
-        Map<String, Tag> tagsMap = new HashMap<String, Tag>();
+        Map<String, Tag> tagsMap = new HashMap<>();
         for (Tag tag : extractTags(api)) {
             tagsMap.put(tag.getName(), tag);
         }
@@ -319,7 +319,7 @@ public abstract class AbstractReader {
         // whitelist to make sure that the annotation of the parameter is
         // compatible with spring-maven-plugin
 
-        List<Type> validParameterAnnotations = new ArrayList<Type>();
+        List<Type> validParameterAnnotations = new ArrayList<>();
         validParameterAnnotations.add(ModelAttribute.class);
         validParameterAnnotations.add(BeanParam.class);
         validParameterAnnotations.add(InjectParam.class);
@@ -359,7 +359,7 @@ public abstract class AbstractReader {
         }
 
         Iterator<SwaggerExtension> chain = SwaggerExtensions.chain();
-        List<Parameter> parameters = new ArrayList<Parameter>();
+        List<Parameter> parameters = new ArrayList<>();
         Class<?> cls = TypeUtils.getRawType(type, type);
         LOG.debug("Looking for path/query/header/form/cookie params in " + cls);
 
@@ -439,7 +439,7 @@ public abstract class AbstractReader {
 
     protected String[] updateOperationProduces(String[] parentProduces, String[] apiProduces, Operation operation) {
         if (parentProduces != null) {
-            Set<String> both = new LinkedHashSet<String>(Arrays.asList(apiProduces));
+            Set<String> both = new LinkedHashSet<>(Arrays.asList(apiProduces));
             both.addAll(Arrays.asList(parentProduces));
             if (operation.getProduces() != null) {
                 both.addAll(operation.getProduces());
@@ -451,7 +451,7 @@ public abstract class AbstractReader {
 
     protected String[] updateOperationConsumes(String[] parentConsumes, String[] apiConsumes, Operation operation) {
         if (parentConsumes != null) {
-            Set<String> both = new LinkedHashSet<String>(Arrays.asList(apiConsumes));
+            Set<String> both = new LinkedHashSet<>(Arrays.asList(apiConsumes));
             both.addAll(Arrays.asList(parentConsumes));
             if (operation.getConsumes() != null) {
                 both.addAll(operation.getConsumes());
