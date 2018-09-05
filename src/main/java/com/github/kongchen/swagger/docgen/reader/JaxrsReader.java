@@ -416,6 +416,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
             List<Parameter> parameters = getParameters(type, annotations);
 
             for (Parameter parameter : parameters) {
+                parameter = replaceArrayModelForOctetStream(operation, parameter);
                 operation.parameter(parameter);
             }
         }
@@ -461,7 +462,27 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         return mergedAnnotations.toArray(new Annotation[0]);
     }
 
-	public String extractOperationMethod(ApiOperation apiOperation, Method method, Iterator<SwaggerExtension> chain) {
+    private Parameter replaceArrayModelForOctetStream(Operation operation, Parameter parameter) {
+        if (parameter instanceof BodyParameter
+                && operation.getConsumes() != null
+                && operation.getConsumes().contains("application/octet-stream")) {
+            BodyParameter bodyParam = (BodyParameter) parameter;
+            Model schema = bodyParam.getSchema();
+            if (schema instanceof ArrayModel) {
+                ArrayModel arrayModel = (ArrayModel) schema;
+                Property items = arrayModel.getItems();
+                if (items != null && items.getFormat() == "byte" && items.getType() == "string") {
+                    ModelImpl model = new ModelImpl();
+                    model.setFormat("byte");
+                    model.setType("string");
+                    bodyParam.setSchema(model);
+                }
+            }
+        }
+        return parameter;
+    }
+
+    public String extractOperationMethod(ApiOperation apiOperation, Method method, Iterator<SwaggerExtension> chain) {
         if (apiOperation != null && !apiOperation.httpMethod().isEmpty()) {
             return apiOperation.httpMethod().toLowerCase();
         } else if (AnnotationUtils.findAnnotation(method, GET.class) != null) {
