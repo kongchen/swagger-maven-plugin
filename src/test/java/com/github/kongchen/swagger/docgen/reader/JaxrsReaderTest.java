@@ -1,5 +1,6 @@
 package com.github.kongchen.swagger.docgen.reader;
 
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
@@ -29,6 +30,7 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.jaxrs.ext.SwaggerExtension;
 import io.swagger.jaxrs.ext.SwaggerExtensions;
 import io.swagger.models.ArrayModel;
+import io.swagger.models.Operation;
 import io.swagger.models.Swagger;
 import io.swagger.models.Tag;
 import io.swagger.models.parameters.BodyParameter;
@@ -122,6 +124,21 @@ public class JaxrsReaderTest {
         assertFalse(path.getOperations().isEmpty(), "Should be a get operation");
     }
 
+    @Test
+    public void discoverSubResource() {
+        Swagger result = reader.read(SomeResource.class);
+        assertSwaggerPath(result.getPath("/resource/explicit/name").getGet(), result, "/resource/implicit/name");
+    }
+
+    private void assertSwaggerPath(Operation expectedOperation, Swagger result, String expectedPath) {
+        assertNotNull(result, "No Swagger object created");
+        assertFalse(result.getPaths().isEmpty(), "Should contain operation paths");
+        assertTrue(result.getPaths().containsKey(expectedPath), "Expected path missing");
+        io.swagger.models.Path path = result.getPaths().get(expectedPath);
+        assertFalse(path.getOperations().isEmpty(), "Should be a get operation");
+        assertEquals(expectedOperation, path.getGet(), "Should contain operation");
+    }
+
     @Api(tags = "atag")
     @Path("/apath")
     static class AnApi {
@@ -146,6 +163,7 @@ public class JaxrsReaderTest {
     static class NotAnnotatedApi {
     }
 
+
     @Api(value = "v1")
     @Path("/apath")
     static class AnApiWithOctetStream {
@@ -158,4 +176,30 @@ public class JaxrsReaderTest {
                     final byte[] content) {
         }
     }
+
+    @Path("/resource")
+    @Api(tags = "Resource")
+    static class SomeResource {
+        @Path("explicit")
+        public SomeSubResource getSomething() {
+            // no implementation needed. Method is only for the test cases, so that the return type is captured
+            return new SomeSubResource();
+        }
+        @Path("implicit")
+        @ApiOperation(value="", response = SomeSubResource.class)
+        public Object getSomeSub() {
+            // no implementation needed. Method is only for the test cases, so that the return type is overridden by @ApiOperation.response
+            return new SomeSubResource();
+        }
+    }
+
+    static class SomeSubResource {
+        @Path("name")
+        @GET
+        public String getName() {
+            // no implementation needed. Method is only for the test cases
+            return toString();
+        }
+    }
+
 }
