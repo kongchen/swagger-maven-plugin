@@ -50,7 +50,7 @@
   "securityDefinitions" : {
     "api_key" : {
       "type" : "apiKey",
-      "name" : "Authorization",
+      "name" : "api_key",
       "in" : "header"
     },
     "basicAuth" : {
