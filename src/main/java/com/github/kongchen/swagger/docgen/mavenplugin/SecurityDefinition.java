@@ -18,8 +18,6 @@ import java.util.*;
  * @author chekong on 15/5/5.
  */
 public class SecurityDefinition {
-    private static final String SECURITY_NAME = "securityName";
-
     private String name;
     private String type;
     private String in;
@@ -40,8 +38,7 @@ public class SecurityDefinition {
         for (JsonNode securityDefinition : securityDefinitions) {
             SecuritySchemeDefinition ssd = getSecuritySchemeDefinitionByType(securityDefinition.get("type").asText(), securityDefinition);
             if (ssd != null) {
-                String fieldDescriptor = securityDefinition.findValue(SECURITY_NAME)!=null ? SECURITY_NAME : "name";
-                map.put(securityDefinition.get(fieldDescriptor).asText(), ssd);
+                map.put(securityDefinition.get("name").asText(), ssd);
             }
         }
 
@@ -58,10 +55,7 @@ public class SecurityDefinition {
             while (securityDefinitionNameIterator.hasNext()) {
                 String securityDefinitionName = securityDefinitionNameIterator.next();
                 JsonNode securityDefinition = tree.get(securityDefinitionName);
-                if (securityDefinition.findValue("name") == null) {
-                    securityDefinition = ((ObjectNode) securityDefinition).put("name", securityDefinitionName);
-                }
-                securityDefinition = ((ObjectNode) securityDefinition).put(SECURITY_NAME, securityDefinitionName);
+                securityDefinition = ((ObjectNode) securityDefinition).put("name", securityDefinitionName);
                 securityDefinitions.add(securityDefinition);
             }
         } catch (IOException e) {
