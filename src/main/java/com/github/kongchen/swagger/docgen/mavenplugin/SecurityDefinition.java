@@ -58,9 +58,9 @@ public class SecurityDefinition {
             while (securityDefinitionNameIterator.hasNext()) {
                 String securityDefinitionName = securityDefinitionNameIterator.next();
                 JsonNode securityDefinition = tree.get(securityDefinitionName);
-        	if (securityDefinition.findValue("name") == null) {
-	            securityDefinition = ((ObjectNode) securityDefinition).put("name", securityDefinitionName);
-		}
+                if (securityDefinition.findValue("name") == null) {
+                    securityDefinition = ((ObjectNode) securityDefinition).put("name", securityDefinitionName);
+                }
                 securityDefinition = ((ObjectNode) securityDefinition).put(SECURITY_NAME, securityDefinitionName);
                 securityDefinitions.add(securityDefinition);
             }
