@@ -322,6 +322,17 @@ paths:
           description: "successful operation"
           schema:
             type: "string"
+  /getWithParam:
+    get:
+      operationId: "getWithParam"
+      parameters:
+      - name: "optionalParam"
+        in: "query"
+        required: true
+        type: "boolean"
+      responses:
+        default:
+          description: "successful operation"
   /testingEmptyRootPathResource:
     get:
       summary: "testingEmptyRootPathResource"
