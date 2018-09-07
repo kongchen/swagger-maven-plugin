@@ -1,4 +1,4 @@
-# Swagger Maven Plugin 
+# Swagger Maven Plugin
 [![Build Status](https://travis-ci.org/kongchen/swagger-maven-plugin.png)](https://travis-ci.org/kongchen/swagger-maven-plugin)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.kongchen/swagger-maven-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.kongchen/swagger-maven-plugin)
 
@@ -22,7 +22,7 @@ Version 3.1.0+ of this plugin depends on the re-packaged/re-branded io.swagger.s
 
 
 # Usage
-Import the plugin in your project by adding following configuration in your `plugins` block: 
+Import the plugin in your project by adding following configuration in your `plugins` block:
 
 ```xml
 <build>
@@ -83,11 +83,11 @@ The `executions` block is used to specify the phase of the build lifecycle you w
 | `typesToSkip` | Nodes of class names to explicitly skip during parameter processing. More details [below](#typesToSkip)|
 | `apiModelPropertyAccessExclusions` | Allows the exclusion of specified `@ApiModelProperty` fields. This can be used to hide certain model properties from the swagger spec. More details [below](#apiModelPropertyAccessExclusions)|
 | `jsonExampleValues` | If `true`, all example values in `@ApiModelProperty` will be handled as json raw values. This is useful for creating valid examples in the generated json for all property types, including non-string ones. |
-| `modelConverters` | List of custom implementations of `io.swagger.converter.ModelConverter` that should be used when generating the swagger files. | 
+| `modelConverters` | List of custom implementations of `io.swagger.converter.ModelConverter` that should be used when generating the swagger files. |
 | `swaggerExtensions` | List of custom implementations of `io.swagger.jaxrs.ext.SwaggerExtension` that should be used when generating the swagger files. |
-| `operationIdFormat` | Format of `operationId` used in Swagger spec. For historical reasons default is Java method name. Since 3.1.8, for new APIs suggested format is: `{{className}}_{{methodName}}_{{httpMethod}}`. `{{packageName}}` token is also supported. | 
-
-
+| `enabledObjectMapperFeatures`    | List of ConfigFeature enums that are supported by ObjectMapper.configure - the feature is set to true. https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#features) here, see more details [below](#features)|
+| `disabledObjectMapperFeatures`    | List of ConfigFeature enums that are supported by ObjectMapper.configure - the feature is set to false. https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#features) here, see more details [below](#features)|
+| `operationIdFormat` | Format of `operationId` used in Swagger spec. For historical reasons default is Java method name. Since 3.1.8, for new APIs suggested format is: `{{className}}_{{methodName}}_{{httpMethod}}`. `{{packageName}}` token is also supported. |
 # <a id="templatefile">Template File</a>
 
 If you'd like to generate a template-driven static document, such as markdown or HTML documentation, you'll need to specify a [handlebars](https://github.com/jknack/handlebars.java) template file in ```templatePath```.
@@ -133,7 +133,7 @@ or define several definitions in a json file and specify the json path like this
 
 The file will be read by `getClass().getResourceAsStream`, so please note the path you configured.
 
-Alternatively, specify the __absolute__ file path to the json definition file: 
+Alternatively, specify the __absolute__ file path to the json definition file:
 
 ```xml
 <securityDefinition>
@@ -258,6 +258,25 @@ or `custom.json` by adding the following to your pom.xml:
 
 The above setting attaches the generated file to Maven for install/deploy purpose with `swagger-ui`as classifier and `json` as type
 
+# <a id="features">Object Mapper Configuration Features</a>
+
+Enables or disables the static Json.mapper config, by setting the feature of a known enum to true or false respectively.
+
+N.B. Inner class fully qualified domain names are using $
+
+```
+<configuration>
+...
+   <enabledObjectMapperFeatures>
+       <feature>com.fasterxml.jackson.databind.SerializationFeature.WRITE_ENUMS_USING_TO_STRING</feature>
+       <feature>com.fasterxml.jackson.core.JsonParser$Feature.ALLOW_NUMERIC_LEADING_ZEROS</feature>
+   </enabledObjectMapperFeatures>
+...
+    <disabledObjectMapperFeatures>
+        <feature>com.fasterxml.jackson.databind.SerializationFeature.FAIL_ON_EMPTY_BEANS</feature>
+    </disabledObjectMapperFeatures>
+</configuration>
+```
 
 
 # Example
@@ -331,6 +350,13 @@ There's a [sample here](https://github.com/swagger-maven-plugin/swagger-maven-ex
                 <swaggerExtensions>
                     <swaggerExtension>com.example.VendorExtension</swaggerExtension>
                 </swaggerExtensions>
+                <enabledObjectMapperFeatures>
+                    <feature>com.fasterxml.jackson.databind.SerializationFeature.WRITE_ENUMS_USING_TO_STRING</feature>
+                    <feature>com.fasterxml.jackson.core.JsonParser$Feature.ALLOW_NUMERIC_LEADING_ZEROS</feature>
+                </enabledObjectMapperFeatures>
+                <disabledObjectMapperFeatures>
+                    <feature>com.fasterxml.jackson.databind.SerializationFeature.FAIL_ON_EMPTY_BEANS</feature>
+                </disabledObjectMapperFeatures>
                 <operationIdFormat>{{className}}_{{methodName}}_{{httpMethod}}</operationIdFormat>
             </apiSource>
         </apiSources>
