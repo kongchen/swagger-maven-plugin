@@ -8,6 +8,8 @@ import com.google.common.collect.Lists;
 import io.swagger.jaxrs.ext.AbstractSwaggerExtension;
 import io.swagger.jaxrs.ext.SwaggerExtension;
 import io.swagger.models.parameters.Parameter;
+
+import org.apache.maven.plugin.logging.SystemStreamLog;
 import org.testng.annotations.Test;
 
 import java.lang.annotation.Annotation;
@@ -35,7 +37,7 @@ public class IncludedSwaggerExtensionTest {
     static {
         //TODO: Maybe use a Classpath Scanner to automatically figure out the included extensions?
         SWAGGER_EXTENSIONS.add(new JaxrsParameterExtension());
-        SWAGGER_EXTENSIONS.add(new SpringSwaggerExtension());
+        SWAGGER_EXTENSIONS.add(new SpringSwaggerExtension(new SystemStreamLog()));
         SWAGGER_EXTENSIONS.add(new BeanParamInjectParamExtention(mock(JaxrsReader.class)));
     }
 
