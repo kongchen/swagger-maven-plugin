@@ -214,11 +214,6 @@
             <artifactId>jackson-module-jaxb-annotations</artifactId>
             <version>${jackson.version}</version>
         </dependency>
-        <dependency>
-            <groupId>io.leangen.geantyref</groupId>
-            <artifactId>geantyref</artifactId>
-            <version>1.3.6</version>
-        </dependency>
 
         <!-- Test dependencies -->
         <dependency>

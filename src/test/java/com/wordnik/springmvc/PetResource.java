@@ -86,7 +86,8 @@ public class PetResource {
     public ResponseEntity deletePet(
             @RequestHeader("api_key") String apiKey,
             @ApiParam(value = "Pet id to delete", required = true)
-            @PathVariable("petId") @Size(min = 0, max = Integer.MAX_VALUE) Long petId) {
+            @PathVariable("petId")
+            @Size(min = 0, max = Integer.MAX_VALUE) Long petId) {
         petData.deletePet(petId);
         return new ResponseEntity(HttpStatus.OK);
     }

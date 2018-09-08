@@ -8,19 +8,15 @@ import com.google.common.collect.Lists;
 import io.swagger.jaxrs.ext.AbstractSwaggerExtension;
 import io.swagger.jaxrs.ext.SwaggerExtension;
 import io.swagger.models.parameters.Parameter;
-
 import org.apache.maven.plugin.logging.SystemStreamLog;
+import org.mockito.Mockito;
 import org.testng.annotations.Test;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.mockito.Mockito.*;
-import static org.testng.Assert.assertTrue;
 
 /**
  * Test class which ensures common functionality across all of the currently included Swagger Extensions, namely </p>
@@ -49,8 +45,10 @@ public class IncludedSwaggerExtensionTest {
     public void testExtractParametersReturnsEmptyList() {
         for (AbstractSwaggerExtension swaggerExtension : SWAGGER_EXTENSIONS) {
             Set<Type> typesToSkip = Collections.emptySet();
-            List<Annotation> annotations = Collections.emptyList();
+            List<Annotation> annotations = Lists.newArrayList(AnnotationBearer.class.getAnnotation(Deprecated.class));
             AbstractSwaggerExtension extension = mock(AbstractSwaggerExtension.class, CALLS_REAL_METHODS);
+            Mockito.doReturn(new ArrayList<Parameter>()).when(extension).extractParameters(any(), any(), any(), any());
+
             Iterator<SwaggerExtension> iterator = Lists.<SwaggerExtension>newArrayList(extension).iterator();
 
             // Not possible to add any parameters for the extensions, since no annotation / field is given to the extensions
@@ -58,13 +56,17 @@ public class IncludedSwaggerExtensionTest {
             // This allows to test if first the chain is called, and only then empty, modifiable lists are returned as last resort
             List<Parameter> parameters = swaggerExtension.extractParameters(
                     annotations,
-                    Void.TYPE,
+                    String.class,
                     typesToSkip,
                     iterator);
+            // Has to return a collection we can later modify.
+            try {
+                parameters.add(null);
+            } catch (Exception e) {
+                throw new IllegalStateException("Extension "+ swaggerExtension.getClass().getName() + " did not return a modifiable list.", e);
+            }
 
-            // returned parameters have to be empty since we gave the extension no real type to work with
-            assertTrue(parameters.isEmpty(), "Extension " + swaggerExtension.getClass().getName() + " did not return a modifiable list.");
-
+            // Test if the next extension in the chain was called
             try {
                 verify(extension).extractParameters(
                         anyListOf(Annotation.class),
@@ -82,5 +84,10 @@ public class IncludedSwaggerExtensionTest {
                 throw new IllegalStateException("Extension "+ swaggerExtension.getClass().getName() + " failed this Test.", t);
             }
         }
+    }
+
+    // Class specificly for holding default value annotations
+    @Deprecated
+    private static class AnnotationBearer {
     }
 }
