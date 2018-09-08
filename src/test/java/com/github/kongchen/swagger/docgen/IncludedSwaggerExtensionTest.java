@@ -9,7 +9,6 @@ import io.swagger.jaxrs.ext.AbstractSwaggerExtension;
 import io.swagger.jaxrs.ext.SwaggerExtension;
 import io.swagger.models.parameters.Parameter;
 import org.apache.maven.plugin.logging.SystemStreamLog;
-import org.mockito.Mockito;
 import org.testng.annotations.Test;
 
 import java.lang.annotation.Annotation;
@@ -47,7 +46,7 @@ public class IncludedSwaggerExtensionTest {
             Set<Type> typesToSkip = Collections.emptySet();
             List<Annotation> annotations = Lists.newArrayList(AnnotationBearer.class.getAnnotation(Deprecated.class));
             AbstractSwaggerExtension extension = mock(AbstractSwaggerExtension.class, CALLS_REAL_METHODS);
-            Mockito.doReturn(new ArrayList<Parameter>()).when(extension).extractParameters(any(), any(), any(), any());
+            doReturn(new ArrayList<Parameter>()).when(extension).extractParameters(any(), any(), any(), any());
 
             Iterator<SwaggerExtension> iterator = Lists.<SwaggerExtension>newArrayList(extension).iterator();
 
