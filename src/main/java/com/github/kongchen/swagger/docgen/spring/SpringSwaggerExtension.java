@@ -255,7 +255,7 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension {
 
     private boolean isRequestParamType(Type type, Map<Class<?>, Annotation> annotations) {
         RequestParam requestParam = (RequestParam)annotations.get(RequestParam.class);
-        return requestParam != null || (requestParam == null || !hasClassStartingWith(annotations.keySet(), "org.springframework.web.bind.annotation")) && BeanUtils.isSimpleProperty(TypeUtils.getRawType(type, null));
+        return requestParam != null || (!hasClassStartingWith(annotations.keySet(), "org.springframework.web.bind.annotation")) && BeanUtils.isSimpleProperty(TypeUtils.getRawType(type, type));
     }
 
     private Parameter extractParameterFromRequestParam(Type type, RequestParam requestParam) {
