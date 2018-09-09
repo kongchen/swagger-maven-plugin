@@ -55,7 +55,7 @@ public class IncludedSwaggerExtensionTest {
             // This allows to test if first the chain is called, and only then empty, modifiable lists are returned as last resort
             List<Parameter> parameters = swaggerExtension.extractParameters(
                     annotations,
-                    String.class,
+                    Void.class,
                     typesToSkip,
                     iterator);
             // Has to return a collection we can later modify.

@@ -1,16 +1,19 @@
 package com.github.kongchen.swagger.docgen.spring;
 
 import com.fasterxml.jackson.databind.JavaType;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import io.swagger.annotations.ApiParam;
 import io.swagger.converter.ModelConverters;
 import io.swagger.jaxrs.ext.AbstractSwaggerExtension;
 import io.swagger.jaxrs.ext.SwaggerExtension;
+import io.swagger.models.Swagger;
 import io.swagger.models.parameters.*;
 import io.swagger.models.properties.ArrayProperty;
 import io.swagger.models.properties.FileProperty;
 import io.swagger.models.properties.Property;
 import io.swagger.models.properties.StringProperty;
+import io.swagger.util.ParameterProcessor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.apache.commons.lang3.reflect.TypeUtils;
@@ -74,6 +77,9 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension {
     private Map<Class<?>, Annotation> toMap(Collection<? extends Annotation> annotations) {
         Map<Class<?>, Annotation> annotationMap = new HashMap<>();
         for (Annotation annotation : annotations) {
+            if (annotation == null) {
+                continue;
+            }
             annotationMap.put(annotation.annotationType(), annotation);
         }
 
@@ -221,32 +227,22 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension {
                 // Here we have a bean setter method that is annotted with @ApiParam, but we still
                 // need to know what type of parameter to create. In order to do this, we look for
                 // any annotation attached to the first method parameter of the setter fucntion.
-                Annotation[][] methodAnnotations = propertyDescriptorSetter.getParameterAnnotations();
-                if (methodAnnotations == null || methodAnnotations.length == 0) {
+                Annotation[][] parameterAnnotations = propertyDescriptorSetter.getParameterAnnotations();
+                if (parameterAnnotations == null || parameterAnnotations.length == 0) {
                     continue;
                 }
 
                 Class parameterClass = propertyDescriptor.getPropertyType();
                 List<Parameter> propertySetterExtractedParameters = this.extractParameterFromAnnotation(
-                        parameterClass, toMap(Arrays.asList(methodAnnotations[0])));
+                        parameterClass, toMap(Arrays.asList(parameterAnnotations[0])));
 
-                if (propertySetterExtractedParameters.isEmpty()) {
-                    QueryParameter queryParameter = new QueryParameter().name(propertyDescriptor.getDisplayName())
-                            .description(propertySetterApiParam.value())
-                            .required(propertySetterApiParam.required());
-                    queryParameter.setAccess(propertySetterApiParam.access());
-                    Property schema = ModelConverters.getInstance()
-                            .readAsProperty(propertyDescriptor.getPropertyType());
-                    if (schema != null) {
-                        queryParameter.setProperty(schema);
+                for (Parameter parameter : propertySetterExtractedParameters) {
+                    if (Strings.isNullOrEmpty(parameter.getName())) {
+                        parameter.setName(propertyDescriptor.getDisplayName());
                     }
-                    if (!propertySetterApiParam.name().isEmpty()) {
-                        queryParameter.setName(propertySetterApiParam.name());
-                    }
-                    parameters.add(queryParameter);
-                } else {
-                    parameters.add(propertySetterExtractedParameters.get(0));
+                    ParameterProcessor.applyAnnotations(new Swagger(), parameter, type, Lists.newArrayList(propertySetterApiParam));
                 }
+                parameters.addAll(propertySetterExtractedParameters);
             }
         }
 
