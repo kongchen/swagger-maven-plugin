@@ -278,15 +278,25 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension {
 
     @Override
     public boolean shouldIgnoreType(Type type, Set<Type> typesToSkip) {
-        Class<?> cls = TypeUtils.getRawType(type, type);
-        if (cls == null) {
+        Class<?> clazz = TypeUtils.getRawType(type, type);
+        if (clazz == null) {
             return false;
         }
 
-        // TODO: Some classes are missing in this ignore list. compare with
-        // https://docs.spring.io/spring/docs/current/spring-framework-reference/web.html#mvc-ann-arguments
+        String clazzName = clazz.getName();
 
-        return cls.getName().startsWith("org.springframework") &&
-                !cls.getName().equals("org.springframework.web.multipart.MultipartFile");
+        switch (clazzName) {
+            case "javax.servlet.ServletRequest":
+            case "javax.servlet.ServletResponse":
+            case "javax.servlet.http.HttpSession":
+            case "javax.servlet.http.PushBuilder":
+            case "java.security.Principal":
+            case "java.io.OutputStream":
+            case "java.io.Writer":
+                return true;
+        }
+
+        return clazzName.startsWith("org.springframework") &&
+                !clazzName.equals("org.springframework.web.multipart.MultipartFile");
     }
 }
