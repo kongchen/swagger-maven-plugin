@@ -43,6 +43,10 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension {
 
     // Class specificly for holding default value annotations
     private static class AnnotationBearer {
+        /**
+         * Only used to get annotations..
+         * @param requestParam ignore this
+         */
         public void get(@RequestParam String requestParam) {
         }
     }
@@ -66,7 +70,7 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension {
 
         List<Parameter> parameters = new ArrayList<Parameter>();
         parameters.addAll(extractParametersFromModelAttributeAnnotation(type, annotationMap));
-        parameters.addAll(extractParameterFromAnnotation(type, annotationMap));
+        parameters.addAll(extractParametersFromAnnotation(type, annotationMap));
 
         if (!parameters.isEmpty()) {
             return parameters;
@@ -96,80 +100,119 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension {
         return false;
     }
 
-    private List<Parameter> extractParameterFromAnnotation(Type type, Map<Class<?>, Annotation> annotations) {
+    private List<Parameter> extractParametersFromAnnotation(Type type, Map<Class<?>, Annotation> annotations) {
         List<Parameter> parameters = new ArrayList<>();
 
         if (isRequestParamType(type, annotations)) {
-            parameters.add(extractParameterFromRequestParam(type, (RequestParam)annotations.get(RequestParam.class)));
+            parameters.add(extractRequestParam(type, (RequestParam)annotations.get(RequestParam.class)));
         }
         if (annotations.containsKey(PathVariable.class)) {
             PathVariable pathVariable = (PathVariable) annotations.get(PathVariable.class);
-            String paramName = StringUtils.defaultIfEmpty(pathVariable.value(), pathVariable.name());
-            PathParameter pathParameter = new PathParameter().name(paramName);
-            Property schema = readAsPropertyIfPrimitive(type);
-            if (schema != null) {
-                pathParameter.setProperty(schema);
-            }
+            PathParameter pathParameter = extractPathVariable(type, pathVariable);
             parameters.add(pathParameter);
         }
         if (annotations.containsKey(RequestHeader.class)) {
             RequestHeader requestHeader = (RequestHeader) annotations.get(RequestHeader.class);
-            String paramName = StringUtils.defaultIfEmpty(requestHeader.value(), requestHeader.name());
-            HeaderParameter headerParameter = new HeaderParameter().name(paramName)
-                    .required(requestHeader.required());
-            Property schema = readAsPropertyIfPrimitive(type);
-            if (!DEFAULT_VALUE.equals(requestHeader.defaultValue())) {
-                headerParameter.setDefaultValue(requestHeader.defaultValue());
-                headerParameter.setRequired(false);
-            }
-            if (schema != null) {
-                headerParameter.setProperty(schema);
-            }
-
+            HeaderParameter headerParameter = extractRequestHeader(type, requestHeader);
             parameters.add(headerParameter);
         }
         if (annotations.containsKey(CookieValue.class)) {
             CookieValue cookieValue = (CookieValue) annotations.get(CookieValue.class);
-            String paramName = StringUtils.defaultIfEmpty(cookieValue.value(), cookieValue.name());
-            CookieParameter cookieParameter = new CookieParameter().name(paramName)
-                    .required(cookieValue.required());
-            Property schema = readAsPropertyIfPrimitive(type);
-            if (!DEFAULT_VALUE.equals(cookieValue.defaultValue())) {
-                cookieParameter.setDefaultValue(cookieValue.defaultValue());
-                cookieParameter.setRequired(false);
-            }
-            if (schema != null) {
-                cookieParameter.setProperty(schema);
-            }
-
+            CookieParameter cookieParameter = extractCookieValue(type, cookieValue);
             parameters.add(cookieParameter);
         }
         if (annotations.containsKey(RequestPart.class)) {
             RequestPart requestPart = (RequestPart) annotations.get(RequestPart.class);
-            String paramName = StringUtils.defaultIfEmpty(requestPart.value(), requestPart.name());
-            FormParameter formParameter = new FormParameter().name(paramName)
-                    .required(requestPart.required());
-
-            JavaType ct = constructType(type);
-            Property schema;
-
-            if (MultipartFile.class.isAssignableFrom(ct.getRawClass())) {
-                schema = new FileProperty();
-            } else if (ct.isContainerType() &&
-                    MultipartFile.class.isAssignableFrom(ct.getContentType().getRawClass())) {
-                schema = new ArrayProperty().items(new FileProperty());
-            } else {
-                schema = ModelConverters.getInstance().readAsProperty(type);
-            }
-
-            if (schema != null) {
-                formParameter.setProperty(schema);
-            }
-
+            FormParameter formParameter = extractRequestPart(type, requestPart);
             parameters.add(formParameter);
         }
 
         return parameters;
+    }
+
+    private Parameter extractRequestParam(Type type, RequestParam requestParam) {
+        if (requestParam == null) {
+            requestParam = DEFAULT_REQUEST_PARAM;
+        }
+
+        String paramName = StringUtils.defaultIfEmpty(requestParam.value(), requestParam.name());
+        QueryParameter queryParameter = new QueryParameter().name(paramName)
+                .required(requestParam.required());
+
+        if (!DEFAULT_VALUE.equals(requestParam.defaultValue())) {
+            queryParameter.setDefaultValue(requestParam.defaultValue());
+            // Supplying a default value implicitly sets required() to false.
+            queryParameter.setRequired(false);
+        }
+        Property schema = readAsPropertyIfPrimitive(type);
+        if (schema != null) {
+            queryParameter.setProperty(schema);
+        }
+
+        return queryParameter;
+    }
+
+    private FormParameter extractRequestPart(Type type, RequestPart requestPart) {
+        String paramName = StringUtils.defaultIfEmpty(requestPart.value(), requestPart.name());
+        FormParameter formParameter = new FormParameter().name(paramName)
+                .required(requestPart.required());
+
+        JavaType ct = constructType(type);
+        Property schema;
+
+        if (MultipartFile.class.isAssignableFrom(ct.getRawClass())) {
+            schema = new FileProperty();
+        } else if (ct.isContainerType() &&
+                MultipartFile.class.isAssignableFrom(ct.getContentType().getRawClass())) {
+            schema = new ArrayProperty().items(new FileProperty());
+        } else {
+            schema = ModelConverters.getInstance().readAsProperty(type);
+        }
+
+        if (schema != null) {
+            formParameter.setProperty(schema);
+        }
+        return formParameter;
+    }
+
+    private CookieParameter extractCookieValue(Type type, CookieValue cookieValue) {
+        String paramName = StringUtils.defaultIfEmpty(cookieValue.value(), cookieValue.name());
+        CookieParameter cookieParameter = new CookieParameter().name(paramName)
+                .required(cookieValue.required());
+        Property schema = readAsPropertyIfPrimitive(type);
+        if (!DEFAULT_VALUE.equals(cookieValue.defaultValue())) {
+            cookieParameter.setDefaultValue(cookieValue.defaultValue());
+            cookieParameter.setRequired(false);
+        }
+        if (schema != null) {
+            cookieParameter.setProperty(schema);
+        }
+        return cookieParameter;
+    }
+
+    private HeaderParameter extractRequestHeader(Type type, RequestHeader requestHeader) {
+        String paramName = StringUtils.defaultIfEmpty(requestHeader.value(), requestHeader.name());
+        HeaderParameter headerParameter = new HeaderParameter().name(paramName)
+                .required(requestHeader.required());
+        Property schema = readAsPropertyIfPrimitive(type);
+        if (!DEFAULT_VALUE.equals(requestHeader.defaultValue())) {
+            headerParameter.setDefaultValue(requestHeader.defaultValue());
+            headerParameter.setRequired(false);
+        }
+        if (schema != null) {
+            headerParameter.setProperty(schema);
+        }
+        return headerParameter;
+    }
+
+    private PathParameter extractPathVariable(Type type, PathVariable pathVariable) {
+        String paramName = StringUtils.defaultIfEmpty(pathVariable.value(), pathVariable.name());
+        PathParameter pathParameter = new PathParameter().name(paramName);
+        Property schema = readAsPropertyIfPrimitive(type);
+        if (schema != null) {
+            pathParameter.setProperty(schema);
+        }
+        return pathParameter;
     }
 
     private Property readAsPropertyIfPrimitive(Type type) {
@@ -233,7 +276,7 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension {
                 }
 
                 Class parameterClass = propertyDescriptor.getPropertyType();
-                List<Parameter> propertySetterExtractedParameters = this.extractParameterFromAnnotation(
+                List<Parameter> propertySetterExtractedParameters = this.extractParametersFromAnnotation(
                         parameterClass, toMap(Arrays.asList(parameterAnnotations[0])));
 
                 for (Parameter parameter : propertySetterExtractedParameters) {
@@ -250,30 +293,8 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension {
     }
 
     private boolean isRequestParamType(Type type, Map<Class<?>, Annotation> annotations) {
-        RequestParam requestParam = (RequestParam)annotations.get(RequestParam.class);
-        return requestParam != null || (!hasClassStartingWith(annotations.keySet(), "org.springframework.web.bind.annotation")) && BeanUtils.isSimpleProperty(TypeUtils.getRawType(type, type));
-    }
-
-    private Parameter extractParameterFromRequestParam(Type type, RequestParam requestParam) {
-        if (requestParam == null) {
-            requestParam = DEFAULT_REQUEST_PARAM;
-        }
-
-        String paramName = StringUtils.defaultIfEmpty(requestParam.value(), requestParam.name());
-        QueryParameter queryParameter = new QueryParameter().name(paramName)
-                .required(requestParam.required());
-
-        if (!DEFAULT_VALUE.equals(requestParam.defaultValue())) {
-            queryParameter.setDefaultValue(requestParam.defaultValue());
-            // Supplying a default value implicitly sets required() to false.
-            queryParameter.setRequired(false);
-        }
-        Property schema = readAsPropertyIfPrimitive(type);
-        if (schema != null) {
-            queryParameter.setProperty(schema);
-        }
-
-        return queryParameter;
+        RequestParam requestParam = (RequestParam) annotations.get(RequestParam.class);
+        return requestParam != null || (BeanUtils.isSimpleProperty(TypeUtils.getRawType(type, type)) && !hasClassStartingWith(annotations.keySet(), "org.springframework.web.bind.annotation"));
     }
 
     @Override
@@ -294,9 +315,10 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension {
             case "java.io.OutputStream":
             case "java.io.Writer":
                 return true;
+            default:
         }
 
         return clazzName.startsWith("org.springframework") &&
-                !clazzName.equals("org.springframework.web.multipart.MultipartFile");
+                !"org.springframework.web.multipart.MultipartFile".equals(clazzName);
     }
 }
