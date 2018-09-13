@@ -662,14 +662,14 @@
           "name" : "limit",
           "in" : "query",
           "description" : "The pagination limit",
-          "required" : false,
+          "required" : true,
           "type" : "integer",
           "format" : "int32"
         }, {
           "name" : "offset",
           "in" : "query",
           "description" : "The pagination offset",
-          "required" : false,
+          "required" : true,
           "type" : "integer",
           "format" : "int32"
         } ],
@@ -972,18 +972,19 @@
           "name" : "name",
           "in" : "query",
           "description" : "Updated name of the pet",
-          "required" : false,
+          "required" : true,
           "type" : "string"
         }, {
           "name" : "petId",
           "in" : "path",
+          "description" : "ID of pet that needs to be updated",
           "required" : true,
           "type" : "string"
         }, {
           "name" : "status",
           "in" : "query",
           "description" : "Updated status of the pet",
-          "required" : false,
+          "required" : true,
           "type" : "string"
         } ],
         "responses" : {
