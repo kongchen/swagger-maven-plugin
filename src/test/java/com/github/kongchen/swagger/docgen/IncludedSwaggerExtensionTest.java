@@ -1,6 +1,6 @@
 package com.github.kongchen.swagger.docgen;
 
-import com.github.kongchen.swagger.docgen.jaxrs.BeanParamInjectParamExtention;
+import com.github.kongchen.swagger.docgen.jaxrs.BeanParamInjectParamExtension;
 import com.github.kongchen.swagger.docgen.jaxrs.JaxrsParameterExtension;
 import com.github.kongchen.swagger.docgen.reader.JaxrsReader;
 import com.github.kongchen.swagger.docgen.spring.SpringSwaggerExtension;
@@ -22,7 +22,7 @@ import static org.mockito.Mockito.*;
  * <ul>
  *     <li>@{@link com.github.kongchen.swagger.docgen.spring.SpringSwaggerExtension}</li>
  *     <li>{@link com.github.kongchen.swagger.docgen.jaxrs.JaxrsParameterExtension}</li>
- *     <li>{@link com.github.kongchen.swagger.docgen.jaxrs.BeanParamInjectParamExtention}</li>
+ *     <li>{@link BeanParamInjectParamExtension}</li>
  * </ul>
  *
  */
@@ -33,7 +33,7 @@ public class IncludedSwaggerExtensionTest {
         //TODO: Maybe use a Classpath Scanner to automatically figure out the included extensions?
         SWAGGER_EXTENSIONS.add(new JaxrsParameterExtension());
         SWAGGER_EXTENSIONS.add(new SpringSwaggerExtension(new SystemStreamLog()));
-        SWAGGER_EXTENSIONS.add(new BeanParamInjectParamExtention(mock(JaxrsReader.class)));
+        SWAGGER_EXTENSIONS.add(new BeanParamInjectParamExtension(mock(JaxrsReader.class)));
     }
 
     @Test
