@@ -2,6 +2,7 @@ package com.github.kongchen.swagger.docgen.mavenplugin;
 
 import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
 import com.github.kongchen.swagger.docgen.GenerateException;
+import io.swagger.util.Json;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -15,7 +16,10 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * User: kongchen
@@ -32,6 +36,18 @@ public class ApiDocumentMojo extends AbstractMojo {
     @Parameter
     private List<ApiSource> apiSources;
 
+    /**
+     * A set of feature enums which should be enabled on the JSON object mapper
+     */
+    @Parameter
+    private List<String> enabledObjectMapperFeatures;
+
+    /**
+     * A set of feature enums which should be enabled on the JSON object mapper
+     */
+    @Parameter
+    private List<String> disabledObjectMapperFeatures;
+
 
     @Parameter(defaultValue = "${project}", readonly = true)
     private MavenProject project;
@@ -46,7 +62,7 @@ public class ApiDocumentMojo extends AbstractMojo {
      */
     @Parameter(property = "swagger.skip", defaultValue = "false")
     private boolean skipSwaggerGeneration;
-    
+
     @Parameter(property="file.encoding")
     private String encoding;
 
@@ -84,6 +100,16 @@ public class ApiDocumentMojo extends AbstractMojo {
 
         try {
             getLog().debug(apiSources.toString());
+
+            if (enabledObjectMapperFeatures!=null) {
+                configureObjectMapperFeatures(enabledObjectMapperFeatures,true);
+                
+            }
+
+            if (disabledObjectMapperFeatures!=null) {
+                configureObjectMapperFeatures(disabledObjectMapperFeatures,false);
+            }
+            
             for (ApiSource apiSource : apiSources) {
                 validateConfiguration(apiSource);
                 AbstractDocumentSource documentSource = apiSource.isSpringmvc()
@@ -94,15 +120,9 @@ public class ApiDocumentMojo extends AbstractMojo {
                 documentSource.loadModelModifier();
                 documentSource.loadModelConverters();
                 documentSource.loadDocuments();
-                if (apiSource.getOutputPath() != null) {
-                    File outputDirectory = new File(apiSource.getOutputPath()).getParentFile();
-                    if (outputDirectory != null && !outputDirectory.exists()) {
-                        if (!outputDirectory.mkdirs()) {
-                            throw new MojoExecutionException("Create directory[" +
-                                    apiSource.getOutputPath() + "] for output failed.");
-                        }
-                    }
-                }
+
+                createOutputDirs(apiSource.getOutputPath());
+
                 if (apiSource.getTemplatePath() != null) {
                     documentSource.toDocuments();
                 }
@@ -112,7 +132,6 @@ public class ApiDocumentMojo extends AbstractMojo {
                                 ? apiSource.getBasePath()
                                 : apiSource.getSwaggerUIDocBasePath(),
                         apiSource.getOutputFormats(), swaggerFileName, projectEncoding);
-
 
                 if (apiSource.isAttachSwaggerArtifact() && apiSource.getSwaggerDirectory() != null && project != null) {
                     String outputFormats = apiSource.getOutputFormats();
@@ -131,6 +150,18 @@ public class ApiDocumentMojo extends AbstractMojo {
             throw new MojoFailureException(e.getMessage(), e);
         } catch (Exception e) {
             throw new MojoExecutionException(e.getMessage(), e);
+        }
+    }
+
+    private void createOutputDirs(String outputPath) throws MojoExecutionException {
+        if (outputPath != null) {
+            File outputDirectory = new File(outputPath).getParentFile();
+            if (outputDirectory != null && !outputDirectory.exists()) {
+                if (!outputDirectory.mkdirs()) {
+                    throw new MojoExecutionException(
+                            String.format("Create directory [%s] for output failed.", outputPath));
+                }
+            }
         }
     }
 
@@ -181,13 +212,24 @@ public class ApiDocumentMojo extends AbstractMojo {
             return false;
         }
     }
-    
+
     private String getSwaggerFileName(String swaggerFileName) {
         return swaggerFileName == null || "".equals(swaggerFileName.trim()) ? "swagger" : swaggerFileName;
     }
 
     private String getSwaggerDirectoryName(String swaggerDirectory) {
         return new File(swaggerDirectory).getName();
+    }
+
+    private void configureObjectMapperFeatures(List<String> features, boolean enabled) throws Exception {
+        for (String feature : features) {
+            int i=  feature.lastIndexOf(".");
+            Class clazz = Class.forName(feature.substring(0,i));
+            Enum e = Enum.valueOf(clazz,feature.substring(i+1));
+            getLog().debug("enabling " + e.getDeclaringClass().toString() + "." + e.name() + "");
+            Method method = Json.mapper().getClass().getMethod("configure",e.getClass(),boolean.class);
+            method.invoke(Json.mapper(),e,enabled);
+        }
     }
 
 }

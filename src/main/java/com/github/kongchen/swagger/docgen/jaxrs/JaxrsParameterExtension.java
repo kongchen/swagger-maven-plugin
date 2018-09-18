@@ -40,7 +40,7 @@ public class JaxrsParameterExtension extends AbstractSwaggerExtension {
         return super.extractParameters(annotations, type, typesToSkip, chain);
     }
 
-    public static SerializableParameter getParameter(Type type, SerializableParameter parameter, Annotation annotation) {
+    private SerializableParameter getParameter(Type type, SerializableParameter parameter, Annotation annotation) {
         String defaultValue = "";
         if (annotation instanceof DefaultValue) {
             DefaultValue defaultValueAnnotation = (DefaultValue) annotation;
@@ -60,6 +60,7 @@ public class JaxrsParameterExtension extends AbstractSwaggerExtension {
             }
 
             String parameterType = queryParameter.getType();
+
             if (parameterType == null || parameterType.equals("ref")) {
                 queryParameter.setType("string");
             }

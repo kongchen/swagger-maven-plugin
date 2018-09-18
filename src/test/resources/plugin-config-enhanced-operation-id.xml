@@ -9,6 +9,7 @@
                     <apiSources>
                         <apiSource>
                             <springmvc>false</springmvc>
+                            <operationIdFormat>{{className}}_{{methodName}}_{{httpMethod}}</operationIdFormat>
                             <locations>
                                 <location>com.wordnik.jaxrs</location>
                             </locations>
@@ -30,14 +31,8 @@
                                     <json>/securityDefinition.json</json>
                                 </securityDefinition>
                             </securityDefinitions>
-                            <!-- Support classpath or file absolute path here.
-                            1) classpath e.g: "classpath:/markdown.hbs", "classpath:/templates/hello.html"
-                            2) file e.g: "${basedir}/src/main/resources/markdown.hbs",
-                                "${basedir}/src/main/resources/template/hello.html" -->
-                            <templatePath>classpath:/templates/strapdown.html.hbs</templatePath>
-                            <outputPath>${basedir}/generated/document.html</outputPath>
                             <outputFormats>json</outputFormats>
-                            <swaggerDirectory>${basedir}/generated/swagger-ui</swaggerDirectory>
+                            <swaggerDirectory>${basedir}/generated/swagger-ui-enhanced-operation-id</swaggerDirectory>
                             <swaggerApiReader>com.wordnik.jaxrs.VendorExtensionsJaxrsReader</swaggerApiReader>
                             <attachSwaggerArtifact>true</attachSwaggerArtifact>
                             <swaggerUIDocBasePath>http://www.example.com/restapi/doc</swaggerUIDocBasePath>
@@ -52,13 +47,6 @@
                             </swaggerExtensions>
                         </apiSource>
                     </apiSources>
-                    <enabledObjectMapperFeatures>
-                        <feature>com.fasterxml.jackson.databind.SerializationFeature.WRITE_ENUMS_USING_TO_STRING</feature>
-                        <feature>com.fasterxml.jackson.core.JsonParser$Feature.ALLOW_NUMERIC_LEADING_ZEROS</feature>
-                    </enabledObjectMapperFeatures>
-                    <disabledObjectMapperFeatures>
-                        <feature>com.fasterxml.jackson.databind.SerializationFeature.FAIL_ON_EMPTY_BEANS</feature>
-                    </disabledObjectMapperFeatures>
                 </configuration>
                 <executions>
                     <execution>

@@ -26,6 +26,7 @@ import io.swagger.core.filter.SpecFilter;
 import io.swagger.core.filter.SwaggerSpecFilter;
 import io.swagger.jaxrs.ext.SwaggerExtension;
 import io.swagger.jaxrs.ext.SwaggerExtensions;
+import io.swagger.models.Path;
 import io.swagger.models.Scheme;
 import io.swagger.models.Swagger;
 import io.swagger.models.auth.SecuritySchemeDefinition;
@@ -44,6 +45,9 @@ import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.nio.charset.Charset;
 import java.util.*;
+
+import static org.apache.commons.lang3.StringUtils.defaultString;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 /**
  * @author chekong 05/13/2013
@@ -102,6 +106,8 @@ public abstract class AbstractDocumentSource {
         loadSwaggerExtensions(apiSource);
 
         swagger = reader.read(getValidClasses());
+
+        swagger = removeBasePathFromEndpoints(swagger, apiSource.getRemoveBasePathFromEndpoints());
 
         swagger = addSecurityDefinitions(swagger, apiSource);
 
@@ -172,10 +178,12 @@ public abstract class AbstractDocumentSource {
         if (swaggerPath == null) {
             return;
         }
+
         if (!isSorted) {
             Utils.sortSwagger(swagger);
             isSorted = true;
         }
+
         File dir = new File(swaggerPath);
         if (dir.isFile()) {
             throw new GenerateException(String.format("Swagger-outputDirectory[%s] must be a directory!", swaggerPath));
@@ -189,34 +197,23 @@ public abstract class AbstractDocumentSource {
             }
         }
 
-        if (fileName == null || "".equals(fileName.trim())) {
-            fileName = "swagger";
-        }
-        try {
-            if (outputFormats != null) {
-                for (String format : outputFormats.split(",")) {
-                    try {
-                        Output output = Output.valueOf(format.toLowerCase());
-                        switch (output) {
-                            case json:
-                                ObjectWriter jsonWriter = mapper.writer(new DefaultPrettyPrinter());
-                                FileUtils.write(new File(dir, fileName + ".json"), jsonWriter.writeValueAsString(swagger), encoding);
-                                break;
-                            case yaml:
-                                FileUtils.write(new File(dir, fileName + ".yaml"), Yaml.pretty().writeValueAsString(swagger), encoding);
-                                break;
-                        }
-                    } catch (Exception e) {
-                        throw new GenerateException(String.format("Declared output format [%s] is not supported.", format));
-                    }
+        fileName = defaultString(fileName, "swagger");
+
+        for (String format : outputFormats.split(",")) {
+            try {
+                Output output = Output.valueOf(format.toLowerCase());
+                switch (output) {
+                    case json:
+                        ObjectWriter jsonWriter = mapper.writer(new DefaultPrettyPrinter());
+                        FileUtils.write(new File(dir, fileName + ".json"), jsonWriter.writeValueAsString(swagger), encoding);
+                        break;
+                    case yaml:
+                        FileUtils.write(new File(dir, fileName + ".yaml"), Yaml.pretty().writeValueAsString(swagger), encoding);
+                        break;
                 }
-            } else {
-                // Default to json
-                ObjectWriter jsonWriter = mapper.writer(new DefaultPrettyPrinter());
-                FileUtils.write(new File(dir, fileName + ".json"), jsonWriter.writeValueAsString(swagger), encoding);
+            } catch (Exception e) {
+                throw new GenerateException(String.format("Declared output format [%s] is not supported.", format));
             }
-        } catch (IOException e) {
-            throw new GenerateException(e);
         }
     }
 
@@ -305,6 +302,24 @@ public abstract class AbstractDocumentSource {
                 throw new GenerateException(e);
             }
         }
+    }
+
+    protected Swagger removeBasePathFromEndpoints(Swagger swagger, boolean removeBasePathFromEndpoints) {
+        Swagger result = swagger;
+        if (!removeBasePathFromEndpoints) {
+            return result;
+        }
+        String basePath = swagger.getBasePath();
+        if (isEmpty(basePath)) {
+            return result;
+        }
+        Map<String, Path> oldPathMap = result.getPaths();
+        Map<String, Path> newPathMap = new HashMap<String, Path>();
+        for (Map.Entry<String, Path> entry: oldPathMap.entrySet()) {
+            newPathMap.put(entry.getKey().replace(basePath, ""), entry.getValue());
+        }
+        result.setPaths(newPathMap);
+        return result;
     }
 
     protected File createFile(File dir, String outputResourcePath) throws IOException {

@@ -1,7 +1,9 @@
 package com.github.kongchen.smp.integration;
 
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.github.kongchen.smp.integration.utils.PetIdToStringModelConverter;
 import com.github.kongchen.swagger.docgen.mavenplugin.ApiDocumentMojo;
 import com.github.kongchen.swagger.docgen.mavenplugin.ApiSource;
@@ -35,6 +37,9 @@ import static com.github.kongchen.smp.integration.utils.TestUtils.YamlToJson;
 import static com.github.kongchen.smp.integration.utils.TestUtils.changeDescription;
 import static com.github.kongchen.smp.integration.utils.TestUtils.createTempDirPath;
 import static com.github.kongchen.smp.integration.utils.TestUtils.setCustomReader;
+import io.swagger.util.Json;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import static net.javacrumbs.jsonunit.JsonAssert.assertJsonEquals;
 import static net.javacrumbs.jsonunit.core.Option.IGNORING_ARRAY_ORDER;
 
@@ -42,6 +47,7 @@ import static net.javacrumbs.jsonunit.core.Option.IGNORING_ARRAY_ORDER;
  * @author chekong on 8/15/14.
  */
 public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
+
     private File swaggerOutputDir = new File(getBasedir(), "generated/swagger-ui");
     private File docOutput = new File(getBasedir(), "generated/document.html");
     private ApiDocumentMojo mojo;
@@ -293,5 +299,33 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
         changeDescription(expectJson, description);
         assertJsonEquals(expectJson, actualJson, Configuration.empty().when(IGNORING_ARRAY_ORDER));
     }
+
+    @Test
+    public void testFeatureIsAccepted() throws Exception {
+        File testPom = new File(getBasedir(), "src/test/resources/plugin-config.xml");
+        mojo = (ApiDocumentMojo) lookupMojo("generate", testPom);
+        mojo.execute();
+
+        assertTrue(Json.mapper().isEnabled(SerializationFeature.WRITE_ENUMS_USING_TO_STRING));
+        assertTrue(Json.mapper().isEnabled(JsonParser.Feature.ALLOW_NUMERIC_LEADING_ZEROS));
+    }
+
+    @Test
+    public void testFeatureIsNotFoundFail() throws Exception {
+        File testPom = new File(getBasedir(), "src/test/resources/plugin-config-feature-fail.xml");
+        mojo = (ApiDocumentMojo) lookupMojo("generate", testPom);
+        try {
+            mojo.execute();
+            fail();
+        } catch (Exception x) {
+            Logger.getAnonymousLogger().log(Level.FINE,x.getMessage(),x);
+            assertTrue(Json.mapper().isEnabled(SerializationFeature.WRITE_ENUMS_USING_TO_STRING));
+            assertTrue(x.getMessage().contains("com.fasterxml.jackson.core.JsonParser.Feature"));
+            assertNotNull(x.getCause());
+            assertTrue(x.getCause().getMessage().contains("com.fasterxml.jackson.core.JsonParser.Feature"));
+        }
+    }
+
+
 
 }

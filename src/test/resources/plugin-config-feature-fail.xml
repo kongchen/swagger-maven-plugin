@@ -54,11 +54,8 @@
                     </apiSources>
                     <enabledObjectMapperFeatures>
                         <feature>com.fasterxml.jackson.databind.SerializationFeature.WRITE_ENUMS_USING_TO_STRING</feature>
-                        <feature>com.fasterxml.jackson.core.JsonParser$Feature.ALLOW_NUMERIC_LEADING_ZEROS</feature>
+                        <feature>com.fasterxml.jackson.core.JsonParser.Feature.ALLOW_NUMERIC_LEADING_ZEROS</feature>
                     </enabledObjectMapperFeatures>
-                    <disabledObjectMapperFeatures>
-                        <feature>com.fasterxml.jackson.databind.SerializationFeature.FAIL_ON_EMPTY_BEANS</feature>
-                    </disabledObjectMapperFeatures>
                 </configuration>
                 <executions>
                     <execution>

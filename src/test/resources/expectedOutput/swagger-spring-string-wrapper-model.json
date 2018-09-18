@@ -1,0 +1,159 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "description" : "This is a sample.",
+    "version" : "v1",
+    "title" : "Swagger Maven Plugin Sample",
+    "termsOfService" : "http://www.github.com/kongchen/swagger-maven-plugin",
+    "contact" : {
+      "name" : "Kong Chen",
+      "url" : "http://kongch.com",
+      "email" : "kongchen@gmail.com"
+    },
+    "license" : {
+      "name" : "Apache 2.0",
+      "url" : "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "host" : "www.example.com:8080",
+  "basePath" : "/api",
+  "schemes" : [ "http", "https" ],
+  "paths" : {
+    "/wrappers/body" : {
+      "post" : {
+        "operationId" : "stringWrapperBody",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Must be passed as JSON object",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/SimpleStringWrapper"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "string"
+            }
+          }
+        }
+      }
+    },
+    "/wrappers/cookie" : {
+      "get" : {
+        "operationId" : "stringWrapperCookie",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "wrapper",
+          "in" : "cookie",
+          "description" : "Must be passed as String",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "string"
+            }
+          }
+        }
+      }
+    },
+    "/wrappers/header" : {
+      "get" : {
+        "operationId" : "stringWrapperHeader",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "wrapper",
+          "in" : "header",
+          "description" : "Must be passed as String",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "string"
+            }
+          }
+        }
+      }
+    },
+    "/wrappers/param" : {
+      "get" : {
+        "operationId" : "stringWrapperParam",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "wrapper",
+          "in" : "query",
+          "description" : "Must be passed as String",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "string"
+            }
+          }
+        }
+      }
+    },
+    "/wrappers/path/{wrapper}" : {
+      "get" : {
+        "operationId" : "stringWrapperPath",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "wrapper",
+          "in" : "path",
+          "description" : "Must be passed as String",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "string"
+            }
+          }
+        }
+      }
+    }
+  },
+  "securityDefinitions" : {
+    "api_key" : {
+      "type" : "apiKey",
+      "name" : "api_key",
+      "in" : "header"
+    },
+    "basicAuth" : {
+      "type" : "basic"
+    },
+    "petstore_auth" : {
+      "type" : "oauth2",
+      "authorizationUrl" : "http://swagger.io/api/oauth/dialog",
+      "flow" : "implicit",
+      "scopes" : {
+        "write:pets" : "modify pets in your account",
+        "read:pets" : "read your pets"
+      }
+    }
+  },
+  "definitions" : {
+    "SimpleStringWrapper" : {
+      "type" : "object",
+      "properties" : {
+        "value" : {
+          "type" : "string"
+        }
+      }
+    }
+  }
+}

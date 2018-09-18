@@ -4,23 +4,16 @@ import com.github.kongchen.swagger.docgen.GenerateException;
 import com.github.kongchen.swagger.docgen.spring.SpringResource;
 import com.github.kongchen.swagger.docgen.spring.SpringSwaggerExtension;
 import com.github.kongchen.swagger.docgen.util.SpringUtils;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.Authorization;
-import io.swagger.annotations.AuthorizationScope;
+import io.swagger.annotations.*;
 import io.swagger.converter.ModelConverters;
 import io.swagger.jaxrs.ext.SwaggerExtension;
 import io.swagger.jaxrs.ext.SwaggerExtensions;
-import io.swagger.models.Model;
-import io.swagger.models.Operation;
-import io.swagger.models.Response;
-import io.swagger.models.SecurityRequirement;
-import io.swagger.models.Swagger;
+import io.swagger.models.*;
 import io.swagger.models.Tag;
 import io.swagger.models.parameters.Parameter;
 import io.swagger.models.properties.Property;
 import io.swagger.models.properties.RefProperty;
+import io.swagger.util.BaseReaderUtils;
 import org.apache.maven.plugin.logging.Log;
 import org.codehaus.plexus.util.StringUtils;
 import org.springframework.core.DefaultParameterNameDiscoverer;
@@ -33,12 +26,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static org.springframework.core.annotation.AnnotatedElementUtils.findMergedAnnotation;
@@ -59,7 +47,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
     @Override
     protected void updateExtensionChain() {
     	List<SwaggerExtension> extensions = new ArrayList<SwaggerExtension>();
-    	extensions.add(new SpringSwaggerExtension());
+    	extensions.add(new SpringSwaggerExtension(LOG));
     	SwaggerExtensions.setExtensions(extensions);
     }
 
@@ -128,7 +116,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
                 //http method
                 for (RequestMethod requestMethod : requestMapping.method()) {
                     String httpMethod = requestMethod.toString().toLowerCase();
-                    Operation operation = parseMethod(method);
+                    Operation operation = parseMethod(method, requestMethod);
 
                     updateOperationParameters(new ArrayList<Parameter>(), regexMap, operation);
 
@@ -152,7 +140,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         return swagger;
     }
 
-    private Operation parseMethod(Method method) {
+    private Operation parseMethod(Method method, RequestMethod requestMethod) {
         int responseCode = 200;
         Operation operation = new Operation();
 
@@ -161,7 +149,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         List<String> produces = new ArrayList<String>();
         List<String> consumes = new ArrayList<String>();
         String responseContainer = null;
-        String operationId = method.getName();
+        String operationId = getOperationId(method, requestMethod.name());
         Map<String, Property> defaultResponseHeaders = null;
 
         ApiOperation apiOperation = findMergedAnnotation(method, ApiOperation.class);
@@ -178,20 +166,8 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
 
             operation.summary(apiOperation.value()).description(apiOperation.notes());
 
-            Set<Map<String, Object>> customExtensions = parseCustomExtensions(apiOperation.extensions());
-
-            for (Map<String, Object> extension : customExtensions) {
-                if (extension == null) {
-                    continue;
-                }
-                for (Map.Entry<String, Object> map : extension.entrySet()) {
-                    operation.setVendorExtension(
-                            map.getKey().startsWith("x-")
-                                    ? map.getKey()
-                                    : "x-" + map.getKey(), map.getValue()
-                    );
-                }
-            }
+            Map<String, Object> customExtensions = BaseReaderUtils.parseExtensions(apiOperation.extensions());
+            operation.setVendorExtensions(customExtensions);
 
             if (!apiOperation.response().equals(Void.class)) {
                 responseClass = apiOperation.response();
@@ -378,6 +354,10 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         // Iterate over all value attributes of the class-level RequestMapping annotation
         for (String controllerRequestMappingValue : controllerRequestMappingValues) {
             for (Method method : controllerClazz.getMethods()) {
+                // Skip methods introduced by compiler
+                if (method.isSynthetic()) {
+                    continue;
+                }
                 RequestMapping methodRequestMapping = findMergedAnnotation(method, RequestMapping.class);
 
                 // Look for method-level @RequestMapping annotation
@@ -447,5 +427,4 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
 
         return resourceMap;
     }
-
 }

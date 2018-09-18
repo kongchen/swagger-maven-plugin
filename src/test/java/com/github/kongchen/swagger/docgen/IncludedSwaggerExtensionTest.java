@@ -1,6 +1,6 @@
 package com.github.kongchen.swagger.docgen;
 
-import com.github.kongchen.swagger.docgen.jaxrs.BeanParamInjectParamExtention;
+import com.github.kongchen.swagger.docgen.jaxrs.BeanParamInjectParamExtension;
 import com.github.kongchen.swagger.docgen.jaxrs.JaxrsParameterExtension;
 import com.github.kongchen.swagger.docgen.reader.JaxrsReader;
 import com.github.kongchen.swagger.docgen.spring.SpringSwaggerExtension;
@@ -8,24 +8,21 @@ import com.google.common.collect.Lists;
 import io.swagger.jaxrs.ext.AbstractSwaggerExtension;
 import io.swagger.jaxrs.ext.SwaggerExtension;
 import io.swagger.models.parameters.Parameter;
+import org.apache.maven.plugin.logging.SystemStreamLog;
 import org.testng.annotations.Test;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.mockito.Mockito.*;
-import static org.testng.Assert.assertTrue;
 
 /**
  * Test class which ensures common functionality across all of the currently included Swagger Extensions, namely </p>
  * <ul>
  *     <li>@{@link com.github.kongchen.swagger.docgen.spring.SpringSwaggerExtension}</li>
  *     <li>{@link com.github.kongchen.swagger.docgen.jaxrs.JaxrsParameterExtension}</li>
- *     <li>{@link com.github.kongchen.swagger.docgen.jaxrs.BeanParamInjectParamExtention}</li>
+ *     <li>{@link BeanParamInjectParamExtension}</li>
  * </ul>
  *
  */
@@ -35,8 +32,8 @@ public class IncludedSwaggerExtensionTest {
     static {
         //TODO: Maybe use a Classpath Scanner to automatically figure out the included extensions?
         SWAGGER_EXTENSIONS.add(new JaxrsParameterExtension());
-        SWAGGER_EXTENSIONS.add(new SpringSwaggerExtension());
-        SWAGGER_EXTENSIONS.add(new BeanParamInjectParamExtention(mock(JaxrsReader.class)));
+        SWAGGER_EXTENSIONS.add(new SpringSwaggerExtension(new SystemStreamLog()));
+        SWAGGER_EXTENSIONS.add(new BeanParamInjectParamExtension(mock(JaxrsReader.class)));
     }
 
     @Test
@@ -47,8 +44,10 @@ public class IncludedSwaggerExtensionTest {
     public void testExtractParametersReturnsEmptyList() {
         for (AbstractSwaggerExtension swaggerExtension : SWAGGER_EXTENSIONS) {
             Set<Type> typesToSkip = Collections.emptySet();
-            List<Annotation> annotations = Collections.emptyList();
+            List<Annotation> annotations = Lists.newArrayList(AnnotationBearer.class.getAnnotation(Deprecated.class));
             AbstractSwaggerExtension extension = mock(AbstractSwaggerExtension.class, CALLS_REAL_METHODS);
+            doReturn(new ArrayList<Parameter>()).when(extension).extractParameters(any(), any(), any(), any());
+
             Iterator<SwaggerExtension> iterator = Lists.<SwaggerExtension>newArrayList(extension).iterator();
 
             // Not possible to add any parameters for the extensions, since no annotation / field is given to the extensions
@@ -56,13 +55,17 @@ public class IncludedSwaggerExtensionTest {
             // This allows to test if first the chain is called, and only then empty, modifiable lists are returned as last resort
             List<Parameter> parameters = swaggerExtension.extractParameters(
                     annotations,
-                    Void.TYPE,
+                    Void.class,
                     typesToSkip,
                     iterator);
+            // Has to return a collection we can later modify.
+            try {
+                parameters.add(null);
+            } catch (Exception e) {
+                throw new IllegalStateException("Extension "+ swaggerExtension.getClass().getName() + " did not return a modifiable list.", e);
+            }
 
-            // returned parameters have to be empty since we gave the extension no real type to work with
-            assertTrue(parameters.isEmpty(), "Extension " + swaggerExtension.getClass().getName() + " did not return a modifiable list.");
-
+            // Test if the next extension in the chain was called
             try {
                 verify(extension).extractParameters(
                         anyListOf(Annotation.class),
@@ -80,5 +83,10 @@ public class IncludedSwaggerExtensionTest {
                 throw new IllegalStateException("Extension "+ swaggerExtension.getClass().getName() + " failed this Test.", t);
             }
         }
+    }
+
+    // Class specificly for holding default value annotations
+    @Deprecated
+    private static class AnnotationBearer {
     }
 }

@@ -18,14 +18,14 @@
   "host" : "www.example.com:8080",
   "basePath" : "/api",
   "tags" : [ {
-      "name" : "echo",
-      "description" : "Set of simple endpoints that return whatever value you pass in"
-  }, {
-    "name" : "store",
-    "description" : "Operations about store"
+    "name" : "echo",
+    "description" : "Set of simple endpoints that return whatever value you pass in"
   }, {
     "name" : "pet",
     "description" : "Operations about pets"
+  }, {
+    "name" : "store",
+    "description" : "Operations about store"
   }, {
     "name" : "user",
     "description" : "Operations about user"
@@ -36,46 +36,12 @@
       "get" : {
         "summary" : "testingRootPathResource",
         "description" : "",
-        "operationId" : "testingRootPathResource",
+        "operationId" : "RootPathResource_testingRootPathResource_GET",
         "responses" : {
           "200" : {
             "description" : "successful operation",
             "schema" : {
               "type" : "string"
-            }
-          }
-        }
-      }
-    },
-    "/testingEmptyRootPathResource" : {
-      "get" : {
-        "summary" : "testingEmptyRootPathResource",
-        "description" : "",
-        "operationId" : "testingEmptyRootPathResource",
-        "responses" : {
-          "200" : {
-            "description" : "successful operation",
-            "schema" : {
-              "type" : "string"
-            }
-          }
-        }
-      }
-    },
-    "/myResourceImpl/list" : {
-      "get" : {
-        "summary" : "Get a list of items",
-        "description" : "This is a contrived example",
-        "operationId" : "getListOfItems",
-        "produces" : [ "application/json", "application/xml" ],
-        "responses" : {
-          "200" : {
-            "description" : "successful operation",
-            "schema" : {
-              "type" : "array",
-              "items" : {
-                "$ref" : "#/definitions/ListItem"
-              }
             }
           }
         }
@@ -86,7 +52,7 @@
         "tags" : [ "echo" ],
         "summary" : "",
         "description" : "",
-        "operationId" : "cookieValueExpectCookieName",
+        "operationId" : "EchoResource_cookieValueExpectCookieName_GET",
         "produces" : [ "application/json" ],
         "parameters" : [ {
           "name" : "cookieValueName",
@@ -109,7 +75,7 @@
         "tags" : [ "echo" ],
         "summary" : "",
         "description" : "",
-        "operationId" : "cookieValueExpectCookieValue",
+        "operationId" : "EchoResource_cookieValueExpectCookieValue_GET",
         "produces" : [ "application/json" ],
         "parameters" : [ {
           "name" : "cookieValueValue",
@@ -132,7 +98,7 @@
         "tags" : [ "echo" ],
         "summary" : "",
         "description" : "",
-        "operationId" : "cookieValueExpectParameterName",
+        "operationId" : "EchoResource_cookieValueExpectParameterName_GET",
         "produces" : [ "application/json" ],
         "parameters" : [ {
           "name" : "parameterName",
@@ -155,7 +121,7 @@
         "tags" : [ "echo" ],
         "summary" : "",
         "description" : "",
-        "operationId" : "pathVariableExpectParameterName",
+        "operationId" : "EchoResource_pathVariableExpectParameterName_GET",
         "produces" : [ "application/json" ],
         "parameters" : [ {
           "name" : "parameterName",
@@ -178,7 +144,7 @@
         "tags" : [ "echo" ],
         "summary" : "",
         "description" : "",
-        "operationId" : "pathVariableExpectVariableName",
+        "operationId" : "EchoResource_pathVariableExpectVariableName_GET",
         "produces" : [ "application/json" ],
         "parameters" : [ {
           "name" : "pathVariableName",
@@ -201,7 +167,7 @@
         "tags" : [ "echo" ],
         "summary" : "",
         "description" : "",
-        "operationId" : "pathVariableExpectVariableValue",
+        "operationId" : "EchoResource_pathVariableExpectVariableValue_GET",
         "produces" : [ "application/json" ],
         "parameters" : [ {
           "name" : "pathVariableValue",
@@ -224,7 +190,7 @@
         "tags" : [ "echo" ],
         "summary" : "",
         "description" : "",
-        "operationId" : "requestHeaderExpectHeaderName",
+        "operationId" : "EchoResource_requestHeaderExpectHeaderName_GET",
         "produces" : [ "application/json" ],
         "parameters" : [ {
           "name" : "requestHeaderName",
@@ -247,7 +213,7 @@
         "tags" : [ "echo" ],
         "summary" : "",
         "description" : "",
-        "operationId" : "requestHeaderExpectHeaderValue",
+        "operationId" : "EchoResource_requestHeaderExpectHeaderValue_GET",
         "produces" : [ "application/json" ],
         "parameters" : [ {
           "name" : "requestHeaderValue",
@@ -270,7 +236,7 @@
         "tags" : [ "echo" ],
         "summary" : "",
         "description" : "",
-        "operationId" : "requestHeaderExpectParameterName",
+        "operationId" : "EchoResource_requestHeaderExpectParameterName_GET",
         "produces" : [ "application/json" ],
         "parameters" : [ {
           "name" : "parameterName",
@@ -293,7 +259,7 @@
         "tags" : [ "echo" ],
         "summary" : "",
         "description" : "",
-        "operationId" : "requestParamExpectParamName",
+        "operationId" : "EchoResource_requestParamExpectParamName_GET",
         "produces" : [ "application/json" ],
         "parameters" : [ {
           "name" : "requestParamName",
@@ -316,7 +282,7 @@
         "tags" : [ "echo" ],
         "summary" : "",
         "description" : "",
-        "operationId" : "requestParamExpectParamValue",
+        "operationId" : "EchoResource_requestParamExpectParamValue_GET",
         "produces" : [ "application/json" ],
         "parameters" : [ {
           "name" : "requestParamValue",
@@ -339,7 +305,7 @@
         "tags" : [ "echo" ],
         "summary" : "",
         "description" : "",
-        "operationId" : "requestParamExpectParameterName",
+        "operationId" : "EchoResource_requestParamExpectParameterName_GET",
         "produces" : [ "application/json" ],
         "parameters" : [ {
           "name" : "parameterName",
@@ -362,7 +328,7 @@
         "tags" : [ "echo" ],
         "summary" : "",
         "description" : "",
-        "operationId" : "requestPartExpectParameterName",
+        "operationId" : "EchoResource_requestPartExpectParameterName_GET",
         "produces" : [ "application/json" ],
         "parameters" : [ {
           "name" : "parameterName",
@@ -385,7 +351,7 @@
         "tags" : [ "echo" ],
         "summary" : "",
         "description" : "",
-        "operationId" : "requestPartExpectPartName",
+        "operationId" : "EchoResource_requestPartExpectPartName_GET",
         "produces" : [ "application/json" ],
         "parameters" : [ {
           "name" : "requestPartName",
@@ -408,7 +374,7 @@
         "tags" : [ "echo" ],
         "summary" : "",
         "description" : "",
-        "operationId" : "requestPartExpectPartValue",
+        "operationId" : "EchoResource_requestPartExpectPartValue_GET",
         "produces" : [ "application/json" ],
         "parameters" : [ {
           "name" : "requestPartValue",
@@ -426,28 +392,47 @@
         }
       }
     },
-      "/getWithParam" : {
-          "get" : {
-              "operationId" : "getWithParam",
-              "parameters" : [ {
-                  "name" : "optionalParam",
-                  "in" : "query",
-                  "required" : true,
-                  "type" : "boolean"
-              } ],
-              "responses" : {
-                  "default" : {
-                      "description" : "successful operation"
-                  }
-              }
+    "/getWithParam" : {
+      "get" : {
+        "operationId" : "KotlinController_getWithParam_GET",
+        "parameters" : [ {
+          "name" : "optionalParam",
+          "in" : "query",
+          "required" : true,
+          "type" : "boolean"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
           }
-      },
+        }
+      }
+    },
+    "/myResourceImpl/list" : {
+      "get" : {
+        "summary" : "Get a list of items",
+        "description" : "This is a contrived example",
+        "operationId" : "MyResourceImpl_getListOfItems_GET",
+        "produces" : [ "application/json", "application/xml" ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ListItem"
+              }
+            }
+          }
+        }
+      }
+    },
     "/pet" : {
       "get" : {
         "tags" : [ "pet" ],
         "summary" : "Returns pet",
         "description" : "",
-        "operationId" : "get",
+        "operationId" : "PetResource_get_GET",
         "produces" : [ "application/json" ],
         "responses" : {
           "200" : {
@@ -465,9 +450,9 @@
         "tags" : [ "pet" ],
         "summary" : "Add a new pet to the store",
         "description" : "",
-        "operationId" : "addPet",
-        "consumes" : [ "application/xml", "application/json" ],
-        "produces" : [ "application/xml", "application/json" ],
+        "operationId" : "PetResource_addPet_POST",
+        "consumes" : [ "application/json", "application/xml" ],
+        "produces" : [ "application/json", "application/xml" ],
         "parameters" : [ {
           "in" : "body",
           "name" : "body",
@@ -496,9 +481,9 @@
         "tags" : [ "pet" ],
         "summary" : "Update an existing pet",
         "description" : "",
-        "operationId" : "updatePet",
-        "consumes" : [ "application/xml", "application/json" ],
-        "produces" : [ "application/xml", "application/json" ],
+        "operationId" : "PetResource_updatePet_PUT",
+        "consumes" : [ "application/json", "application/xml" ],
+        "produces" : [ "application/json", "application/xml" ],
         "parameters" : [ {
           "in" : "body",
           "name" : "body",
@@ -535,8 +520,8 @@
         "tags" : [ "pet" ],
         "summary" : "Finds Pets by status",
         "description" : "Multiple status values can be provided with comma seperated strings",
-        "operationId" : "findPetsByStatus",
-        "produces" : [ "application/xml", "application/json" ],
+        "operationId" : "PetResource_findPetsByStatus_GET",
+        "produces" : [ "application/json", "application/xml" ],
         "parameters" : [ {
           "name" : "status",
           "in" : "query",
@@ -545,8 +530,8 @@
           "type" : "array",
           "items" : {
             "type" : "string",
-            "enum" : [ "available", "pending", "sold" ],
-            "default" : "available"
+            "default" : "available",
+            "enum" : [ "available", "pending", "sold" ]
           },
           "collectionFormat" : "multi"
         } ],
@@ -574,8 +559,8 @@
         "tags" : [ "pet" ],
         "summary" : "Finds Pets by status",
         "description" : "Multiple status values can be provided with multiple query parameters. Example: ?status=sold&status=pending",
-        "operationId" : "findPetsByStatuses",
-        "produces" : [ "application/xml", "application/json" ],
+        "operationId" : "PetResource_findPetsByStatuses_GET",
+        "produces" : [ "application/json", "application/xml" ],
         "parameters" : [ {
           "name" : "status",
           "in" : "query",
@@ -584,8 +569,8 @@
           "type" : "array",
           "items" : {
             "type" : "string",
-            "enum" : [ "available", "pending", "sold" ],
-            "default" : "available"
+            "default" : "available",
+            "enum" : [ "available", "pending", "sold" ]
           },
           "collectionFormat" : "multi"
         } ],
@@ -613,8 +598,8 @@
         "tags" : [ "pet" ],
         "summary" : "Finds Pets by tags",
         "description" : "Muliple tags can be provided with comma seperated strings. Use tags=tag1,tag2,tag3 for testing.",
-        "operationId" : "findPetsByTags",
-        "produces" : [ "application/xml", "application/json" ],
+        "operationId" : "PetResource_findPetsByTags_GET",
+        "produces" : [ "application/json", "application/xml" ],
         "parameters" : [ {
           "name" : "tags",
           "in" : "query",
@@ -643,7 +628,7 @@
         "security" : [ {
           "petstore_auth" : [ "write:pets", "read:pets" ]
         } ],
-        "deprecated":true
+        "deprecated" : true
       }
     },
     "/pet/petPing" : {
@@ -651,8 +636,8 @@
         "tags" : [ "pet" ],
         "summary" : "ping the service",
         "description" : "",
-        "operationId" : "petPing",
-        "produces" : [ "application/xml", "application/json" ],
+        "operationId" : "PetResource_petPing_GET",
+        "produces" : [ "application/json", "application/xml" ],
         "responses" : {
           "200" : {
             "description" : "successful operation",
@@ -671,8 +656,8 @@
         "tags" : [ "pet" ],
         "summary" : "Retrieve all pets. Pagination supported",
         "description" : "If you wish to paginate the results of this API, supply offset and limit query parameters.",
-        "operationId" : "getAllPetsPaginated",
-        "produces" : [ "application/xml", "application/json" ],
+        "operationId" : "PetResource_getAllPetsPaginated_GET",
+        "produces" : [ "application/json", "application/xml" ],
         "parameters" : [ {
           "name" : "limit",
           "in" : "query",
@@ -707,9 +692,9 @@
         "tags" : [ "pet" ],
         "summary" : "Add multiple pets to the store",
         "description" : "",
-        "operationId" : "addMultiplePets",
-        "consumes" : [ "application/xml", "application/json" ],
-        "produces" : [ "application/xml", "application/json" ],
+        "operationId" : "PetResource_addMultiplePets_POST",
+        "consumes" : [ "application/json", "application/xml" ],
+        "produces" : [ "application/json", "application/xml" ],
         "parameters" : [ {
           "in" : "body",
           "name" : "body",
@@ -746,8 +731,8 @@
         "tags" : [ "pet" ],
         "summary" : "testExtensions",
         "description" : "",
-        "operationId" : "testingExtensions",
-        "produces" : [ "application/xml", "application/json" ],
+        "operationId" : "PetResource_testingExtensions_GET",
+        "produces" : [ "application/json", "application/xml" ],
         "responses" : {
           "200" : {
             "description" : "successful operation",
@@ -759,11 +744,11 @@
         "security" : [ {
           "petstore_auth" : [ "write:pets", "read:pets" ]
         } ],
+        "x-extensionName3" : "extensionValue3",
         "x-firstExtension" : {
           "extensionName2" : "extensionValue2",
           "extensionName1" : "extensionValue1"
-        },
-        "x-extensionName3" : "extensionValue3"
+        }
       }
     },
     "/pet/testing" : {
@@ -771,8 +756,8 @@
         "tags" : [ "pet" ],
         "summary" : "testing",
         "description" : "",
-        "operationId" : "testing",
-        "produces" : [ "application/xml", "application/json" ],
+        "operationId" : "PetResource_testing_GET",
+        "produces" : [ "application/json", "application/xml" ],
         "parameters" : [ {
           "name" : "items",
           "in" : "query",
@@ -801,7 +786,7 @@
         "tags" : [ "pet" ],
         "summary" : "testingApiImplicitParams",
         "description" : "",
-        "operationId" : "testingApiImplicitParams",
+        "operationId" : "PetResource_testingApiImplicitParams_GET",
         "produces" : [ "application/json" ],
         "parameters" : [ {
           "name" : "header-test-name",
@@ -844,7 +829,7 @@
         "tags" : [ "pet" ],
         "summary" : "testingBasicAuth",
         "description" : "",
-        "operationId" : "testingBasicAuth",
+        "operationId" : "PetResource_testingBasicAuth_GET",
         "produces" : [ "application/json" ],
         "responses" : {
           "200" : {
@@ -866,7 +851,7 @@
         "tags" : [ "pet" ],
         "summary" : "testingFormApiImplicitParam",
         "description" : "",
-        "operationId" : "testingFormApiImplicitParam",
+        "operationId" : "PetResource_testingFormApiImplicitParam_GET",
         "produces" : [ "application/json" ],
         "parameters" : [ {
           "name" : "form-test-name",
@@ -898,7 +883,7 @@
         "tags" : [ "pet" ],
         "summary" : "testingMergedAnnotations",
         "description" : "",
-        "operationId" : "testingMergedAnnotations",
+        "operationId" : "PetResource_testingMergedAnnotations_GET",
         "produces" : [ "application/json" ],
         "responses" : {
           "200" : {
@@ -918,7 +903,7 @@
         "tags" : [ "pet" ],
         "summary" : "testingVendorExtensions",
         "description" : "",
-        "operationId" : "testingVendorExtensions",
+        "operationId" : "PetResource_testingVendorExtensions_GET",
         "produces" : [ "application/json" ],
         "responses" : {
           "200" : {
@@ -944,8 +929,8 @@
         "tags" : [ "pet" ],
         "summary" : "Find pet by ID",
         "description" : "Returns a pet when ID < 10.  ID > 10 or nonintegers will simulate API error conditions",
-        "operationId" : "getPetById",
-        "produces" : [ "application/xml", "application/json" ],
+        "operationId" : "PetResource_getPetById_GET",
+        "produces" : [ "application/json", "application/xml" ],
         "parameters" : [ {
           "name" : "petId",
           "in" : "path",
@@ -980,9 +965,9 @@
         "tags" : [ "pet" ],
         "summary" : "Updates a pet in the store with form data",
         "description" : "",
-        "operationId" : "updatePetWithForm",
+        "operationId" : "PetResource_updatePetWithForm_POST",
         "consumes" : [ "application/x-www-form-urlencoded" ],
-        "produces" : [ "application/xml", "application/json" ],
+        "produces" : [ "application/json", "application/xml" ],
         "parameters" : [ {
           "name" : "name",
           "in" : "query",
@@ -1022,7 +1007,7 @@
         "summary" : "Deletes a pet",
         "description" : "",
         "operationId" : "removePet",
-        "produces" : [ "application/xml", "application/json" ],
+        "produces" : [ "application/json", "application/xml" ],
         "parameters" : [ {
           "name" : "api_key",
           "in" : "header",
@@ -1053,8 +1038,8 @@
         "tags" : [ "store" ],
         "summary" : "Place an order for a pet",
         "description" : "",
-        "operationId" : "placeOrder",
-        "produces" : [ "application/xml", "application/json" ],
+        "operationId" : "PetStoreResource_placeOrder_POST",
+        "produces" : [ "application/json", "application/xml" ],
         "parameters" : [ {
           "in" : "body",
           "name" : "body",
@@ -1082,8 +1067,8 @@
         "tags" : [ "store" ],
         "summary" : "Find purchase order by ID",
         "description" : "For valid response try integer IDs with value <= 5 or > 10. Other values will generated exceptions",
-        "operationId" : "getOrderById",
-        "produces" : [ "application/xml", "application/json" ],
+        "operationId" : "PetStoreResource_getOrderById_GET",
+        "produces" : [ "application/json", "application/xml" ],
         "parameters" : [ {
           "name" : "orderId",
           "in" : "path",
@@ -1112,8 +1097,8 @@
         "tags" : [ "store" ],
         "summary" : "Delete purchase order by ID",
         "description" : "For valid response try integer IDs with value < 1000. Anything above 1000 or nonintegers will generate API errors",
-        "operationId" : "deleteOrder",
-        "produces" : [ "application/xml", "application/json" ],
+        "operationId" : "PetStoreResource_deleteOrder_DELETE",
+        "produces" : [ "application/json", "application/xml" ],
         "parameters" : [ {
           "name" : "orderId",
           "in" : "path",
@@ -1132,50 +1117,50 @@
         }
       }
     },
-      "/store/orders/{orderIds}" : {
-          "get" : {
-              "tags" : [ "store" ],
-              "summary" : "Find multiple purchase orders by IDs",
-              "description" : "For valid response try integer IDs with value <= 5 or > 10. Other values will generated exceptions",
-              "operationId" : "getOrdersById",
-              "produces" : [ "application/xml", "application/json" ],
-              "parameters" : [ {
-                  "name" : "orderIds",
-                  "in" : "path",
-                  "description" : "IDs of pets that needs to be fetched",
-                  "required" : true,
-                  "type" : "array",
-                  "items" : {
-                      "type" : "string"
-                  },
-                  "collectionFormat" : "csv"
-              } ],
-              "responses" : {
-                  "200" : {
-                      "description" : "successful operation",
-                      "schema" : {
-                          "type" : "array",
-                          "items" : {
-                              "$ref" : "#/definitions/Order"
-                          }
-                      }
-                  },
-                  "400" : {
-                      "description" : "Invalid ID supplied"
-                  },
-                  "404" : {
-                      "description" : "Order not found"
-                  }
+    "/store/orders/{orderIds}" : {
+      "get" : {
+        "tags" : [ "store" ],
+        "summary" : "Find multiple purchase orders by IDs",
+        "description" : "For valid response try integer IDs with value <= 5 or > 10. Other values will generated exceptions",
+        "operationId" : "PetStoreResource_getOrdersById_GET",
+        "produces" : [ "application/json", "application/xml" ],
+        "parameters" : [ {
+          "name" : "orderIds",
+          "in" : "path",
+          "description" : "IDs of pets that needs to be fetched",
+          "required" : true,
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          },
+          "collectionFormat" : "csv"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/Order"
               }
+            }
+          },
+          "400" : {
+            "description" : "Invalid ID supplied"
+          },
+          "404" : {
+            "description" : "Order not found"
           }
-      },
+        }
+      }
+    },
     "/store/ping" : {
       "get" : {
         "tags" : [ "store" ],
         "summary" : "ping",
         "description" : "",
-        "operationId" : "storePing",
-        "produces" : [ "application/xml", "application/json" ],
+        "operationId" : "PetStoreResource_storePing_GET",
+        "produces" : [ "application/json", "application/xml" ],
         "responses" : {
           "200" : {
             "description" : "successful operation",
@@ -1188,7 +1173,7 @@
     },
     "/swaggerless/{petId}" : {
       "get" : {
-        "operationId" : "getPetByName",
+        "operationId" : "SwaggerlessResource_getPetByName_GET",
         "parameters" : [ {
           "name" : "name",
           "in" : "path",
@@ -1205,13 +1190,28 @@
         }
       }
     },
+    "/testingEmptyRootPathResource" : {
+      "get" : {
+        "summary" : "testingEmptyRootPathResource",
+        "description" : "",
+        "operationId" : "EmptyRootPathResource_testingEmptyRootPathResource_GET",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "string"
+            }
+          }
+        }
+      }
+    },
     "/user" : {
       "post" : {
         "tags" : [ "user" ],
         "summary" : "Create user",
         "description" : "This can only be done by the logged in user.",
-        "operationId" : "createUser",
-        "produces" : [ "application/xml", "application/json" ],
+        "operationId" : "UserResource_createUser_POST",
+        "produces" : [ "application/json", "application/xml" ],
         "parameters" : [ {
           "in" : "body",
           "name" : "body",
@@ -1233,8 +1233,8 @@
         "tags" : [ "user" ],
         "summary" : "Creates list of users with given input array",
         "description" : "",
-        "operationId" : "createUsersWithArrayInput",
-        "produces" : [ "application/xml", "application/json" ],
+        "operationId" : "UserResource_createUsersWithArrayInput_POST",
+        "produces" : [ "application/json", "application/xml" ],
         "parameters" : [ {
           "in" : "body",
           "name" : "body",
@@ -1259,8 +1259,8 @@
         "tags" : [ "user" ],
         "summary" : "Creates list of users with given input array",
         "description" : "",
-        "operationId" : "createUsersWithListInput",
-        "produces" : [ "application/xml", "application/json" ],
+        "operationId" : "UserResource_createUsersWithListInput_POST",
+        "produces" : [ "application/json", "application/xml" ],
         "parameters" : [ {
           "in" : "body",
           "name" : "body",
@@ -1285,8 +1285,8 @@
         "tags" : [ "user" ],
         "summary" : "Logs user into the system",
         "description" : "",
-        "operationId" : "loginUser",
-        "produces" : [ "application/xml", "application/json" ],
+        "operationId" : "UserResource_loginUser_GET",
+        "produces" : [ "application/json", "application/xml" ],
         "parameters" : [ {
           "name" : "username",
           "in" : "query",
@@ -1318,8 +1318,8 @@
         "tags" : [ "user" ],
         "summary" : "Logs out current logged in user session",
         "description" : "",
-        "operationId" : "logoutUser",
-        "produces" : [ "application/xml", "application/json" ],
+        "operationId" : "UserResource_logoutUser_GET",
+        "produces" : [ "application/json", "application/xml" ],
         "responses" : {
           "default" : {
             "description" : "successful operation"
@@ -1332,8 +1332,8 @@
         "tags" : [ "user" ],
         "summary" : "Get user by user name",
         "description" : "",
-        "operationId" : "getUserByName",
-        "produces" : [ "application/xml", "application/json" ],
+        "operationId" : "UserResource_getUserByName_GET",
+        "produces" : [ "application/json", "application/xml" ],
         "parameters" : [ {
           "name" : "username",
           "in" : "path",
@@ -1360,8 +1360,8 @@
         "tags" : [ "user" ],
         "summary" : "Updated user",
         "description" : "This can only be done by the logged in user.",
-        "operationId" : "updateUser",
-        "produces" : [ "application/xml", "application/json" ],
+        "operationId" : "UserResource_updateUser_PUT",
+        "produces" : [ "application/json", "application/xml" ],
         "parameters" : [ {
           "name" : "username",
           "in" : "path",
@@ -1390,8 +1390,8 @@
         "tags" : [ "user" ],
         "summary" : "Delete user",
         "description" : "This can only be done by the logged in user.",
-        "operationId" : "deleteUser",
-        "produces" : [ "application/xml", "application/json" ],
+        "operationId" : "UserResource_deleteUser_DELETE",
+        "produces" : [ "application/json", "application/xml" ],
         "parameters" : [ {
           "name" : "username",
           "in" : "path",
@@ -1412,8 +1412,8 @@
         "tags" : [ "user" ],
         "summary" : "Updated user",
         "description" : "This can only be done by the logged in user.",
-        "operationId" : "updateUser",
-        "produces" : [ "application/xml", "application/json" ],
+        "operationId" : "UserResource_updateUser_PATCH",
+        "produces" : [ "application/json", "application/xml" ],
         "parameters" : [ {
           "name" : "username",
           "in" : "path",
@@ -1481,20 +1481,20 @@
         "id" : {
           "type" : "integer",
           "format" : "int64",
-          "xml": {
-            "namespace": "http://com.wordnik/sample/model/category"
+          "xml" : {
+            "namespace" : "http://com.wordnik/sample/model/category"
           }
         },
         "name" : {
           "type" : "string",
-          "xml": {
-            "namespace": "http://com.wordnik/sample/model/category"
+          "xml" : {
+            "namespace" : "http://com.wordnik/sample/model/category"
           }
         }
       },
       "xml" : {
         "name" : "Category",
-        "namespace": "http://com.wordnik/sample/model/category"
+        "namespace" : "http://com.wordnik/sample/model/category"
       }
     },
     "ListItem" : {
@@ -1507,7 +1507,7 @@
       },
       "xml" : {
         "name" : "ListItem",
-        "namespace": "http://com.wordnik/sample/model"
+        "namespace" : "http://com.wordnik/sample/model"
       }
     },
     "Order" : {
@@ -1537,13 +1537,13 @@
         "complete" : {
           "type" : "boolean"
         },
-          "optionalStatus" : {
-              "type" : "string"
-          }
+        "optionalStatus" : {
+          "type" : "string"
+        }
       },
       "xml" : {
         "name" : "Order",
-        "namespace": "http://com.wordnik/sample/model"
+        "namespace" : "http://com.wordnik/sample/model"
       }
     },
     "Pet" : {
@@ -1592,7 +1592,7 @@
       },
       "xml" : {
         "name" : "Pet",
-        "namespace": "http://com.wordnik/sample/model"
+        "namespace" : "http://com.wordnik/sample/model"
       }
     },
     "Tag" : {
@@ -1608,7 +1608,7 @@
       },
       "xml" : {
         "name" : "Tag",
-        "namespace": "http://com.wordnik/sample/model"
+        "namespace" : "http://com.wordnik/sample/model"
       }
     },
     "User" : {
@@ -1646,7 +1646,7 @@
       },
       "xml" : {
         "name" : "User",
-        "namespace": "http://com.wordnik/sample/model"
+        "namespace" : "http://com.wordnik/sample/model"
       }
     }
   }
