@@ -1,33 +1,62 @@
 package com.github.kongchen.swagger.docgen.reader;
 
-import com.github.kongchen.swagger.docgen.jaxrs.BeanParamInjectParamExtension;
-import com.github.kongchen.swagger.docgen.jaxrs.JaxrsParameterExtension;
-import io.swagger.annotations.*;
-import io.swagger.converter.ModelConverters;
-import io.swagger.jaxrs.ext.SwaggerExtension;
-import io.swagger.jaxrs.ext.SwaggerExtensions;
-import io.swagger.jersey.SwaggerJerseyJaxrs;
-import io.swagger.models.*;
-import io.swagger.models.Tag;
-import io.swagger.models.parameters.BodyParameter;
-import io.swagger.models.parameters.Parameter;
-import io.swagger.models.properties.Property;
-import io.swagger.models.properties.RefProperty;
-import io.swagger.util.BaseReaderUtils;
-import io.swagger.util.ReflectionUtils;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.HEAD;
+import javax.ws.rs.HttpMethod;
+import javax.ws.rs.OPTIONS;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+
 import org.apache.maven.plugin.logging.Log;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.AnnotationUtils;
 
-import javax.ws.rs.*;
-import javax.ws.rs.HttpMethod;
-import javax.ws.rs.Path;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-import java.util.*;
+import com.github.kongchen.swagger.docgen.jaxrs.BeanParamInjectParamExtension;
+import com.github.kongchen.swagger.docgen.jaxrs.JaxrsParameterExtension;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.Authorization;
+import io.swagger.annotations.AuthorizationScope;
+import io.swagger.annotations.SwaggerDefinition;
+import io.swagger.converter.ModelConverters;
+import io.swagger.jaxrs.ext.SwaggerExtension;
+import io.swagger.jaxrs.ext.SwaggerExtensions;
+import io.swagger.jersey.SwaggerJerseyJaxrs;
+import io.swagger.models.ArrayModel;
+import io.swagger.models.Model;
+import io.swagger.models.ModelImpl;
+import io.swagger.models.Operation;
+import io.swagger.models.Response;
+import io.swagger.models.SecurityRequirement;
+import io.swagger.models.Swagger;
+import io.swagger.models.Tag;
+import io.swagger.models.parameters.BodyParameter;
+import io.swagger.models.parameters.Parameter;
+import io.swagger.models.parameters.RefParameter;
+import io.swagger.models.properties.Property;
+import io.swagger.models.properties.RefProperty;
+import io.swagger.models.refs.RefType;
+import io.swagger.util.BaseReaderUtils;
+import io.swagger.util.ReflectionUtils;
 
 public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
     private static final Logger LOGGER = LoggerFactory.getLogger(JaxrsReader.class);
@@ -79,7 +108,9 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         List<SecurityRequirement> securities = getSecurityRequirements(api);
         Map<String, Tag> discoveredTags = scanClasspathForTags();
 
-        // merge consumes, pro duces
+        // merge consumes, produces
+
+        readCommonParameters(cls);
 
         // look for method-level annotated properties
 
@@ -161,6 +192,54 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
             }
         }
         return filteredMethods;
+    }
+
+    /**
+     * Returns true when the swagger object already contains a common parameter
+     * with the same name and type as the passed parameter.
+     * 
+     * @param parameter The parameter to check.
+     * @return true if the swagger object already contains a common parameter with the same name and type
+     */
+    private boolean hasCommonParameter(Parameter parameter) {
+        Parameter commonParameter = swagger.getParameter(parameter.getName());
+        return commonParameter != null && parameter.getIn().equals(commonParameter.getIn());
+    }
+
+    private void readCommonParameters(Class<?> cls) {
+        Path path = AnnotationUtils.findAnnotation(cls, Path.class);
+        if (path != null) {
+            return;
+        }
+
+        List<Method> filteredMethods = getFilteredMethods(cls);
+        for (Method method : filteredMethods) {
+            path = AnnotationUtils.findAnnotation(method, Path.class);
+            if (path != null) {
+                return;
+            }
+
+            String httpMethod = extractOperationMethod(null, method, SwaggerExtensions.chain());
+            if (httpMethod != null) {
+                return;
+            }
+        }
+
+        Field[] fields = cls.getDeclaredFields();
+        for (Field field : fields) {
+            Annotation[] annotations = field.getAnnotations();
+            if (annotations.length > 0) {
+                List<Parameter> params = getParameters(cls, Arrays.asList(annotations));
+                for (Parameter param : params) {
+                    if (hasCommonParameter(param)) {
+                        String msg = "[" + cls.getCanonicalName() + "] Redefining common parameter '" + param.getName()
+                            + "' already defined elsewhere";
+                        throw new RuntimeException(msg);
+                    }
+                    swagger.addParameter(param.getName(), param);
+                }
+            }
+        }
     }
 
     private void updateTagDescriptions(Map<String, Tag> discoveredTags) {
@@ -384,8 +463,13 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
             List<Parameter> parameters = getParameters(type, annotations);
 
             for (Parameter parameter : parameters) {
-                parameter = replaceArrayModelForOctetStream(operation, parameter);
-                operation.parameter(parameter);
+                if (hasCommonParameter(parameter)) {
+                    Parameter refParameter = new RefParameter(RefType.PARAMETER.getInternalPrefix() + parameter.getName());
+                    operation.parameter(refParameter);
+                } else {
+                    parameter = replaceArrayModelForOctetStream(operation, parameter);
+                    operation.parameter(parameter);
+                }
             }
         }
         if (operation.getResponses() == null) {

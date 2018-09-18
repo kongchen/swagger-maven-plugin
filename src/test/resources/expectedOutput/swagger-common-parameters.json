@@ -1,0 +1,34 @@
+{
+  "swagger" : "2.0",
+  "paths" : {
+    "/apath" : {
+      "get" : {
+        "operationId" : "getOperation",
+        "parameters" : [ {
+          "$ref" : "#/parameters/headerParam"
+        }, {
+          "$ref" : "#/parameters/queryParam"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    }
+  },
+  "parameters" : {
+    "headerParam" : {
+      "name" : "headerParam",
+      "in" : "header",
+      "required" : false,
+      "type" : "string"
+    },
+    "queryParam" : {
+      "name" : "queryParam",
+      "in" : "query",
+      "required" : false,
+      "type" : "string"
+    }
+  }
+}

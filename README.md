@@ -237,6 +237,12 @@ The above setting would prevent `internalThing` from appearing in the swagger sp
 
 Note: In order to use `apiModelPropertyAccessExclusions`, you must specify both the `name` and `access` fields of the property you wish to exclude. Additionally, `apiModelPropertyAccessExclusions` requires at least `swagger-maven-plugin` version 3.1.1-SNAPSHOT.
 
+# Defining common Swagger parameters with JAX-RS annotations
+
+When defining the Swagger API with JAX-RS, it is possible to specify common parameters by defining an `@Api` class that only contains fields annotated with JAX-RS parameter annotations. Note that this class should not contain any `@Path` or HTTP method annotation in order to consider it as a declaration of common parameters. When a common parameter is specified in another JAX-RS resource class, the parameter will have a reference to the common parameter.
+
+The result of having common parameters and parameter references can be seen in the test file [swagger-common-parameters.json](src/test/resources/swagger-common-parameters.json). The `@Api` class used to generate this example can be seen in the test file [JaxrsReaderTest.java](src/test/java/com/github/kongchen/swagger/docgen/reader/JaxrsReaderTest.java).
+
 # Install/Deploy `swagger.json`
 
 You can instruct `swagger-maven-plugin` to deploy the generated `swagger.json` by adding the following to your pom.xml:
