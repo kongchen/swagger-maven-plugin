@@ -2,11 +2,13 @@ package com.github.kongchen.swagger.docgen;
 
 import com.github.kongchen.swagger.docgen.mavenplugin.ApiSource;
 import com.github.kongchen.swagger.docgen.reader.ClassSwaggerReader;
+import io.swagger.models.ExternalDocs;
 import io.swagger.models.Path;
 import io.swagger.models.Swagger;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -14,8 +16,7 @@ import org.testng.annotations.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class AbstractDocumentSourceTest {
@@ -23,6 +24,7 @@ public class AbstractDocumentSourceTest {
     private Log log;
     @Mock
     private ApiSource apiSource;
+
     private AbstractDocumentSource source;
 
     @BeforeMethod
@@ -51,5 +53,24 @@ public class AbstractDocumentSourceTest {
         // assert
         assertThat(result.getPath("/c"), notNullValue());
         assertThat(result.getPath("/a/b/c"), nullValue());
+    }
+
+    @Test
+    public void testExternalDocsGetAdded() throws MojoFailureException {
+        // arrange
+        Mockito.when(apiSource.getExternalDocs()).thenReturn(new ExternalDocs("Example external docs", "https://example.com/docs"));
+
+        // act
+        AbstractDocumentSource externalDocsSource = new AbstractDocumentSource(log, apiSource) {
+            @Override
+            protected ClassSwaggerReader resolveApiReader() throws GenerateException {
+                return null;
+            }
+        };
+
+        // assert
+        assertThat(externalDocsSource.swagger.getExternalDocs(), notNullValue());
+        assertThat(externalDocsSource.swagger.getExternalDocs().getDescription(), equalTo("Example external docs"));
+        assertThat(externalDocsSource.swagger.getExternalDocs().getUrl(), equalTo("https://example.com/docs"));
     }
 }

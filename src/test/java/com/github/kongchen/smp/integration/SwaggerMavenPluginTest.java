@@ -8,9 +8,9 @@ import com.github.kongchen.smp.integration.utils.PetIdToStringModelConverter;
 import com.github.kongchen.swagger.docgen.mavenplugin.ApiDocumentMojo;
 import com.github.kongchen.swagger.docgen.mavenplugin.ApiSource;
 import com.google.common.collect.ImmutableList;
-
 import io.swagger.jaxrs.ext.SwaggerExtension;
 import io.swagger.jaxrs.ext.SwaggerExtensions;
+import io.swagger.util.Json;
 import net.javacrumbs.jsonunit.core.Configuration;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -23,23 +23,15 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-
-import static com.github.kongchen.smp.integration.utils.TestUtils.YamlToJson;
-import static com.github.kongchen.smp.integration.utils.TestUtils.changeDescription;
-import static com.github.kongchen.smp.integration.utils.TestUtils.createTempDirPath;
-import static com.github.kongchen.smp.integration.utils.TestUtils.setCustomReader;
-import io.swagger.util.Json;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static com.github.kongchen.smp.integration.utils.TestUtils.*;
 import static net.javacrumbs.jsonunit.JsonAssert.assertJsonEquals;
 import static net.javacrumbs.jsonunit.core.Option.IGNORING_ARRAY_ORDER;
 
@@ -326,6 +318,12 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
         }
     }
 
+    @Test
+    public void testExternalDocsAdded() throws Exception {
+        File testPom = new File(getBasedir(), "src/test/resources/plugin-config-externalDocs.xml");
+        mojo = (ApiDocumentMojo) lookupMojo("generate", testPom);
+        mojo.execute();
 
-
+        assertGeneratedSwaggerSpecJson("This is a sample.", "/expectedOutput/swagger-externalDocs.json", "swagger.json");
+    }
 }

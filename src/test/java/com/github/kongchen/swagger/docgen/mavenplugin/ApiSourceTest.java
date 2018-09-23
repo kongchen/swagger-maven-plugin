@@ -4,10 +4,9 @@ import com.google.common.collect.Sets;
 import io.swagger.annotations.Extension;
 import io.swagger.annotations.ExtensionProperty;
 import io.swagger.annotations.SwaggerDefinition;
+import io.swagger.models.ExternalDocs;
 import io.swagger.models.Info;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -16,14 +15,48 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class ApiSourceTest {
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
-    @Spy
-    protected ApiSource apiSource;
+public class ApiSourceTest {
 
     @BeforeMethod
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+    }
+
+    @Test
+    public void testGetExternalDocsNoneFound() {
+        // given
+        @SwaggerDefinition
+        class TestClassNoExternalDocs { }
+
+        ApiSource apiSource = spy(ApiSource.class);
+        when(apiSource.getValidClasses(SwaggerDefinition.class)).thenReturn(Sets.newHashSet(TestClassNoExternalDocs.class));
+
+        // when
+        ExternalDocs externalDocs = apiSource.getExternalDocs();
+
+        // then
+        Assert.assertNull(externalDocs);
+    }
+
+    @Test
+    public void testGetExternalDocsFound() {
+        // given
+        @SwaggerDefinition(externalDocs = @io.swagger.annotations.ExternalDocs(value = "Example external docs", url = "https://example.com/docs"))
+        class TestClassExternalDocs { }
+
+        ApiSource apiSource = spy(ApiSource.class);
+        when(apiSource.getValidClasses(SwaggerDefinition.class)).thenReturn(Sets.newHashSet(TestClassExternalDocs.class));
+
+        // when
+        ExternalDocs externalDocs = apiSource.getExternalDocs();
+
+        // then
+        Assert.assertNotNull(externalDocs);
+        Assert.assertEquals(externalDocs.getDescription(), "Example external docs");
+        Assert.assertEquals(externalDocs.getUrl(), "https://example.com/docs");
     }
 
     @Test
@@ -42,8 +75,9 @@ public class ApiSourceTest {
 
 
         Set<Class<?>> validClasses = Sets.newHashSet(ApiSourceTestClass.class);
+        ApiSource apiSource = spy(ApiSource.class);
 
-        Mockito.when(apiSource.getValidClasses(SwaggerDefinition.class)).thenReturn(validClasses);
+        when(apiSource.getValidClasses(SwaggerDefinition.class)).thenReturn(validClasses);
         Info info = apiSource.getInfo();
 
         Map<String, Object> vendorExtensions = info.getVendorExtensions();
