@@ -7,6 +7,7 @@ import io.swagger.models.auth.ApiKeyAuthDefinition;
 import io.swagger.models.auth.BasicAuthDefinition;
 import io.swagger.models.auth.OAuth2Definition;
 import io.swagger.models.auth.SecuritySchemeDefinition;
+import io.swagger.util.Json;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
 import java.io.FileInputStream;
@@ -28,6 +29,8 @@ public class SecurityDefinition {
     private String json;
     private String jsonPath;
 
+    private ObjectMapper mapper = Json.mapper();
+
     public Map<String, SecuritySchemeDefinition> generateSecuritySchemeDefinitions() throws GenerateException {
         Map<String, SecuritySchemeDefinition> map = new HashMap<String, SecuritySchemeDefinition>();
 
@@ -35,7 +38,7 @@ public class SecurityDefinition {
         if (json != null || jsonPath != null) {
             securityDefinitions = loadSecurityDefintionsFromJsonFile();
         } else {
-            JsonNode tree = new ObjectMapper().valueToTree(this);
+            JsonNode tree = mapper.valueToTree(this);
             securityDefinitions.put(tree.get("name").asText(), tree);
         }
 
@@ -81,7 +84,7 @@ public class SecurityDefinition {
 
         try {
             InputStream jsonStream = json != null ? this.getClass().getResourceAsStream(json) : new FileInputStream(jsonPath);
-            JsonNode tree = new ObjectMapper().readTree(jsonStream);
+            JsonNode tree = mapper.readTree(jsonStream);
             Iterator<Map.Entry<String, JsonNode>> fields = tree.fields();
             while(fields.hasNext()) {
                 Map.Entry<String, JsonNode> field = fields.next();
@@ -98,7 +101,6 @@ public class SecurityDefinition {
 
     private SecuritySchemeDefinition getSecuritySchemeDefinitionByType(String type, JsonNode node) throws GenerateException {
         try {
-            ObjectMapper mapper = new ObjectMapper();
             SecuritySchemeDefinition def = null;
             if (type.equals(new OAuth2Definition().getType())) {
                 def = new OAuth2Definition();

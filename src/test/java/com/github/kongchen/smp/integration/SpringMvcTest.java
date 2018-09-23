@@ -165,8 +165,7 @@ public class SpringMvcTest extends AbstractMojoTestCase {
         JsonNode actualUserNode = actualJson.path("definitions").path("User");
         JsonNode expectUserNode = expectJson.path("definitions").path("User");
 
-        // Cannot test full node equality since tags order is not guaranteed in generated json
-        Assert.assertEquals(actualUserNode, expectUserNode);
+        assertJsonEquals(expectUserNode, actualUserNode, Configuration.empty().when(IGNORING_ARRAY_ORDER));
     }
 
     @Test
