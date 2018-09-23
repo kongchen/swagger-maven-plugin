@@ -8,6 +8,7 @@ import com.google.common.base.CharMatcher;
 import com.google.common.io.Files;
 import io.swagger.jaxrs.ext.SwaggerExtension;
 import io.swagger.jaxrs.ext.SwaggerExtensions;
+import io.swagger.util.Json;
 import net.javacrumbs.jsonunit.core.Configuration;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -158,7 +159,7 @@ public class SpringMvcTest extends AbstractMojoTestCase {
         mojo.execute();
 
         // check generated swagger json file
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = Json.mapper();
         JsonNode actualJson = mapper.readTree(new File(swaggerOutputDir, "swagger.json"));
         JsonNode expectJson = mapper.readTree(this.getClass().getResourceAsStream("/options/jsonExampleValues/expected/swagger-spring.json"));
 
@@ -213,7 +214,7 @@ public class SpringMvcTest extends AbstractMojoTestCase {
 
     private void assertGeneratedSwaggerSpecJson(String description) throws MojoExecutionException, MojoFailureException, IOException {
         mojo.execute();
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = Json.mapper();
         JsonNode actualJson = mapper.readTree(new File(swaggerOutputDir, "swagger.json"));
         JsonNode expectJson = mapper.readTree(this.getClass().getResourceAsStream("/expectedOutput/swagger-spring.json"));
 
@@ -232,7 +233,7 @@ public class SpringMvcTest extends AbstractMojoTestCase {
         String actualYaml = yaml.dump(yaml.load(FileUtils.readFileToString(new File(swaggerOutputDir, "swagger.yaml"))));
         String expectYaml = yaml.dump(yaml.load(this.getClass().getResourceAsStream("/expectedOutput/swagger-spring.yaml")));
 
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = Json.mapper();
         JsonNode actualJson = mapper.readTree(YamlToJson(actualYaml));
         JsonNode expectJson = mapper.readTree(YamlToJson(expectYaml));
 
