@@ -1,7 +1,9 @@
 package com.github.kongchen.swagger.docgen.mavenplugin;
 
+import com.google.common.base.Strings;
 import io.swagger.annotations.SwaggerDefinition;
 import io.swagger.models.Contact;
+import io.swagger.models.ExternalDocs;
 import io.swagger.models.Info;
 import io.swagger.models.License;
 import io.swagger.util.BaseReaderUtils;
@@ -140,6 +142,9 @@ public class ApiSource {
     @Parameter
     private String operationIdFormat;
 
+    @Parameter
+    private ExternalDocs externalDocs;
+
     public Set<Class<?>> getValidClasses(Class<? extends Annotation> clazz) {
         Set<Class<?>> classes = new LinkedHashSet<Class<?>>();
         
@@ -251,6 +256,18 @@ public class ApiSource {
         }
     }
 
+    private void setExternalDocsFromAnnotation() {
+        for (Class<?> aClass : getValidClasses(SwaggerDefinition.class)) {
+            SwaggerDefinition swaggerDefinition = AnnotationUtils.findAnnotation(aClass, SwaggerDefinition.class);
+            io.swagger.annotations.ExternalDocs docsAnnotation = swaggerDefinition.externalDocs();
+
+            if (!Strings.isNullOrEmpty(docsAnnotation.url())) {
+                externalDocs = new ExternalDocs(docsAnnotation.value(), docsAnnotation.url());
+                break;
+            }
+        }
+    }
+
     public void setInfo(Info info) {
         this.info = info;
     }
@@ -335,6 +352,13 @@ public class ApiSource {
             setHostFromAnnotation();
         }
         return host;
+    }
+
+    public ExternalDocs getExternalDocs() {
+        if (externalDocs == null) {
+            setExternalDocsFromAnnotation();
+        }
+        return externalDocs;
     }
 
     public void setModelSubstitute(String modelSubstitute) {

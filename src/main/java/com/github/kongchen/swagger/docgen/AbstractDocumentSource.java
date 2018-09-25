@@ -96,6 +96,7 @@ public abstract class AbstractDocumentSource {
         swagger.setHost(apiSource.getHost());
         swagger.setInfo(apiSource.getInfo());
         swagger.setBasePath(apiSource.getBasePath());
+        swagger.setExternalDocs(apiSource.getExternalDocs());
 
         this.apiSource = apiSource;
     }
