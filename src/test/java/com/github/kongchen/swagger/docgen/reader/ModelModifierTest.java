@@ -1,9 +1,16 @@
 package com.github.kongchen.swagger.docgen.reader;
 
 import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.SimpleType;
-
+import io.swagger.annotations.ApiModelProperty;
+import io.swagger.converter.ModelConverter;
+import io.swagger.converter.ModelConverterContext;
+import io.swagger.converter.ModelConverterContextImpl;
+import io.swagger.models.ArrayModel;
+import io.swagger.models.Model;
+import io.swagger.models.properties.Property;
+import io.swagger.models.properties.StringProperty;
+import io.swagger.util.Json;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -14,15 +21,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import io.swagger.annotations.ApiModelProperty;
-import io.swagger.converter.ModelConverter;
-import io.swagger.converter.ModelConverterContext;
-import io.swagger.converter.ModelConverterContextImpl;
-import io.swagger.models.ArrayModel;
-import io.swagger.models.Model;
-import io.swagger.models.properties.Property;
-import io.swagger.models.properties.StringProperty;
-
 /**
  * Created by mkosiorek on 25.04.17.
  */
@@ -30,7 +28,7 @@ public class ModelModifierTest {
 
     @Test
     public void testProcessFieldInParentClass() throws Exception {
-        ModelModifier modelModifier =  new ModelModifier(new ObjectMapper());
+        ModelModifier modelModifier =  new ModelModifier(Json.mapper());
         modelModifier.setApiModelPropertyAccessExclusions(Arrays.asList("public"));
 
         JavaType type = SimpleType.constructUnsafe(B.class);

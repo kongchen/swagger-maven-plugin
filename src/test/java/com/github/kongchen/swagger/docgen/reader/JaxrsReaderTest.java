@@ -13,6 +13,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import io.swagger.util.Json;
 import org.apache.maven.plugin.logging.Log;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -152,8 +153,7 @@ public class JaxrsReaderTest {
             assertTrue(parameter instanceof RefParameter);
         }
 
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        ObjectMapper mapper = Json.mapper();
         ObjectWriter jsonWriter = mapper.writer(new DefaultPrettyPrinter());
         String json = jsonWriter.writeValueAsString(result);
         JsonNode expectJson = mapper.readTree(this.getClass().getResourceAsStream("/expectedOutput/swagger-common-parameters.json"));

@@ -737,7 +737,7 @@
         "tags" : [ "pet" ],
         "summary" : "Find pet(s) by ID",
         "description" : "This is a contrived example of a path segment containing multiple path parameters, separated by a character which may be present in the path parameter template. You may think that it returns a range of pets from startId to endId, inclusive, but it doesn't.",
-        "operationId" : "getPetsById",
+        "operationId" : "getPetsById_1",
         "produces" : [ "application/json", "application/xml" ],
         "parameters" : [ {
           "name" : "startId",

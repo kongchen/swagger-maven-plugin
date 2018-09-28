@@ -1,10 +1,10 @@
 package com.github.kongchen.smp.integration.utils;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.converter.ModelConverter;
 import io.swagger.converter.ModelConverterContext;
 import io.swagger.jackson.AbstractModelConverter;
 import io.swagger.models.properties.Property;
+import io.swagger.util.Json;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -16,7 +16,7 @@ import java.util.Iterator;
 public class PetIdToStringModelConverter extends AbstractModelConverter {
 
     public PetIdToStringModelConverter() {
-        super(new ObjectMapper());
+        super(Json.mapper().copy());
     }
 
     @Override

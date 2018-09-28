@@ -1,6 +1,5 @@
 package com.github.kongchen.swagger.docgen;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -63,7 +62,7 @@ public abstract class AbstractDocumentSource {
     private final String swaggerPath;
     private final String modelSubstitute;
     private final boolean jsonExampleValues;
-    private ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper mapper = Json.mapper();
     private boolean isSorted = false;
     protected String encoding = "UTF-8";
 
@@ -170,7 +169,8 @@ public abstract class AbstractDocumentSource {
 
     public void toSwaggerDocuments(String uiDocBasePath, String outputFormats, String fileName, String encoding) throws GenerateException {
         mapper.configure(SerializationFeature.WRITE_EMPTY_JSON_ARRAYS, false);
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
+        mapper = mapper.copy();
 
         if (jsonExampleValues) {
             mapper.addMixInAnnotations(Property.class, PropertyExampleMixIn.class);

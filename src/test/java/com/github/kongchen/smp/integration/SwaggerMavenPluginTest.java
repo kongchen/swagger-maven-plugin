@@ -43,7 +43,7 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
     private File swaggerOutputDir = new File(getBasedir(), "generated/swagger-ui");
     private File docOutput = new File(getBasedir(), "generated/document.html");
     private ApiDocumentMojo mojo;
-    private ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper mapper = Json.mapper();
     private List<SwaggerExtension> extensions;
 
     @Override
