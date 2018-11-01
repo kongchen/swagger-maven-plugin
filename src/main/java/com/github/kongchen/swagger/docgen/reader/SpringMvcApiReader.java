@@ -387,7 +387,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
                             for (String methodRequestMappingValue : methodRequestMappingValues) {
                                 String resourceKey = controllerClazz.getCanonicalName() + controllerRequestMappingValue
                                         + methodRequestMappingValue + requestMappingRequestMethod;
-                                if (!methodRequestMappingValue.isEmpty()) {
+                                if (!(controllerRequestMappingValue + methodRequestMappingValue).isEmpty()) {
                                     if (!resourceMap.containsKey(resourceKey)) {
                                         resourceMap.put(resourceKey, new SpringResource(controllerClazz, methodRequestMappingValue, resourceKey, description));
                                     }
