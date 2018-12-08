@@ -83,10 +83,14 @@ public abstract class AbstractDocumentSource {
 
         // read description from file
         if (apiSource.getDescriptionFile() != null) {
-            try (InputStream is = new FileInputStream(apiSource.getDescriptionFile())) {
+            InputStream is = null;
+            try {
+                is = new FileInputStream(apiSource.getDescriptionFile());
                 apiSource.getInfo().setDescription(IOUtils.toString(is));
             } catch (IOException e) {
                 throw new MojoFailureException(e.getMessage(), e);
+            } finally {
+                IOUtils.closeQuietly(is);
             }
         }
 
