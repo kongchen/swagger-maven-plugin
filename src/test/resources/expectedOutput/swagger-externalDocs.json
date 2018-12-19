@@ -1731,6 +1731,9 @@
       }
     }
   },
+  "security" : [ {
+    "api_key_2" : [ ]
+  } ],
   "definitions": {
     "Category": {
       "type": "object",
