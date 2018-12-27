@@ -470,14 +470,22 @@ public class ApiSource {
     }
 
     public String getOperationIdFormat() {
-		return operationIdFormat;
-	}
+        return operationIdFormat;
+    }
 
-	public void setOperationIdFormat(String operationIdFormat) {
-		this.operationIdFormat = operationIdFormat;
-	}
+    public void setOperationIdFormat(String operationIdFormat) {
+        this.operationIdFormat = operationIdFormat;
+    }
 
-	private String emptyToNull(String str) {
+    public boolean isSkipInheritingClasses() {
+        return skipInheritingClasses;
+    }
+
+    public void setSkipInheritingClasses(boolean skipInheritingClasses) {
+        this.skipInheritingClasses = skipInheritingClasses;
+    }
+
+    private String emptyToNull(String str) {
         return StringUtils.isEmpty(str) ? null : str;
     }
 
