@@ -89,7 +89,7 @@
         <version.animal-sniffer-plugin>1.14</version.animal-sniffer-plugin>
         <version.maven-source-plugin>2.1.2</version.maven-source-plugin>
         <version.maven-javadoc-plugin>2.7</version.maven-javadoc-plugin>
-        <version.maven-gpg-plugin>1.1</version.maven-gpg-plugin>
+        <version.maven-gpg-plugin>1.6</version.maven-gpg-plugin>
         <version.plexus-javadoc>1.0</version.plexus-javadoc>
         <version.slf4j-nop>1.7.25</version.slf4j-nop>
         <kotlin.version>1.2.61</kotlin.version>
