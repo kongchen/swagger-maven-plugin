@@ -200,7 +200,7 @@ public abstract class AbstractDocumentSource {
 
         fileName = defaultString(fileName, "swagger");
 
-        for (String format : outputFormats.split(",")) {
+        for (String format : defaultString(outputFormats, Output.json.name()).split(",")) {
             try {
                 Output output = Output.valueOf(format.toLowerCase());
                 switch (output) {
