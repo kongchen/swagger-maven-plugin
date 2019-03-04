@@ -1,9 +1,15 @@
 package com.github.kongchen.swagger.docgen.reader;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+import io.swagger.models.Model;
+import io.swagger.models.properties.Property;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import java.util.Map;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -187,6 +193,21 @@ public class JaxrsReaderTest {
         assertNotNull(exception);
     }
 
+    @Test
+    public void handleResponseWithInheritance() {
+        Swagger result = reader.read(AnApiWithInheritance.class);
+        Map<String, Model> models = result.getDefinitions();
+
+        assertTrue(models.containsKey("SomeResponseWithInheritance"));
+
+        System.out.println(models.get("SomeResponseWithInheritance"));
+
+        Map<String, Property> properties = models.get("SomeResponseWithInheritance").getProperties();
+        assertTrue(properties.containsKey("classProperty"));
+        assertTrue(properties.containsKey("inheritedProperty"));
+        assertTrue(properties.containsKey("type"));
+    }
+
     public void discoverSubResource() {
         Swagger result = reader.read(SomeResource.class);
         assertSwaggerPath(result.getPath("/resource/explicit/name").getGet(), result, "/resource/implicit/name");
@@ -282,6 +303,15 @@ public class JaxrsReaderTest {
         }
     }
 
+    @Api
+    @Path("/apath")
+    static class AnApiWithInheritance {
+        @GET
+        public SomeResponseWithInheritance getOperation() {
+            return new SomeResponseWithInheritance();
+        }
+    }
+
     @Path("/resource")
     @Api(tags = "Resource")
     static class SomeResource {
@@ -304,6 +334,23 @@ public class JaxrsReaderTest {
         public String getName() {
             // no implementation needed. Method is only for the test cases
             return toString();
+        }
+    }
+
+    @JsonTypeInfo(use=Id.NAME, property="type")
+    static class SomeResponseWithInheritance extends SomeResponseBaseClass {
+        public String getClassProperty(){
+            return null;
+        }
+    }
+
+    @JsonTypeInfo(use=Id.NAME, property="type")
+    @JsonSubTypes({
+            @JsonSubTypes.Type(SomeResponseWithInheritance.class)
+    })
+    static class SomeResponseBaseClass {
+        public String getInheritedProperty(){
+            return null;
         }
     }
 }
