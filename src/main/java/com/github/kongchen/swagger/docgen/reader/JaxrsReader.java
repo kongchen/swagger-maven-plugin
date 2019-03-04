@@ -576,16 +576,18 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
 
     private Map<String, Model> readAllModels(Type responseClassType) {
         Map<String, Model> modelMap = ModelConverters.getInstance().readAll(responseClassType);
-
-        handleJsonTypeInfo(responseClassType, modelMap);
+        if (modelMap != null) {
+            handleJsonTypeInfo(responseClassType, modelMap);
+        }
 
         return modelMap;
     }
 
     private Map<String, Model> readModels(Type responseClassType) {
         Map<String, Model> modelMap = ModelConverters.getInstance().read(responseClassType);
-
-        handleJsonTypeInfo(responseClassType, modelMap);
+        if (modelMap != null) {
+            handleJsonTypeInfo(responseClassType, modelMap);
+        }
 
         return modelMap;
     }
@@ -595,7 +597,10 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
             JsonTypeInfo typeInfo = ((Class<?>)responseClassType).getAnnotation(JsonTypeInfo.class);
             if (typeInfo != null && !StringUtils.isEmpty(typeInfo.property())) {
                 for (Model model : modelMap.values()) {
-                    model.getProperties().put(typeInfo.property(), new StringProperty());
+                    Map<String, Property> properties = model.getProperties();
+                    if (properties != null) {
+                        properties.put(typeInfo.property(), new StringProperty());
+                    }
                 }
             }
         }
