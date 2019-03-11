@@ -431,10 +431,17 @@ public abstract class AbstractDocumentSource {
         List<SwaggerExtension> resolved = new ArrayList<SwaggerExtension>();
         if (clazzes != null) {
             for (String clazz : clazzes) {
-                SwaggerExtension extension;
+                SwaggerExtension extension = null;
+                //Try to get a parameterized constructor for extensions that are log-enabled.
                 try {
-                    extension = (SwaggerExtension) Class.forName(clazz).newInstance();
-                } catch (Exception e) {
+                    try {
+                        Constructor<?> constructor = Class.forName(clazz).getConstructor(Log.class);
+                        extension = (SwaggerExtension) constructor.newInstance(LOG);
+                    } catch (NoSuchMethodException nsme) {
+                        extension = (SwaggerExtension) Class.forName(clazz).newInstance();
+                    }
+                }
+                catch (Exception e) {
                     throw new GenerateException("Cannot load Swagger extension: " + clazz, e);
                 }
                 resolved.add(extension);
