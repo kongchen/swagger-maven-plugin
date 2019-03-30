@@ -13,6 +13,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import io.swagger.models.*;
 import io.swagger.util.Json;
 import org.apache.maven.plugin.logging.Log;
 import org.mockito.Mock;
@@ -32,10 +33,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.jaxrs.ext.SwaggerExtension;
 import io.swagger.jaxrs.ext.SwaggerExtensions;
-import io.swagger.models.ArrayModel;
-import io.swagger.models.Operation;
-import io.swagger.models.Swagger;
-import io.swagger.models.Tag;
 import io.swagger.models.parameters.BodyParameter;
 import io.swagger.models.parameters.HeaderParameter;
 import io.swagger.models.parameters.Parameter;
@@ -305,5 +302,32 @@ public class JaxrsReaderTest {
             // no implementation needed. Method is only for the test cases
             return toString();
         }
+    }
+
+    interface GenericResource<T> {
+        @Path("name")
+        @POST
+        String postItem(@ApiParam T item);
+    }
+
+    class GenericResourceSubclass implements GenericResource<String> {
+        public String postItem(String item) {
+            return "";
+        }
+    }
+
+    @Test
+    public void handleGenericSuperClassMethods() {
+        reader = new JaxrsReader(new Swagger(), Mockito.mock(Log.class));
+        Swagger result = reader.read(GenericResourceSubclass.class);
+        io.swagger.models.Path path = result.getPath("/name");
+        assertNotNull(path);
+
+        // Check also type of the generated param. Must be string - not generic
+        List<Parameter> parameters = path.getPost().getParameters();
+        assertEquals(parameters.size(), 1);
+        BodyParameter bodyParameter = (BodyParameter) parameters.get(0);
+        ModelImpl schema = (ModelImpl) bodyParameter.getSchema();
+        assertEquals(schema.getType(), "string");
     }
 }
