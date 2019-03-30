@@ -27,6 +27,7 @@ import org.apache.maven.plugin.logging.Log;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.BridgeMethodResolver;
 import org.springframework.core.annotation.AnnotationUtils;
 
 import com.github.kongchen.swagger.docgen.jaxrs.BeanParamInjectParamExtension;
@@ -119,11 +120,11 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         // parse the method
         List<Method> filteredMethods = getFilteredMethods(cls);
         for (Method method : filteredMethods) {
-            ApiOperation apiOperation = AnnotationUtils.findAnnotation(method, ApiOperation.class);
+            ApiOperation apiOperation = JaxrsReader.findAnnotation(method, ApiOperation.class);
             if (apiOperation != null && apiOperation.hidden()) {
                 continue;
             }
-            Path methodPath = AnnotationUtils.findAnnotation(method, Path.class);
+            Path methodPath = JaxrsReader.findAnnotation(method, Path.class);
 
             String parentPathValue = String.valueOf(parentPath);
             //is method default handler within a subresource
@@ -183,6 +184,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         return swagger;
     }
 
+
     private List<Method> getFilteredMethods(Class<?> cls) {
         Method[] methods = cls.getMethods();
         List<Method> filteredMethods = new ArrayList<>();
@@ -197,13 +199,43 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
     /**
      * Returns true when the swagger object already contains a common parameter
      * with the same name and type as the passed parameter.
-     * 
+     *
      * @param parameter The parameter to check.
      * @return true if the swagger object already contains a common parameter with the same name and type
      */
     private boolean hasCommonParameter(Parameter parameter) {
         Parameter commonParameter = swagger.getParameter(parameter.getName());
         return commonParameter != null && parameter.getIn().equals(commonParameter.getIn());
+    }
+
+    private static <A extends Annotation>
+    A findAnnotation(Method method, Class<A> annotationType) {
+        A annotation = AnnotationUtils.findAnnotation(method, annotationType);
+        if (annotation != null)
+            return annotation;
+
+        Method bridgeMethod = getBridgeMethodFor(method);
+        if (bridgeMethod == null)
+            return annotation;
+
+        return AnnotationUtils.findAnnotation(bridgeMethod, annotationType);
+    }
+
+    private static boolean isMatchingBridgeMethod(Method method, Method candidate) {
+        if (candidate.isBridge()) {
+            Method bridgedMethod = BridgeMethodResolver.findBridgedMethod(candidate);
+            return bridgedMethod.equals(method);
+        }
+        return false;
+    }
+
+    private static Method getBridgeMethodFor(Method method) {
+        Method[] classMethods = method.getDeclaringClass().getMethods();
+        for (Method candidate : classMethods) {
+            if (isMatchingBridgeMethod(method, candidate))
+                return candidate;
+        }
+        return null;
     }
 
     private void readCommonParameters(Class<?> cls) {
@@ -214,7 +246,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
 
         List<Method> filteredMethods = getFilteredMethods(cls);
         for (Method method : filteredMethods) {
-            path = AnnotationUtils.findAnnotation(method, Path.class);
+            path = JaxrsReader.findAnnotation(method, Path.class);
             if (path != null) {
                 return;
             }
@@ -283,7 +315,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
 
     protected boolean isSubResource(String httpMethod, Method method) {
         Class<?> responseClass = method.getReturnType();
-        return (responseClass != null) && (httpMethod == null) && (AnnotationUtils.findAnnotation(method, Path.class) != null);
+        return (responseClass != null) && (httpMethod == null) && (JaxrsReader.findAnnotation(method, Path.class) != null);
     }
 
     private String getPath(Path classLevelPath, Path methodLevelPath, String parentPath) {
@@ -329,7 +361,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
     public Operation parseMethod(String httpMethod, Method method) {
         int responseCode = 200;
         Operation operation = new Operation();
-        ApiOperation apiOperation = AnnotationUtils.findAnnotation(method, ApiOperation.class);
+        ApiOperation apiOperation = JaxrsReader.findAnnotation(method, ApiOperation.class);
 
         String operationId = getOperationId(method, httpMethod);
 
@@ -429,26 +461,26 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
             }
         }
 
-        Consumes consumes = AnnotationUtils.findAnnotation(method, Consumes.class);
+        Consumes consumes = JaxrsReader.findAnnotation(method, Consumes.class);
         if (consumes != null) {
             for (String mediaType : consumes.value()) {
                 operation.consumes(mediaType);
             }
         }
 
-        Produces produces = AnnotationUtils.findAnnotation(method, Produces.class);
+        Produces produces = JaxrsReader.findAnnotation(method, Produces.class);
         if (produces != null) {
             for (String mediaType : produces.value()) {
                 operation.produces(mediaType);
             }
         }
 
-        ApiResponses responseAnnotation = AnnotationUtils.findAnnotation(method, ApiResponses.class);
+        ApiResponses responseAnnotation = JaxrsReader.findAnnotation(method, ApiResponses.class);
         if (responseAnnotation != null) {
             updateApiResponse(operation, responseAnnotation);
         }
 
-        if (AnnotationUtils.findAnnotation(method, Deprecated.class) != null) {
+        if (JaxrsReader.findAnnotation(method, Deprecated.class) != null) {
             operation.deprecated(true);
         }
 
@@ -537,19 +569,19 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
     public String extractOperationMethod(ApiOperation apiOperation, Method method, Iterator<SwaggerExtension> chain) {
         if (apiOperation != null && !apiOperation.httpMethod().isEmpty()) {
             return apiOperation.httpMethod().toLowerCase();
-        } else if (AnnotationUtils.findAnnotation(method, GET.class) != null) {
+        } else if (JaxrsReader.findAnnotation(method, GET.class) != null) {
             return "get";
-        } else if (AnnotationUtils.findAnnotation(method, PUT.class) != null) {
+        } else if (JaxrsReader.findAnnotation(method, PUT.class) != null) {
             return "put";
-        } else if (AnnotationUtils.findAnnotation(method, POST.class) != null) {
+        } else if (JaxrsReader.findAnnotation(method, POST.class) != null) {
             return "post";
-        } else if (AnnotationUtils.findAnnotation(method, DELETE.class) != null) {
+        } else if (JaxrsReader.findAnnotation(method, DELETE.class) != null) {
             return "delete";
-        } else if (AnnotationUtils.findAnnotation(method, OPTIONS.class) != null) {
+        } else if (JaxrsReader.findAnnotation(method, OPTIONS.class) != null) {
             return "options";
-        } else if (AnnotationUtils.findAnnotation(method, HEAD.class) != null) {
+        } else if (JaxrsReader.findAnnotation(method, HEAD.class) != null) {
             return "head";
-        } else if (AnnotationUtils.findAnnotation(method, io.swagger.jaxrs.PATCH.class) != null) {
+        } else if (JaxrsReader.findAnnotation(method, io.swagger.jaxrs.PATCH.class) != null) {
             return "patch";
         } else {
             // check for custom HTTP Method annotations
