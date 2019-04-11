@@ -4,6 +4,7 @@ import java.util.Set;
 
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -31,6 +32,7 @@ public class SpringMavenDocumentSource extends AbstractDocumentSource {
     @Override
     protected Set<Class<?>> getValidClasses() {
         Set result = super.getValidClasses();
+        result.addAll(apiSource.getValidClasses(Controller.class));
         result.addAll(apiSource.getValidClasses(RestController.class));
         result.addAll(apiSource.getValidClasses(ControllerAdvice.class));
         return result;
