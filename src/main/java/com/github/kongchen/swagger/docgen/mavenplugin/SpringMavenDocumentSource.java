@@ -30,9 +30,9 @@ public class SpringMavenDocumentSource extends AbstractDocumentSource {
 
     @Override
     protected Set<Class<?>> getValidClasses() {
-        Set result = super.getValidClasses();
-        result.addAll(apiSource.getValidClasses(RestController.class));
-        result.addAll(apiSource.getValidClasses(ControllerAdvice.class));
+        Set<Class<?>> result = super.getValidClasses();
+        addAllFiltered(result, apiSource.getValidClasses(RestController.class));
+        addAllFiltered(result, apiSource.getValidClasses(ControllerAdvice.class));
         return result;
     }
 
@@ -53,4 +53,20 @@ public class SpringMavenDocumentSource extends AbstractDocumentSource {
         }
     }
 
+    private void addAllFiltered(Set<Class<?>> targetSet, Set<Class<?>> classes) {
+        for (Class<?> clazz : classes) {
+            if (!this.apiSource.isSkipInheritingClasses() || !isSubClassOfAny(clazz, targetSet)) {
+                targetSet.add(clazz);
+            }
+        }
+    }
+
+    private boolean isSubClassOfAny(Class<?> clazz, Set<Class<?>> classes) {
+        for (Class<?> c : classes) {
+            if (c.isAssignableFrom(clazz)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
