@@ -354,6 +354,15 @@ public abstract class AbstractReader {
                     .description(apiResponse.message())
                     .headers(responseHeaders);
 
+            if (apiResponse.examples() != null && apiResponse.examples().value() != null)    {
+                for (ExampleProperty exampleProperty : apiResponse.examples().value()) {
+                    if (exampleProperty.value() != null && !exampleProperty.value().isEmpty()
+                    && exampleProperty.mediaType() != null) {
+                        response.example(exampleProperty.mediaType(), exampleProperty.value());
+                    }
+                }
+            }
+
             if (responseClass.equals(Void.class)) {
                 if (operation.getResponses() != null) {
                     Response apiOperationResponse = operation.getResponses().get(String.valueOf(apiResponse.code()));
