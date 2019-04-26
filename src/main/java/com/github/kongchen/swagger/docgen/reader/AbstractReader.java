@@ -182,7 +182,6 @@ public abstract class AbstractReader {
         if(api == null) {
             return output;
         }
-
         boolean hasExplicitTags = false;
         for (String tag : api.tags()) {
             if (!tag.isEmpty()) {
