@@ -1,5 +1,6 @@
 package com.github.kongchen.swagger.docgen.mavenplugin;
 
+import com.github.kongchen.swagger.docgen.ResponseMessageOverride;
 import com.google.common.base.Strings;
 import io.swagger.annotations.SwaggerDefinition;
 import io.swagger.models.Contact;
@@ -144,6 +145,9 @@ public class ApiSource {
 
     @Parameter
     private ExternalDocs externalDocs;
+
+    @Parameter
+    private List<ResponseMessageOverride> responseMessageOverrides;
 
     public Set<Class<?>> getValidClasses(Class<? extends Annotation> clazz) {
         Set<Class<?>> classes = new LinkedHashSet<Class<?>>();
@@ -359,6 +363,14 @@ public class ApiSource {
             setExternalDocsFromAnnotation();
         }
         return externalDocs;
+    }
+
+    public List<ResponseMessageOverride> getResponseMessageOverrides() {
+        return responseMessageOverrides;
+    }
+
+    public void setResponseMessageOverrides(List<ResponseMessageOverride> responseMessageOverrides) {
+        this.responseMessageOverrides = responseMessageOverrides;
     }
 
     public void setModelSubstitute(String modelSubstitute) {

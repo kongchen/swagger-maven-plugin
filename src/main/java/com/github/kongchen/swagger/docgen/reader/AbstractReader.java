@@ -1,5 +1,6 @@
 package com.github.kongchen.swagger.docgen.reader;
 
+import com.github.kongchen.swagger.docgen.ResponseMessageOverride;
 import com.github.kongchen.swagger.docgen.util.TypeExtracter;
 import com.github.kongchen.swagger.docgen.util.TypeWithAnnotations;
 import com.google.common.collect.Lists;
@@ -37,6 +38,7 @@ public abstract class AbstractReader {
     protected final Log LOG;
     protected Swagger swagger;
     private Set<Type> typesToSkip = new HashSet<Type>();
+    protected List<ResponseMessageOverride> responseMessageOverrides;
 
     protected String operationIdFormat;
     
@@ -60,6 +62,14 @@ public abstract class AbstractReader {
 
     public void addTypeToSkippedTypes(Type type) {
         this.typesToSkip.add(type);
+    }
+
+    public void setResponseMessageOverrides(List<ResponseMessageOverride> responseMessageOverrides) {
+        this.responseMessageOverrides = responseMessageOverrides;
+    }
+
+    public List<ResponseMessageOverride> getResponseMessageOverrides() {
+        return responseMessageOverrides;
     }
 
     public AbstractReader(Swagger swagger, Log LOG) {
@@ -111,6 +121,20 @@ public abstract class AbstractReader {
             String pattern = regexMap.get(param.getName());
             if (pattern != null) {
                 param.setPattern(pattern);
+            }
+        }
+    }
+
+    protected void overrideResponseMessages(Operation operation) {
+        if (responseMessageOverrides != null) {
+            for (ResponseMessageOverride responseMessage : responseMessageOverrides) {
+                Response response = new Response()
+                        .description(responseMessage.getMessage());
+                ResponseMessageOverride.Example example = responseMessage.getExample();
+                if (example != null) {
+                    response.example(example.getMediaType(), example.getValue());
+                }
+                operation.response(responseMessage.getCode(), response);
             }
         }
     }

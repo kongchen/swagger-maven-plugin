@@ -40,6 +40,7 @@ public class MavenDocumentSource extends AbstractDocumentSource {
             JaxrsReader reader = new JaxrsReader(swagger, LOG);
             reader.setTypesToSkip(this.typesToSkip);
             reader.setOperationIdFormat(this.apiSource.getOperationIdFormat());
+            reader.setResponseMessageOverrides(this.apiSource.getResponseMessageOverrides());
             return reader;
         } else {
             ClassSwaggerReader customApiReader = getCustomApiReader(customReaderClassName);
