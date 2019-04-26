@@ -348,7 +348,7 @@ public abstract class AbstractReader {
 
     protected void updateApiResponse(Operation operation, ApiResponses responseAnnotation) {
         boolean contains200 = false;
-        boolean contains201 = false;
+        boolean contains2xx = false;
         for (ApiResponse apiResponse : responseAnnotation.value()) {
             Map<String, Property> responseHeaders = parseResponseHeaders(apiResponse.responseHeaders());
             Class<?> responseClass = apiResponse.response();
@@ -397,12 +397,12 @@ public abstract class AbstractReader {
             }
             if (apiResponse.code() == 200) {
                 contains200 = true;
-            } else if (apiResponse.code() == 201) {
-                contains201 = true;
+            } else if (apiResponse.code() > 200 && apiResponse.code() < 300) {
+                contains2xx = true;
             }
         }
 
-        if (!contains200 && contains201) {
+        if (!contains200 && contains2xx) {
             operation.getResponses().remove("200");
         }
     }
