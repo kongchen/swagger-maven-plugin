@@ -347,7 +347,8 @@ public abstract class AbstractReader {
     }
 
     protected void updateApiResponse(Operation operation, ApiResponses responseAnnotation) {
-        boolean contains200 = false, contains201 = false;
+        boolean contains200 = false;
+        boolean contains201 = false;
         for (ApiResponse apiResponse : responseAnnotation.value()) {
             Map<String, Property> responseHeaders = parseResponseHeaders(apiResponse.responseHeaders());
             Class<?> responseClass = apiResponse.response();
