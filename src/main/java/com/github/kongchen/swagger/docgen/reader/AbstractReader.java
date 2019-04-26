@@ -128,16 +128,20 @@ public abstract class AbstractReader {
     protected void overrideResponseMessages(Operation operation) {
         if (responseMessageOverrides != null) {
             for (ResponseMessageOverride responseMessage : responseMessageOverrides) {
-                Response response = new Response()
-                        .description(responseMessage.getMessage());
-                if (responseMessage.getExample() != null) {
-                    response.example(
-                            responseMessage.getExample().getMediaType(),
-                            responseMessage.getExample().getValue());
-                }
-                operation.response(responseMessage.getCode(), response);
+                operation.response(responseMessage.getCode(), createResponse(responseMessage));
             }
         }
+    }
+
+    private Response createResponse(ResponseMessageOverride responseMessage) {
+        Response response = new Response()
+                .description(responseMessage.getMessage());
+        if (responseMessage.getExample() != null) {
+            response.example(
+                    responseMessage.getExample().getMediaType(),
+                    responseMessage.getExample().getValue());
+        }
+        return response;
     }
 
     protected Map<String, Property> parseResponseHeaders(ResponseHeader[] headers) {
