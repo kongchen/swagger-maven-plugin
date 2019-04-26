@@ -1,6 +1,7 @@
 package com.github.kongchen.swagger.docgen;
 
 import com.github.kongchen.swagger.docgen.mavenplugin.ApiSource;
+import com.github.kongchen.swagger.docgen.reader.AbstractReader;
 import com.github.kongchen.swagger.docgen.reader.ClassSwaggerReader;
 import io.swagger.models.ExternalDocs;
 import io.swagger.models.Path;
@@ -30,9 +31,14 @@ public class AbstractDocumentSourceTest {
     @BeforeMethod
     public void setUp() throws MojoFailureException {
         MockitoAnnotations.initMocks(this);
-        source = new AbstractDocumentSource(log, apiSource) {
+        source = new AbstractDocumentSource(log, apiSource, null) {
             @Override
             protected ClassSwaggerReader resolveApiReader() throws GenerateException {
+                return null;
+            }
+
+            @Override
+            protected AbstractReader createReader() {
                 return null;
             }
         };
@@ -61,9 +67,14 @@ public class AbstractDocumentSourceTest {
         Mockito.when(apiSource.getExternalDocs()).thenReturn(new ExternalDocs("Example external docs", "https://example.com/docs"));
 
         // act
-        AbstractDocumentSource externalDocsSource = new AbstractDocumentSource(log, apiSource) {
+        AbstractDocumentSource externalDocsSource = new AbstractDocumentSource(log, apiSource, null) {
             @Override
             protected ClassSwaggerReader resolveApiReader() throws GenerateException {
+                return null;
+            }
+
+            @Override
+            protected AbstractReader createReader() {
                 return null;
             }
         };

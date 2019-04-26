@@ -130,9 +130,10 @@ public abstract class AbstractReader {
             for (ResponseMessageOverride responseMessage : responseMessageOverrides) {
                 Response response = new Response()
                         .description(responseMessage.getMessage());
-                ResponseMessageOverride.Example example = responseMessage.getExample();
-                if (example != null) {
-                    response.example(example.getMediaType(), example.getValue());
+                if (responseMessage.getExample() != null) {
+                    response.example(
+                            responseMessage.getExample().getMediaType(),
+                            responseMessage.getExample().getValue());
                 }
                 operation.response(responseMessage.getCode(), response);
             }

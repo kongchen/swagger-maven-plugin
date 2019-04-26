@@ -1,29 +1,22 @@
 package com.github.kongchen.swagger.docgen.mavenplugin;
 
+import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
+import com.github.kongchen.swagger.docgen.reader.JaxrsReader;
 import com.google.common.collect.Sets;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
-
-import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
-import com.github.kongchen.swagger.docgen.GenerateException;
-import com.github.kongchen.swagger.docgen.reader.AbstractReader;
-import com.github.kongchen.swagger.docgen.reader.ClassSwaggerReader;
-import com.github.kongchen.swagger.docgen.reader.JaxrsReader;
 
 import javax.ws.rs.Path;
 import java.util.Set;
 
 /**
  * @author chekong
- *         05/13/2013
+ * 05/13/2013
  */
-public class MavenDocumentSource extends AbstractDocumentSource {
+public class MavenDocumentSource extends AbstractDocumentSource<JaxrsReader> {
 
     public MavenDocumentSource(ApiSource apiSource, Log log, String encoding) throws MojoFailureException {
-        super(log, apiSource);
-        if(encoding !=null) {
-            this.encoding = encoding;
-        }
+        super(log, apiSource, encoding);
     }
 
     @Override
@@ -34,21 +27,7 @@ public class MavenDocumentSource extends AbstractDocumentSource {
     }
 
     @Override
-    protected ClassSwaggerReader resolveApiReader() throws GenerateException {
-        String customReaderClassName = apiSource.getSwaggerApiReader();
-        if (customReaderClassName == null) {
-            JaxrsReader reader = new JaxrsReader(swagger, LOG);
-            reader.setTypesToSkip(this.typesToSkip);
-            reader.setOperationIdFormat(this.apiSource.getOperationIdFormat());
-            reader.setResponseMessageOverrides(this.apiSource.getResponseMessageOverrides());
-            return reader;
-        } else {
-            ClassSwaggerReader customApiReader = getCustomApiReader(customReaderClassName);
-            if (customApiReader instanceof AbstractReader) {
-                ((AbstractReader)customApiReader).setOperationIdFormat(this.apiSource.getOperationIdFormat());
-            }
-            return customApiReader;
-
-        }
+    protected JaxrsReader createReader() {
+        return new JaxrsReader(swagger, LOG);
     }
 }
