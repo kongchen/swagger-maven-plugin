@@ -46,9 +46,9 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
 
     @Override
     protected void updateExtensionChain() {
-    	List<SwaggerExtension> extensions = new ArrayList<SwaggerExtension>();
-    	extensions.add(new SpringSwaggerExtension(LOG));
-    	SwaggerExtensions.setExtensions(extensions);
+        List<SwaggerExtension> extensions = new ArrayList<SwaggerExtension>();
+        extensions.add(new SpringSwaggerExtension(LOG));
+        SwaggerExtensions.setExtensions(extensions);
     }
 
     @Override
@@ -58,7 +58,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         //create map - resource string (after first slash) as key, new SpringResource as value
         Map<String, SpringResource> resourceMap = generateResourceMap(classes);
         exceptionHandlerReader.processExceptionHandlers(classes);
-        for (SpringResource resource: resourceMap.values()) {
+        for (SpringResource resource : resourceMap.values()) {
             read(resource);
         }
 
@@ -154,7 +154,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
 
         ApiOperation apiOperation = findMergedAnnotation(method, ApiOperation.class);
 
-        if(apiOperation != null) {
+        if (apiOperation != null) {
             if (apiOperation.hidden()) {
                 return null;
             }
@@ -202,12 +202,12 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
             LOG.info("picking up response class from method " + method);
             responseClass = method.getGenericReturnType();
         }
-        if (responseClass instanceof ParameterizedType && ResponseEntity.class.equals(((ParameterizedType) responseClass).getRawType())) {
-            responseClass = ((ParameterizedType) responseClass).getActualTypeArguments()[0];
+        if (responseClass instanceof ParameterizedType && ResponseEntity.class.equals(((ParameterizedType)responseClass).getRawType())) {
+            responseClass = ((ParameterizedType)responseClass).getActualTypeArguments()[0];
         }
         boolean hasApiAnnotation = false;
         if (responseClass instanceof Class) {
-            hasApiAnnotation = findAnnotation((Class) responseClass, Api.class) != null;
+            hasApiAnnotation = findAnnotation((Class)responseClass, Api.class) != null;
         }
         if (responseClass != null
                 && !responseClass.equals(Void.class)
@@ -262,17 +262,24 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         ApiResponses responseAnnotation = findMergedAnnotation(method, ApiResponses.class);
         if (responseAnnotation != null) {
             updateApiResponse(operation, responseAnnotation);
-        } else {
-            ResponseStatus responseStatus = findMergedAnnotation(method, ResponseStatus.class);
-            if (responseStatus != null) {
-                operation.response(responseStatus.value().value(), new Response().description(responseStatus.reason()));
+        }
+
+        ResponseStatus responseStatus = findMergedAnnotation(method, ResponseStatus.class);
+        if (responseStatus != null) {
+            int code = responseStatus.value().value();
+            if (responseAnnotation == null || operation.getResponses() == null ||
+                    !operation.getResponses().containsKey(String.valueOf(code))) {
+                operation.response(code, new Response().description(responseStatus.reason()));
+                if (code == 201) {
+                    operation.getResponses().remove("200");
+                }
             }
         }
 
         List<ResponseStatus> errorResponses = exceptionHandlerReader.getResponseStatusesFromExceptions(method);
-        for (ResponseStatus responseStatus: errorResponses) {
-            int code = responseStatus.code().value();
-            String description = defaultIfEmpty(responseStatus.reason(), responseStatus.code().getReasonPhrase());
+        for (ResponseStatus errorResponseStatus : errorResponses) {
+            int code = errorResponseStatus.code().value();
+            String description = defaultIfEmpty(errorResponseStatus.reason(), errorResponseStatus.code().getReasonPhrase());
             operation.response(code, new Response().description(description));
         }
 
@@ -296,7 +303,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
             List<Parameter> parameters = getParameters(type, annotations);
 
             for (Parameter parameter : parameters) {
-                if(parameter.getName().isEmpty()) {
+                if (parameter.getName().isEmpty()) {
                     parameter.setName(parameterNames[i]);
                 }
                 operation.parameter(parameter);
@@ -349,7 +356,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
 
     //Helper method for loadDocuments()
     private Map<String, SpringResource> analyzeController(Class<?> controllerClazz, Map<String, SpringResource> resourceMap, String description) {
-	String[] controllerRequestMappingValues = SpringUtils.getControllerResquestMapping(controllerClazz);
+        String[] controllerRequestMappingValues = SpringUtils.getControllerResquestMapping(controllerClazz);
 
         // Iterate over all value attributes of the class-level RequestMapping annotation
         for (String controllerRequestMappingValue : controllerRequestMappingValues) {
