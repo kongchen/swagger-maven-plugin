@@ -4,6 +4,7 @@ import com.github.kongchen.swagger.docgen.GenerateException;
 import com.github.kongchen.swagger.docgen.spring.SpringResource;
 import com.github.kongchen.swagger.docgen.spring.SpringSwaggerExtension;
 import com.github.kongchen.swagger.docgen.util.SpringUtils;
+import com.google.common.base.Strings;
 import io.swagger.annotations.*;
 import io.swagger.converter.ModelConverters;
 import io.swagger.jaxrs.ext.SwaggerExtension;
@@ -269,9 +270,14 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
             int code = responseStatus.value().value();
             if (responseAnnotation == null || operation.getResponses() == null ||
                     !operation.getResponses().containsKey(String.valueOf(code))) {
-                operation.response(code, new Response().description(responseStatus.reason()));
-                if (code == 201) {
-                    operation.getResponses().remove("200");
+                if (code == 201 && operation.getResponses() != null && operation.getResponses().containsKey("200")) {
+                    Response replaced = operation.getResponses().remove("200");
+                    if (!Strings.isNullOrEmpty(responseStatus.reason())) {
+                        replaced.setDescription(responseStatus.reason());
+                    }
+                    operation.response(code, replaced);
+                } else {
+                    operation.response(code, new Response().description(responseStatus.reason()));
                 }
             }
         }
