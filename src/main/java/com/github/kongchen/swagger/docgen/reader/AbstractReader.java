@@ -428,7 +428,9 @@ public abstract class AbstractReader {
         for (ApiImplicitParam param : implicitParams.value()) {
             Class<?> cls;
             try {
-                cls = Class.forName(param.dataType());
+                cls = param.dataTypeClass() == Void.class ?
+                        Class.forName(param.dataType()) :
+                        param.dataTypeClass();
             } catch (ClassNotFoundException e) {
                 cls = method.getDeclaringClass();
             }
