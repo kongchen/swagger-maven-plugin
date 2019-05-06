@@ -435,6 +435,9 @@ public abstract class AbstractReader {
 
             Parameter p = readImplicitParam(param, cls);
             if (p != null) {
+                if (p instanceof BodyParameter) {
+                    operation.getParameters().removeIf(parameter -> parameter instanceof BodyParameter);
+                }
                 operation.addParameter(p);
             }
         }
