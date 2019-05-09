@@ -38,7 +38,7 @@ public class SpringMVCResponseStatusTest {
     private SpringMvcApiReader reader;
 
     @BeforeMethod
-    public void setup() {
+    public void setUp() {
         reader = new SpringMvcApiReader(new Swagger(), new SystemStreamLog());
     }
 
