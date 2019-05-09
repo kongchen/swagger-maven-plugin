@@ -402,7 +402,11 @@ public abstract class AbstractReader {
             }
         }
         if (!contains200 && contains2xx) {
-            operation.getResponses().remove("200");
+            Map<String, Response> responses = operation.getResponses();
+            //technically should not be possible at this point, added to be safe
+            if (responses != null) {
+                responses.remove("200");
+            }
         }
     }
 
