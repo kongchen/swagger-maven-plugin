@@ -1649,10 +1649,10 @@
           "200" : {
             "description" : "Successful operation",
             "schema": {
-                "type": "array",
-                "items": {
-                    "type": "object"
-                }
+              "type": "array",
+              "items": {
+                "type": "object",
+              }
             }
           }
         },

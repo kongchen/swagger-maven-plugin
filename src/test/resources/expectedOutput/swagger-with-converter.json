@@ -1642,13 +1642,13 @@
         "produces" : [ "application/json" ],
         "responses" : {
           "200" : {
-              "description": "Successful operation",
-              "schema": {
-                  "type": "array",
-                  "items": {
-                      "type": "object"
-                  }
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object"
               }
+            }
           }
         },
         "security" : [ {
