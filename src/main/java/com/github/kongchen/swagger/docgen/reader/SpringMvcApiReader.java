@@ -265,7 +265,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         } else {
             ResponseStatus responseStatus = findMergedAnnotation(method, ResponseStatus.class);
             if (responseStatus != null) {
-                operation.response(responseStatus.value().value(), new Response().description(responseStatus.reason()));
+                updateResponseStatus(operation, responseStatus);
             }
         }
 
@@ -313,6 +313,22 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         processOperationDecorator(operation, method);
 
         return operation;
+    }
+
+    private void updateResponseStatus(Operation operation, ResponseStatus responseStatus) {
+        int code = responseStatus.value().value();
+        String reason = responseStatus.reason();
+
+        if (operation.getResponses() != null && operation.getResponses().size() == 1) {
+            String currentKey = operation.getResponses().keySet().iterator().next();
+            Response oldResponse = operation.getResponses().remove(currentKey);
+            if (StringUtils.isNotEmpty(reason)) {
+                oldResponse.setDescription(reason);
+            }
+            operation.response(code, oldResponse);
+        } else {
+            operation.response(code, new Response().description(reason));
+        }
     }
 
     private Map<String, List<Method>> collectApisByRequestMapping(List<Method> methods) {

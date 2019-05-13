@@ -347,6 +347,8 @@ public abstract class AbstractReader {
     }
 
     protected void updateApiResponse(Operation operation, ApiResponses responseAnnotation) {
+        boolean contains200 = false;
+        boolean contains2xx = false;
         for (ApiResponse apiResponse : responseAnnotation.value()) {
             Map<String, Property> responseHeaders = parseResponseHeaders(apiResponse.responseHeaders());
             Class<?> responseClass = apiResponse.response();
@@ -392,6 +394,18 @@ public abstract class AbstractReader {
                 operation.defaultResponse(response);
             } else {
                 operation.response(apiResponse.code(), response);
+            }
+            if (apiResponse.code() == 200) {
+                contains200 = true;
+            } else if (apiResponse.code() > 200 && apiResponse.code() < 300) {
+                contains2xx = true;
+            }
+        }
+        if (!contains200 && contains2xx) {
+            Map<String, Response> responses = operation.getResponses();
+            //technically should not be possible at this point, added to be safe
+            if (responses != null) {
+                responses.remove("200");
             }
         }
     }
