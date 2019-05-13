@@ -34,6 +34,7 @@ import java.util.*;
  * @author chekong on 15/4/28.
  */
 public abstract class AbstractReader {
+    private static final ResponseContainerConverter RESPONSE_CONTAINER_CONVERTER = new ResponseContainerConverter();
     protected final Log LOG;
     protected Swagger swagger;
     private Set<Type> typesToSkip = new HashSet<Type>();
@@ -363,15 +364,16 @@ public abstract class AbstractReader {
                         response.setSchema(apiOperationResponse.getSchema());
                     }
                 }
+            } else if (isPrimitive(responseClass)) {
+                Property property = ModelConverters.getInstance().readAsProperty(responseClass);
+                if (property != null) {
+                    response.setSchema(RESPONSE_CONTAINER_CONVERTER.withResponseContainer(apiResponse.responseContainer(), property));
+                }
             } else {
                 Map<String, Model> models = ModelConverters.getInstance().read(responseClass);
                 for (String key : models.keySet()) {
                     final Property schema = new RefProperty().asDefault(key);
-                    if (apiResponse.responseContainer().equals("List")) {
-                        response.schema(new ArrayProperty(schema));
-                    } else {
-                        response.schema(schema);
-                    }
+                    response.setSchema(RESPONSE_CONTAINER_CONVERTER.withResponseContainer(apiResponse.responseContainer(), schema));
                     swagger.model(key, models.get(key));
                 }
                 models = ModelConverters.getInstance().readAll(responseClass);
