@@ -83,12 +83,14 @@ public abstract class AbstractDocumentSource<D extends AbstractReader & ClassSwa
 
         // read description from file
         if (apiSource.getDescriptionFile() != null) {
+            InputStream is = null;
             try {
-                InputStream is = new FileInputStream(apiSource.getDescriptionFile());
+                is = new FileInputStream(apiSource.getDescriptionFile());
                 apiSource.getInfo().setDescription(IOUtils.toString(is));
-                is.close();
             } catch (IOException e) {
                 throw new MojoFailureException(e.getMessage(), e);
+            } finally {
+                IOUtils.closeQuietly(is);
             }
         }
 
