@@ -453,6 +453,15 @@ public abstract class AbstractReader {
 
             Parameter p = readImplicitParam(param, cls);
             if (p != null) {
+                if (p instanceof BodyParameter) {
+                    Iterator<Parameter> iterator = operation.getParameters().iterator();
+                    while(iterator.hasNext()) {
+                        Parameter parameter = iterator.next();
+                        if (parameter instanceof BodyParameter) {
+                            iterator.remove();
+                        }
+                    }
+                }
                 operation.addParameter(p);
             }
         }
