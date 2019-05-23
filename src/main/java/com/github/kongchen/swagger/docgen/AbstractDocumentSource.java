@@ -65,7 +65,7 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 /**
  * @author chekong 05/13/2013
  */
-public abstract class AbstractDocumentSource {
+public abstract class AbstractDocumentSource<D extends AbstractReader & ClassSwaggerReader> {
     protected final ApiSource apiSource;
     protected final Log LOG;
     protected final List<Type> typesToSkip = new ArrayList<Type>();
@@ -80,7 +80,7 @@ public abstract class AbstractDocumentSource {
     private boolean isSorted = false;
     protected String encoding = "UTF-8";
 
-    public AbstractDocumentSource(Log log, ApiSource apiSource) throws MojoFailureException {
+    public AbstractDocumentSource(Log log, ApiSource apiSource, String encoding) throws MojoFailureException {
         LOG = log;
         this.outputPath = apiSource.getOutputPath();
         this.templatePath = apiSource.getTemplatePath();
@@ -97,12 +97,14 @@ public abstract class AbstractDocumentSource {
 
         // read description from file
         if (apiSource.getDescriptionFile() != null) {
+            InputStream is = null;
             try {
-                InputStream is = new FileInputStream(apiSource.getDescriptionFile());
+                is = new FileInputStream(apiSource.getDescriptionFile());
                 apiSource.getInfo().setDescription(IOUtils.toString(is));
-                is.close();
             } catch (IOException e) {
                 throw new MojoFailureException(e.getMessage(), e);
+            } finally {
+                IOUtils.closeQuietly(is);
             }
         }
 
@@ -112,6 +114,9 @@ public abstract class AbstractDocumentSource {
         swagger.setExternalDocs(apiSource.getExternalDocs());
 
         this.apiSource = apiSource;
+        if (encoding != null) {
+            this.encoding = encoding;
+        }
     }
 
     public void loadDocuments() throws GenerateException {
@@ -438,7 +443,24 @@ public abstract class AbstractDocumentSource {
      * @return ClassSwaggerReader to use
      * @throws GenerateException if the reader cannot be created / resolved
      */
-    protected abstract ClassSwaggerReader resolveApiReader() throws GenerateException;
+    protected ClassSwaggerReader resolveApiReader() throws GenerateException {
+        String customReaderClassName = apiSource.getSwaggerApiReader();
+        if (customReaderClassName == null) {
+            D reader = createReader();
+            reader.setTypesToSkip(this.typesToSkip);
+            reader.setOperationIdFormat(this.apiSource.getOperationIdFormat());
+            reader.setResponseMessageOverrides(this.apiSource.getResponseMessageOverrides());
+            return reader;
+        } else {
+            ClassSwaggerReader customApiReader = getCustomApiReader(customReaderClassName);
+            if (customApiReader instanceof AbstractReader) {
+                ((AbstractReader)customApiReader).setOperationIdFormat(this.apiSource.getOperationIdFormat());
+            }
+            return customApiReader;
+        }
+    }
+
+    protected abstract D createReader();
 
     /**
      * Returns the set of classes which should be included in the scanning.
@@ -460,10 +482,17 @@ public abstract class AbstractDocumentSource {
         List<SwaggerExtension> resolved = new ArrayList<SwaggerExtension>();
         if (clazzes != null) {
             for (String clazz : clazzes) {
-                SwaggerExtension extension;
+                SwaggerExtension extension = null;
+                //Try to get a parameterized constructor for extensions that are log-enabled.
                 try {
-                    extension = (SwaggerExtension) Class.forName(clazz).newInstance();
-                } catch (Exception e) {
+                    try {
+                        Constructor<?> constructor = Class.forName(clazz).getConstructor(Log.class);
+                        extension = (SwaggerExtension) constructor.newInstance(LOG);
+                    } catch (NoSuchMethodException nsme) {
+                        extension = (SwaggerExtension) Class.forName(clazz).newInstance();
+                    }
+                }
+                catch (Exception e) {
                     throw new GenerateException("Cannot load Swagger extension: " + clazz, e);
                 }
                 resolved.add(extension);

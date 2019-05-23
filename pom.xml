@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.kongchen</groupId>
     <artifactId>swagger-maven-plugin</artifactId>
-    <version>3.1.8-SNAPSHOT</version>
+    <version>3.1.9-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
     <name>Swagger Maven Plugin</name>
     <description>
@@ -69,7 +69,7 @@
         <commons-io.version>2.0.1</commons-io.version>
         <reflections.version>0.9.9</reflections.version>
         <springframework.version>4.3.7.RELEASE</springframework.version>
-        <commons-lang3.version>3.5</commons-lang3.version>
+        <commons-lang3.version>3.9</commons-lang3.version>
         <version.jersey-server>1.13</version.jersey-server>
         <version.javax.ws.rs-api>2.0.1</version.javax.ws.rs-api>
         <version.maven-plugin-annotations>3.3</version.maven-plugin-annotations>
@@ -89,7 +89,7 @@
         <version.animal-sniffer-plugin>1.14</version.animal-sniffer-plugin>
         <version.maven-source-plugin>2.1.2</version.maven-source-plugin>
         <version.maven-javadoc-plugin>2.7</version.maven-javadoc-plugin>
-        <version.maven-gpg-plugin>1.1</version.maven-gpg-plugin>
+        <version.maven-gpg-plugin>1.6</version.maven-gpg-plugin>
         <version.plexus-javadoc>1.0</version.plexus-javadoc>
         <version.slf4j-nop>1.7.25</version.slf4j-nop>
         <kotlin.version>1.2.61</kotlin.version>

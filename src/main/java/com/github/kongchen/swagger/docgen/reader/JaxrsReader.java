@@ -448,6 +448,8 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
             updateApiResponse(operation, responseAnnotation);
         }
 
+        overrideResponseMessages(operation);
+
         if (AnnotationUtils.findAnnotation(method, Deprecated.class) != null) {
             operation.deprecated(true);
         }

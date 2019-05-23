@@ -90,6 +90,7 @@ The `executions` block is used to specify the phase of the build lifecycle you w
 | `disabledObjectMapperFeatures`    | List of ConfigFeature enums that are supported by ObjectMapper.configure - the feature is set to false. https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#features) here, see more details [below](#features)|
 | `operationIdFormat` | Format of `operationId` used in Swagger spec. For historical reasons default is Java method name. Since 3.1.8, for new APIs suggested format is: `{{className}}_{{methodName}}_{{httpMethod}}`. `{{packageName}}` token is also supported. |
 | `externalDocs` | URL Reference to external documentation |
+| `responseMessageOverrides` | Default response message overrides of type ```@ApiResponse```. Example: `<responseMessageOverrides><responseMessageOverride><code>401</code><message>Unauthenticated - could not authenticate the user.</message></responseMessageOverride></responseMessageOverrides>` |
 # <a id="templatefile">Template File</a>
 
 If you'd like to generate a template-driven static document, such as markdown or HTML documentation, you'll need to specify a [handlebars](https://github.com/jknack/handlebars.java) template file in ```templatePath```.
@@ -353,6 +354,16 @@ There's a [sample here](https://github.com/swagger-maven-plugin/swagger-maven-ex
                         </scopes>
                     </security>
                 </securityRequirements>
+                <responseMessageOverrides>
+                    <responseMessageOverride>
+                        <code>401</code>
+                        <message>Unauthenticated - could not authenticate the user.</message>
+                    </responseMessageOverride>
+                    <responseMessageOverride>
+                        <code>403</code>
+                        <message>Forbidden - the user does not have the required permissions to execute this request.</message>
+                    </responseMessageOverride>
+                </responseMessageOverrides>
                 <!-- Support classpath or file absolute path here.
                 1) classpath e.g: "classpath:/markdown.hbs", "classpath:/templates/hello.html"
                 2) file e.g: "${basedir}/src/main/resources/markdown.hbs",
