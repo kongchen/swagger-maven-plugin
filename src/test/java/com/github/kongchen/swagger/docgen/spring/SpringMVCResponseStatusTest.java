@@ -72,7 +72,7 @@ public class SpringMVCResponseStatusTest {
         testMethod("/getString_ApiResponse_202_409", HttpMethod.GET,
               ImmutableMap.of(
                     HttpStatus.ACCEPTED,
-                    new Response().description(ACCEPTED_OPERATION_DESCRIPTION),
+                    new Response().description(ACCEPTED_OPERATION_DESCRIPTION).responseSchema(RETURN_TYPE_STRING),
                     HttpStatus.CONFLICT,
                     new Response().description(CONFLICT_OPERATION_DESCRIPTION))
         );
@@ -83,7 +83,7 @@ public class SpringMVCResponseStatusTest {
         testMethod("/getString_ApiResponse_202_409_over", HttpMethod.GET,
               ImmutableMap.of(
                     HttpStatus.ACCEPTED,
-                    new Response().description(ACCEPTED_OPERATION_DESCRIPTION),
+                    new Response().description(ACCEPTED_OPERATION_DESCRIPTION).responseSchema(RETURN_TYPE_INTEGER),
                     HttpStatus.CONFLICT,
                     new Response().description(CONFLICT_OPERATION_DESCRIPTION))
         );
