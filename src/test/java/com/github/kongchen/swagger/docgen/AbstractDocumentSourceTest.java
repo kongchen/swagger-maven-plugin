@@ -100,9 +100,14 @@ public class AbstractDocumentSourceTest {
         when(apiSource.getInfo()).thenReturn(new Info());
 
         // act
-        AbstractDocumentSource externalDocsSource = new AbstractDocumentSource(log, apiSource) {
+        AbstractDocumentSource externalDocsSource = new AbstractDocumentSource(log, apiSource, "UTF-8") {
             @Override
             protected ClassSwaggerReader resolveApiReader() throws GenerateException {
+                return null;
+            }
+
+            @Override
+            protected AbstractReader createReader() {
                 return null;
             }
         };
