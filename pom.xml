@@ -69,7 +69,7 @@
         <commons-io.version>2.0.1</commons-io.version>
         <reflections.version>0.9.9</reflections.version>
         <springframework.version>4.3.7.RELEASE</springframework.version>
-        <commons-lang3.version>3.5</commons-lang3.version>
+        <commons-lang3.version>3.9</commons-lang3.version>
         <version.jersey-server>1.13</version.jersey-server>
         <version.javax.ws.rs-api>2.0.1</version.javax.ws.rs-api>
         <version.maven-plugin-annotations>3.3</version.maven-plugin-annotations>
