@@ -29,7 +29,7 @@ public class SpringMvcApiReaderTest {
     private SpringMvcApiReader reader;
 
     @BeforeMethod
-    public void setup() {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
         reader = new SpringMvcApiReader(new Swagger(), log);
     }
