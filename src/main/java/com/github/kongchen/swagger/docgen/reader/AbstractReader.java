@@ -1,5 +1,6 @@
 package com.github.kongchen.swagger.docgen.reader;
 
+import com.github.kongchen.swagger.docgen.ResponseMessageOverride;
 import com.github.kongchen.swagger.docgen.util.TypeExtracter;
 import com.github.kongchen.swagger.docgen.util.TypeWithAnnotations;
 import com.google.common.collect.Lists;
@@ -34,9 +35,11 @@ import java.util.*;
  * @author chekong on 15/4/28.
  */
 public abstract class AbstractReader {
+    private static final ResponseContainerConverter RESPONSE_CONTAINER_CONVERTER = new ResponseContainerConverter();
     protected final Log LOG;
     protected Swagger swagger;
     private Set<Type> typesToSkip = new HashSet<Type>();
+    protected List<ResponseMessageOverride> responseMessageOverrides;
 
     protected String operationIdFormat;
     
@@ -60,6 +63,14 @@ public abstract class AbstractReader {
 
     public void addTypeToSkippedTypes(Type type) {
         this.typesToSkip.add(type);
+    }
+
+    public void setResponseMessageOverrides(List<ResponseMessageOverride> responseMessageOverrides) {
+        this.responseMessageOverrides = responseMessageOverrides;
+    }
+
+    public List<ResponseMessageOverride> getResponseMessageOverrides() {
+        return responseMessageOverrides;
     }
 
     public AbstractReader(Swagger swagger, Log LOG) {
@@ -113,6 +124,25 @@ public abstract class AbstractReader {
                 param.setPattern(pattern);
             }
         }
+    }
+
+    protected void overrideResponseMessages(Operation operation) {
+        if (responseMessageOverrides != null) {
+            for (ResponseMessageOverride responseMessage : responseMessageOverrides) {
+                operation.response(responseMessage.getCode(), createResponse(responseMessage));
+            }
+        }
+    }
+
+    private Response createResponse(ResponseMessageOverride responseMessage) {
+        Response response = new Response()
+                .description(responseMessage.getMessage());
+        if (responseMessage.getExample() != null) {
+            response.example(
+                    responseMessage.getExample().getMediaType(),
+                    responseMessage.getExample().getValue());
+        }
+        return response;
     }
 
     protected Map<String, Property> parseResponseHeaders(ResponseHeader[] headers) {
@@ -347,6 +377,8 @@ public abstract class AbstractReader {
     }
 
     protected void updateApiResponse(Operation operation, ApiResponses responseAnnotation) {
+        boolean contains200 = false;
+        boolean contains2xx = false;
         for (ApiResponse apiResponse : responseAnnotation.value()) {
             Map<String, Property> responseHeaders = parseResponseHeaders(apiResponse.responseHeaders());
             Class<?> responseClass = apiResponse.response();
@@ -370,15 +402,16 @@ public abstract class AbstractReader {
                         response.setSchema(apiOperationResponse.getSchema());
                     }
                 }
+            } else if (isPrimitive(responseClass)) {
+                Property property = ModelConverters.getInstance().readAsProperty(responseClass);
+                if (property != null) {
+                    response.setSchema(RESPONSE_CONTAINER_CONVERTER.withResponseContainer(apiResponse.responseContainer(), property));
+                }
             } else {
                 Map<String, Model> models = ModelConverters.getInstance().read(responseClass);
                 for (String key : models.keySet()) {
                     final Property schema = new RefProperty().asDefault(key);
-                    if (apiResponse.responseContainer().equals("List")) {
-                        response.schema(new ArrayProperty(schema));
-                    } else {
-                        response.schema(schema);
-                    }
+                    response.setSchema(RESPONSE_CONTAINER_CONVERTER.withResponseContainer(apiResponse.responseContainer(), schema));
                     swagger.model(key, models.get(key));
                 }
                 models = ModelConverters.getInstance().readAll(responseClass);
@@ -401,6 +434,18 @@ public abstract class AbstractReader {
                 operation.defaultResponse(response);
             } else {
                 operation.response(apiResponse.code(), response);
+            }
+            if (apiResponse.code() == 200) {
+                contains200 = true;
+            } else if (apiResponse.code() > 200 && apiResponse.code() < 300) {
+                contains2xx = true;
+            }
+        }
+        if (!contains200 && contains2xx) {
+            Map<String, Response> responses = operation.getResponses();
+            //technically should not be possible at this point, added to be safe
+            if (responses != null) {
+                responses.remove("200");
             }
         }
     }
@@ -437,13 +482,24 @@ public abstract class AbstractReader {
         for (ApiImplicitParam param : implicitParams.value()) {
             Class<?> cls;
             try {
-                cls = Class.forName(param.dataType());
+                cls = param.dataTypeClass() == Void.class ?
+                        Class.forName(param.dataType()) :
+                        param.dataTypeClass();
             } catch (ClassNotFoundException e) {
                 cls = method.getDeclaringClass();
             }
 
             Parameter p = readImplicitParam(param, cls);
             if (p != null) {
+                if (p instanceof BodyParameter) {
+                    Iterator<Parameter> iterator = operation.getParameters().iterator();
+                    while(iterator.hasNext()) {
+                        Parameter parameter = iterator.next();
+                        if (parameter instanceof BodyParameter) {
+                            iterator.remove();
+                        }
+                    }
+                }
                 operation.addParameter(p);
             }
         }

@@ -219,13 +219,13 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension {
         if (com.github.kongchen.swagger.docgen.util.TypeUtils.isPrimitive(type)) {
             return ModelConverters.getInstance().readAsProperty(type);
         } else {
-            String msg = String.format("Can't use non-primitive type: %s as request parameter", type);
-            log.error(msg);
+            String msg = String.format("Non-primitive type: %s used as request/path/cookie parameter", type);
+            log.warn(msg);
 
             // fallback to string if type is simple wrapper for String to support legacy code
             JavaType ct = constructType(type);
             if (isSimpleWrapperForString(ct.getRawClass())) {
-                log.warn(String.format("Non-primitive type: %s used as string for request parameter", type));
+                log.warn(String.format("Non-primitive type: %s used as string for request/path/cookie parameter", type));
                 return new StringProperty();
             }
         }

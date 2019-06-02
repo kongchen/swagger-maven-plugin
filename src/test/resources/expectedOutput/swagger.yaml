@@ -1162,6 +1162,10 @@ paths:
       responses:
         200:
           description: "Successful operation"
+          schema:
+            type: array
+            items:
+              type: object
       security:
       - api_key: []
     put:

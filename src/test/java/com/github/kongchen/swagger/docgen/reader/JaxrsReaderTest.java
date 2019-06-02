@@ -1,9 +1,16 @@
 package com.github.kongchen.swagger.docgen.reader;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+import io.swagger.models.ComposedModel;
+import io.swagger.models.Model;
+import io.swagger.models.properties.Property;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import java.util.Map;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -187,6 +194,56 @@ public class JaxrsReaderTest {
         assertNotNull(exception);
     }
 
+    @Test
+    public void handleResponseWithInheritance() {
+        Swagger result = reader.read(AnApiWithInheritance.class);
+        Map<String, Model> models = result.getDefinitions();
+
+        Map<String, Property> properties = getProperties(models, "SomeResponseWithAbstractInheritance");
+        assertNotNull(properties);
+        assertTrue(properties.containsKey("classProperty"));
+        assertFalse(properties.containsKey("inheritedProperty"));
+        assertFalse(properties.containsKey("type"));
+
+        properties = models.get("SomeResponseBaseClass").getProperties();
+        assertNotNull(properties);
+        assertTrue(properties.containsKey("inheritedProperty"));
+        assertTrue(properties.containsKey("type"));
+
+        properties = getProperties(models, "SomeResponseWithInterfaceInheritance");
+        assertNotNull(properties);
+        assertTrue(properties.containsKey("classProperty"));
+        assertFalse(properties.containsKey("inheritedProperty"));
+        assertFalse(properties.containsKey("type"));
+
+        properties = getProperties(models,"SomeResponseInterface");
+        assertNotNull(properties);
+        assertTrue(properties.containsKey("inheritedProperty"));
+        assertTrue(properties.containsKey("type"));
+
+        properties = getProperties(models,"SomeResponse");
+        assertNotNull(properties);
+        assertTrue(properties.containsKey("classProperty"));
+        assertTrue(properties.containsKey("type"));
+
+        properties = getProperties(models,"SomeOtherResponse");
+        assertNotNull(properties);
+        assertTrue(properties.containsKey("classProperty"));
+        assertTrue(properties.containsKey("type"));
+    }
+
+    private Map<String, Property> getProperties(Map<String, Model> models, String className) {
+        assertTrue(models.containsKey(className));
+
+        Model model = models.get(className);
+        if (model instanceof ComposedModel) {
+            ComposedModel composedResponse = (ComposedModel) model;
+            return composedResponse.getChild().getProperties();
+        } else {
+            return model.getProperties();
+        }
+    }
+
     public void discoverSubResource() {
         Swagger result = reader.read(SomeResource.class);
         assertSwaggerPath(result.getPath("/resource/explicit/name").getGet(), result, "/resource/implicit/name");
@@ -305,5 +362,76 @@ public class JaxrsReaderTest {
             // no implementation needed. Method is only for the test cases
             return toString();
         }
+    }
+
+    @Api
+    @Path("/apath")
+    static class AnApiWithInheritance {
+        @GET
+        public SomeResponseWithAbstractInheritance getOperation() {
+            return null;
+        }
+
+        @GET
+        public SomeResponseBaseClass getOperation2() { return null; }
+
+        @GET
+        public SomeResponseWithInterfaceInheritance getOperation3() { return null; }
+
+        @GET
+        public SomeResponseInterface getOperation4() {
+            return null;
+        }
+
+        @GET
+        public List<SomeResponse> getOperation5() { return null; }
+
+        @GET
+        public SomeOtherResponse[] getOperation6() { return null; }
+    }
+
+    @JsonTypeInfo(use=Id.NAME, property="type")
+    static class SomeResponseWithAbstractInheritance extends SomeResponseBaseClass {
+        public String getClassProperty(){
+            return null;
+        }
+    }
+
+    @JsonTypeInfo(use=Id.NAME, property="type")
+    @JsonSubTypes({
+            @JsonSubTypes.Type(SomeResponseWithAbstractInheritance.class)
+    })
+    static abstract class SomeResponseBaseClass {
+        public String getInheritedProperty(){
+            return null;
+        }
+    }
+
+    @JsonTypeInfo(use=Id.NAME, property="type")
+    static class SomeResponseWithInterfaceInheritance implements SomeResponseInterface {
+        public String getClassProperty(){
+            return null;
+        }
+        public String getInheritedProperty(){
+            return null;
+        }
+    }
+
+    @JsonTypeInfo(use=Id.NAME, property="type")
+    @JsonSubTypes({
+            @JsonSubTypes.Type(SomeResponseWithInterfaceInheritance.class)
+    })
+    interface SomeResponseInterface {
+        String getInheritedProperty();
+    }
+
+    @JsonTypeInfo(use=Id.NAME, property="type")
+    static class SomeResponse {
+        public String getClassProperty() { return null; }
+    }
+
+    @JsonTypeInfo(use=Id.NAME, property="type")
+    static class SomeOtherResponse {
+        public String getClassProperty() { return null; }
     }
 }
