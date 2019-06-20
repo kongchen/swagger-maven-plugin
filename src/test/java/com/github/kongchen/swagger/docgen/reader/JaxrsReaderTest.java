@@ -218,17 +218,17 @@ public class JaxrsReaderTest {
         assertFalse(properties.containsKey("inheritedProperty"));
         assertFalse(properties.containsKey("type"));
 
-        properties = getProperties(models, "SomeResponseInterface");
+        properties = getProperties(models,"SomeResponseInterface");
         assertNotNull(properties);
         assertTrue(properties.containsKey("inheritedProperty"));
         assertTrue(properties.containsKey("type"));
 
-        properties = getProperties(models, "SomeResponse");
+        properties = getProperties(models,"SomeResponse");
         assertNotNull(properties);
         assertTrue(properties.containsKey("classProperty"));
         assertTrue(properties.containsKey("type"));
 
-        properties = getProperties(models, "SomeOtherResponse");
+        properties = getProperties(models,"SomeOtherResponse");
         assertNotNull(properties);
         assertTrue(properties.containsKey("classProperty"));
         assertTrue(properties.containsKey("type"));
@@ -352,7 +352,8 @@ public class JaxrsReaderTest {
         @ApiOperation(value = "Add content")
         @Consumes(MediaType.APPLICATION_OCTET_STREAM)
         public void addOperation(
-            @ApiParam(value = "content", required = true, type = "string", format = "byte") final byte[] content) {
+                @ApiParam(value = "content", required = true, type = "string", format = "byte")
+                    final byte[] content) {
         }
     }
 
@@ -364,9 +365,8 @@ public class JaxrsReaderTest {
             // no implementation needed. Method is only for the test cases, so that the return type is captured
             return new SomeSubResource();
         }
-
         @Path("implicit")
-        @ApiOperation(value = "", response = SomeSubResource.class)
+        @ApiOperation(value="", response = SomeSubResource.class)
         public Object getSomeSub() {
             // no implementation needed. Method is only for the test cases, so that the return type is overridden by @ApiOperation.response
             return new SomeSubResource();
@@ -391,14 +391,10 @@ public class JaxrsReaderTest {
         }
 
         @GET
-        public SomeResponseBaseClass getOperation2() {
-            return null;
-        }
+        public SomeResponseBaseClass getOperation2() { return null; }
 
         @GET
-        public SomeResponseWithInterfaceInheritance getOperation3() {
-            return null;
-        }
+        public SomeResponseWithInterfaceInheritance getOperation3() { return null; }
 
         @GET
         public SomeResponseInterface getOperation4() {
@@ -406,14 +402,10 @@ public class JaxrsReaderTest {
         }
 
         @GET
-        public List<SomeResponse> getOperation5() {
-            return null;
-        }
+        public List<SomeResponse> getOperation5() { return null; }
 
         @GET
-        public SomeOtherResponse[] getOperation6() {
-            return null;
-        }
+        public SomeOtherResponse[] getOperation6() { return null; }
     }
 
     @Api
@@ -421,70 +413,59 @@ public class JaxrsReaderTest {
     static class AnApiWithCompletionStage {
         @Path("a")
         @GET
-        public CompletableFuture<String> getOperation1() {
-            return null;
-        }
+        public CompletableFuture<String> getOperation1() { return null; }
 
         @Path("b")
         @GET
-        public CompletionStage<String> getOperation2() {
-            return null;
-        }
+        public CompletionStage<String> getOperation2() { return null; }
 
         @Path("c")
         @GET
-        public String getOperation3() {
-            return null;
-        }
+        public String getOperation3() { return null; }
     }
 
-    @JsonTypeInfo(use = Id.NAME, property = "type")
+    @JsonTypeInfo(use=Id.NAME, property="type")
     static class SomeResponseWithAbstractInheritance extends SomeResponseBaseClass {
-        public String getClassProperty() {
+        public String getClassProperty(){
             return null;
         }
     }
 
-    @JsonTypeInfo(use = Id.NAME, property = "type")
+    @JsonTypeInfo(use=Id.NAME, property="type")
     @JsonSubTypes({
-        @JsonSubTypes.Type(SomeResponseWithAbstractInheritance.class)
+            @JsonSubTypes.Type(SomeResponseWithAbstractInheritance.class)
     })
     static abstract class SomeResponseBaseClass {
-        public String getInheritedProperty() {
+        public String getInheritedProperty(){
             return null;
         }
     }
 
-    @JsonTypeInfo(use = Id.NAME, property = "type")
+    @JsonTypeInfo(use=Id.NAME, property="type")
     static class SomeResponseWithInterfaceInheritance implements SomeResponseInterface {
-        public String getClassProperty() {
+        public String getClassProperty(){
             return null;
         }
-
-        public String getInheritedProperty() {
+        public String getInheritedProperty(){
             return null;
         }
     }
 
-    @JsonTypeInfo(use = Id.NAME, property = "type")
+    @JsonTypeInfo(use=Id.NAME, property="type")
     @JsonSubTypes({
-        @JsonSubTypes.Type(SomeResponseWithInterfaceInheritance.class)
+            @JsonSubTypes.Type(SomeResponseWithInterfaceInheritance.class)
     })
     interface SomeResponseInterface {
         String getInheritedProperty();
     }
 
-    @JsonTypeInfo(use = Id.NAME, property = "type")
+    @JsonTypeInfo(use=Id.NAME, property="type")
     static class SomeResponse {
-        public String getClassProperty() {
-            return null;
-        }
+        public String getClassProperty() { return null; }
     }
 
-    @JsonTypeInfo(use = Id.NAME, property = "type")
+    @JsonTypeInfo(use=Id.NAME, property="type")
     static class SomeOtherResponse {
-        public String getClassProperty() {
-            return null;
-        }
+        public String getClassProperty() { return null; }
     }
 }
