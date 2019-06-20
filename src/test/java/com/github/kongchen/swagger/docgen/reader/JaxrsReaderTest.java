@@ -3,33 +3,6 @@ package com.github.kongchen.swagger.docgen.reader;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
-import io.swagger.models.ComposedModel;
-import io.swagger.models.Model;
-import io.swagger.models.properties.Property;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import java.util.Map;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
-import io.swagger.util.Json;
-import org.apache.maven.plugin.logging.Log;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
-
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,22 +12,32 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.jaxrs.ext.SwaggerExtension;
 import io.swagger.jaxrs.ext.SwaggerExtensions;
-import io.swagger.models.ArrayModel;
-import io.swagger.models.Operation;
-import io.swagger.models.Swagger;
-import io.swagger.models.Tag;
-import io.swagger.models.parameters.BodyParameter;
-import io.swagger.models.parameters.HeaderParameter;
-import io.swagger.models.parameters.Parameter;
-import io.swagger.models.parameters.QueryParameter;
-import io.swagger.models.parameters.RefParameter;
+import io.swagger.models.*;
+import io.swagger.models.parameters.*;
+import io.swagger.models.properties.Property;
+import io.swagger.models.utils.PropertyModelConverter;
+import io.swagger.util.Json;
 import net.javacrumbs.jsonunit.JsonAssert;
+import org.apache.maven.plugin.logging.Log;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertNull;
-import static org.testng.Assert.assertTrue;
+import javax.ws.rs.Path;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+
+import static org.testng.Assert.*;
 
 public class JaxrsReaderTest {
     @Mock
@@ -216,20 +199,36 @@ public class JaxrsReaderTest {
         assertFalse(properties.containsKey("inheritedProperty"));
         assertFalse(properties.containsKey("type"));
 
-        properties = getProperties(models,"SomeResponseInterface");
+        properties = getProperties(models, "SomeResponseInterface");
         assertNotNull(properties);
         assertTrue(properties.containsKey("inheritedProperty"));
         assertTrue(properties.containsKey("type"));
 
-        properties = getProperties(models,"SomeResponse");
+        properties = getProperties(models, "SomeResponse");
         assertNotNull(properties);
         assertTrue(properties.containsKey("classProperty"));
         assertTrue(properties.containsKey("type"));
 
-        properties = getProperties(models,"SomeOtherResponse");
+        properties = getProperties(models, "SomeOtherResponse");
         assertNotNull(properties);
         assertTrue(properties.containsKey("classProperty"));
         assertTrue(properties.containsKey("type"));
+    }
+
+    @Test
+    public void handleResponseWithCompletionStage() {
+        String expectedFormat = "string";
+        Swagger result = reader.read(AnApiWithCompletionStage.class);
+        PropertyModelConverter converter = new PropertyModelConverter();
+        // CompletableFuture<String>
+        Model getA = result.getPath("/apath/a").getGet().getResponses().get("200").getResponseSchema();
+        assertEquals(expectedFormat, converter.modelToProperty(getA).getType());
+        // CompletionStage<String>
+        Model getB = result.getPath("/apath/b").getGet().getResponses().get("200").getResponseSchema();
+        assertEquals(expectedFormat, converter.modelToProperty(getB).getType());
+        // String
+        Model getC = result.getPath("/apath/c").getGet().getResponses().get("200").getResponseSchema();
+        assertEquals(expectedFormat, converter.modelToProperty(getC).getType());
     }
 
     private Map<String, Property> getProperties(Map<String, Model> models, String className) {
@@ -334,8 +333,7 @@ public class JaxrsReaderTest {
         @ApiOperation(value = "Add content")
         @Consumes(MediaType.APPLICATION_OCTET_STREAM)
         public void addOperation(
-                @ApiParam(value = "content", required = true, type = "string", format = "byte")
-                    final byte[] content) {
+            @ApiParam(value = "content", required = true, type = "string", format = "byte") final byte[] content) {
         }
     }
 
@@ -347,8 +345,9 @@ public class JaxrsReaderTest {
             // no implementation needed. Method is only for the test cases, so that the return type is captured
             return new SomeSubResource();
         }
+
         @Path("implicit")
-        @ApiOperation(value="", response = SomeSubResource.class)
+        @ApiOperation(value = "", response = SomeSubResource.class)
         public Object getSomeSub() {
             // no implementation needed. Method is only for the test cases, so that the return type is overridden by @ApiOperation.response
             return new SomeSubResource();
@@ -373,10 +372,14 @@ public class JaxrsReaderTest {
         }
 
         @GET
-        public SomeResponseBaseClass getOperation2() { return null; }
+        public SomeResponseBaseClass getOperation2() {
+            return null;
+        }
 
         @GET
-        public SomeResponseWithInterfaceInheritance getOperation3() { return null; }
+        public SomeResponseWithInterfaceInheritance getOperation3() {
+            return null;
+        }
 
         @GET
         public SomeResponseInterface getOperation4() {
@@ -384,54 +387,85 @@ public class JaxrsReaderTest {
         }
 
         @GET
-        public List<SomeResponse> getOperation5() { return null; }
+        public List<SomeResponse> getOperation5() {
+            return null;
+        }
 
         @GET
-        public SomeOtherResponse[] getOperation6() { return null; }
-    }
-
-    @JsonTypeInfo(use=Id.NAME, property="type")
-    static class SomeResponseWithAbstractInheritance extends SomeResponseBaseClass {
-        public String getClassProperty(){
+        public SomeOtherResponse[] getOperation6() {
             return null;
         }
     }
 
-    @JsonTypeInfo(use=Id.NAME, property="type")
+    @Api
+    @Path("/apath")
+    static class AnApiWithCompletionStage {
+        @Path("a")
+        @GET
+        public CompletableFuture<String> getOperation1() {
+            return null;
+        }
+
+        @Path("b")
+        @GET
+        public CompletionStage<String> getOperation2() {
+            return null;
+        }
+
+        @Path("c")
+        @GET
+        public String getOperation3() {
+            return null;
+        }
+    }
+
+    @JsonTypeInfo(use = Id.NAME, property = "type")
+    static class SomeResponseWithAbstractInheritance extends SomeResponseBaseClass {
+        public String getClassProperty() {
+            return null;
+        }
+    }
+
+    @JsonTypeInfo(use = Id.NAME, property = "type")
     @JsonSubTypes({
-            @JsonSubTypes.Type(SomeResponseWithAbstractInheritance.class)
+        @JsonSubTypes.Type(SomeResponseWithAbstractInheritance.class)
     })
     static abstract class SomeResponseBaseClass {
-        public String getInheritedProperty(){
+        public String getInheritedProperty() {
             return null;
         }
     }
 
-    @JsonTypeInfo(use=Id.NAME, property="type")
+    @JsonTypeInfo(use = Id.NAME, property = "type")
     static class SomeResponseWithInterfaceInheritance implements SomeResponseInterface {
-        public String getClassProperty(){
+        public String getClassProperty() {
             return null;
         }
-        public String getInheritedProperty(){
+
+        public String getInheritedProperty() {
             return null;
         }
     }
 
-    @JsonTypeInfo(use=Id.NAME, property="type")
+    @JsonTypeInfo(use = Id.NAME, property = "type")
     @JsonSubTypes({
-            @JsonSubTypes.Type(SomeResponseWithInterfaceInheritance.class)
+        @JsonSubTypes.Type(SomeResponseWithInterfaceInheritance.class)
     })
     interface SomeResponseInterface {
         String getInheritedProperty();
     }
 
-    @JsonTypeInfo(use=Id.NAME, property="type")
+    @JsonTypeInfo(use = Id.NAME, property = "type")
     static class SomeResponse {
-        public String getClassProperty() { return null; }
+        public String getClassProperty() {
+            return null;
+        }
     }
 
-    @JsonTypeInfo(use=Id.NAME, property="type")
+    @JsonTypeInfo(use = Id.NAME, property = "type")
     static class SomeOtherResponse {
-        public String getClassProperty() { return null; }
+        public String getClassProperty() {
+            return null;
+        }
     }
 }
