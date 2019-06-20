@@ -3,6 +3,35 @@ package com.github.kongchen.swagger.docgen.reader;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+import io.swagger.models.ComposedModel;
+import io.swagger.models.Model;
+import io.swagger.models.properties.Property;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import io.swagger.models.utils.PropertyModelConverter;
+import io.swagger.util.Json;
+import org.apache.maven.plugin.logging.Log;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,32 +41,22 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.jaxrs.ext.SwaggerExtension;
 import io.swagger.jaxrs.ext.SwaggerExtensions;
-import io.swagger.models.*;
-import io.swagger.models.parameters.*;
-import io.swagger.models.properties.Property;
-import io.swagger.models.utils.PropertyModelConverter;
-import io.swagger.util.Json;
+import io.swagger.models.ArrayModel;
+import io.swagger.models.Operation;
+import io.swagger.models.Swagger;
+import io.swagger.models.Tag;
+import io.swagger.models.parameters.BodyParameter;
+import io.swagger.models.parameters.HeaderParameter;
+import io.swagger.models.parameters.Parameter;
+import io.swagger.models.parameters.QueryParameter;
+import io.swagger.models.parameters.RefParameter;
 import net.javacrumbs.jsonunit.JsonAssert;
-import org.apache.maven.plugin.logging.Log;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 
-import javax.ws.rs.Path;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertNull;
+import static org.testng.Assert.assertTrue;
 
 public class JaxrsReaderTest {
     @Mock
