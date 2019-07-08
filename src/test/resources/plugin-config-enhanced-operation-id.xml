@@ -31,7 +31,6 @@
                                     <json>/securityDefinition.json</json>
                                 </securityDefinition>
                             </securityDefinitions>
-                            <outputFormats>json</outputFormats>
                             <swaggerDirectory>${basedir}/generated/swagger-ui-enhanced-operation-id</swaggerDirectory>
                             <swaggerApiReader>com.wordnik.jaxrs.VendorExtensionsJaxrsReader</swaggerApiReader>
                             <attachSwaggerArtifact>true</attachSwaggerArtifact>

@@ -9,7 +9,6 @@ import io.swagger.models.Info;
 import io.swagger.models.License;
 import io.swagger.util.BaseReaderUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.maven.plugins.annotations.Parameter;
 import org.reflections.Reflections;
 import org.springframework.core.annotation.AnnotationUtils;
 
@@ -26,20 +25,16 @@ public class ApiSource {
      * Java classes containing Swagger's annotation <code>@Api</code>, or Java packages containing those classes
      * can be configured here.
      */
-    @Parameter(required = true)
     private List<String> locations;
 
-    @Parameter
     private Info info;
 
     /**
      * The basePath of your APIs.
      */
-    @Parameter
     private String basePath;
 
-    @Parameter(defaultValue = "false")
-    private boolean removeBasePathFromEndpoints;
+    private boolean removeBasePathFromEndpoints = false;
 
     /**
      * The host (name or ip) serving the API.
@@ -59,19 +54,14 @@ public class ApiSource {
      * see more details in next section.
      * If you don't want to generate extra api documents, just don't set it.
      */
-    @Parameter
     private String templatePath;
 
-    @Parameter
     private String outputPath;
 
-    @Parameter(defaultValue = "json")
-    private String outputFormats;
+    private String outputFormats = "json";
 
-    @Parameter
     private String swaggerDirectory;
 
-    @Parameter
     private String swaggerFileName;
 
     /**
@@ -79,86 +69,65 @@ public class ApiSource {
      * swagger.json to Maven session for deployment purpose.  The attached classifier
      * is the directory name of <code>swaggerDirectory</code>
      */
-    @Parameter
     private boolean attachSwaggerArtifact;
 
-    @Parameter
     private String swaggerUIDocBasePath;
 
-    @Parameter
     private String modelSubstitute;
 
-    @Parameter
     private String apiSortComparator;
 
     /**
      * Information about swagger filter that will be used for prefiltering
      */
-    @Parameter
     private String swaggerInternalFilter;
 
-    @Parameter
     private String swaggerApiReader;
 
     /**
      * List of full qualified class names of SwaggerExtension implementations to be
      * considered for the generation
      */
-    @Parameter
     private List<String> swaggerExtensions;
 
-    @Parameter
     private boolean springmvc;
 
-    @Parameter
     private boolean useJAXBAnnotationProcessor;
 
-    @Parameter
     private boolean useJAXBAnnotationProcessorAsPrimary = true;
 
-    @Parameter
     private String swaggerSchemaConverter;
 
-    @Parameter
     private List<SecurityDefinition> securityDefinitions;
 
-    @Parameter
     private List<String> typesToSkip = new ArrayList<String>();
 
-    @Parameter
     private List<String> apiModelPropertyAccessExclusions = new ArrayList<String>();
 
-    @Parameter
     private boolean jsonExampleValues = false;
 
-    @Parameter
     private File descriptionFile;
 
-    @Parameter
     private List<String> modelConverters;
-    
-    @Parameter
+
     private boolean skipInheritingClasses = false;
-    
-    @Parameter
+
     private String operationIdFormat;
 
-    @Parameter
     private ExternalDocs externalDocs;
 
-    @Parameter
     private List<ResponseMessageOverride> responseMessageOverrides;
 
     public Set<Class<?>> getValidClasses(Class<? extends Annotation> clazz) {
         Set<Class<?>> classes = new LinkedHashSet<Class<?>>();
-        
+
         List<String> prefixes = new ArrayList<String>();
         if (getLocations() == null) {
             prefixes.add("");
         } else {
             prefixes.addAll(getLocations());
         }
-        
+
         for (String location : prefixes) {
             Set<Class<?>> c = new Reflections(location).getTypesAnnotatedWith(clazz, true);
             classes.addAll(c);
