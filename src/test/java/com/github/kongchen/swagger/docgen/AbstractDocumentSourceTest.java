@@ -113,6 +113,6 @@ public class AbstractDocumentSourceTest {
         };
 
         // assert
-        assertThat(externalDocsSource.swagger.getInfo().getDescription(), is("Description file content\n"));
+        assertThat(externalDocsSource.swagger.getInfo().getDescription(), is("Description file content" + System.getProperty("line.separator")));
     }
 }
