@@ -156,6 +156,10 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
                 String httpMethod = extractOperationMethod(apiOperation, method, SwaggerExtensions.chain());
 
                 Operation operation = parseMethod(httpMethod, method);
+                if (AnnotationUtils.findAnnotation(cls, Deprecated.class) != null) {
+                    operation.deprecated(true);
+                }
+
                 updateOperationParameters(parentParameters, regexMap, operation);
                 updateOperationProtocols(apiOperation, operation);
 

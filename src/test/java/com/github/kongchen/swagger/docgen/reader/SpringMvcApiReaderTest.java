@@ -2,20 +2,20 @@ package com.github.kongchen.swagger.docgen.reader;
 
 import com.github.kongchen.swagger.docgen.GenerateException;
 import com.github.kongchen.swagger.docgen.spring.SpringResource;
+
+import io.swagger.models.HttpMethod;
 import io.swagger.models.Swagger;
-import org.apache.maven.monitor.logging.DefaultLog;
 import org.apache.maven.plugin.logging.Log;
-import org.codehaus.plexus.logging.console.ConsoleLogger;
-import org.codehaus.plexus.logging.console.ConsoleLoggerManager;
+import org.mockito.Mockito;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.testng.annotations.Test;
-import org.codehaus.plexus.logging.Logger;
 
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
+import static org.testng.Assert.assertTrue;
 import static org.testng.AssertJUnit.assertEquals;
 
 public class SpringMvcApiReaderTest {
@@ -27,6 +27,14 @@ public class SpringMvcApiReaderTest {
         Set<Class<?>> classes = Collections.singleton( SomeResourceWithClassOnlyPaths.class );
         Map<String, SpringResource> resourceMap = reader.generateResourceMap(classes);
         assertEquals(3, resourceMap.size());
+    }
+
+    @Test
+    public void testDeprecatedAnnotationOnControllerClass() throws GenerateException {
+        Swagger swagger = new Swagger();
+        SpringMvcApiReader reader = new SpringMvcApiReader(swagger, Mockito.mock(Log.class));
+        reader.read(Collections.singleton(ADeprecatedResource.class));
+        assertTrue(swagger.getPath("/adeprecatedpath").getOperationMap().get(HttpMethod.GET).isDeprecated(), "This operation should be marked as deprecated");
     }
 
     @RequestMapping("/some/path")
@@ -43,5 +51,15 @@ public class SpringMvcApiReaderTest {
         // GET /some/path/search
         @RequestMapping(value="/search", method=RequestMethod.GET)
         public String search() { return null; }
+    }
+
+    @Deprecated
+    @RequestMapping("/adeprecatedpath")
+    private static class ADeprecatedResource {
+
+        // GET /some/path (explicit value="")
+        @RequestMapping(method = RequestMethod.GET)
+        public String get() { return null; }
+
     }
 }

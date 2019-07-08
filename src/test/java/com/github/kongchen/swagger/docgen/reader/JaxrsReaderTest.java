@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import io.swagger.models.ComposedModel;
+import io.swagger.models.HttpMethod;
 import io.swagger.models.Model;
 import io.swagger.models.properties.Property;
 import java.util.ArrayList;
@@ -29,7 +30,6 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -115,6 +115,12 @@ public class JaxrsReaderTest {
         Swagger result = nullReader.read(AnApi.class);
 
         assertSwaggerResponseContents(expectedTag, result);
+    }
+
+    @Test
+    public void verifyDeprecatedAnnotationOnClass() {
+        Swagger deprecated = reader.read(ADeprecatedApi.class);
+        assertTrue(deprecated.getPath("/deprecatedpath").getOperationMap().get(HttpMethod.GET).isDeprecated(), "method is not marked as deprecated");
     }
 
     @Test
@@ -336,6 +342,19 @@ public class JaxrsReaderTest {
         public void addOperation(
                 @ApiParam(value = "content", required = true, type = "string", format = "byte")
                     final byte[] content) {
+        }
+    }
+
+    @Path("/deprecatedpath")
+    @Deprecated
+    static class ADeprecatedApi extends NonDeprecatedApi {
+    }
+
+    @Path("/apath")
+    static class NonDeprecatedApi {
+        @GET
+        public String get() {
+            return null;
         }
     }
 

@@ -117,6 +117,9 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
                 for (RequestMethod requestMethod : requestMapping.method()) {
                     String httpMethod = requestMethod.toString().toLowerCase();
                     Operation operation = parseMethod(method, requestMethod);
+                    if (findAnnotation(resource.getControllerClass(), Deprecated.class) != null) {
+                        operation.deprecated(true);
+                    }
 
                     updateOperationParameters(new ArrayList<Parameter>(), regexMap, operation);
 
@@ -278,8 +281,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
 
         overrideResponseMessages(operation);
 
-        Deprecated annotation = findAnnotation(method, Deprecated.class);
-        if (annotation != null) {
+        if (findAnnotation(method, Deprecated.class) != null) {
             operation.deprecated(true);
         }
 
