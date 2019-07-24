@@ -10,10 +10,7 @@ import io.swagger.jaxrs.ext.SwaggerExtensions;
 import io.swagger.models.*;
 import org.apache.maven.plugin.logging.SystemStreamLog;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -146,6 +143,11 @@ public class SpringMVCResponseStatusTest {
         @ApiResponses({@ApiResponse(code = 202, message = ACCEPTED_OPERATION_DESCRIPTION, response = Integer.class), @ApiResponse(code = 409, message = CONFLICT_OPERATION_DESCRIPTION)})
         public Integer getStringAPIResponseOverridden() {
             return 0;
+        }
+
+        @GetMapping(value = {"/v1/{petId}", "/v2/{petId}"})
+        public String getPet(@PathVariable Long petId){
+            return "tom";
         }
     }
 }
