@@ -319,6 +319,7 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension {
         }
 
         return clazzName.startsWith("org.springframework") &&
-                !"org.springframework.web.multipart.MultipartFile".equals(clazzName);
+                !"org.springframework.web.multipart.MultipartFile".equals(clazzName) &&
+                !"org.springframework.http.HttpHeaders".equals(clazzName);
     }
 }
