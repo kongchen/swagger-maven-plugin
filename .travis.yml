@@ -8,5 +8,5 @@ before_install:
 
 install:
 
-
+dist: trusty
 
