@@ -84,7 +84,7 @@
 
         <!-- Plugin versions -->
         <version.maven-release-plugin>2.5.3</version.maven-release-plugin>
-        <version.plexus-component-metadata>1.5.5</version.plexus-component-metadata>
+        <version.plexus-component-metadata>2.1.0</version.plexus-component-metadata>
         <version.maven-compiler-plugin>2.3.2</version.maven-compiler-plugin>
         <version.maven-plugin-plugin>3.3</version.maven-plugin-plugin>
         <version.animal-sniffer-plugin>1.14</version.animal-sniffer-plugin>
