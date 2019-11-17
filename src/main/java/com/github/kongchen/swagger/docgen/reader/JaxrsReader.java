@@ -155,7 +155,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
 
                 String httpMethod = extractOperationMethod(apiOperation, method, SwaggerExtensions.chain());
 
-                Operation operation = parseMethod(httpMethod, method);
+                Operation operation = parseMethod(operationPath, cls, httpMethod, method);
                 updateOperationParameters(parentParameters, regexMap, operation);
                 updateOperationProtocols(apiOperation, operation);
 
@@ -331,12 +331,12 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
     }
 
 
-    public Operation parseMethod(String httpMethod, Method method) {
+    public Operation parseMethod(String path, Class<?> controller, String httpMethod, Method method) {
         int responseCode = 200;
         Operation operation = new Operation();
         ApiOperation apiOperation = AnnotationUtils.findAnnotation(method, ApiOperation.class);
 
-        String operationId = getOperationId(method, httpMethod);
+        String operationId = getOperationId(path, controller, method.getName(), httpMethod);
 
         String responseContainer = null;
 
