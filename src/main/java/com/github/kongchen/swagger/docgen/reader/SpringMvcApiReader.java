@@ -149,7 +149,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         List<String> produces = new ArrayList<String>();
         List<String> consumes = new ArrayList<String>();
         String responseContainer = null;
-        String operationId = getOperationId(operationPath, controller, method.getName(), requestMethod.name());
+        String operationId = getOperationId(operationPath, controller, method, requestMethod.name());
         Map<String, Property> defaultResponseHeaders = null;
 
         ApiOperation apiOperation = findMergedAnnotation(method, ApiOperation.class);

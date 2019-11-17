@@ -336,7 +336,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         Operation operation = new Operation();
         ApiOperation apiOperation = AnnotationUtils.findAnnotation(method, ApiOperation.class);
 
-        String operationId = getOperationId(path, controller, method.getName(), httpMethod);
+        String operationId = getOperationId(path, controller, method, httpMethod);
 
         String responseContainer = null;
 

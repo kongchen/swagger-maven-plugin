@@ -523,13 +523,14 @@ public abstract class AbstractReader {
         }
     }
     
-    protected String getOperationId(String operationPath, Class<?> controller, String methodName, String httpMethod) {
+    protected String getOperationId(String operationPath, Class<?> controller, Method method, String httpMethod) {
   		if (this.operationIdFormat == null) {
   			this.operationIdFormat = OPERATION_ID_FORMAT_DEFAULT;
   		}
   		
   		String packageName = controller.getPackage().getName();
   		String className = controller.getSimpleName();
+        String methodName = method.getName();
         
   		StrBuilder sb = new StrBuilder(this.operationIdFormat);
   		sb.replaceAll("{{packageName}}", packageName);
