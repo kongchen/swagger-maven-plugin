@@ -15,8 +15,8 @@ import java.util.Set;
  */
 public class MavenDocumentSource extends AbstractDocumentSource<JaxrsReader> {
 
-    public MavenDocumentSource(ApiSource apiSource, Log log, String encoding) throws MojoFailureException {
-        super(log, apiSource, encoding);
+    public MavenDocumentSource(ApiSource apiSource, Log log, String encoding, String specification, String specificationVersion) throws MojoFailureException {
+        super(log, apiSource, encoding, specification, specificationVersion);
     }
 
     @Override

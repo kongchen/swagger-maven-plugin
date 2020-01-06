@@ -56,7 +56,6 @@ public abstract class AbstractDocumentSource<D extends AbstractReader & ClassSwa
     protected final Log LOG;
     protected final List<Type> typesToSkip = new ArrayList<Type>();
     protected Swagger swagger;
-    protected String swaggerSchemaConverter;
     private final String outputPath;
     private final String templatePath;
     private final String swaggerPath;
@@ -66,7 +65,7 @@ public abstract class AbstractDocumentSource<D extends AbstractReader & ClassSwa
     private boolean isSorted = false;
     protected String encoding = "UTF-8";
 
-    public AbstractDocumentSource(Log log, ApiSource apiSource, String encoding) throws MojoFailureException {
+    public AbstractDocumentSource(Log log, ApiSource apiSource, String encoding, String specification, String specificationVersion) throws MojoFailureException {
         LOG = log;
         this.outputPath = apiSource.getOutputPath();
         this.templatePath = apiSource.getTemplatePath();
@@ -74,7 +73,12 @@ public abstract class AbstractDocumentSource<D extends AbstractReader & ClassSwa
         this.modelSubstitute = apiSource.getModelSubstitute();
         this.jsonExampleValues = apiSource.isJsonExampleValues();
 
-        swagger = new Swagger();
+        if (specification.toLowerCase().equals("openapi")) {
+            swagger = new OpenApi(specificationVersion);
+        } else {
+            swagger = new Swagger();
+        }
+
         if (apiSource.getSchemes() != null) {
             for (String scheme : apiSource.getSchemes()) {
                 swagger.scheme(Scheme.forValue(scheme));

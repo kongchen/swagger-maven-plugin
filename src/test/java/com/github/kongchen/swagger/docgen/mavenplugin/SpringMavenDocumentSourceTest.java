@@ -22,7 +22,7 @@ public class SpringMavenDocumentSourceTest
         apiSource.setLocations(Collections.singletonList(this.getClass().getPackage().getName()));
         apiSource.setSwaggerDirectory("./");
 
-        SpringMavenDocumentSource springMavenDocumentSource = new SpringMavenDocumentSource(apiSource, log, "UTF-8");
+        SpringMavenDocumentSource springMavenDocumentSource = new SpringMavenDocumentSource(apiSource, log, "UTF-8", "swagger", "2.0");
 
         Set<Class<?>> validClasses = springMavenDocumentSource.getValidClasses();
 

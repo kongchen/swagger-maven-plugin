@@ -17,8 +17,8 @@ import java.util.Set;
  */
 public class SpringMavenDocumentSource extends AbstractDocumentSource<SpringMvcApiReader> {
 
-    public SpringMavenDocumentSource(ApiSource apiSource, Log log, String encoding) throws MojoFailureException {
-        super(log, apiSource, encoding);
+    public SpringMavenDocumentSource(ApiSource apiSource, Log log, String encoding, String specification, String specificationVersion) throws MojoFailureException {
+        super(log, apiSource, encoding, specification, specificationVersion);
     }
 
     @Override

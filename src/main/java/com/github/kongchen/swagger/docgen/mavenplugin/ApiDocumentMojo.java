@@ -18,8 +18,6 @@ import org.apache.maven.project.MavenProjectHelper;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * User: kongchen
@@ -51,6 +49,12 @@ public class ApiDocumentMojo extends AbstractMojo {
 
     @Parameter(defaultValue = "${project}", readonly = true)
     private MavenProject project;
+
+    @Parameter(defaultValue = "swagger")
+    private String specification;
+
+    @Parameter(defaultValue = "2.0")
+    private String specificationVersion;
 
     private String projectEncoding;
 
@@ -103,18 +107,17 @@ public class ApiDocumentMojo extends AbstractMojo {
 
             if (enabledObjectMapperFeatures!=null) {
                 configureObjectMapperFeatures(enabledObjectMapperFeatures,true);
-                
             }
 
             if (disabledObjectMapperFeatures!=null) {
                 configureObjectMapperFeatures(disabledObjectMapperFeatures,false);
             }
-            
+
             for (ApiSource apiSource : apiSources) {
                 validateConfiguration(apiSource);
                 AbstractDocumentSource documentSource = apiSource.isSpringmvc()
-                        ? new SpringMavenDocumentSource(apiSource, getLog(), projectEncoding)
-                        : new MavenDocumentSource(apiSource, getLog(), projectEncoding);
+                        ? new SpringMavenDocumentSource(apiSource, getLog(), projectEncoding, specification, specificationVersion)
+                        : new MavenDocumentSource(apiSource, getLog(), projectEncoding, specification, specificationVersion);
 
                 documentSource.loadTypesToSkip();
                 documentSource.loadModelModifier();
@@ -214,7 +217,7 @@ public class ApiDocumentMojo extends AbstractMojo {
     }
 
     private String getSwaggerFileName(String swaggerFileName) {
-        return swaggerFileName == null || "".equals(swaggerFileName.trim()) ? "swagger" : swaggerFileName;
+        return swaggerFileName == null || "".equals(swaggerFileName.trim()) ? specification : swaggerFileName;
     }
 
     private String getSwaggerDirectoryName(String swaggerDirectory) {

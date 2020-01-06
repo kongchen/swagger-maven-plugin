@@ -90,6 +90,8 @@ The `executions` block is used to specify the phase of the build lifecycle you w
 | `operationIdFormat` | Format of `operationId` used in Swagger spec. For historical reasons default is Java method name. Since 3.1.8, for new APIs suggested format is: `{{className}}_{{methodName}}_{{httpMethod}}`. `{{packageName}}` token is also supported. |
 | `externalDocs` | URL Reference to external documentation |
 | `responseMessageOverrides` | Default response message overrides of type ```@ApiResponse```. Example: `<responseMessageOverrides><responseMessageOverride><code>401</code><message>Unauthenticated - could not authenticate the user.</message></responseMessageOverride></responseMessageOverrides>` |
+| `specification` | Output specification. Should be either `swagger` (default) or `openapi`. Works in conjunction with `specificationVersion` |
+| `specificationVersion` | Output specification version. Defaults to `2.0` (which will give `swagger: 2.0` for default `specificagtion` value) |
 # <a id="templatefile">Template File</a>
 
 If you'd like to generate a template-driven static document, such as markdown or HTML documentation, you'll need to specify a [handlebars](https://github.com/jknack/handlebars.java) template file in ```templatePath```.

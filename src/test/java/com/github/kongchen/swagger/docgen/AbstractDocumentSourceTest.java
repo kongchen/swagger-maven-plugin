@@ -35,7 +35,7 @@ public class AbstractDocumentSourceTest {
     @BeforeMethod
     public void setUp() throws MojoFailureException {
         MockitoAnnotations.initMocks(this);
-        source = new AbstractDocumentSource(log, apiSource, null) {
+        source = new AbstractDocumentSource(log, apiSource, null, "swagger", "2.0") {
             @Override
             protected ClassSwaggerReader resolveApiReader() throws GenerateException {
                 return null;
@@ -71,7 +71,7 @@ public class AbstractDocumentSourceTest {
         when(apiSource.getExternalDocs()).thenReturn(new ExternalDocs("Example external docs", "https://example.com/docs"));
 
         // act
-        AbstractDocumentSource externalDocsSource = new AbstractDocumentSource(log, apiSource, null) {
+        AbstractDocumentSource externalDocsSource = new AbstractDocumentSource(log, apiSource, null, "swagger", "2.0") {
             @Override
             protected ClassSwaggerReader resolveApiReader() throws GenerateException {
                 return null;
@@ -100,7 +100,7 @@ public class AbstractDocumentSourceTest {
         when(apiSource.getInfo()).thenReturn(new Info());
 
         // act
-        AbstractDocumentSource externalDocsSource = new AbstractDocumentSource(log, apiSource, "UTF-8") {
+        AbstractDocumentSource externalDocsSource = new AbstractDocumentSource(log, apiSource, "UTF-8", "swagger", "2.0") {
             @Override
             protected ClassSwaggerReader resolveApiReader() throws GenerateException {
                 return null;
