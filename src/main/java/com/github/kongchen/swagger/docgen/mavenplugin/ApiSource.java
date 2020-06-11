@@ -66,7 +66,7 @@ public class ApiSource {
     private String outputPath;
 
     @Parameter(defaultValue = "json")
-    private String outputFormats;
+    private String outputFormats = "json";
 
     @Parameter
     private String swaggerDirectory;
