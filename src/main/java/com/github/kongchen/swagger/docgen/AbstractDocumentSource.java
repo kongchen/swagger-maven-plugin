@@ -98,6 +98,7 @@ public abstract class AbstractDocumentSource<D extends AbstractReader & ClassSwa
         swagger.setInfo(apiSource.getInfo());
         swagger.setBasePath(apiSource.getBasePath());
         swagger.setExternalDocs(apiSource.getExternalDocs());
+        swagger.setVendorExtensions(apiSource.getVendorExtensions());
 
         this.apiSource = apiSource;
         if (encoding != null) {
