@@ -14,6 +14,7 @@ import io.swagger.models.parameters.Parameter;
 import io.swagger.models.properties.Property;
 import io.swagger.models.properties.RefProperty;
 import io.swagger.util.BaseReaderUtils;
+import io.swagger.util.PathUtils;
 import org.apache.maven.plugin.logging.Log;
 import org.codehaus.plexus.util.StringUtils;
 import org.springframework.core.DefaultParameterNameDiscoverer;
@@ -36,8 +37,6 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
     private static final ResponseContainerConverter RESPONSE_CONTAINER_CONVERTER = new ResponseContainerConverter();
 
     private final SpringExceptionHandlerReader exceptionHandlerReader;
-
-    private String resourcePath;
 
     public SpringMvcApiReader(Swagger swagger, Log log) {
         super(swagger, log);
@@ -94,10 +93,8 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
             resourceSecurities = getSecurityRequirements(api);
         }
 
-        resourcePath = resource.getControllerMapping();
-
         //collect api from method with @RequestMapping
-        Map<String, List<Method>> apiMethodMap = collectApisByRequestMapping(methods);
+        Map<String, List<Method>> apiMethodMap = collectApisByRequestMapping(resource);
 
         for (String path : apiMethodMap.keySet()) {
             for (Method method : apiMethodMap.get(path)) {
@@ -332,36 +329,18 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         }
     }
 
-    private Map<String, List<Method>> collectApisByRequestMapping(List<Method> methods) {
+    private Map<String, List<Method>> collectApisByRequestMapping(SpringResource resource) {
         Map<String, List<Method>> apiMethodMap = new HashMap<String, List<Method>>();
-        for (Method method : methods) {
-            RequestMapping requestMapping = findMergedAnnotation(method, RequestMapping.class);
-            if (requestMapping != null) {
-                String path;
-                if (requestMapping.value().length != 0) {
-                    path = generateFullPath(requestMapping.value()[0]);
-                } else {
-                    path = resourcePath;
-                }
-                if (apiMethodMap.containsKey(path)) {
-                    apiMethodMap.get(path).add(method);
-                } else {
-                    List<Method> ms = new ArrayList<Method>();
-                    ms.add(method);
-                    apiMethodMap.put(path, ms);
-                }
+        String path = PathUtils.collectPath(resource.getControllerMapping(), resource.getMethodMapping());
+        for (Method method : resource.getMethods()) {
+            List<Method> ms = apiMethodMap.get(path);
+            if (ms == null){
+                ms = new ArrayList<Method>();
+                apiMethodMap.put(path, ms);
             }
+            ms.add(method);
         }
-
         return apiMethodMap;
-    }
-
-    private String generateFullPath(String path) {
-        if (StringUtils.isNotEmpty(path)) {
-            return this.resourcePath + (path.startsWith("/") ? path : '/' + path);
-        } else {
-            return this.resourcePath;
-        }
     }
 
     //Helper method for loadDocuments()
@@ -369,7 +348,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
 	String[] controllerRequestMappingValues = SpringUtils.getControllerResquestMapping(controllerClazz);
 
         // Iterate over all value attributes of the class-level RequestMapping annotation
-        for (String controllerRequestMappingValue : controllerRequestMappingValues) {
+        for (String controllerMapping : controllerRequestMappingValues) {
             for (Method method : controllerClazz.getMethods()) {
                 // Skip methods introduced by compiler
                 if (method.isSynthetic()) {
@@ -391,22 +370,22 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
                             //   1. The controller package
                             //   2. The controller class name
                             //   3. The controller-level @RequestMapping#value
-                            String resourceKey = controllerClazz.getCanonicalName() + controllerRequestMappingValue + requestMappingRequestMethod;
+                            String resourceKey = controllerClazz.getCanonicalName() + controllerMapping + requestMappingRequestMethod;
                             if (!resourceMap.containsKey(resourceKey)) {
                                 resourceMap.put(
                                         resourceKey,
-                                        new SpringResource(controllerClazz, controllerRequestMappingValue, resourceKey, description));
+                                        new SpringResource(controllerClazz, controllerMapping, null, resourceKey, description));
                             }
                             resourceMap.get(resourceKey).addMethod(method);
                         } else {
                             // Here we know that method-level @RequestMapping#value is populated, so
                             // iterate over all the @RequestMapping#value attributes, and add them to the resource map.
-                            for (String methodRequestMappingValue : methodRequestMappingValues) {
-                                String resourceKey = controllerClazz.getCanonicalName() + controllerRequestMappingValue
-                                        + methodRequestMappingValue + requestMappingRequestMethod;
-                                if (!(controllerRequestMappingValue + methodRequestMappingValue).isEmpty()) {
+                            for (String methodMapping : methodRequestMappingValues) {
+                                String resourceKey = controllerClazz.getCanonicalName() + controllerMapping
+                                        + methodMapping + requestMappingRequestMethod;
+                                if (!(controllerMapping + methodMapping).isEmpty()) {
                                     if (!resourceMap.containsKey(resourceKey)) {
-                                        resourceMap.put(resourceKey, new SpringResource(controllerClazz, methodRequestMappingValue, resourceKey, description));
+                                        resourceMap.put(resourceKey, new SpringResource(controllerClazz, controllerMapping, methodMapping, resourceKey, description));
                                     }
                                     resourceMap.get(resourceKey).addMethod(method);
                                 }

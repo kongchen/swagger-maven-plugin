@@ -1,8 +1,5 @@
 package com.github.kongchen.swagger.docgen.spring;
 
-import com.github.kongchen.swagger.docgen.util.SpringUtils;
-import org.apache.commons.lang3.StringUtils;
-
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,28 +10,24 @@ import java.util.List;
 public class SpringResource {
     private Class<?> controllerClass;
     private List<Method> methods;
-    private String controllerMapping; //FIXME should be an array
-    private String resourceName;
+    private String controllerMapping;
+    private String methodMapping;
     private String resourceKey;
     private String description;
 
     /**
-     *
-     * @param clazz        Controller class
-     * @param resourceName resource Name
-     * @param resourceKey key containing the controller package, class controller class name, and controller-level @RequestMapping#value
-     * @param description description of the contrroller
+     * @param clazz         Controller class
+     * @param methodMapping resource Name
+     * @param resourceKey   key containing the controller package, class controller class name, and controller-level @RequestMapping#value
+     * @param description   description of the contrroller
      */
-    public SpringResource(Class<?> clazz, String resourceName, String resourceKey, String description) {
+    public SpringResource(Class<?> clazz, String controllerMapping, String methodMapping, String resourceKey, String description) {
         this.controllerClass = clazz;
-        this.resourceName = resourceName;
+        this.controllerMapping = controllerMapping;
+        this.methodMapping = methodMapping;
         this.resourceKey = resourceKey;
         this.description = description;
         methods = new ArrayList<Method>();
-
-        String[] controllerRequestMappingValues = SpringUtils.getControllerResquestMapping(controllerClass);
-
-        this.controllerMapping = StringUtils.removeEnd(controllerRequestMappingValues[0], "/");
     }
 
     public Class<?> getControllerClass() {
@@ -65,16 +58,16 @@ public class SpringResource {
         this.controllerMapping = controllerMapping;
     }
 
-    public String getResourceName() {
-        return resourceName;
+    public String getMethodMapping() {
+        return methodMapping;
     }
 
     public void setResource(String resource) {
-        this.resourceName = resource;
+        this.methodMapping = resource;
     }
 
     public String getResourcePath() {
-        return "/" + resourceName;
+        return "/" + methodMapping;
     }
 
     public String getResourceKey() {
