@@ -523,20 +523,21 @@ public abstract class AbstractReader {
         }
     }
     
-    protected String getOperationId(Method method, String httpMethod) {
+    protected String getOperationId(String operationPath, Class<?> controller, Method method, String httpMethod) {
   		if (this.operationIdFormat == null) {
   			this.operationIdFormat = OPERATION_ID_FORMAT_DEFAULT;
   		}
   		
-  		String packageName = method.getDeclaringClass().getPackage().getName();
-  		String className = method.getDeclaringClass().getSimpleName();
-  		String methodName = method.getName();
+  		String packageName = controller.getPackage().getName();
+  		String className = controller.getSimpleName();
+        String methodName = method.getName();
         
   		StrBuilder sb = new StrBuilder(this.operationIdFormat);
   		sb.replaceAll("{{packageName}}", packageName);
   		sb.replaceAll("{{className}}", className);
   		sb.replaceAll("{{methodName}}", methodName);
-  		sb.replaceAll("{{httpMethod}}", httpMethod);
+        sb.replaceAll("{{httpMethod}}", httpMethod);
+        sb.replaceAll("{{path}}", operationPath);
   		
   		return sb.toString();
     }

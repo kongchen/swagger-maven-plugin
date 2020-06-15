@@ -202,8 +202,8 @@ public class JaxrsReaderTest {
         Map<String, Property> properties = getProperties(models, "SomeResponseWithAbstractInheritance");
         assertNotNull(properties);
         assertTrue(properties.containsKey("classProperty"));
-        assertFalse(properties.containsKey("inheritedProperty"));
-        assertFalse(properties.containsKey("type"));
+        assertTrue(properties.containsKey("inheritedProperty"));
+        assertTrue(properties.containsKey("type"));
 
         properties = models.get("SomeResponseBaseClass").getProperties();
         assertNotNull(properties);
