@@ -216,9 +216,11 @@ public abstract class AbstractDocumentSource<D extends AbstractReader & ClassSwa
                     case yaml:
                         FileUtils.write(new File(dir, fileName + ".yaml"), Yaml.pretty().writeValueAsString(swagger), encoding);
                         break;
+                    default:
+                        throw new GenerateException(String.format("Declared output format [%s] is not supported.", format));
                 }
             } catch (Exception e) {
-                throw new GenerateException(String.format("Declared output format [%s] is not supported.", format));
+                throw new GenerateException(String.format("Got exception while writing file. (format=%s, errorMessage=%s)", format, e.getMessage()));
             }
         }
     }
