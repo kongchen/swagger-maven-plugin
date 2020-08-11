@@ -15,7 +15,11 @@ import org.springframework.core.annotation.AnnotationUtils;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * User: kongchen
@@ -123,6 +127,9 @@ public class ApiSource {
     private List<SecurityDefinition> securityDefinitions;
 
     @Parameter
+    private List<Security> securityRequirements;
+
+    @Parameter
     private List<String> typesToSkip = new ArrayList<String>();
 
     @Parameter
@@ -183,16 +190,24 @@ public class ApiSource {
         return securityDefinitions;
     }
 
+    public void setSecurityDefinitions(List<SecurityDefinition> securityDefinitions) {
+        this.securityDefinitions = securityDefinitions;
+    }
+
+    public List<Security> getSecurityRequirements() {
+        return securityRequirements;
+    }
+
+    public void setSecurityRequirements(List<Security> securityRequirements) {
+        this.securityRequirements = securityRequirements;
+    }
+
     public List<String> getTypesToSkip() {
         return typesToSkip;
     }
 
     public void setTypesToSkip(List<String> typesToSkip) {
         this.typesToSkip = typesToSkip;
-    }
-
-    public void setSecurityDefinitions(List<SecurityDefinition> securityDefinitions) {
-        this.securityDefinitions = securityDefinitions;
     }
 
     public Info getInfo() {

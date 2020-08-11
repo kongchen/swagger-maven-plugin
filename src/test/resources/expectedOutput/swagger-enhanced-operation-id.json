@@ -1388,6 +1388,9 @@
       }
     }
   },
+  "security" : [ {
+    "petstore_auth" : ["write:pets"]
+  } ],
   "definitions" : {
     "Category" : {
       "type" : "object",

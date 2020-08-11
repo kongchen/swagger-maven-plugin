@@ -72,6 +72,7 @@ The `executions` block is used to specify the phase of the build lifecycle you w
 | `descriptionFile` | A Path to file with description to be set to Swagger Spec 2.0's [info Object](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#infoObject) |
 | `info` **required**| The basic information of the api, using same definition as Swagger Spec 2.0's [info Object](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#infoObject) |
 | `securityDefinitions` | You can put your [security definitions](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#security-definitions-object) here, see more details [below](#securityDefinitions)|
+| `securityRequirements` | You can put your [security requirements](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md#security-requirement-object) here|
 | `templatePath` | The path of a [handlebars](http://handlebarsjs.com/) template file, see more details [below](#templatefile).|
 | `outputPath` | The path of the generated static document, not existed parent directories will be created. If you don't want to generate a static document, just don't set it. |
 | `outputFormats` | The format types of the generated swagger spec. Valid values are `json`, `yaml` or both `json,yaml`. The `json` format is default.|
@@ -345,6 +346,14 @@ There's a [sample here](https://github.com/swagger-maven-plugin/swagger-maven-ex
                         <json>/securityDefinition.json</json>
                     </securityDefinition>
                 </securityDefinitions>
+                <securityRequirements>
+                    <security>
+                        <name>petstore_auth</name>
+                        <scopes>
+                            <scope>read:pets</scope>
+                        </scopes>
+                    </security>
+                </securityRequirements>
                 <responseMessageOverrides>
                     <responseMessageOverride>
                         <code>401</code>
@@ -355,7 +364,6 @@ There's a [sample here](https://github.com/swagger-maven-plugin/swagger-maven-ex
                         <message>Forbidden - the user does not have the required permissions to execute this request.</message>
                     </responseMessageOverride>
                 </responseMessageOverrides>
-
                 <!-- Support classpath or file absolute path here.
                 1) classpath e.g: "classpath:/markdown.hbs", "classpath:/templates/hello.html"
                 2) file e.g: "${basedir}/src/main/resources/markdown.hbs",

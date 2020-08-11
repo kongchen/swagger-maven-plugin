@@ -30,6 +30,11 @@
                                     <json>/securityDefinition.json</json>
                                 </securityDefinition>
                             </securityDefinitions>
+                            <securityRequirements>
+                                <security>
+                                    <name>api_key_2</name>
+                                </security>
+                            </securityRequirements>
                             <!-- Support classpath or file absolute path here.
                             1) classpath e.g: "classpath:/markdown.hbs", "classpath:/templates/hello.html"
                             2) file e.g: "${basedir}/src/main/resources/markdown.hbs",
@@ -75,6 +80,11 @@
                                     <jsonPath>${basedir}/src/test/resources/securityDefinition.json</jsonPath>
                                 </securityDefinition>
                             </securityDefinitions>
+                            <securityRequirements>
+                                <security>
+                                    <name>api_key_2</name>
+                                </security>
+                            </securityRequirements>
                             <!-- Support classpath or file absolute path here.
                             1) classpath e.g: "classpath:/markdown.hbs", "classpath:/templates/hello.html"
                             2) file e.g: "${basedir}/src/main/resources/markdown.hbs",
@@ -120,6 +130,11 @@
                                     <json>/securityDefinition.json</json>
                                 </securityDefinition>
                             </securityDefinitions>
+                            <securityRequirements>
+                                <security>
+                                    <name>api_key_2</name>
+                                </security>
+                            </securityRequirements>
                             <!-- Support classpath or file absolute path here.
                             1) classpath e.g: "classpath:/markdown.hbs", "classpath:/templates/hello.html"
                             2) file e.g: "${basedir}/src/main/resources/markdown.hbs",

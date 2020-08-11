@@ -13,6 +13,7 @@ import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.helper.StringHelpers;
 import com.github.jknack.handlebars.io.TemplateLoader;
 import com.github.kongchen.swagger.docgen.mavenplugin.ApiSource;
+import com.github.kongchen.swagger.docgen.mavenplugin.Security;
 import com.github.kongchen.swagger.docgen.mavenplugin.SecurityDefinition;
 import com.github.kongchen.swagger.docgen.reader.AbstractReader;
 import com.github.kongchen.swagger.docgen.reader.ClassSwaggerReader;
@@ -27,6 +28,7 @@ import io.swagger.jaxrs.ext.SwaggerExtension;
 import io.swagger.jaxrs.ext.SwaggerExtensions;
 import io.swagger.models.Path;
 import io.swagger.models.Scheme;
+import io.swagger.models.SecurityRequirement;
 import io.swagger.models.Swagger;
 import io.swagger.models.auth.SecuritySchemeDefinition;
 import io.swagger.models.properties.Property;
@@ -38,12 +40,24 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 import static org.apache.commons.lang3.StringUtils.defaultString;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
@@ -116,6 +130,8 @@ public abstract class AbstractDocumentSource<D extends AbstractReader & ClassSwa
 
         swagger = addSecurityDefinitions(swagger, apiSource);
 
+        swagger = addSecurityRequirements(swagger, apiSource);
+
         swagger = doFilter(swagger);
     }
 
@@ -154,6 +170,19 @@ public abstract class AbstractDocumentSource<D extends AbstractReader & ClassSwa
             }
         }
         result.setSecurityDefinitions(definitions);
+        return result;
+    }
+
+    private Swagger addSecurityRequirements(final Swagger swagger, ApiSource apiSource) {
+        Swagger result = swagger;
+        if (apiSource.getSecurityRequirements() == null) {
+            return result;
+        }
+        List<SecurityRequirement> securityRequirementList = new ArrayList<>();
+        for (Security security : apiSource.getSecurityRequirements()) {
+            securityRequirementList.add(security.generateSecurityRequirement());
+        }
+        result.setSecurity(securityRequirementList);
         return result;
     }
 

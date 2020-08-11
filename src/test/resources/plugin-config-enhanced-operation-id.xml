@@ -31,6 +31,14 @@
                                     <json>/securityDefinition.json</json>
                                 </securityDefinition>
                             </securityDefinitions>
+                            <securityRequirements>
+                                <security>
+                                    <name>petstore_auth</name>
+                                    <scopes>
+                                        <scope>write:pets</scope>
+                                    </scopes>
+                                </security>
+                            </securityRequirements>
                             <outputFormats>json</outputFormats>
                             <swaggerDirectory>${basedir}/generated/swagger-ui-enhanced-operation-id</swaggerDirectory>
                             <swaggerApiReader>com.wordnik.jaxrs.VendorExtensionsJaxrsReader</swaggerApiReader>
