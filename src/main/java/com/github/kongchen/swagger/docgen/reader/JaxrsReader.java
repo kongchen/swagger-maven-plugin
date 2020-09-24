@@ -113,6 +113,9 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         List<SecurityRequirement> securities = getSecurityRequirements(api);
         Map<String, Tag> discoveredTags = scanClasspathForTags();
 
+        final String resourceClassNameTag = cls.getSimpleName();
+        tags.put(resourceClassNameTag, new Tag().name(resourceClassNameTag));
+
         // merge consumes, produces
 
         readCommonParameters(cls);
