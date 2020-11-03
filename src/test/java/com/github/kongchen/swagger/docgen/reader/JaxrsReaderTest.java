@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -20,6 +22,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import io.swagger.models.utils.PropertyModelConverter;
 import io.swagger.util.Json;
 import org.apache.maven.plugin.logging.Log;
 import org.mockito.Mock;
@@ -29,7 +32,6 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -232,6 +234,22 @@ public class JaxrsReaderTest {
         assertTrue(properties.containsKey("type"));
     }
 
+    @Test
+    public void handleResponseWithCompletionStage() {
+        String expectedFormat = "string";
+        Swagger result = reader.read(AnApiWithCompletionStage.class);
+        PropertyModelConverter converter = new PropertyModelConverter();
+        // CompletableFuture<String>
+        Model getA = result.getPath("/apath/a").getGet().getResponses().get("200").getResponseSchema();
+        assertEquals(expectedFormat, converter.modelToProperty(getA).getType());
+        // CompletionStage<String>
+        Model getB = result.getPath("/apath/b").getGet().getResponses().get("200").getResponseSchema();
+        assertEquals(expectedFormat, converter.modelToProperty(getB).getType());
+        // String
+        Model getC = result.getPath("/apath/c").getGet().getResponses().get("200").getResponseSchema();
+        assertEquals(expectedFormat, converter.modelToProperty(getC).getType());
+    }
+
     private Map<String, Property> getProperties(Map<String, Model> models, String className) {
         assertTrue(models.containsKey(className));
 
@@ -388,6 +406,22 @@ public class JaxrsReaderTest {
 
         @GET
         public SomeOtherResponse[] getOperation6() { return null; }
+    }
+
+    @Api
+    @Path("/apath")
+    static class AnApiWithCompletionStage {
+        @Path("a")
+        @GET
+        public CompletableFuture<String> getOperation1() { return null; }
+
+        @Path("b")
+        @GET
+        public CompletionStage<String> getOperation2() { return null; }
+
+        @Path("c")
+        @GET
+        public String getOperation3() { return null; }
     }
 
     @JsonTypeInfo(use=Id.NAME, property="type")

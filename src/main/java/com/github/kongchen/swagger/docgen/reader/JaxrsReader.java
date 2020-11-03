@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletionStage;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -387,6 +388,13 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
             // pick out response from method declaration
             LOGGER.debug("picking up response class from method " + method);
             responseClassType = method.getGenericReturnType();
+            if(responseClassType instanceof ParameterizedType) {
+                ParameterizedType responseClassTypeImpl = (ParameterizedType) responseClassType;
+                if(CompletionStage.class.isAssignableFrom((Class) responseClassTypeImpl.getRawType())) {
+                    responseClassTypeImpl.getRawType();
+                    responseClassType = responseClassTypeImpl.getActualTypeArguments()[0];
+                }
+            }
         }
         boolean hasApiAnnotation = false;
         if (responseClassType instanceof Class) {
