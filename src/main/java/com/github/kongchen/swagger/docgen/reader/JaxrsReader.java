@@ -1,8 +1,5 @@
 package com.github.kongchen.swagger.docgen.reader;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
-import io.swagger.models.properties.StringProperty;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -34,8 +31,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.AnnotationUtils;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.github.kongchen.swagger.docgen.jaxrs.BeanParamInjectParamExtension;
 import com.github.kongchen.swagger.docgen.jaxrs.JaxrsParameterExtension;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponses;
@@ -59,6 +59,7 @@ import io.swagger.models.parameters.Parameter;
 import io.swagger.models.parameters.RefParameter;
 import io.swagger.models.properties.Property;
 import io.swagger.models.properties.RefProperty;
+import io.swagger.models.properties.StringProperty;
 import io.swagger.models.refs.RefType;
 import io.swagger.util.BaseReaderUtils;
 import io.swagger.util.ReflectionUtils;
@@ -202,7 +203,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
     /**
      * Returns true when the swagger object already contains a common parameter
      * with the same name and type as the passed parameter.
-     * 
+     *
      * @param parameter The parameter to check.
      * @return true if the swagger object already contains a common parameter with the same name and type
      */
@@ -350,6 +351,8 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
             if (!apiOperation.nickname().isEmpty()) {
                 operationId = apiOperation.nickname();
             }
+
+            responseCode = apiOperation.code();
 
             defaultResponseHeaders = parseResponseHeaders(apiOperation.responseHeaders());
             operation.summary(apiOperation.value()).description(apiOperation.notes());
