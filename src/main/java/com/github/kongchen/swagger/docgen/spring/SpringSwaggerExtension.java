@@ -251,41 +251,45 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension {
 
     private List<Parameter> extractParametersFromModelAttributeAnnotation(Type type, Map<Class<?>, Annotation> annotations) {
         ModelAttribute modelAttribute = (ModelAttribute)annotations.get(ModelAttribute.class);
-        if ((modelAttribute == null || !hasClassStartingWith(annotations.keySet(), "org.springframework.web.bind.annotation"))&& BeanUtils.isSimpleProperty(TypeUtils.getRawType(type, null))) {
+        Class<?> rawType = TypeUtils.getRawType(type, null);
+
+        if ((modelAttribute == null || !hasClassStartingWith(annotations.keySet(), "org.springframework.web.bind.annotation")) && rawType != null && BeanUtils.isSimpleProperty(rawType)) {
             return Collections.emptyList();
         }
 
         List<Parameter> parameters = new ArrayList<Parameter>();
         Class<?> clazz = TypeUtils.getRawType(type, type);
-        for (PropertyDescriptor propertyDescriptor : BeanUtils.getPropertyDescriptors(clazz)) {
-            // Get all the valid setter methods inside the bean
-            Method propertyDescriptorSetter = propertyDescriptor.getWriteMethod();
-            if (propertyDescriptorSetter != null) {
-                ApiParam propertySetterApiParam = AnnotationUtils.findAnnotation(propertyDescriptorSetter, ApiParam.class);
-                if (propertySetterApiParam == null) {
-                    // If we find a setter that doesn't have @ApiParam annotation, then skip it
-                    continue;
-                }
-
-                // Here we have a bean setter method that is annotted with @ApiParam, but we still
-                // need to know what type of parameter to create. In order to do this, we look for
-                // any annotation attached to the first method parameter of the setter fucntion.
-                Annotation[][] parameterAnnotations = propertyDescriptorSetter.getParameterAnnotations();
-                if (parameterAnnotations == null || parameterAnnotations.length == 0) {
-                    continue;
-                }
-
-                Class parameterClass = propertyDescriptor.getPropertyType();
-                List<Parameter> propertySetterExtractedParameters = this.extractParametersFromAnnotation(
-                        parameterClass, toMap(Arrays.asList(parameterAnnotations[0])));
-
-                for (Parameter parameter : propertySetterExtractedParameters) {
-                    if (Strings.isNullOrEmpty(parameter.getName())) {
-                        parameter.setName(propertyDescriptor.getDisplayName());
+        if (clazz != null) {
+            for (PropertyDescriptor propertyDescriptor : BeanUtils.getPropertyDescriptors(clazz)) {
+                // Get all the valid setter methods inside the bean
+                Method propertyDescriptorSetter = propertyDescriptor.getWriteMethod();
+                if (propertyDescriptorSetter != null) {
+                    ApiParam propertySetterApiParam = AnnotationUtils.findAnnotation(propertyDescriptorSetter, ApiParam.class);
+                    if (propertySetterApiParam == null) {
+                        // If we find a setter that doesn't have @ApiParam annotation, then skip it
+                        continue;
                     }
-                    ParameterProcessor.applyAnnotations(new Swagger(), parameter, type, Lists.newArrayList(propertySetterApiParam));
+
+                    // Here we have a bean setter method that is annotted with @ApiParam, but we still
+                    // need to know what type of parameter to create. In order to do this, we look for
+                    // any annotation attached to the first method parameter of the setter fucntion.
+                    Annotation[][] parameterAnnotations = propertyDescriptorSetter.getParameterAnnotations();
+                    if (parameterAnnotations == null || parameterAnnotations.length == 0) {
+                        continue;
+                    }
+
+                    Class parameterClass = propertyDescriptor.getPropertyType();
+                    List<Parameter> propertySetterExtractedParameters = this.extractParametersFromAnnotation(
+                            parameterClass, toMap(Arrays.asList(parameterAnnotations[0])));
+
+                    for (Parameter parameter : propertySetterExtractedParameters) {
+                        if (Strings.isNullOrEmpty(parameter.getName())) {
+                            parameter.setName(propertyDescriptor.getDisplayName());
+                        }
+                        ParameterProcessor.applyAnnotations(new Swagger(), parameter, type, Lists.newArrayList(propertySetterApiParam));
+                    }
+                    parameters.addAll(propertySetterExtractedParameters);
                 }
-                parameters.addAll(propertySetterExtractedParameters);
             }
         }
 
@@ -294,7 +298,8 @@ public class SpringSwaggerExtension extends AbstractSwaggerExtension {
 
     private boolean isRequestParamType(Type type, Map<Class<?>, Annotation> annotations) {
         RequestParam requestParam = (RequestParam) annotations.get(RequestParam.class);
-        return requestParam != null || (BeanUtils.isSimpleProperty(TypeUtils.getRawType(type, type)) && !hasClassStartingWith(annotations.keySet(), "org.springframework.web.bind.annotation"));
+        Class<?> rawType = TypeUtils.getRawType(type, type);
+        return requestParam != null || (rawType != null && BeanUtils.isSimpleProperty(rawType) && !hasClassStartingWith(annotations.keySet(), "org.springframework.web.bind.annotation"));
     }
 
     @Override
