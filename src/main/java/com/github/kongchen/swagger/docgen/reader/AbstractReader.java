@@ -42,7 +42,7 @@ public abstract class AbstractReader {
     protected List<ResponseMessageOverride> responseMessageOverrides;
 
     protected String operationIdFormat;
-    
+
     /**
      * Supported parameters: {{packageName}}, {{className}}, {{methodName}}, {{httpMethod}}
      * Suggested default value is: "{{className}}_{{methodName}}_{{httpMethod}}"
@@ -209,18 +209,19 @@ public abstract class AbstractReader {
 
     protected Set<Tag> extractTags(Api api) {
         Set<Tag> output = new LinkedHashSet<>();
-        if(api == null) {
+        if (api == null) {
             return output;
         }
-
-        boolean hasExplicitTags = false;
         for (String tag : api.tags()) {
             if (!tag.isEmpty()) {
-                hasExplicitTags = true;
-                output.add(new Tag().name(tag));
+                Tag t = new Tag().name(tag);
+                output.add(t);
+                if (api.tags().length == 1 && !api.description().isEmpty()) {
+                    t.description(api.description());
+                }
             }
         }
-        if (!hasExplicitTags) {
+        if (output.isEmpty()) {
             // derive tag from api path + description
             String tagString = api.value().replace("/", "");
             if (!tagString.isEmpty()) {
@@ -522,22 +523,22 @@ public abstract class AbstractReader {
             extension.decorateOperation(operation, method, chain);
         }
     }
-    
+
     protected String getOperationId(Method method, String httpMethod) {
   		if (this.operationIdFormat == null) {
   			this.operationIdFormat = OPERATION_ID_FORMAT_DEFAULT;
   		}
-  		
+
   		String packageName = method.getDeclaringClass().getPackage().getName();
   		String className = method.getDeclaringClass().getSimpleName();
   		String methodName = method.getName();
-        
+
   		StrBuilder sb = new StrBuilder(this.operationIdFormat);
   		sb.replaceAll("{{packageName}}", packageName);
   		sb.replaceAll("{{className}}", className);
   		sb.replaceAll("{{methodName}}", methodName);
   		sb.replaceAll("{{httpMethod}}", httpMethod);
-  		
+
   		return sb.toString();
     }
 
