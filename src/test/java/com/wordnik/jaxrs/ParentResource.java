@@ -5,8 +5,12 @@
  */
 package com.wordnik.jaxrs;
 
+import java.sql.SQLException;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
+import javax.net.ssl.SSLException;
 import javax.ws.rs.Path;
 
 /**
@@ -20,5 +24,15 @@ public class ParentResource {
     @ApiOperation(value="SubResource")
     public SubResource getStudyResource() {
         return new SubResource();
+    }
+
+    // this static method and return type should not be included in the swagger as there is no Path nor Api
+    public static SQLException getCauseSQLException(Throwable e) {
+        return null;
+    }
+
+    // this method and return type should not be included in the swagger as there is no Path nor Api
+    public SSLException getCauseSSLException(Throwable e) {
+        return null;
     }
 }

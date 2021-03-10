@@ -12,8 +12,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.ws.rs.Consumes;
@@ -155,7 +157,8 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
 
                 String httpMethod = extractOperationMethod(apiOperation, method, SwaggerExtensions.chain());
 
-                Operation operation = parseMethod(httpMethod, method);
+                final LinkedHashMap<String, Model> resultModels = new LinkedHashMap<>();
+                final Operation operation = parseMethod(httpMethod, method, resultModels);
                 updateOperationParameters(parentParameters, regexMap, operation);
                 updateOperationProtocols(apiOperation, operation);
 
@@ -178,9 +181,14 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
 
                 // can't continue without a valid http method
                 httpMethod = (httpMethod == null) ? parentMethod : httpMethod;
-                updateTagsForOperation(operation, apiOperation);
-                updateOperation(apiConsumes, apiProduces, tags, securities, operation);
-                updatePath(operationPath, httpMethod, operation);
+                if (httpMethod != null) {
+                    for (Entry<String, Model> m : resultModels.entrySet()) {
+                        swagger.model(m.getKey(), m.getValue());
+                    }
+                    updateTagsForOperation(operation, apiOperation);
+                    updateOperation(apiConsumes, apiProduces, tags, securities, operation);
+                    updatePath(operationPath, httpMethod, operation);
+                }
             }
             updateTagDescriptions(discoveredTags);
         }
@@ -202,7 +210,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
     /**
      * Returns true when the swagger object already contains a common parameter
      * with the same name and type as the passed parameter.
-     * 
+     *
      * @param parameter The parameter to check.
      * @return true if the swagger object already contains a common parameter with the same name and type
      */
@@ -331,7 +339,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
     }
 
 
-    public Operation parseMethod(String httpMethod, Method method) {
+    public Operation parseMethod(String httpMethod, Method method, LinkedHashMap<String, Model> resultModels) {
         int responseCode = 200;
         Operation operation = new Operation();
         ApiOperation apiOperation = AnnotationUtils.findAnnotation(method, ApiOperation.class);
@@ -392,6 +400,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         if (responseClassType instanceof Class) {
             hasApiAnnotation = AnnotationUtils.findAnnotation((Class) responseClassType, Api.class) != null;
         }
+
         if ((responseClassType != null)
                 && !responseClassType.equals(Void.class)
                 && !responseClassType.equals(void.class)
@@ -417,20 +426,21 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
                             .schema(p)
                             .headers(defaultResponseHeaders));
                 }
-                for (String key : models.keySet()) {
-                    Property responseProperty = RESPONSE_CONTAINER_CONVERTER.withResponseContainer(responseContainer, new RefProperty().asDefault(key));
-
+                for (Map.Entry<String, Model> entry : models.entrySet()) {
+                    final String key = entry.getKey();
+                    Property responseProperty = RESPONSE_CONTAINER_CONVERTER
+                            .withResponseContainer(responseContainer, new RefProperty().asDefault(key));
 
                     operation.response(responseCode, new Response()
                             .description("successful operation")
                             .schema(responseProperty)
                             .headers(defaultResponseHeaders));
-                    swagger.model(key, models.get(key));
+                    resultModels.put(entry.getKey(), entry.getValue());
                 }
             }
             Map<String, Model> models = readAllModels(responseClassType);
             for (Map.Entry<String, Model> entry : models.entrySet()) {
-                swagger.model(entry.getKey(), entry.getValue());
+                resultModels.put(entry.getKey(), entry.getValue());
             }
         }
 
