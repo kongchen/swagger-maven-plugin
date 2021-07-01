@@ -1,9 +1,10 @@
 package com.github.kongchen.swagger.docgen.mavenplugin;
 
-import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
-import com.github.kongchen.swagger.docgen.GenerateException;
-import io.swagger.util.Json;
+import java.io.File;
+import java.lang.reflect.Method;
+import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -15,11 +16,10 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
 
-import java.io.File;
-import java.lang.reflect.Method;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
+import com.github.kongchen.swagger.docgen.GenerateException;
+
+import io.swagger.util.Json;
 
 /**
  * User: kongchen
@@ -112,7 +112,7 @@ public class ApiDocumentMojo extends AbstractMojo {
             
             for (ApiSource apiSource : apiSources) {
                 validateConfiguration(apiSource);
-                AbstractDocumentSource documentSource = apiSource.isSpringmvc()
+                AbstractDocumentSource<?> documentSource = apiSource.isSpringmvc()
                         ? new SpringMavenDocumentSource(apiSource, getLog(), projectEncoding)
                         : new MavenDocumentSource(apiSource, getLog(), projectEncoding);
 
@@ -134,16 +134,17 @@ public class ApiDocumentMojo extends AbstractMojo {
                         apiSource.getOutputFormats(), swaggerFileName, projectEncoding);
 
                 if (apiSource.isAttachSwaggerArtifact() && apiSource.getSwaggerDirectory() != null && project != null) {
-                    String outputFormats = apiSource.getOutputFormats();
-                    if (outputFormats != null) {
-                        for (String format : outputFormats.split(",")) {
-                            String classifier = swaggerFileName.equals("swagger")
-                                    ? getSwaggerDirectoryName(apiSource.getSwaggerDirectory())
-                                    : swaggerFileName;
-                            File swaggerFile = new File(apiSource.getSwaggerDirectory(), swaggerFileName + "." + format.toLowerCase());
-                            projectHelper.attachArtifact(project, format.toLowerCase(), classifier, swaggerFile);
-                        }
+                	
+                	// Default Output Format to be json. Null Check not required.
+                    String outputFormats = StringUtils.defaultString(apiSource.getOutputFormats(), "json");
+                    for (String format : outputFormats.split(",")) {
+                        String classifier = swaggerFileName.equals("swagger")
+                                ? getSwaggerDirectoryName(apiSource.getSwaggerDirectory())
+                                : swaggerFileName;
+                        File swaggerFile = new File(apiSource.getSwaggerDirectory(), swaggerFileName + "." + format.toLowerCase());
+                        projectHelper.attachArtifact(project, format.toLowerCase(), classifier, swaggerFile);
                     }
+                    
                 }
             }
         } catch (GenerateException e) {
