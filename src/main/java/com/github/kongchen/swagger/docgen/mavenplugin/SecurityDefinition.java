@@ -84,6 +84,11 @@ public class SecurityDefinition {
 
         try {
             InputStream jsonStream = json != null ? this.getClass().getResourceAsStream(json) : new FileInputStream(jsonPath);
+            
+            if(jsonStream == null) {
+            	String errorMsg = String.format("Invalid Security Definition json = %s, jasonPath = %s", json, jsonPath);
+            	throw new GenerateException(errorMsg);
+            }
             JsonNode tree = mapper.readTree(jsonStream);
             Iterator<Map.Entry<String, JsonNode>> fields = tree.fields();
             while(fields.hasNext()) {
