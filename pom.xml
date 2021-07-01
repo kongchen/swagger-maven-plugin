@@ -69,6 +69,7 @@
         <commons-io.version>2.0.1</commons-io.version>
         <reflections.version>0.9.9</reflections.version>
         <springframework.version>4.3.7.RELEASE</springframework.version>
+        <springframework.security.version>5.5.1</springframework.security.version>
         <commons-lang3.version>3.9</commons-lang3.version>
         <version.jersey-server>1.13</version.jersey-server>
         <version.javax.ws.rs-api>2.0.1</version.javax.ws.rs-api>
@@ -212,6 +213,11 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
             <version>${springframework.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-core</artifactId>
+            <version>${springframework.security.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
