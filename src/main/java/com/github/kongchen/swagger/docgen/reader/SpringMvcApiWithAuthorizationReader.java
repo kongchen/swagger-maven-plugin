@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import static org.apache.commons.lang3.ObjectUtils.allNotNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.springframework.core.annotation.AnnotatedElementUtils.findMergedAnnotation;
 
@@ -36,15 +37,10 @@ public class SpringMvcApiWithAuthorizationReader extends SpringMvcApiReader {
         for (Method method : methods) {
             PreAuthorize preAuthorize = findMergedAnnotation(method, PreAuthorize.class);
             RequestMapping requestMapping = findMergedAnnotation(method, RequestMapping.class);
-            if (preAuthorize == null) continue; // nothing to update
-            if (requestMapping == null) continue; // nothing to update
-
             String resourcePathKey = resource.getControllerMapping() + resource.getResourceName();
             Path path = extSwagger.getPath(resourcePathKey);
-            if (path == null) continue; // nothing to update
-
             String permissions = preAuthorize.value();
-            if (isBlank(permissions)) continue; // nothing to update
+            if (!allNotNull(preAuthorize, requestMapping, path) || isBlank(permissions)) continue; // nothing to update
 
             for (RequestMethod reqMethod : requestMapping.method()) {
                 Operation operation = operation(path, reqMethod);
