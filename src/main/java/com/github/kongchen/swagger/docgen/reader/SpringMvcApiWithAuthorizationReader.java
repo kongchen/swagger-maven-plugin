@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.apache.commons.lang3.ObjectUtils.allNotNull;
@@ -42,10 +43,9 @@ public class SpringMvcApiWithAuthorizationReader extends SpringMvcApiReader {
             String permissions = preAuthorize.value();
             if (!allNotNull(preAuthorize, requestMapping, path) || isBlank(permissions)) continue; // nothing to update
 
-            for (RequestMethod reqMethod : requestMapping.method()) {
-                Operation operation = operation(path, reqMethod);
-                updateOperation(operation, permissions);
-            }
+            Arrays.stream(requestMapping.method())
+                    .map(reqMethod -> operation(path, reqMethod))
+                    .forEach(operation -> updateOperation(operation, permissions));
         }
 
         return extSwagger;
