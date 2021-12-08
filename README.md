@@ -59,6 +59,8 @@ The `executions` block is used to specify the phase of the build lifecycle you w
 |------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `skipSwaggerGeneration` | If `true`, swagger generation will be skipped. Default is `false`. User property is `swagger.skip`. |
 | `apiSources` | List of `apiSource` elements. One `apiSource` can be considered as a version of APIs of your service. You can specify several `apiSource` elements, though generally one is enough. |
+| `enabledObjectMapperFeatures`    | List of ConfigFeature enums that are supported by ObjectMapper.configure - the feature is set to true. https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#features) here, see more details [below](#features)|
+| `disabledObjectMapperFeatures`    | List of ConfigFeature enums that are supported by ObjectMapper.configure - the feature is set to false. https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#features) here, see more details [below](#features)|
 
 # Configuration for `apiSource`
 
@@ -85,8 +87,6 @@ The `executions` block is used to specify the phase of the build lifecycle you w
 | `jsonExampleValues` | If `true`, all example values in `@ApiModelProperty` will be handled as json raw values. This is useful for creating valid examples in the generated json for all property types, including non-string ones. |
 | `modelConverters` | List of custom implementations of `io.swagger.converter.ModelConverter` that should be used when generating the swagger files. |
 | `swaggerExtensions` | List of custom implementations of `io.swagger.jaxrs.ext.SwaggerExtension` that should be used when generating the swagger files. |
-| `enabledObjectMapperFeatures`    | List of ConfigFeature enums that are supported by ObjectMapper.configure - the feature is set to true. https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#features) here, see more details [below](#features)|
-| `disabledObjectMapperFeatures`    | List of ConfigFeature enums that are supported by ObjectMapper.configure - the feature is set to false. https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#features) here, see more details [below](#features)|
 | `operationIdFormat` | Format of `operationId` used in Swagger spec. For historical reasons default is Java method name. Since 3.1.8, for new APIs suggested format is: `{{className}}_{{methodName}}_{{httpMethod}}`. `{{packageName}}` token is also supported. |
 | `externalDocs` | URL Reference to external documentation |
 | `responseMessageOverrides` | Default response message overrides of type ```@ApiResponse```. Example: `<responseMessageOverrides><responseMessageOverride><code>401</code><message>Unauthenticated - could not authenticate the user.</message></responseMessageOverride></responseMessageOverrides>` |
@@ -369,13 +369,6 @@ There's a [sample here](https://github.com/swagger-maven-plugin/swagger-maven-ex
                 <swaggerExtensions>
                     <swaggerExtension>com.example.VendorExtension</swaggerExtension>
                 </swaggerExtensions>
-                <enabledObjectMapperFeatures>
-                    <feature>com.fasterxml.jackson.databind.SerializationFeature.WRITE_ENUMS_USING_TO_STRING</feature>
-                    <feature>com.fasterxml.jackson.core.JsonParser$Feature.ALLOW_NUMERIC_LEADING_ZEROS</feature>
-                </enabledObjectMapperFeatures>
-                <disabledObjectMapperFeatures>
-                    <feature>com.fasterxml.jackson.databind.SerializationFeature.FAIL_ON_EMPTY_BEANS</feature>
-                </disabledObjectMapperFeatures>
                 <operationIdFormat>{{className}}_{{methodName}}_{{httpMethod}}</operationIdFormat>
                 <externalDocs>
                     <description>Example external docs</description>
@@ -383,6 +376,13 @@ There's a [sample here](https://github.com/swagger-maven-plugin/swagger-maven-ex
                 </externalDocs>
             </apiSource>
         </apiSources>
+	<enabledObjectMapperFeatures>
+	    <feature>com.fasterxml.jackson.databind.SerializationFeature.WRITE_ENUMS_USING_TO_STRING</feature>
+	    <feature>com.fasterxml.jackson.core.JsonParser$Feature.ALLOW_NUMERIC_LEADING_ZEROS</feature>
+	</enabledObjectMapperFeatures>
+	<disabledObjectMapperFeatures>
+	    <feature>com.fasterxml.jackson.databind.SerializationFeature.FAIL_ON_EMPTY_BEANS</feature>
+	</disabledObjectMapperFeatures>
     </configuration>
     <executions>
         <execution>
