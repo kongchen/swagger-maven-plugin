@@ -110,7 +110,8 @@ public class User {
     }
 
     @XmlElement(name = "userStatus")
-    @ApiModelProperty(value = "User Status", allowableValues = "1-registered,2-active,3-closed", example = "2")
+    @ApiModelProperty(value = "User Status", allowableValues = "1-registered,2-active,3-closed", example = "2",
+      extensions = @Extension(properties = {@ExtensionProperty(name = "nested", parseValue = true, value = "{\"field1\": 1, \"field2\": [2,3], \"field3\": \"value3\" }")}))
     public int getUserStatus() {
         return userStatus;
     }

@@ -1641,7 +1641,8 @@
           "type" : "integer",
           "format" : "int32",
           "example" : 2,
-          "description" : "User Status"
+          "description" : "User Status",
+          "x-nested": {"field1": 1, "field2": [2,3], "field3": "value3" }
         }
       },
       "xml" : {
