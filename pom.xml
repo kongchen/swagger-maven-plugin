@@ -93,7 +93,7 @@
         <version.maven-gpg-plugin>1.6</version.maven-gpg-plugin>
         <version.plexus-javadoc>1.0</version.plexus-javadoc>
         <version.slf4j-nop>1.7.25</version.slf4j-nop>
-        <kotlin.version>1.2.61</kotlin.version>
+        <kotlin.version>1.5.32</kotlin.version>
     </properties>
 
     <dependencies>

@@ -991,7 +991,10 @@
         ],
         "responses": {
           "400": {
-            "description": "Invalid pet value"
+            "description": "Invalid pet value",
+              "schema" : {
+                  "$ref" : "https://pet.error.com"
+              }
           }
         },
         "security": [
