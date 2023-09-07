@@ -1,6 +1,7 @@
 package com.github.kongchen.swagger.docgen.reader;
 
 import com.github.kongchen.swagger.docgen.ResponseMessageOverride;
+import com.github.kongchen.swagger.docgen.mavenplugin.ApiSource;
 import com.github.kongchen.swagger.docgen.util.TypeExtracter;
 import com.github.kongchen.swagger.docgen.util.TypeWithAnnotations;
 import com.google.common.collect.Lists;
@@ -40,6 +41,7 @@ public abstract class AbstractReader {
     protected Swagger swagger;
     private Set<Type> typesToSkip = new HashSet<Type>();
     protected List<ResponseMessageOverride> responseMessageOverrides;
+    protected boolean includeHidden = false;
 
     protected String operationIdFormat;
     
@@ -292,6 +294,9 @@ public abstract class AbstractReader {
     }
 
     private boolean isApiParamHidden(List<Annotation> parameterAnnotations) {
+        if (includeHidden) {
+            return false;
+        }
         for (Annotation parameterAnnotation : parameterAnnotations) {
             if (parameterAnnotation instanceof ApiParam) {
                 return ((ApiParam) parameterAnnotation).hidden();
@@ -299,6 +304,14 @@ public abstract class AbstractReader {
         }
 
         return false;
+    }
+
+    protected boolean isApiOperationHidden(ApiOperation apiOperation) {
+        if (includeHidden) {
+            return false;
+        } else {
+            return apiOperation != null && apiOperation.hidden();
+        }
     }
 
     private boolean hasValidAnnotations(List<Annotation> parameterAnnotations) {
@@ -577,5 +590,9 @@ public abstract class AbstractReader {
 	public void setOperationIdFormat(String operationIdFormat) {
 		this.operationIdFormat = operationIdFormat;
 	}
+
+    public void setIncludeHidden(boolean includeHidden) {
+        this.includeHidden = includeHidden;
+    }
 }
 

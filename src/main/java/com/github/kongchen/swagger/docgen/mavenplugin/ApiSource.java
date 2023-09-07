@@ -149,6 +149,9 @@ public class ApiSource {
     @Parameter
     private List<ResponseMessageOverride> responseMessageOverrides;
 
+    @Parameter
+    private boolean includeHidden = false;
+
     public Set<Class<?>> getValidClasses(Class<? extends Annotation> clazz) {
         Set<Class<?>> classes = new LinkedHashSet<Class<?>>();
         
@@ -499,6 +502,14 @@ public class ApiSource {
 
     public void setRemoveBasePathFromEndpoints(Boolean removeBasePathFromEndpoints) {
         this.removeBasePathFromEndpoints = removeBasePathFromEndpoints;
+    }
+
+    public boolean isIncludeHidden() {
+        return includeHidden;
+    }
+
+    public void setIncludeHidden(boolean includeHidden) {
+        this.includeHidden = includeHidden;
     }
 }
 

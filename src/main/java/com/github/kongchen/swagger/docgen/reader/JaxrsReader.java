@@ -93,7 +93,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
     }
 
     public Swagger read(Class<?> cls) {
-        return read(cls, "", null, false, new String[0], new String[0], new HashMap<String, Tag>(), new ArrayList<Parameter>());
+        return read(cls, "", null, includeHidden, new String[0], new String[0], new HashMap<String, Tag>(), new ArrayList<Parameter>());
     }
 
     protected Swagger read(Class<?> cls, String parentPath, String parentMethod, boolean readHidden, String[] parentConsumes,
@@ -125,7 +125,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         List<Method> filteredMethods = getFilteredMethods(cls);
         for (Method method : filteredMethods) {
             ApiOperation apiOperation = AnnotationUtils.findAnnotation(method, ApiOperation.class);
-            if (apiOperation != null && apiOperation.hidden()) {
+            if (isApiOperationHidden(apiOperation)) {
                 continue;
             }
             Path methodPath = AnnotationUtils.findAnnotation(method, Path.class);
@@ -282,6 +282,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
                 responseClass = apiOperation.response();
             }
             LOGGER.debug("handling sub-resource method " + method.toString() + " -> " + responseClass);
+            // TODO: Should we use includeHidden instead of true?
             read(responseClass, operationPath, httpMethod, true, apiConsumes, apiProduces, tags, operation.getParameters());
         }
     }
@@ -344,7 +345,7 @@ public class JaxrsReader extends AbstractReader implements ClassSwaggerReader {
         Map<String, Property> defaultResponseHeaders = null;
 
         if (apiOperation != null) {
-            if (apiOperation.hidden()) {
+            if (isApiOperationHidden(apiOperation)) {
                 return null;
             }
             if (!apiOperation.nickname().isEmpty()) {

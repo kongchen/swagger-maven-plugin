@@ -421,6 +421,7 @@ public abstract class AbstractDocumentSource<D extends AbstractReader & ClassSwa
             reader.setTypesToSkip(this.typesToSkip);
             reader.setOperationIdFormat(this.apiSource.getOperationIdFormat());
             reader.setResponseMessageOverrides(this.apiSource.getResponseMessageOverrides());
+            reader.setIncludeHidden(apiSource.isIncludeHidden());
             return reader;
         } else {
             ClassSwaggerReader customApiReader = getCustomApiReader(customReaderClassName);
