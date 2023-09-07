@@ -87,7 +87,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
 
         if (controller.isAnnotationPresent(Api.class)) {
             Api api = findMergedAnnotation(controller, Api.class);
-            if (!canReadApi(false, api)) {
+            if (!canReadApi(includeHidden, api)) {
                 return swagger;
             }
             tags = updateTagsForApi(null, api);
@@ -106,7 +106,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
                     continue;
                 }
                 ApiOperation apiOperation = findMergedAnnotation(method, ApiOperation.class);
-                if (apiOperation != null && apiOperation.hidden()) {
+                if (isApiOperationHidden(apiOperation)) {
                     continue;
                 }
 
@@ -155,7 +155,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         ApiOperation apiOperation = findMergedAnnotation(method, ApiOperation.class);
 
         if(apiOperation != null) {
-            if (apiOperation.hidden()) {
+            if (isApiOperationHidden(apiOperation)) {
                 return null;
             }
             if (!apiOperation.nickname().isEmpty()) {
