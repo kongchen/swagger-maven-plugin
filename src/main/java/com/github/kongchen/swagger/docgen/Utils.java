@@ -8,6 +8,7 @@ import io.swagger.models.Path;
 import io.swagger.models.Response;
 import io.swagger.models.Swagger;
 import io.swagger.models.Tag;
+import io.swagger.models.properties.Property;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -87,9 +88,7 @@ public class Utils {
 
         //reorder definitions
         if (swagger.getDefinitions() != null) {
-            TreeMap<String, Model> defs = new TreeMap<String, Model>();
-            defs.putAll(swagger.getDefinitions());
-            swagger.setDefinitions(defs);
+            swagger.setDefinitions(sortDefinitions(swagger.getDefinitions()));
         }
 
         // order the tags
@@ -101,6 +100,22 @@ public class Utils {
             });
         }
 
+    }
+
+   /**
+    * Produce a sorted map of models, where the models are sorted by name, and the properties within each model are also
+    * sorted by name.
+    * @apiNote The map of models argument is not mutated, however the properties of each model is mutated (re-ordered).
+    * @param definitions to sort
+    * @return A new sorted map of models/definitions.
+    */
+    private static Map<String, Model> sortDefinitions(Map<String, Model> definitions){
+       for (Model model : definitions.values()) {
+          // Sort the properties by placing them in a TreeMap
+          model.setProperties(new TreeMap<>(model.getProperties()));
+       }
+       // Sort the definitions by placing them in a TreeMap
+       return new TreeMap<>(definitions);
     }
 
     private static void sortResponses(Path path, String method) throws GenerateException {
