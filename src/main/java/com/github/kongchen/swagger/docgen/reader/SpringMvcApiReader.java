@@ -1,19 +1,41 @@
 package com.github.kongchen.swagger.docgen.reader;
 
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
+import static org.springframework.core.annotation.AnnotatedElementUtils.findMergedAnnotation;
+import static org.springframework.core.annotation.AnnotationUtils.findAnnotation;
+
 import com.github.kongchen.swagger.docgen.GenerateException;
 import com.github.kongchen.swagger.docgen.spring.SpringResource;
 import com.github.kongchen.swagger.docgen.spring.SpringSwaggerExtension;
 import com.github.kongchen.swagger.docgen.util.SpringUtils;
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.Authorization;
+import io.swagger.annotations.AuthorizationScope;
 import io.swagger.converter.ModelConverters;
 import io.swagger.jaxrs.ext.SwaggerExtension;
 import io.swagger.jaxrs.ext.SwaggerExtensions;
-import io.swagger.models.*;
+import io.swagger.models.Model;
+import io.swagger.models.Operation;
+import io.swagger.models.Response;
+import io.swagger.models.SecurityRequirement;
+import io.swagger.models.Swagger;
 import io.swagger.models.Tag;
 import io.swagger.models.parameters.Parameter;
 import io.swagger.models.properties.Property;
 import io.swagger.models.properties.RefProperty;
 import io.swagger.util.BaseReaderUtils;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.apache.maven.plugin.logging.Log;
 import org.codehaus.plexus.util.StringUtils;
 import org.springframework.core.DefaultParameterNameDiscoverer;
@@ -21,16 +43,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.*;
-
-import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
-import static org.springframework.core.annotation.AnnotatedElementUtils.findMergedAnnotation;
-import static org.springframework.core.annotation.AnnotationUtils.findAnnotation;
 
 public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerReader {
     private static final ResponseContainerConverter RESPONSE_CONTAINER_CONVERTER = new ResponseContainerConverter();
@@ -285,14 +297,13 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
 
         // process parameters
         Class[] parameterTypes = method.getParameterTypes();
-        Type[] genericParameterTypes = method.getGenericParameterTypes();
         Annotation[][] paramAnnotations = method.getParameterAnnotations();
         DefaultParameterNameDiscoverer parameterNameDiscoverer = new DefaultParameterNameDiscoverer();
         String[] parameterNames = parameterNameDiscoverer.getParameterNames(method);
         // paramTypes = method.getParameterTypes
         // genericParamTypes = method.getGenericParameterTypes
         for (int i = 0; i < parameterTypes.length; i++) {
-            Type type = genericParameterTypes[i];
+            Type type = parameterTypes[i];
             List<Annotation> annotations = Arrays.asList(paramAnnotations[i]);
             List<Parameter> parameters = getParameters(type, annotations);
 

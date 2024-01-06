@@ -4,6 +4,7 @@ import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
 import com.github.kongchen.swagger.docgen.reader.SpringMvcApiReader;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
+import org.springframework.data.rest.webmvc.RepositoryRestController;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,6 +26,7 @@ public class SpringMavenDocumentSource extends AbstractDocumentSource<SpringMvcA
     protected Set<Class<?>> getValidClasses() {
         Set<Class<?>> result = super.getValidClasses();
         result.addAll(apiSource.getValidClasses(RestController.class));
+        result.addAll(apiSource.getValidClasses(RepositoryRestController.class));
         result.addAll(apiSource.getValidClasses(ControllerAdvice.class));
         return result;
     }
